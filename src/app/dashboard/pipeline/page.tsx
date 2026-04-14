@@ -70,7 +70,7 @@ export default function PipelinePage() {
               value={filters.search}
               onChange={(e) => setFilter({ search: e.target.value })}
               placeholder="Search…"
-              className="pl-8 pr-3 py-2 w-44 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+              className="pl-8 pr-3 py-2 w-44 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
             />
             {filters.search && (
               <button
@@ -175,7 +175,7 @@ export default function PipelinePage() {
                 setShowSort(!showSort);
                 setShowFilters(false);
               }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
             >
               <ArrowUpDown className="w-4 h-4" />
               Sort
@@ -210,7 +210,7 @@ export default function PipelinePage() {
           {/* Analytics link */}
           <Link
             href="/dashboard/pipeline/analytics"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
           >
             <BarChart3 className="w-4 h-4" />
             <span className="hidden sm:inline">Analytics</span>

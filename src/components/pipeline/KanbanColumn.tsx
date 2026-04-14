@@ -57,10 +57,10 @@ export default function KanbanColumn({ config, jobs, onAddClick }: KanbanColumnP
               boxShadow: `0 4px 12px -2px color-mix(in oklch, ${config.color}, transparent 60%)`
             }}
           >
-            <config.icon className="w-4.5 h-4.5 text-white" />
+            <config.icon className="w-4.5 h-4.5 text-zinc-900 dark:text-white" />
           </div>
           <div>
-            <span className="text-xs font-bold uppercase tracking-[0.15em] text-white font-display block leading-none">
+            <span className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-900 dark:text-white font-display block leading-none">
               {config.title}
             </span>
             <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest leading-none mt-1 block">
@@ -72,7 +72,7 @@ export default function KanbanColumn({ config, jobs, onAddClick }: KanbanColumnP
         {config.id === "new" && onAddClick && (
           <button
             onClick={onAddClick}
-            className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
+            className="w-8 h-8 rounded-lg bg-white/5 border border-zinc-200 dark:border-white/10 flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
           >
             <Plus className="w-4.5 h-4.5" />
           </button>
@@ -92,7 +92,7 @@ export default function KanbanColumn({ config, jobs, onAddClick }: KanbanColumnP
         >
           {jobs.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full min-h-[240px] text-center px-4">
-              <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center mb-4 opacity-50">
+              <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] flex items-center justify-center mb-4 opacity-50">
                 <config.icon className="w-6 h-6 text-zinc-600" />
               </div>
               <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Column Empty</p>

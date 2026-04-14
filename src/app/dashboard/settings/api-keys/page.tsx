@@ -163,7 +163,7 @@ export default function ApiKeysPage() {
                       </code>
                       <button
                         onClick={() => toggleReveal(entry.id)}
-                        className="p-1 text-zinc-400 dark:text-gray-600 hover:text-zinc-600 dark:hover:text-gray-400 transition-colors"
+                        className="p-1 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 hover:text-zinc-600 dark:hover:text-gray-400 transition-colors"
                       >
                         {isRevealed ? (
                           <EyeOff className="w-3 h-3" />
@@ -194,7 +194,7 @@ export default function ApiKeysPage() {
                           ? "Invalid"
                           : "Untested"}
                       </span>
-                      <span className="text-[10px] text-zinc-400 dark:text-gray-600">
+                      <span className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">
                         Added {entry.addedAt}
                       </span>
                     </div>
@@ -212,7 +212,7 @@ export default function ApiKeysPage() {
                   )}
                   <button
                     onClick={() => handleDelete(entry.id)}
-                    className="p-1.5 rounded-lg text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                    className="p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -263,7 +263,7 @@ export default function ApiKeysPage() {
                 value={newLabel}
                 onChange={(e) => setNewLabel(e.target.value)}
                 placeholder="e.g., Personal Key"
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
               />
             </div>
 
@@ -277,7 +277,7 @@ export default function ApiKeysPage() {
                 value={newKey}
                 onChange={(e) => setNewKey(e.target.value)}
                 placeholder="sk-..."
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all font-mono"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all font-mono"
               />
             </div>
 
@@ -285,7 +285,7 @@ export default function ApiKeysPage() {
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 onClick={() => setShowAddForm(false)}
-                className="px-4 py-2 rounded-xl bg-surface-200 text-zinc-700 dark:text-gray-300 text-sm font-medium hover:text-white hover:bg-surface-300 transition-all"
+                className="px-4 py-2 rounded-xl bg-surface-200 text-zinc-700 dark:text-gray-300 text-sm font-medium hover:text-zinc-900 dark:hover:text-white hover:bg-surface-300 transition-all"
               >
                 Cancel
               </button>

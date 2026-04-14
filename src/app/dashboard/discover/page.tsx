@@ -89,7 +89,7 @@ function CompanyCard({ company }: { company: DiscoveredCompany }) {
         </div>
       </div>
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.04]">
-        <span className="text-[10px] text-zinc-400 dark:text-gray-600">
+        <span className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">
           {jobCount} open {jobCount === 1 ? "role" : "roles"} matched
         </span>
         <div className="flex gap-2">
@@ -158,7 +158,7 @@ function JobCard({ jobId }: { jobId: string }) {
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.04]">
         <div className="flex items-center gap-3">
           <MatchBadge score={job.match_score} size="md" />
-          <span className="text-[10px] text-zinc-400 dark:text-gray-600 flex items-center gap-1">
+          <span className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600 flex items-center gap-1">
             <Clock className="w-3 h-3" />
             {new Date(job.posted_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
           </span>
@@ -175,7 +175,7 @@ function JobCard({ jobId }: { jobId: string }) {
           </button>
           <button
             onClick={() => dismissJob(job.id)}
-            className="p-1.5 rounded-lg text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
+            className="p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
           >
             <X className="w-4 h-4" />
           </button>
@@ -402,7 +402,7 @@ export default function DiscoverPage() {
                 value={store.searchQuery}
                 onChange={(e) => store.setSearchQuery(e.target.value)}
                 placeholder="Search jobs by title, company, or keyword..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
               />
             </div>
             <button
@@ -489,9 +489,9 @@ export default function DiscoverPage() {
         <div className="space-y-3">
           {filteredJobs.length === 0 ? (
             <div className="glass rounded-xl p-8 text-center">
-              <Search className="w-8 h-8 text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
+              <Search className="w-8 h-8 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
               <h3 className="text-sm font-medium text-zinc-600 dark:text-gray-400 mb-1">No matches found</h3>
-              <p className="text-xs text-zinc-400 dark:text-gray-600">Try adjusting your filters or run a new scan.</p>
+              <p className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600">Try adjusting your filters or run a new scan.</p>
             </div>
           ) : (
             filteredJobs.map((job) => <JobCard key={job.id} jobId={job.id} />)
@@ -504,9 +504,9 @@ export default function DiscoverPage() {
         <div className="space-y-3">
           {savedJobs.length === 0 ? (
             <div className="glass rounded-xl p-8 text-center">
-              <Bookmark className="w-8 h-8 text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
+              <Bookmark className="w-8 h-8 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
               <h3 className="text-sm font-medium text-zinc-600 dark:text-gray-400 mb-1">No saved leads yet</h3>
-              <p className="text-xs text-zinc-400 dark:text-gray-600">Bookmark interesting jobs to save them here.</p>
+              <p className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600">Bookmark interesting jobs to save them here.</p>
             </div>
           ) : (
             savedJobs.map((job) => <JobCard key={job.id} jobId={job.id} />)
@@ -653,29 +653,29 @@ export default function DiscoverPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Target Roles</label>
-                <input type="text" value={prefsForm.target_roles} onChange={(e) => setPrefsForm({ ...prefsForm, target_roles: e.target.value })} placeholder="e.g. Product Manager, PM Lead" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
-                <p className="text-[10px] text-zinc-400 dark:text-gray-600 mt-1">Comma-separated</p>
+                <input type="text" value={prefsForm.target_roles} onChange={(e) => setPrefsForm({ ...prefsForm, target_roles: e.target.value })} placeholder="e.g. Product Manager, PM Lead" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                <p className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mt-1">Comma-separated</p>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Industries</label>
-                <input type="text" value={prefsForm.industries} onChange={(e) => setPrefsForm({ ...prefsForm, industries: e.target.value })} placeholder="e.g. Technology, Ad Tech, Fintech" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                <input type="text" value={prefsForm.industries} onChange={(e) => setPrefsForm({ ...prefsForm, industries: e.target.value })} placeholder="e.g. Technology, Ad Tech, Fintech" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Locations</label>
-                <input type="text" value={prefsForm.locations} onChange={(e) => setPrefsForm({ ...prefsForm, locations: e.target.value })} placeholder="e.g. Singapore, San Francisco, Remote" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                <input type="text" value={prefsForm.locations} onChange={(e) => setPrefsForm({ ...prefsForm, locations: e.target.value })} placeholder="e.g. Singapore, San Francisco, Remote" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Keywords</label>
-                <input type="text" value={prefsForm.keywords} onChange={(e) => setPrefsForm({ ...prefsForm, keywords: e.target.value })} placeholder="e.g. AI, ML, revenue, platform" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                <input type="text" value={prefsForm.keywords} onChange={(e) => setPrefsForm({ ...prefsForm, keywords: e.target.value })} placeholder="e.g. AI, ML, revenue, platform" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Experience Level</label>
-                  <select value={prefsForm.experience_years} onChange={(e) => setPrefsForm({ ...prefsForm, experience_years: e.target.value })} className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 transition-all appearance-none cursor-pointer">
+                  <select value={prefsForm.experience_years} onChange={(e) => setPrefsForm({ ...prefsForm, experience_years: e.target.value })} className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 transition-all appearance-none cursor-pointer">
                     <option value="0-2">0–2 years</option>
                     <option value="3-5">3–5 years</option>
                     <option value="5-8">5–8 years</option>
@@ -744,33 +744,33 @@ export default function DiscoverPage() {
               <div className="flex items-center gap-3">
                 <div>
                   <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Emoji</label>
-                  <input type="text" value={companyForm.logo_emoji} onChange={(e) => setCompanyForm({ ...companyForm, logo_emoji: e.target.value })} className="w-14 px-2 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-lg text-center focus:outline-none focus:border-brand-500/40 transition-all" />
+                  <input type="text" value={companyForm.logo_emoji} onChange={(e) => setCompanyForm({ ...companyForm, logo_emoji: e.target.value })} className="w-14 px-2 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-lg text-center focus:outline-none focus:border-brand-500/40 transition-all" />
                 </div>
                 <div className="flex-1">
                   <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Company Name *</label>
-                  <input type="text" value={companyForm.name} onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })} placeholder="e.g. Stripe" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                  <input type="text" value={companyForm.name} onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })} placeholder="e.g. Stripe" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Industry</label>
-                  <input type="text" value={companyForm.industry} onChange={(e) => setCompanyForm({ ...companyForm, industry: e.target.value })} placeholder="e.g. Fintech" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
+                  <input type="text" value={companyForm.industry} onChange={(e) => setCompanyForm({ ...companyForm, industry: e.target.value })} placeholder="e.g. Fintech" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">HQ Location</label>
-                  <input type="text" value={companyForm.hq} onChange={(e) => setCompanyForm({ ...companyForm, hq: e.target.value })} placeholder="e.g. San Francisco, CA" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
+                  <input type="text" value={companyForm.hq} onChange={(e) => setCompanyForm({ ...companyForm, hq: e.target.value })} placeholder="e.g. San Francisco, CA" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Employee Count</label>
-                  <input type="text" value={companyForm.employee_count} onChange={(e) => setCompanyForm({ ...companyForm, employee_count: e.target.value })} placeholder="e.g. 5,000+" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
+                  <input type="text" value={companyForm.employee_count} onChange={(e) => setCompanyForm({ ...companyForm, employee_count: e.target.value })} placeholder="e.g. 5,000+" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Tier</label>
-                  <select value={companyForm.tier} onChange={(e) => setCompanyForm({ ...companyForm, tier: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 transition-all appearance-none cursor-pointer">
+                  <select value={companyForm.tier} onChange={(e) => setCompanyForm({ ...companyForm, tier: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 transition-all appearance-none cursor-pointer">
                     <option value={1}>Tier 1 — Dream</option>
                     <option value={2}>Tier 2 — Strong</option>
                     <option value={3}>Tier 3 — Good Fit</option>
@@ -780,18 +780,18 @@ export default function DiscoverPage() {
 
               <div>
                 <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Career Page URL</label>
-                <input type="url" value={companyForm.career_url} onChange={(e) => setCompanyForm({ ...companyForm, career_url: e.target.value })} placeholder="https://careers.stripe.com" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                <input type="url" value={companyForm.career_url} onChange={(e) => setCompanyForm({ ...companyForm, career_url: e.target.value })} placeholder="https://careers.stripe.com" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Tags</label>
-                <input type="text" value={companyForm.tags} onChange={(e) => setCompanyForm({ ...companyForm, tags: e.target.value })} placeholder="e.g. payments, API, developer tools" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
-                <p className="text-[10px] text-zinc-400 dark:text-gray-600 mt-1">Comma-separated</p>
+                <input type="text" value={companyForm.tags} onChange={(e) => setCompanyForm({ ...companyForm, tags: e.target.value })} placeholder="e.g. payments, API, developer tools" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
+                <p className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mt-1">Comma-separated</p>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Notes</label>
-                <textarea value={companyForm.notes} onChange={(e) => setCompanyForm({ ...companyForm, notes: e.target.value })} rows={2} placeholder="Why this company interests you..." className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all resize-none" />
+                <textarea value={companyForm.notes} onChange={(e) => setCompanyForm({ ...companyForm, notes: e.target.value })} rows={2} placeholder="Why this company interests you..." className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all resize-none" />
               </div>
             </div>
 

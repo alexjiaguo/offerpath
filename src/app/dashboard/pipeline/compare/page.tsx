@@ -42,7 +42,7 @@ export default function OfferComparePage() {
 
       {offeredJobs.length === 0 ? (
         <div className="glass rounded-2xl p-12 text-center">
-          <Scale className="w-10 h-10 text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
+          <Scale className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">No offers to compare</h2>
           <p className="text-sm text-zinc-500 dark:text-gray-500 mb-6 max-w-md mx-auto">
             Move jobs to the &quot;Offered&quot; column in your pipeline to compare
@@ -79,7 +79,7 @@ export default function OfferComparePage() {
           <div className="mt-8 glass rounded-2xl overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/[0.06]">
+                <tr className="border-b border-zinc-200 dark:border-white/[0.06]">
                   <th className="text-left px-5 py-3 text-xs font-semibold text-zinc-500 dark:text-gray-500 uppercase tracking-wider">
                     Factor
                   </th>
@@ -178,14 +178,14 @@ function OfferCard({
       )}
     >
       {isBest && (
-        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-emerald-500 text-[10px] font-bold text-white uppercase tracking-wider">
+        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-emerald-500 text-[10px] font-bold text-zinc-900 dark:text-white uppercase tracking-wider">
           Highest Score
         </div>
       )}
 
       {/* Company */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-purple-400 flex items-center justify-center text-lg font-bold text-white">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-purple-400 flex items-center justify-center text-lg font-bold text-zinc-900 dark:text-white">
           {(job.company?.name || "?").charAt(0)}
         </div>
         <div>
@@ -237,7 +237,7 @@ function OfferCard({
               </div>
             )}
             {job.comp_details.total_comp && (
-              <div className="flex items-center justify-between border-t border-white/[0.06] pt-1.5">
+              <div className="flex items-center justify-between border-t border-zinc-200 dark:border-white/[0.06] pt-1.5">
                 <span className="text-zinc-600 dark:text-gray-400 font-medium">Total Comp</span>
                 <span className="font-semibold text-emerald-300">
                   {job.comp_details.total_comp}

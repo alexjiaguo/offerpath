@@ -38,7 +38,7 @@ export default function AuthLayout({
           className="flex items-center justify-center gap-2.5 mb-8 group"
         >
           <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center group-hover:scale-105 transition-transform">
-            <Target className="w-5 h-5 text-white" />
+            <Target className="w-5 h-5 text-zinc-900 dark:text-white" />
           </div>
           <span className="text-xl font-bold tracking-tight">
             Offer<span className="gradient-text">Path</span>

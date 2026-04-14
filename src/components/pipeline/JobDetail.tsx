@@ -105,9 +105,9 @@ export default function JobDetail({ jobId }: JobDetailProps) {
   if (!job) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
-        <AlertTriangle className="w-12 h-12 text-zinc-400 dark:text-gray-600 mb-4" />
+        <AlertTriangle className="w-12 h-12 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mb-4" />
         <h2 className="text-xl font-semibold text-zinc-600 dark:text-gray-400 mb-2">Job Not Found</h2>
-        <p className="text-sm text-zinc-400 dark:text-gray-600 mb-6">
+        <p className="text-sm text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mb-6">
           This job may have been deleted or doesn&apos;t exist.
         </p>
         <Link
@@ -196,7 +196,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
           {/* Delete button */}
           <button
             onClick={handleDelete}
-            className="p-2 rounded-lg text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
+            className="p-2 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
             title="Delete job"
           >
             <Trash2 className="w-5 h-5" />
@@ -238,7 +238,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 {job.description}
               </div>
             ) : (
-              <p className="text-sm text-zinc-400 dark:text-gray-600 italic">
+              <p className="text-sm text-zinc-700 dark:text-zinc-400 dark:text-gray-600 italic">
                 No description available. Add a description by editing this job.
               </p>
             )}
@@ -309,7 +309,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 )}
               </div>
               {job.comp_details.benefits && job.comp_details.benefits.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-white/[0.06]">
                   <p className="text-xs text-zinc-500 dark:text-gray-500 mb-2">Benefits</p>
                   <div className="flex flex-wrap gap-2">
                     {job.comp_details.benefits.map((b) => (
@@ -414,11 +414,11 @@ export default function JobDetail({ jobId }: JobDetailProps) {
             </>
           ) : (
             <div className="glass rounded-2xl p-6 text-center">
-              <Star className="w-10 h-10 text-zinc-300 dark:text-gray-700 mx-auto mb-3" />
+              <Star className="w-10 h-10 text-zinc-700 dark:text-zinc-300 dark:text-gray-700 mx-auto mb-3" />
               <h3 className="text-sm font-semibold text-zinc-600 dark:text-gray-400 mb-1">
                 Not Evaluated Yet
               </h3>
-              <p className="text-xs text-zinc-400 dark:text-gray-600 mb-4">
+              <p className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mb-4">
                 Run AI evaluation to get a fitness score, tier assignment, and detailed
                 analysis.
               </p>
@@ -434,7 +434,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
             <div className="space-y-2">
               {/* Resume action — context-aware */}
               {job.resume_id ? (
-                <div className="rounded-lg border border-white/[0.06] overflow-hidden">
+                <div className="rounded-lg border border-zinc-200 dark:border-white/[0.06] overflow-hidden">
                   {/* Linked resume card */}
                   {(() => {
                     const linkedResume = getResumeById(job.resume_id!);
@@ -490,10 +490,10 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 href="/dashboard/interview"
                 className="flex items-center justify-between p-3 rounded-lg hover:bg-white/[0.04] transition-all group"
               >
-                <span className="text-sm text-zinc-600 dark:text-gray-400 group-hover:text-zinc-800 dark:group-hover:text-gray-200">
+                <span className="text-sm text-zinc-600 dark:text-gray-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-900 dark:hover:text-gray-200">
                   Start Interview Prep
                 </span>
-                <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-gray-600 group-hover:text-zinc-600 dark:group-hover:text-gray-400" />
+                <ChevronRight className="w-4 h-4 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-900 dark:hover:text-gray-400" />
               </Link>
             </div>
           </div>

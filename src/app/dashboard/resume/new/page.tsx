@@ -117,7 +117,7 @@ function NewResumeContent() {
     <div className="max-w-3xl mx-auto py-12 px-6">
       <Link
         href="/dashboard/resume"
-        className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-all mb-8 group"
+        className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all mb-8 group"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Back to Studio
@@ -158,8 +158,8 @@ function NewResumeContent() {
                 onClick={handleCreateEmpty}
                 className="liquid-glass rounded-[32px] p-8 text-left border border-zinc-200 dark:border-white/[0.05] hover:bg-zinc-100 dark:hover:border-white/10 transition-all group"
               >
-                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                  <FileText className="w-7 h-7 text-zinc-400" />
+                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-zinc-200 dark:border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                  <FileText className="w-7 h-7 text-zinc-700 dark:text-zinc-400" />
                 </div>
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white font-display mb-2">Start from Scratch</h3>
                 <p className="text-zinc-600 dark:text-zinc-500 text-sm leading-relaxed mb-8">

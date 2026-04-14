@@ -108,7 +108,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="flex items-center gap-5 mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-2xl font-bold text-white">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-2xl font-bold text-zinc-900 dark:text-white">
               {profile.fullName.charAt(0)}
             </div>
             <div>
@@ -130,7 +130,7 @@ export default function SettingsPage() {
                 type="text"
                 value={profile.fullName}
                 onChange={(e) => updateProfile({ fullName: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
               />
             </div>
             <div>
@@ -141,7 +141,7 @@ export default function SettingsPage() {
                 type="email"
                 value={profile.email}
                 onChange={(e) => updateProfile({ email: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
               />
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function SettingsPage() {
                           <CheckCircle className="w-3 h-3" /> Parsed
                           successfully
                         </span>
-                        <span className="text-[10px] text-zinc-400 dark:text-gray-600">
+                        <span className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">
                           {new Date(
                             uploadedResume.uploadedAt
                           ).toLocaleDateString("en-US", {
@@ -206,7 +206,7 @@ export default function SettingsPage() {
                     </button>
                     <button
                       onClick={clearResume}
-                      className="p-1.5 rounded-lg text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                      className="p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -255,7 +255,7 @@ export default function SettingsPage() {
                         Drop your resume here or{" "}
                         <span className="text-brand-400">browse</span>
                       </p>
-                      <p className="text-xs text-zinc-400 dark:text-gray-600 mt-1">
+                      <p className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mt-1">
                         PDF, DOCX, or TXT · Max 10 MB
                       </p>
                     </div>
@@ -289,7 +289,7 @@ export default function SettingsPage() {
                   updateProfile({ headline: e.target.value })
                 }
                 placeholder="e.g. Senior Product Manager | Ad Tech & AI"
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
               />
             </div>
 
@@ -304,7 +304,7 @@ export default function SettingsPage() {
                   onChange={(e) =>
                     updateProfile({ currentTitle: e.target.value })
                   }
-                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
               <div>
@@ -317,7 +317,7 @@ export default function SettingsPage() {
                   onChange={(e) =>
                     updateProfile({ currentCompany: e.target.value })
                   }
-                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             </div>
@@ -333,7 +333,7 @@ export default function SettingsPage() {
                   onChange={(e) =>
                     updateProfile({ yearsOfExperience: e.target.value })
                   }
-                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
               <div>
@@ -347,7 +347,7 @@ export default function SettingsPage() {
                     updateProfile({ workAuthorization: e.target.value })
                   }
                   placeholder="e.g. US Citizen, H-1B, Singapore PR"
-                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             </div>
@@ -363,7 +363,7 @@ export default function SettingsPage() {
                 }
                 rows={3}
                 placeholder="Describe the type of roles you're targeting..."
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
               />
             </div>
 
@@ -397,7 +397,7 @@ export default function SettingsPage() {
                     if (e.key === "Enter") handleSkillAdd();
                   }}
                   placeholder="Add skill and press Enter"
-                  className="flex-1 px-3 py-2 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="flex-1 px-3 py-2 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             </div>
@@ -412,7 +412,7 @@ export default function SettingsPage() {
                   updateProfile({ careerGoals: e.target.value })
                 }
                 rows={2}
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
               />
             </div>
           </div>
@@ -497,7 +497,7 @@ export default function SettingsPage() {
               <select
                 value={defaultTemplate}
                 onChange={(e) => setDefaultTemplate(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all appearance-none cursor-pointer"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all appearance-none cursor-pointer"
               >
                 <option value="modern">Modern</option>
                 <option value="professional">Professional</option>

@@ -68,7 +68,7 @@ export default function JobPrepPage({
     return (
       <div className="max-w-4xl mx-auto animate-fade-in">
         <div className="glass rounded-2xl p-12 text-center">
-          <AlertCircle className="w-10 h-10 text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
+          <AlertCircle className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">Job not found</h2>
           <p className="text-sm text-zinc-500 dark:text-gray-500 mb-4">
             This job may have been removed from your pipeline.
@@ -113,7 +113,7 @@ export default function JobPrepPage({
       {/* Job Context Card */}
       <div className="glass rounded-2xl p-6 mb-6">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center text-lg font-bold text-white flex-shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center text-lg font-bold text-zinc-900 dark:text-white flex-shrink-0">
             {(job.company?.name || "?").charAt(0)}
           </div>
           <div className="flex-1 min-w-0">
@@ -205,7 +205,7 @@ export default function JobPrepPage({
                     <BookOpen className="w-5 h-5 text-blue-400" />
                     <h2 className="text-base font-semibold">Company Research</h2>
                   </div>
-                  <div className="prose prose-invert prose-sm max-w-none text-zinc-700 dark:text-gray-300 leading-relaxed [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-zinc-700 dark::text-zinc-700 dark::text-gray-300 [&_h3]:mt-4 [&_h3]:mb-1.5 [&_ul]:space-y-1 [&_li]:text-sm [&_strong]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200">
+                  <div className="prose prose-invert prose-sm max-w-none text-zinc-700 dark:text-gray-300 leading-relaxed [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-zinc-700 dark::text-zinc-700 dark::text-gray-300 [&_h3]:mt-4 [&_h3]:mb-1.5 [&_ul]:space-y-1 [&_li]:text-sm [&_strong]:text-zinc-800">
                     <ReactMarkdown>{prep.company_research}</ReactMarkdown>
                   </div>
                 </div>
@@ -218,7 +218,7 @@ export default function JobPrepPage({
                     <Brain className="w-5 h-5 text-purple-400" />
                     <h2 className="text-base font-semibold">Role Analysis</h2>
                   </div>
-                  <div className="prose prose-invert prose-sm max-w-none text-zinc-700 dark:text-gray-300 leading-relaxed [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-zinc-700 dark::text-zinc-700 dark::text-gray-300 [&_h3]:mt-4 [&_h3]:mb-1.5 [&_ul]:space-y-1 [&_li]:text-sm [&_strong]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200">
+                  <div className="prose prose-invert prose-sm max-w-none text-zinc-700 dark:text-gray-300 leading-relaxed [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-zinc-700 dark::text-zinc-700 dark::text-gray-300 [&_h3]:mt-4 [&_h3]:mb-1.5 [&_ul]:space-y-1 [&_li]:text-sm [&_strong]:text-zinc-800">
                     <ReactMarkdown>{prep.role_analysis}</ReactMarkdown>
                   </div>
                 </div>
@@ -237,7 +237,7 @@ export default function JobPrepPage({
                       onClick={() => setExpandedQuestion(isExpanded ? null : q.id)}
                       className="w-full p-4 text-left flex items-start gap-3"
                     >
-                      <span className="text-xs font-mono text-zinc-400 dark:text-gray-600 mt-0.5 flex-shrink-0 w-6">
+                      <span className="text-xs font-mono text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mt-0.5 flex-shrink-0 w-6">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <div className="flex-1 min-w-0">
@@ -342,7 +342,7 @@ export default function JobPrepPage({
                         <p className="text-lg font-bold text-brand-400">
                           {m.score.toFixed(1)}
                         </p>
-                        <p className="text-[10px] text-zinc-400 dark:text-gray-600">score</p>
+                        <p className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">score</p>
                       </div>
                     )}
                   </Link>

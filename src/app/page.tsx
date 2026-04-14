@@ -191,9 +191,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-9 h-9 rounded-xl gradient-futuristic flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform duration-500">
-              <Target className="w-5 h-5 text-white" />
+              <Target className="w-5 h-5 text-zinc-900 dark:text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-white font-display">
+            <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">
               Offer<span className="text-gradient-futuristic">Path</span>
             </span>
           </Link>
@@ -203,7 +203,7 @@ export default function LandingPage() {
               <a
                 key={item}
                 href={`#${item.toLowerCase()}`}
-                className="text-sm font-medium text-zinc-400 hover:text-white transition-colors relative group"
+                className="text-sm font-medium text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors relative group"
               >
                 {item}
                 <span className="absolute -bottom-1 left-0 w-0 h-px bg-brand-400 group-hover:w-full transition-all duration-300" />
@@ -214,7 +214,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/login"
-              className="text-sm font-medium text-zinc-400 hover:text-white transition-colors px-4 py-2"
+              className="text-sm font-medium text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors px-4 py-2"
             >
               Sign In
             </Link>
@@ -235,7 +235,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-zinc-400 text-xs font-medium tracking-wider uppercase mb-10"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-zinc-700 dark:text-zinc-400 text-xs font-medium tracking-wider uppercase mb-10"
           >
             <Sparkles className="w-3.5 h-3.5 text-brand-400" />
             All-in-one Job Hunting Toolkit
@@ -245,7 +245,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] mb-8 font-display text-white text-balance"
+            className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] mb-8 font-display text-zinc-900 dark:text-white text-balance"
           >
             Land your <br />
             <span className="text-gradient-futuristic italic">dream offer.</span>
@@ -255,7 +255,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed font-light"
+            className="text-xl md:text-2xl text-zinc-700 dark:text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed font-light"
           >
             Track your pipeline, build tailored resumes, and ace interviews with AI. The complete operating system for your career.
           </motion.p>
@@ -276,7 +276,7 @@ export default function LandingPage() {
             </Link>
             <a
               href="#features"
-              className="px-10 py-4 rounded-2xl border border-white/10 text-white font-semibold text-lg hover:bg-white/5 transition-all"
+              className="px-10 py-4 rounded-2xl border border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-white font-semibold text-lg hover:bg-white/5 transition-all"
             >
               See All Features
             </a>
@@ -287,12 +287,12 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-12 max-w-4xl mx-auto mt-24 border-t border-white/[0.05] pt-12"
+            className="grid grid-cols-2 md:grid-cols-4 gap-12 max-w-4xl mx-auto mt-24 border-t border-zinc-200 dark:border-white/[0.05] pt-12"
           >
             {STATS.map((stat) => (
               <div key={stat.label} className="text-center group cursor-default">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
-                  <span className="text-3xl font-light text-white font-display tabular-nums">
+                  <span className="text-3xl font-light text-zinc-900 dark:text-white font-display tabular-nums">
                     {stat.value}{stat.suffix}
                   </span>
                   {stat.icon && <stat.icon className="w-5 h-5 text-amber-400" />}
@@ -315,15 +315,15 @@ export default function LandingPage() {
                 Everything you <br />
                 <span className="text-gradient-futuristic italic">need to win.</span>
               </h2>
-              <p className="text-zinc-400 text-xl font-light">
+              <p className="text-zinc-700 dark:text-zinc-400 text-xl font-light">
                 Four specialized modules designed to automate the friction of your career search.
               </p>
             </div>
             <div className="flex gap-4">
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div className="p-4 rounded-2xl bg-white/5 border border-zinc-200 dark:border-white/10">
                 <Globe className="w-6 h-6 text-brand-400" />
               </div>
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div className="p-4 rounded-2xl bg-white/5 border border-zinc-200 dark:border-white/10">
                 <Cpu className="w-6 h-6 text-purple-400" />
               </div>
             </div>
@@ -347,7 +347,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: -40 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative p-2 rounded-3xl bg-white/[0.02] border border-white/[0.05] shadow-2xl overflow-hidden"
+              className="relative p-2 rounded-3xl bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] shadow-2xl overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent" />
               <img
@@ -355,12 +355,12 @@ export default function LandingPage() {
                 alt="Resume Editor Interface"
                 className="rounded-2xl opacity-80 mix-blend-luminosity grayscale hover:grayscale-0 transition-all duration-1000"
               />
-              <div className="absolute bottom-8 left-8 right-8 p-6 liquid-glass rounded-2xl border border-white/10">
+              <div className="absolute bottom-8 left-8 right-8 p-6 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/10">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
                   <span className="text-[10px] font-bold tracking-widest uppercase text-brand-400">Live Editor</span>
                 </div>
-                <p className="text-sm font-medium text-white mb-2">Analyzing: Product Designer Application</p>
+                <p className="text-sm font-medium text-zinc-900 dark:text-white mb-2">Analyzing: Product Designer Application</p>
                 <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: "0%" }}
@@ -371,7 +371,7 @@ export default function LandingPage() {
                 </div>
                 <div className="flex justify-between mt-2">
                   <span className="text-[10px] text-zinc-500 uppercase tracking-widest">ATS Match Score</span>
-                  <span className="text-[10px] font-bold text-white uppercase tracking-widest">94.8%</span>
+                  <span className="text-[10px] font-bold text-zinc-900 dark:text-white uppercase tracking-widest">94.8%</span>
                 </div>
               </div>
             </motion.div>
@@ -382,7 +382,7 @@ export default function LandingPage() {
               Built for <br />
               <span className="text-gradient-futuristic italic">maximum callbacks.</span>
             </h2>
-            <p className="text-xl text-zinc-400 font-light leading-relaxed max-w-xl">
+            <p className="text-xl text-zinc-700 dark:text-zinc-400 font-light leading-relaxed max-w-xl">
               OfferPath doesn&apos;t just track your applications; it optimizes every part of your profile to match what hiring managers are looking for.
             </p>
 
@@ -400,10 +400,10 @@ export default function LandingPage() {
                 },
               ].map((item) => (
                 <div key={item.title} className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                    <item.icon className="w-5 h-5 text-zinc-400" />
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-zinc-200 dark:border-white/10 flex items-center justify-center">
+                    <item.icon className="w-5 h-5 text-zinc-700 dark:text-zinc-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">{item.title}</h3>
                   <p className="text-sm text-zinc-500 leading-relaxed">{item.desc}</p>
                 </div>
               ))}
@@ -421,7 +421,7 @@ export default function LandingPage() {
             </h2>
             <div className="flex items-center justify-center gap-1.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 text-white fill-white" />
+                <Star key={i} className="w-5 h-5 text-zinc-900 dark:text-white fill-white" />
               ))}
               <span className="ml-2 text-zinc-500 font-medium uppercase tracking-widest text-xs italic">Exceptional Feedback</span>
             </div>
@@ -435,10 +435,10 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
                 viewport={{ once: true }}
-                className="group p-8 rounded-3xl bg-white/[0.01] border border-white/[0.05] hover:bg-white/[0.02] hover:border-white/[0.1] transition-all duration-500 relative overflow-hidden"
+                className="group p-8 rounded-3xl bg-white/[0.01] border border-zinc-200 dark:border-white/[0.05] hover:bg-white/[0.02] hover:border-white/[0.1] transition-all duration-500 relative overflow-hidden"
               >
                 <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${t.gradient} blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
-                <p className="text-zinc-300 text-lg font-light leading-relaxed mb-8 relative z-10 italic">
+                <p className="text-zinc-700 dark:text-zinc-300 text-lg font-light leading-relaxed mb-8 relative z-10 italic">
                   &ldquo;{t.text}&rdquo;
                 </p>
                 <div className="flex items-center gap-4 relative z-10">
@@ -446,7 +446,7 @@ export default function LandingPage() {
                     {t.avatar}
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-white tracking-tight">{t.name}</div>
+                    <div className="text-sm font-bold text-zinc-900 dark:text-white tracking-tight">{t.name}</div>
                     <div className="text-xs text-zinc-500 font-medium uppercase tracking-widest mt-0.5">{t.role}</div>
                   </div>
                 </div>
@@ -486,11 +486,11 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-brand-600/20 via-purple-600/10 to-blue-600/20 rounded-[40px] blur-[80px] opacity-50 group-hover:opacity-80 transition-opacity duration-1000" />
           <div className="relative liquid-glass rounded-[40px] p-16 md:p-24 text-center border border-white/[0.08]">
             <Zap className="w-16 h-16 text-brand-400 mx-auto mb-10 animate-pulse-subtle" />
-            <h2 className="text-4xl md:text-7xl font-bold mb-8 font-display tracking-tighter text-white">
+            <h2 className="text-4xl md:text-7xl font-bold mb-8 font-display tracking-tighter text-zinc-900 dark:text-white">
               Ready to land <br />
               <span className="text-gradient-futuristic italic text-5xl md:text-8xl">your next role?</span>
             </h2>
-            <p className="text-zinc-400 text-xl md:text-2xl mb-12 max-w-2xl mx-auto font-light leading-relaxed">
+            <p className="text-zinc-700 dark:text-zinc-400 text-xl md:text-2xl mb-12 max-w-2xl mx-auto font-light leading-relaxed">
               Join thousands of professionals who have accelerated their career hunt with OfferPath.
             </p>
             <Link
@@ -511,9 +511,9 @@ export default function LandingPage() {
             <div className="md:col-span-5">
               <Link href="/" className="flex items-center gap-3 mb-8">
                 <div className="w-8 h-8 rounded-xl gradient-futuristic flex items-center justify-center">
-                  <Target className="w-4.5 h-4.5 text-white" />
+                  <Target className="w-4.5 h-4.5 text-zinc-900 dark:text-white" />
                 </div>
-                <span className="text-lg font-bold tracking-tight text-white font-display uppercase tracking-[0.15em]">
+                <span className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white font-display uppercase tracking-[0.15em]">
                   OfferPath
                 </span>
               </Link>
@@ -541,13 +541,13 @@ export default function LandingPage() {
               },
             ].map((col) => (
               <div key={col.title} className="md:col-span-2 md:last:col-span-1">
-                <h4 className="text-[10px] font-bold tracking-[0.3em] mb-8 text-zinc-300 uppercase">{col.title}</h4>
+                <h4 className="text-[10px] font-bold tracking-[0.3em] mb-8 text-zinc-700 dark:text-zinc-300 uppercase">{col.title}</h4>
                 <ul className="space-y-4">
                   {col.links.map((link) => (
                     <li key={link}>
                       <a
                         href="#"
-                        className="text-sm text-zinc-500 hover:text-white transition-colors font-medium tracking-tight"
+                        className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors font-medium tracking-tight"
                       >
                         {link}
                       </a>
@@ -592,7 +592,7 @@ function ModuleCard({ mod, index }: { mod: ModuleDef; index: number }) {
             boxShadow: `0 10px 30px -5px ${mod.color}40`
           }}
         >
-          <mod.icon className="w-7 h-7 text-white" />
+          <mod.icon className="w-7 h-7 text-zinc-900 dark:text-white" />
         </div>
         <div 
           className="absolute inset-0 w-14 h-14 rounded-2xl blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-700"
@@ -609,7 +609,7 @@ function ModuleCard({ mod, index }: { mod: ModuleDef; index: number }) {
 
       <ul className="space-y-3.5 mt-auto">
         {mod.features.map((f: string) => (
-          <li key={f} className="flex items-center gap-3 text-xs font-bold tracking-tight text-zinc-400 uppercase">
+          <li key={f} className="flex items-center gap-3 text-xs font-bold tracking-tight text-zinc-700 dark:text-zinc-400 uppercase">
             <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: mod.color }} />
             {f}
           </li>
@@ -617,7 +617,7 @@ function ModuleCard({ mod, index }: { mod: ModuleDef; index: number }) {
       </ul>
       
       <div className="mt-8 pt-8 border-t border-white/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white">
+        <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-white">
           Get Started <ChevronRight className="w-4 h-4" />
         </button>
       </div>
@@ -653,7 +653,7 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
       </div>
 
       <div className="flex items-baseline gap-2 mb-10">
-        <span className="text-5xl font-light text-white font-display">{plan.price}</span>
+        <span className="text-5xl font-light text-zinc-900 dark:text-white font-display">{plan.price}</span>
         <span className="text-zinc-600 text-sm font-medium uppercase tracking-widest">{plan.period}</span>
       </div>
 
@@ -661,7 +661,7 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
         className={`w-full py-4 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all mb-10 ${
           plan.highlight
             ? "bg-white text-black hover:bg-zinc-200 shadow-xl shadow-white/5"
-            : "bg-white/5 text-zinc-300 border border-white/10 hover:bg-white/10 hover:text-white"
+            : "bg-white/5 text-zinc-300 border border-white/10 hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white"
         }`}
       >
         {plan.cta}
@@ -671,7 +671,7 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
         <div className="text-[10px] font-bold tracking-widest uppercase text-zinc-600">Plan Features</div>
         <ul className="space-y-4">
           {plan.features.map((f: string) => (
-            <li key={f} className="flex items-start gap-3.5 text-sm text-zinc-400 group-hover:text-zinc-300 transition-colors">
+            <li key={f} className="flex items-start gap-3.5 text-sm text-zinc-700 dark:text-zinc-400 group-hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors">
               <CheckCircle2 className="w-5 h-5 text-brand-500 flex-shrink-0 mt-[-2px]" />
               <span className="font-light leading-tight">{f}</span>
             </li>

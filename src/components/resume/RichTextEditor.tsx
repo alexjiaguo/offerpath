@@ -274,7 +274,7 @@ export default function RichTextEditor({
                     .toggleHighlight({ color: c.value })
                     .run()
                 }
-                className="w-5 h-5 rounded-full border border-white/10 hover:scale-110 transition-transform"
+                className="w-5 h-5 rounded-full border border-zinc-200 dark:border-white/10 hover:scale-110 transition-transform"
                 style={{ backgroundColor: c.value }}
                 title={c.label}
               />
@@ -300,7 +300,7 @@ export default function RichTextEditor({
                     ? editor.chain().focus().setColor(c.value).run()
                     : editor.chain().focus().unsetColor().run()
                 }
-                className="w-5 h-5 rounded-full border border-white/10 hover:scale-110 transition-transform"
+                className="w-5 h-5 rounded-full border border-zinc-200 dark:border-white/10 hover:scale-110 transition-transform"
                 style={{
                   backgroundColor: c.value || "#e5e7eb",
                 }}

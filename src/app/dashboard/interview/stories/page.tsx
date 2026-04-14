@@ -155,7 +155,7 @@ export default function StoriesPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search stories…"
-            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
           />
           {search && (
             <button
@@ -200,7 +200,7 @@ export default function StoriesPage() {
       {/* Stories Grid */}
       {filteredStories.length === 0 ? (
         <div className="glass rounded-2xl p-12 text-center">
-          <Library className="w-10 h-10 text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
+          <Library className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">
             {stories.length === 0 ? "Build your story bank" : "No matching stories"}
           </h3>
@@ -251,7 +251,7 @@ export default function StoriesPage() {
                       {/* Tags */}
                       {story.tags.length > 0 && (
                         <div className="flex items-center gap-1.5 mb-2">
-                          <Tag className="w-3 h-3 text-zinc-400 dark:text-gray-600" />
+                          <Tag className="w-3 h-3 text-zinc-700 dark:text-zinc-400 dark:text-gray-600" />
                           {story.tags.map((tag) => (
                             <span
                               key={tag}
@@ -275,7 +275,7 @@ export default function StoriesPage() {
                     <div className="flex items-center gap-3 flex-shrink-0">
                       <div className="text-center">
                         <p className="text-base font-bold">{story.used_count}</p>
-                        <p className="text-[10px] text-zinc-400 dark:text-gray-600">uses</p>
+                        <p className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">uses</p>
                       </div>
                       {isExpanded ? (
                         <ChevronUp className="w-4 h-4 text-zinc-500 dark:text-gray-500" />

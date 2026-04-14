@@ -149,7 +149,7 @@ export default function AddJobDialog() {
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-white/[0.06]">
             <h2 className="text-lg font-semibold">Add Job</h2>
             <button
               onClick={handleClose}
@@ -201,7 +201,7 @@ export default function AddJobDialog() {
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="https://careers.google.com/jobs/..."
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             )}
@@ -216,7 +216,7 @@ export default function AddJobDialog() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Senior Product Manager"
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
               <div>
@@ -228,7 +228,7 @@ export default function AddJobDialog() {
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Google"
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             </div>
@@ -243,7 +243,7 @@ export default function AddJobDialog() {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="Singapore"
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
               <div>
@@ -255,7 +255,7 @@ export default function AddJobDialog() {
                   value={salaryRange}
                   onChange={(e) => setSalaryRange(e.target.value)}
                   placeholder="$200K–$300K"
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             </div>
@@ -270,7 +270,7 @@ export default function AddJobDialog() {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Paste the full job description here..."
                   rows={6}
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
                 />
               </div>
             )}
@@ -309,7 +309,7 @@ export default function AddJobDialog() {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between px-6 py-4 border-t border-white/[0.06] bg-surface-100/30">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-zinc-200 dark:border-white/[0.06] bg-surface-100/30">
             <button
               onClick={handleEvaluate}
               disabled={isEvaluating || (!title.trim() && !description.trim())}

@@ -64,7 +64,7 @@ export default function InterviewPage() {
         </div>
         <Link
           href="/dashboard/interview/stories"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-200 text-zinc-700 dark:text-gray-300 text-sm font-medium hover:text-white hover:bg-surface-300 transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-200 text-zinc-700 dark:text-gray-300 text-sm font-medium hover:text-zinc-900 dark:hover:text-white hover:bg-surface-300 transition-all"
         >
           <Library className="w-4 h-4" />
           Story Bank ({stories.length})
@@ -154,7 +154,7 @@ export default function InterviewPage() {
         </h2>
         {jobsWithPrep.length === 0 ? (
           <div className="glass rounded-2xl p-8 text-center">
-            <Brain className="w-10 h-10 text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
+            <Brain className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
             <p className="text-zinc-500 dark:text-gray-500 text-sm mb-4">
               No prep packages yet. Move jobs to &quot;Applied&quot; or &quot;Interviewing&quot; and generate a prep package.
             </p>
@@ -182,7 +182,7 @@ export default function InterviewPage() {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-400 flex items-center justify-center text-sm font-bold text-white">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-400 flex items-center justify-center text-sm font-bold text-zinc-900 dark:text-white">
                         {(job.company?.name || "?").charAt(0)}
                       </div>
                       <div>
@@ -192,7 +192,7 @@ export default function InterviewPage() {
                         <p className="text-xs text-zinc-500 dark:text-gray-500">{job.company?.name}</p>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-gray-600 group-hover:text-brand-400 transition-colors" />
+                    <ChevronRight className="w-4 h-4 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 group-hover:text-brand-400 transition-colors" />
                   </div>
 
                   <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-gray-500">
@@ -266,7 +266,7 @@ export default function InterviewPage() {
                       <p className="text-lg font-bold text-brand-400">
                         {mock.score.toFixed(1)}
                       </p>
-                      <p className="text-[10px] text-zinc-400 dark:text-gray-600">score</p>
+                      <p className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">score</p>
                     </div>
                   )}
                 </Link>

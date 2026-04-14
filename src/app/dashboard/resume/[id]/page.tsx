@@ -179,7 +179,7 @@ export default function ResumeEditorPage({
     return (
       <div className="max-w-4xl mx-auto animate-fade-in">
         <div className="glass rounded-2xl p-12 text-center">
-          <AlertCircle className="w-10 h-10 text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
+          <AlertCircle className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">Resume not found</h2>
           <Link
             href="/dashboard/resume"
@@ -368,7 +368,7 @@ export default function ResumeEditorPage({
                 "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all",
                 editorMode === "form"
                   ? "bg-zinc-200 dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-300"
+                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
               )}
             >
               <FormInput className="w-3.5 h-3.5" />
@@ -380,7 +380,7 @@ export default function ResumeEditorPage({
                 "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all",
                 editorMode === "richtext"
                   ? "bg-zinc-200 dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-300"
+                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
               )}
             >
               <PenTool className="w-3.5 h-3.5" />
@@ -593,7 +593,7 @@ export default function ResumeEditorPage({
                                 newExps.splice(index, 1);
                                 updateResume(id, { data: { ...data, experience: newExps } });
                               }}
-                              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-all"
+                              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-all"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -658,7 +658,7 @@ export default function ResumeEditorPage({
                                         newExps[index] = { ...newExps[index], bullets: newBullets };
                                         updateResume(id, { data: { ...data, experience: newExps } });
                                       }}
-                                      className="mt-2 p-1 text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover/bullet:opacity-100"
+                                      className="mt-2 p-1 text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover/bullet:opacity-100"
                                     >
                                       <X className="w-3.5 h-3.5" />
                                     </button>
@@ -710,7 +710,7 @@ export default function ResumeEditorPage({
                                 newEdus.splice(index, 1);
                                 updateResume(id, { data: { ...data, education: newEdus } });
                               }}
-                              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-all"
+                              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-all"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -771,7 +771,7 @@ export default function ResumeEditorPage({
                                 newSkills.splice(index, 1);
                                 updateResume(id, { data: { ...data, skills: newSkills } });
                               }}
-                              className="text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 -mr-1"
+                              className="text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 -mr-1"
                             >
                               <X className="w-3.5 h-3.5" />
                             </button>

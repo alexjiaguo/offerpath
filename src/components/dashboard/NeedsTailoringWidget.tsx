@@ -54,11 +54,11 @@ export default function NeedsTailoringWidget() {
 
             {/* Info */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-zinc-700 dark:text-gray-300 truncate group-hover:text-zinc-900 dark:group-hover:text-gray-100 transition-colors">
+              <p className="text-sm font-medium text-zinc-700 dark:text-gray-300 truncate group-hover:text-zinc-900 dark:group-hover:text-zinc-900 dark:hover:text-gray-100 transition-colors">
                 {job.title}
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-zinc-400 dark:text-gray-600">{job.company?.name}</span>
+                <span className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600">{job.company?.name}</span>
                 {job.score !== undefined && (
                   <span className="text-[10px] text-zinc-500 dark:text-gray-500">
                     Score: {job.score.toFixed(1)}
@@ -81,7 +81,7 @@ export default function NeedsTailoringWidget() {
       {jobs.length > 4 && (
         <Link
           href="/dashboard/pipeline?filter=needs-resume"
-          className="flex items-center justify-center gap-1 mt-3 pt-3 border-t border-white/[0.06] text-xs text-zinc-500 dark:text-gray-500 hover:text-brand-400 transition-colors"
+          className="flex items-center justify-center gap-1 mt-3 pt-3 border-t border-zinc-200 dark:border-white/[0.06] text-xs text-zinc-500 dark:text-gray-500 hover:text-brand-400 transition-colors"
         >
           View all {jobs.length} jobs
           <ArrowRight className="w-3 h-3" />

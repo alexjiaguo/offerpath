@@ -137,14 +137,14 @@ export default function DashboardPage() {
             className="liquid-glass rounded-3xl p-6 flex flex-col gap-4 group cursor-default"
           >
             <div className="flex items-center justify-between">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/20 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/20 transition-colors">
                 <stat.icon className="w-5 h-5 text-zinc-500 group-hover:text-brand-400 transition-colors" />
               </div>
               <div className="h-1.5 w-1.5 rounded-full bg-zinc-700 group-hover:bg-brand-500 group-hover:animate-pulse transition-colors" />
             </div>
             <div>
               <p className="text-3xl font-light text-zinc-900 dark:text-white font-display tabular-nums tracking-tight">{stat.value}</p>
-              <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1 group-hover:text-zinc-700 dark:group-hover:text-zinc-400 transition-colors">
+              <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1 group-hover:text-zinc-700 dark:group-hover:text-zinc-900 dark:hover:text-zinc-400 transition-colors">
                 {stat.label}
               </p>
             </div>
@@ -167,10 +167,10 @@ export default function DashboardPage() {
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
                 style={{ background: `linear-gradient(135deg, ${mod.color}, oklch(0.4 0.1 256))` }}
               >
-                <mod.icon className="w-6 h-6 text-white" />
+                <mod.icon className="w-6 h-6 text-zinc-900 dark:text-white" />
               </div>
               <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                <div className="px-2.5 py-1 rounded-full bg-white/5 border border-zinc-200 dark:border-white/10 text-[9px] font-bold text-zinc-700 dark:text-zinc-400 uppercase tracking-widest">
                   Live Update
                 </div>
               </div>
@@ -267,12 +267,12 @@ export default function DashboardPage() {
                       ? "bg-brand-500 shadow-[0_0_12px_rgba(99,102,241,0.4)]" 
                       : "border-2 border-zinc-700 group-hover:border-zinc-500"
                   )}>
-                    {item.done && <CheckCircle2 className="w-4 h-4 text-white" />}
+                    {item.done && <CheckCircle2 className="w-4 h-4 text-zinc-900 dark:text-white" />}
                   </div>
                   <span
                     className={cn(
                       "text-sm font-medium tracking-tight transition-all duration-500",
-                      item.done ? "text-zinc-500 line-through" : "text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white"
+                      item.done ? "text-zinc-500 line-through" : "text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 dark:hover:text-white"
                     )}
                   >
                     {item.step}

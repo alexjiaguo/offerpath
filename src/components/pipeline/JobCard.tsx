@@ -39,7 +39,7 @@ function CompanyLogo({ name }: { name: string }) {
 
   return (
     <div
-      className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0 shadow-lg"
+      className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold text-zinc-900 dark:text-white flex-shrink-0 shadow-lg"
       style={{ 
         background: `linear-gradient(135deg, ${colors[colorIdx]}, color-mix(in oklch, ${colors[colorIdx]}, black 30%))`,
         boxShadow: `0 4px 12px -2px color-mix(in oklch, ${colors[colorIdx]}, transparent 70%)`
@@ -104,7 +104,7 @@ export default function JobCard({ job, overlay }: JobCardProps) {
           <Link
             href={`/dashboard/pipeline/${job.id}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-sm font-semibold text-white group-hover:text-brand-400 transition-colors line-clamp-2 leading-tight font-display mt-0.5"
+            className="text-sm font-semibold text-zinc-900 dark:text-white group-hover:text-brand-400 transition-colors line-clamp-2 leading-tight font-display mt-0.5"
           >
             {job.title}
           </Link>
@@ -161,7 +161,7 @@ export default function JobCard({ job, overlay }: JobCardProps) {
             onClick={(e) => e.stopPropagation()}
             className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white/10"
           >
-            <ChevronRight className="w-4 h-4 text-white" />
+            <ChevronRight className="w-4 h-4 text-zinc-900 dark:text-white" />
           </Link>
         </div>
       </div>

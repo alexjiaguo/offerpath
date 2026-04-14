@@ -102,7 +102,7 @@ export default function Sidebar() {
       <div className="h-20 flex items-center px-6 border-b border-white/[0.03] relative z-10">
         <Link href="/dashboard" className="flex items-center gap-3.5 overflow-hidden group">
           <div className="w-10 h-10 rounded-xl gradient-futuristic flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform duration-500">
-            <Target className="w-5.5 h-5.5 text-white" />
+            <Target className="w-5.5 h-5.5 text-zinc-900 dark:text-white" />
           </div>
           {!collapsed && (
             <motion.span 
@@ -157,7 +157,7 @@ export default function Sidebar() {
                       <item.icon
                         className={cn(
                           "w-[20px] h-[20px] flex-shrink-0 transition-colors relative z-10",
-                          isActive ? "text-brand-400" : "text-zinc-600 group-hover:text-zinc-400"
+                          isActive ? "text-brand-400" : "text-zinc-600 group-hover:text-zinc-900 dark:hover:text-zinc-400"
                         )}
                       />
                       {!collapsed && <span className="relative z-10 font-sans tracking-tight">{item.label}</span>}

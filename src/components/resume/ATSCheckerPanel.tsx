@@ -67,7 +67,7 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
   };
 
   return (
-    <div className="liquid-glass rounded-3xl border border-white/[0.05] overflow-hidden">
+    <div className="liquid-glass rounded-3xl border border-zinc-200 dark:border-white/[0.05] overflow-hidden">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex items-center justify-between p-5 hover:bg-zinc-100 dark:hover:bg-white/5 transition-all"

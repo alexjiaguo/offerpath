@@ -54,7 +54,7 @@ const CustomTooltip = ({
   return (
     <div className="bg-surface-100 border border-white/[0.1] rounded-lg px-3 py-2 shadow-xl">
       <p className="text-xs font-medium text-zinc-700 dark:text-gray-300">{label}</p>
-      <p className="text-sm font-bold text-white">{payload[0].value}</p>
+      <p className="text-sm font-bold text-zinc-900 dark:text-white">{payload[0].value}</p>
     </div>
   );
 };

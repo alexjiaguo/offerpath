@@ -184,7 +184,7 @@ export default function BillingPage() {
                     ? "bg-surface-200 text-zinc-600 dark:text-gray-400 cursor-default"
                     : plan.highlight
                     ? "gradient-brand text-white hover:opacity-90"
-                    : "bg-surface-200 text-zinc-700 dark:text-gray-300 hover:text-white hover:bg-surface-300"
+                    : "bg-surface-200 text-zinc-700 dark:text-gray-300 hover:text-zinc-900 dark:hover:text-white hover:bg-surface-300"
                 )}
                 disabled={isCurrent}
               >

@@ -140,7 +140,7 @@ export default function MobileNav() {
             onClick={() => setIsOpen(false)}
           >
             <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
-              <Target className="w-4 h-4 text-white" />
+              <Target className="w-4 h-4 text-zinc-900 dark:text-white" />
             </div>
             <span className="text-base font-bold tracking-tight">
               Offer<span className="gradient-text">Path</span>
@@ -190,7 +190,7 @@ export default function MobileNav() {
 
                       {/* Sub-navigation */}
                       {isActive && item.subItems && (
-                        <ul className="ml-[30px] mt-1 space-y-0.5 border-l border-white/[0.06] pl-3">
+                        <ul className="ml-[30px] mt-1 space-y-0.5 border-l border-zinc-200 dark:border-white/[0.06] pl-3">
                           {item.subItems.map((sub) => {
                             const subActive = pathname === sub.href;
                             return (

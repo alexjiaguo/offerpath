@@ -126,7 +126,7 @@ export default function ThemePicker({ theme, onChange }: ThemePickerProps) {
                         <div className="absolute bottom-0 right-0 w-1/2 h-1/2 rounded-tl-lg" style={{ backgroundColor: preset.accent }} />
                         {isActive && (
                           <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
-                            <Check className="w-4 h-4 text-white" strokeWidth={3} />
+                            <Check className="w-4 h-4 text-zinc-900 dark:text-white" strokeWidth={3} />
                           </div>
                         )}
                       </button>
