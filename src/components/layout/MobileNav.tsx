@@ -111,7 +111,7 @@ export default function MobileNav() {
       {/* Hamburger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="md:hidden p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-white/[0.04] transition-all"
+        className="md:hidden p-2 rounded-lg text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04] transition-all"
         aria-label="Open navigation menu"
       >
         <Menu className="w-5 h-5" />
@@ -148,7 +148,7 @@ export default function MobileNav() {
           </Link>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.04] transition-all"
+            className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -158,7 +158,7 @@ export default function MobileNav() {
         <nav className="flex-1 overflow-y-auto py-4 px-4 space-y-6">
           {NAV_ITEMS.map((section) => (
             <div key={section.section}>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 px-3 mb-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-gray-500 px-3 mb-2">
                 {section.section}
               </p>
               <ul className="space-y-0.5">
@@ -176,13 +176,13 @@ export default function MobileNav() {
                           "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all",
                           isActive
                             ? "bg-brand-500/10 text-brand-300"
-                            : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.04]"
+                            : "text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04]"
                         )}
                       >
                         <item.icon
                           className={cn(
                             "w-[18px] h-[18px] flex-shrink-0",
-                            isActive ? "text-brand-400" : "text-gray-500"
+                            isActive ? "text-brand-400" : "text-zinc-500 dark:text-gray-500"
                           )}
                         />
                         <span>{item.label}</span>
@@ -201,7 +201,7 @@ export default function MobileNav() {
                                     "flex items-center gap-2 px-2 py-2 rounded-md text-xs font-medium transition-all",
                                     subActive
                                       ? "text-brand-300"
-                                      : "text-gray-500 hover:text-gray-300"
+                                      : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
                                   )}
                                 >
                                   <sub.icon className="w-3 h-3" />
@@ -228,7 +228,7 @@ export default function MobileNav() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">Demo User</p>
-              <p className="text-[10px] text-gray-500 truncate">
+              <p className="text-[10px] text-zinc-500 dark:text-gray-500 truncate">
                 user@offerpath.io
               </p>
             </div>

@@ -31,19 +31,19 @@ import ReactMarkdown from "react-markdown";
    ═══════════════════════════════════════════════════ */
 
 const CATEGORY_COLORS: Record<string, string> = {
-  behavioral: "text-blue-300 bg-blue-500/10",
-  technical: "text-cyan-300 bg-cyan-500/10",
-  product: "text-purple-300 bg-purple-500/10",
-  situational: "text-amber-300 bg-amber-500/10",
-  leadership: "text-emerald-300 bg-emerald-500/10",
-  case: "text-rose-300 bg-rose-500/10",
-  culture: "text-pink-300 bg-pink-500/10",
+  behavioral: "text-blue-700 dark:text-blue-300 bg-blue-500/10",
+  technical: "text-cyan-700 dark:text-cyan-300 bg-cyan-500/10",
+  product: "text-purple-700 dark:text-purple-300 bg-purple-500/10",
+  situational: "text-amber-700 dark:text-amber-300 bg-amber-500/10",
+  leadership: "text-emerald-700 dark:text-emerald-300 bg-emerald-500/10",
+  case: "text-rose-700 dark:text-rose-300 bg-rose-500/10",
+  culture: "text-pink-700 dark:text-pink-300 bg-pink-500/10",
 };
 
 const DIFFICULTY_STYLES: Record<string, string> = {
-  easy: "text-emerald-400 bg-emerald-500/10",
-  medium: "text-amber-400 bg-amber-500/10",
-  hard: "text-red-400 bg-red-500/10",
+  easy: "text-emerald-700 dark:text-emerald-400 bg-emerald-500/10",
+  medium: "text-amber-700 dark:text-amber-400 bg-amber-500/10",
+  hard: "text-red-700 dark:text-red-400 bg-red-500/10",
 };
 
 export default function JobPrepPage({
@@ -68,9 +68,9 @@ export default function JobPrepPage({
     return (
       <div className="max-w-4xl mx-auto animate-fade-in">
         <div className="glass rounded-2xl p-12 text-center">
-          <AlertCircle className="w-10 h-10 text-gray-600 mx-auto mb-4" />
+          <AlertCircle className="w-10 h-10 text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">Job not found</h2>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-zinc-500 dark:text-gray-500 mb-4">
             This job may have been removed from your pipeline.
           </p>
           <Link
@@ -104,7 +104,7 @@ export default function JobPrepPage({
       {/* Back link */}
       <Link
         href="/dashboard/interview"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors mb-4"
+        className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 transition-colors mb-4"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Interview Prep
@@ -118,7 +118,7 @@ export default function JobPrepPage({
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-bold mb-1">{job.title}</h1>
-            <div className="flex items-center gap-3 text-sm text-gray-500 flex-wrap">
+            <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-gray-500 flex-wrap">
               {job.company?.name && (
                 <span className="flex items-center gap-1">
                   <Briefcase className="w-3.5 h-3.5" />
@@ -149,7 +149,7 @@ export default function JobPrepPage({
             <Sparkles className="w-8 h-8 text-brand-400" />
           </div>
           <h2 className="text-xl font-semibold mb-2">Generate Prep Package</h2>
-          <p className="text-sm text-gray-500 max-w-md mx-auto mb-8">
+          <p className="text-sm text-zinc-500 dark:text-gray-500 max-w-md mx-auto mb-8">
             AI will analyze the job description and generate a comprehensive prep
             package with company research, role analysis, and targeted interview
             questions.
@@ -160,7 +160,7 @@ export default function JobPrepPage({
             className={cn(
               "inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all",
               generating
-                ? "bg-surface-300 text-gray-500 cursor-not-allowed"
+                ? "bg-surface-300 text-zinc-500 dark:text-gray-500 cursor-not-allowed"
                 : "gradient-brand text-white hover:opacity-90"
             )}
           >
@@ -186,7 +186,7 @@ export default function JobPrepPage({
                   "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all",
                   activeTab === tab.key
                     ? "bg-surface-200 text-white shadow-sm"
-                    : "text-gray-500 hover:text-gray-300"
+                    : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
                 )}
               >
                 <tab.icon className="w-4 h-4" />
@@ -205,7 +205,7 @@ export default function JobPrepPage({
                     <BookOpen className="w-5 h-5 text-blue-400" />
                     <h2 className="text-base font-semibold">Company Research</h2>
                   </div>
-                  <div className="prose prose-invert prose-sm max-w-none text-gray-300 leading-relaxed [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-gray-200 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-gray-300 [&_h3]:mt-4 [&_h3]:mb-1.5 [&_ul]:space-y-1 [&_li]:text-sm [&_strong]:text-gray-200">
+                  <div className="prose prose-invert prose-sm max-w-none text-zinc-700 dark:text-gray-300 leading-relaxed [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-zinc-700 dark::text-zinc-700 dark::text-gray-300 [&_h3]:mt-4 [&_h3]:mb-1.5 [&_ul]:space-y-1 [&_li]:text-sm [&_strong]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200">
                     <ReactMarkdown>{prep.company_research}</ReactMarkdown>
                   </div>
                 </div>
@@ -218,7 +218,7 @@ export default function JobPrepPage({
                     <Brain className="w-5 h-5 text-purple-400" />
                     <h2 className="text-base font-semibold">Role Analysis</h2>
                   </div>
-                  <div className="prose prose-invert prose-sm max-w-none text-gray-300 leading-relaxed [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-gray-200 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-gray-300 [&_h3]:mt-4 [&_h3]:mb-1.5 [&_ul]:space-y-1 [&_li]:text-sm [&_strong]:text-gray-200">
+                  <div className="prose prose-invert prose-sm max-w-none text-zinc-700 dark:text-gray-300 leading-relaxed [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-zinc-700 dark::text-zinc-700 dark::text-gray-300 [&_h3]:mt-4 [&_h3]:mb-1.5 [&_ul]:space-y-1 [&_li]:text-sm [&_strong]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200">
                     <ReactMarkdown>{prep.role_analysis}</ReactMarkdown>
                   </div>
                 </div>
@@ -237,17 +237,17 @@ export default function JobPrepPage({
                       onClick={() => setExpandedQuestion(isExpanded ? null : q.id)}
                       className="w-full p-4 text-left flex items-start gap-3"
                     >
-                      <span className="text-xs font-mono text-gray-600 mt-0.5 flex-shrink-0 w-6">
+                      <span className="text-xs font-mono text-zinc-400 dark:text-gray-600 mt-0.5 flex-shrink-0 w-6">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-200 leading-relaxed mb-2">
+                        <p className="text-sm font-medium text-zinc-800 dark:text-gray-200 leading-relaxed mb-2">
                           {q.question}
                         </p>
                         <div className="flex items-center gap-2">
                           <span className={cn(
                             "text-[10px] px-1.5 py-0.5 rounded font-medium capitalize",
-                            CATEGORY_COLORS[q.category] || "text-gray-300 bg-gray-500/10"
+                            CATEGORY_COLORS[q.category] || "text-zinc-700 dark:text-gray-300 bg-gray-500/10"
                           )}>
                             {q.category}
                           </span>
@@ -260,9 +260,9 @@ export default function JobPrepPage({
                         </div>
                       </div>
                       {isExpanded ? (
-                        <ChevronUp className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                        <ChevronUp className="w-4 h-4 text-zinc-500 dark:text-gray-500 flex-shrink-0 mt-0.5" />
                       ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                        <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-gray-500 flex-shrink-0 mt-0.5" />
                       )}
                     </button>
 
@@ -275,7 +275,7 @@ export default function JobPrepPage({
                               Suggested Approach
                             </span>
                           </div>
-                          <p className="text-sm text-gray-300 leading-relaxed">
+                          <p className="text-sm text-zinc-700 dark:text-gray-300 leading-relaxed">
                             {q.suggested_answer}
                           </p>
                         </div>
@@ -304,7 +304,7 @@ export default function JobPrepPage({
             </div>
 
             {mocks.length === 0 ? (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-zinc-500 dark:text-gray-500">
                 No mock interview sessions yet. Start one to practice your answers and get AI feedback.
               </p>
             ) : (
@@ -329,7 +329,7 @@ export default function JobPrepPage({
                         <p className="text-sm font-medium">
                           {m.feedback ? "Completed Session" : "Session in Progress"}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-zinc-500 dark:text-gray-500">
                           {new Date(m.created_at).toLocaleDateString("en-US", {
                             month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
                           })}
@@ -342,7 +342,7 @@ export default function JobPrepPage({
                         <p className="text-lg font-bold text-brand-400">
                           {m.score.toFixed(1)}
                         </p>
-                        <p className="text-[10px] text-gray-600">score</p>
+                        <p className="text-[10px] text-zinc-400 dark:text-gray-600">score</p>
                       </div>
                     )}
                   </Link>

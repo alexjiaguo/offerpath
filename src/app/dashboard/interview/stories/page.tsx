@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Library,
   Plus,
@@ -12,10 +12,14 @@ import {
   Trash2,
   BarChart3,
   X,
+  FileUp,
+  Loader2,
 } from "lucide-react";
 import { useInterviewStore } from "@/store/interviewStore";
 import { cn } from "@/lib/utils";
 import StoryDialog from "@/components/interview/StoryDialog";
+import { FileParserService } from "@/lib/FileParserService";
+import { extractStoriesFromFile } from "@/lib/aiService";
 
 /* ═══════════════════════════════════════════════════
    Story Bank — STAR story CRUD manager
@@ -23,29 +27,63 @@ import StoryDialog from "@/components/interview/StoryDialog";
    ═══════════════════════════════════════════════════ */
 
 const COMPETENCY_COLORS: Record<string, string> = {
-  leadership: "text-amber-300 bg-amber-500/10",
-  "conflict-resolution": "text-rose-300 bg-rose-500/10",
-  technical: "text-blue-300 bg-blue-500/10",
-  analytical: "text-cyan-300 bg-cyan-500/10",
-  culture: "text-purple-300 bg-purple-500/10",
-  communication: "text-emerald-300 bg-emerald-500/10",
-  execution: "text-orange-300 bg-orange-500/10",
-  innovation: "text-pink-300 bg-pink-500/10",
+  leadership: "text-amber-700 dark:text-amber-300 bg-amber-500/10",
+  "conflict-resolution": "text-rose-700 dark:text-rose-300 bg-rose-500/10",
+  technical: "text-blue-700 dark:text-blue-300 bg-blue-500/10",
+  analytical: "text-cyan-700 dark:text-cyan-300 bg-cyan-500/10",
+  culture: "text-purple-700 dark:text-purple-300 bg-purple-500/10",
+  communication: "text-emerald-700 dark:text-emerald-300 bg-emerald-500/10",
+  execution: "text-orange-700 dark:text-orange-300 bg-orange-500/10",
+  innovation: "text-pink-700 dark:text-pink-300 bg-pink-500/10",
 };
 
 function getCompetencyStyle(competency: string) {
-  return COMPETENCY_COLORS[competency] || "text-gray-300 bg-gray-500/10";
+  return COMPETENCY_COLORS[competency] || "text-zinc-700 dark:text-gray-300 bg-gray-500/10";
 }
 
 export default function StoriesPage() {
-  const { stories, deleteStory, getAllCompetencies } = useInterviewStore();
+  const { stories, deleteStory, getAllCompetencies, addStory } = useInterviewStore();
   const [search, setSearch] = useState("");
   const [filterCompetency, setFilterCompetency] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingStoryId, setEditingStoryId] = useState<string | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const competencies = getAllCompetencies();
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsExtracting(true);
+      const text = await FileParserService.parseFile(file);
+      const extractedStories = await extractStoriesFromFile(text);
+      
+      extractedStories.forEach(story => {
+        addStory({
+          title: story.title || "Untitled Story",
+          competency: story.competency || "unspecified",
+          tags: story.tags || [],
+          situation: story.situation,
+          task: story.task,
+          action: story.action,
+          result: story.result,
+          metrics: story.metrics,
+        });
+      });
+    } catch (error) {
+      console.error("Failed to extract stories:", error);
+      alert("Failed to parse the file. Only PDF, DOCX, TXT, and MD are supported.");
+    } finally {
+      setIsExtracting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
 
   const filteredStories = stories.filter((s) => {
     const matchesSearch =
@@ -74,34 +112,55 @@ export default function StoriesPage() {
         <div className="flex items-center gap-3">
           <Library className="w-6 h-6 text-brand-400" />
           <h1 className="text-2xl font-bold">Story Bank</h1>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-zinc-500 dark:text-gray-500">
             {stories.length} {stories.length === 1 ? "story" : "stories"}
           </span>
         </div>
-        <button
-          onClick={handleNew}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
-        >
-          <Plus className="w-4 h-4" />
-          Add Story
-        </button>
+        <div className="flex items-center gap-3">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept=".pdf,.docx,.doc,.txt,.md"
+            className="hidden"
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isExtracting}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-600 dark:text-zinc-300 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-white/[0.05] hover:text-zinc-900 dark:hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isExtracting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <FileUp className="w-4 h-4" />
+            )}
+            Import Document
+          </button>
+          <button
+            onClick={handleNew}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            <Plus className="w-4 h-4" />
+            Add Story
+          </button>
+        </div>
       </div>
 
       {/* Search + Filter Bar */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search stories…"
-            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-gray-500 hover:text-gray-300"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -116,7 +175,7 @@ export default function StoriesPage() {
               "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
               !filterCompetency
                 ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                : "bg-surface-200 text-gray-500 hover:text-gray-300"
+                : "bg-surface-200 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
             )}
           >
             All
@@ -129,7 +188,7 @@ export default function StoriesPage() {
                 "px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all",
                 filterCompetency === c
                   ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                  : "bg-surface-200 text-gray-500 hover:text-gray-300"
+                  : "bg-surface-200 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
               )}
             >
               {c.replace("-", " ")}
@@ -141,11 +200,11 @@ export default function StoriesPage() {
       {/* Stories Grid */}
       {filteredStories.length === 0 ? (
         <div className="glass rounded-2xl p-12 text-center">
-          <Library className="w-10 h-10 text-gray-600 mx-auto mb-4" />
+          <Library className="w-10 h-10 text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">
             {stories.length === 0 ? "Build your story bank" : "No matching stories"}
           </h3>
-          <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
+          <p className="text-sm text-zinc-500 dark:text-gray-500 mb-6 max-w-md mx-auto">
             {stories.length === 0
               ? "STAR stories are your secret weapon for behavioral interviews. Add your best accomplishments here and reuse them across multiple interviews."
               : "Try adjusting your search or filter criteria."}
@@ -192,11 +251,11 @@ export default function StoriesPage() {
                       {/* Tags */}
                       {story.tags.length > 0 && (
                         <div className="flex items-center gap-1.5 mb-2">
-                          <Tag className="w-3 h-3 text-gray-600" />
+                          <Tag className="w-3 h-3 text-zinc-400 dark:text-gray-600" />
                           {story.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="text-[10px] px-1.5 py-0.5 rounded bg-surface-200 text-gray-500"
+                              className="text-[10px] px-1.5 py-0.5 rounded bg-surface-200 text-zinc-500 dark:text-gray-500"
                             >
                               {tag}
                             </span>
@@ -206,7 +265,7 @@ export default function StoriesPage() {
 
                       {/* Metrics preview */}
                       {story.metrics && (
-                        <p className="text-xs text-gray-400 flex items-center gap-1.5">
+                        <p className="text-xs text-zinc-600 dark:text-gray-400 flex items-center gap-1.5">
                           <BarChart3 className="w-3 h-3 text-emerald-400" />
                           {story.metrics}
                         </p>
@@ -216,12 +275,12 @@ export default function StoriesPage() {
                     <div className="flex items-center gap-3 flex-shrink-0">
                       <div className="text-center">
                         <p className="text-base font-bold">{story.used_count}</p>
-                        <p className="text-[10px] text-gray-600">uses</p>
+                        <p className="text-[10px] text-zinc-400 dark:text-gray-600">uses</p>
                       </div>
                       {isExpanded ? (
-                        <ChevronUp className="w-4 h-4 text-gray-500" />
+                        <ChevronUp className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
                       ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-500" />
+                        <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
                       )}
                     </div>
                   </div>
@@ -241,7 +300,7 @@ export default function StoriesPage() {
                           <h4 className={cn("text-xs font-semibold uppercase tracking-wider mb-1.5", section.color)}>
                             {section.label}
                           </h4>
-                          <p className="text-sm text-gray-300 leading-relaxed">
+                          <p className="text-sm text-zinc-700 dark:text-gray-300 leading-relaxed">
                             {section.content || "—"}
                           </p>
                         </div>
@@ -255,7 +314,7 @@ export default function StoriesPage() {
                           e.stopPropagation();
                           handleEdit(story.id);
                         }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200/50 text-gray-400 hover:text-gray-200 text-xs font-medium transition-all"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200/50 text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-zinc-800 dark:hover:text-gray-200 text-xs font-medium transition-all"
                       >
                         <Edit3 className="w-3 h-3" />
                         Edit

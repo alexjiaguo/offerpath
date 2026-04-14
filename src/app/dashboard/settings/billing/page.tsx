@@ -77,7 +77,7 @@ export default function BillingPage() {
         </div>
         <Link
           href="/dashboard/settings"
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Settings
@@ -88,15 +88,15 @@ export default function BillingPage() {
       <div className="glass rounded-2xl p-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Current Plan</p>
+            <p className="text-xs text-zinc-500 dark:text-gray-500 uppercase tracking-wider mb-1">Current Plan</p>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold capitalize">{currentPlan}</h2>
-              <span className="text-[10px] px-2 py-0.5 rounded-md bg-surface-200 text-gray-400 font-medium">
+              <span className="text-[10px] px-2 py-0.5 rounded-md bg-surface-200 text-zinc-600 dark:text-gray-400 font-medium">
                 ACTIVE
               </span>
             </div>
           </div>
-          <div className="text-right text-sm text-gray-500">
+          <div className="text-right text-sm text-zinc-500 dark:text-gray-500">
             <p>Next renewal: —</p>
             <p className="text-xs mt-0.5">Free plan — no billing</p>
           </div>
@@ -115,8 +115,8 @@ export default function BillingPage() {
             return (
               <div key={meter.label} className="p-3 rounded-xl bg-surface-100">
                 <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="text-gray-400">{meter.label}</span>
-                  <span className={cn("font-medium", isNearLimit ? "text-amber-400" : "text-gray-300")}>
+                  <span className="text-zinc-600 dark:text-gray-400">{meter.label}</span>
+                  <span className={cn("font-medium", isNearLimit ? "text-amber-400" : "text-zinc-700 dark:text-gray-300")}>
                     {meter.used}/{meter.limit}{meter.unit}
                   </span>
                 </div>
@@ -164,13 +164,13 @@ export default function BillingPage() {
                 <h3 className="text-lg font-bold mb-1">{plan.name}</h3>
                 <p className="text-3xl font-bold">
                   {plan.price}
-                  <span className="text-sm font-normal text-gray-500">{plan.period}</span>
+                  <span className="text-sm font-normal text-zinc-500 dark:text-gray-500">{plan.period}</span>
                 </p>
               </div>
 
               <ul className="space-y-2.5 mb-6">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm text-gray-300">
+                  <li key={feature} className="flex items-start gap-2 text-sm text-zinc-700 dark:text-gray-300">
                     <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                     {feature}
                   </li>
@@ -181,10 +181,10 @@ export default function BillingPage() {
                 className={cn(
                   "w-full py-2.5 rounded-xl text-sm font-medium transition-all",
                   isCurrent
-                    ? "bg-surface-200 text-gray-400 cursor-default"
+                    ? "bg-surface-200 text-zinc-600 dark:text-gray-400 cursor-default"
                     : plan.highlight
                     ? "gradient-brand text-white hover:opacity-90"
-                    : "bg-surface-200 text-gray-300 hover:text-white hover:bg-surface-300"
+                    : "bg-surface-200 text-zinc-700 dark:text-gray-300 hover:text-white hover:bg-surface-300"
                 )}
                 disabled={isCurrent}
               >
@@ -198,7 +198,7 @@ export default function BillingPage() {
       {/* Security Note */}
       <div className="glass rounded-xl p-4 flex items-center gap-3">
         <Shield className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-zinc-500 dark:text-gray-500">
           Payments are securely processed by Stripe. We never store your card details.
           You can cancel or change your plan at any time.
         </p>

@@ -110,7 +110,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.04] transition-all"
+            className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -120,7 +120,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
         <div className="px-6 py-5 space-y-5">
           {/* Title */}
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">
+            <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
               Story Title *
             </label>
             <input
@@ -128,13 +128,13 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Led ad platform revenue growth 3x"
-              className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+              className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
             />
           </div>
 
           {/* Competency */}
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">
+            <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
               Competency
             </label>
             <div className="flex flex-wrap gap-1.5">
@@ -146,7 +146,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
                     "px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all",
                     competency === c
                       ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                      : "bg-surface-200 text-gray-500 hover:text-gray-300 border border-transparent"
+                      : "bg-surface-200 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 border border-transparent"
                   )}
                 >
                   {c.replace("-", " ")}
@@ -164,7 +164,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
               { label: "Result", value: result, setter: setResult, color: "border-purple-500/20", placeholder: "What was the outcome? Include numbers." },
             ].map((field) => (
               <div key={field.label}>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                   {field.label}
                 </label>
                 <textarea
@@ -173,7 +173,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
                   placeholder={field.placeholder}
                   rows={4}
                   className={cn(
-                    "w-full px-3 py-2.5 rounded-xl bg-surface-100 border text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none",
+                    "w-full px-3 py-2.5 rounded-xl bg-surface-100 border text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none",
                     field.color
                   )}
                 />
@@ -183,7 +183,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
 
           {/* Metrics */}
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">
+            <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
               Key Metrics
             </label>
             <input
@@ -191,13 +191,13 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
               value={metrics}
               onChange={(e) => setMetrics(e.target.value)}
               placeholder="e.g., 3x revenue growth, 40% CTR improvement"
-              className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+              className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
             />
           </div>
 
           {/* Tags */}
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">
+            <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
               Tags (comma-separated)
             </label>
             <input
@@ -205,7 +205,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
               placeholder="e.g., revenue, growth, ad-tech"
-              className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+              className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
             />
           </div>
         </div>
@@ -214,7 +214,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
         <div className="sticky bottom-0 bg-surface-50 border-t border-white/[0.04] px-6 py-4 flex items-center justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2.5 rounded-xl bg-surface-200 text-gray-300 text-sm font-medium hover:text-white hover:bg-surface-300 transition-all"
+            className="px-4 py-2.5 rounded-xl bg-surface-200 text-zinc-700 dark:text-gray-300 text-sm font-medium hover:text-white hover:bg-surface-300 transition-all"
           >
             Cancel
           </button>

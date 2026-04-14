@@ -53,7 +53,7 @@ const CustomTooltip = ({
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-surface-100 border border-white/[0.1] rounded-lg px-3 py-2 shadow-xl">
-      <p className="text-xs font-medium text-gray-300">{label}</p>
+      <p className="text-xs font-medium text-zinc-700 dark:text-gray-300">{label}</p>
       <p className="text-sm font-bold text-white">{payload[0].value}</p>
     </div>
   );
@@ -257,7 +257,7 @@ export default function AnalyticsCharts() {
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: tier.color }}
                   />
-                  <span className="text-sm text-gray-400">{tier.name}</span>
+                  <span className="text-sm text-zinc-600 dark:text-gray-400">{tier.name}</span>
                   <span className="text-sm font-semibold">{tier.value}</span>
                 </div>
               ))}
@@ -286,7 +286,7 @@ function StatCard({
       </div>
       <div>
         <p className="text-lg font-bold">{value}</p>
-        <p className="text-xs text-gray-500">{label}</p>
+        <p className="text-xs text-zinc-500 dark:text-gray-500">{label}</p>
       </div>
     </div>
   );

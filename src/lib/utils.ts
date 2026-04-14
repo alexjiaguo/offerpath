@@ -28,8 +28,8 @@ export function statusColor(status: string): string {
     interviewing: "bg-amber-500/20 text-amber-300 border-amber-500/30",
     offered: "bg-purple-500/20 text-purple-300 border-purple-500/30",
     rejected: "bg-red-500/20 text-red-300 border-red-500/30",
-    discarded: "bg-gray-500/20 text-gray-400 border-gray-500/30",
-    archived: "bg-gray-500/20 text-gray-500 border-gray-500/30",
+    discarded: "bg-gray-500/20 text-zinc-600 dark:text-gray-400 border-gray-500/30",
+    archived: "bg-gray-500/20 text-zinc-500 dark:text-gray-500 border-gray-500/30",
   };
   return colors[status] || colors.new;
 }
@@ -37,7 +37,7 @@ export function statusColor(status: string): string {
 export function tierLabel(tier: number): { label: string; color: string } {
   const tiers: Record<number, { label: string; color: string }> = {
     1: { label: "Tier 1", color: "text-amber-400" },
-    2: { label: "Tier 2", color: "text-gray-400" },
+    2: { label: "Tier 2", color: "text-zinc-600 dark:text-gray-400" },
     3: { label: "Tier 3", color: "text-amber-700" },
   };
   return tiers[tier] || tiers[3];

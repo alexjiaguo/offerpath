@@ -86,7 +86,7 @@ function ScoreRing({ score }: { score: number }) {
         <span className="text-2xl font-bold" style={{ color }}>
           {score.toFixed(1)}
         </span>
-        <span className="text-[10px] text-gray-500">/ 5.0</span>
+        <span className="text-[10px] text-zinc-500 dark:text-gray-500">/ 5.0</span>
       </div>
     </div>
   );
@@ -105,9 +105,9 @@ export default function JobDetail({ jobId }: JobDetailProps) {
   if (!job) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
-        <AlertTriangle className="w-12 h-12 text-gray-600 mb-4" />
-        <h2 className="text-xl font-semibold text-gray-400 mb-2">Job Not Found</h2>
-        <p className="text-sm text-gray-600 mb-6">
+        <AlertTriangle className="w-12 h-12 text-zinc-400 dark:text-gray-600 mb-4" />
+        <h2 className="text-xl font-semibold text-zinc-600 dark:text-gray-400 mb-2">Job Not Found</h2>
+        <p className="text-sm text-zinc-400 dark:text-gray-600 mb-6">
           This job may have been deleted or doesn&apos;t exist.
         </p>
         <Link
@@ -135,7 +135,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
       {/* Back navigation */}
       <Link
         href="/dashboard/pipeline"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Pipeline
@@ -155,7 +155,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
               {(job.company?.name || "?").charAt(0)}
             </div>
             <div>
-              <p className="text-sm text-gray-500 mb-0.5">{job.company?.name}</p>
+              <p className="text-sm text-zinc-500 dark:text-gray-500 mb-0.5">{job.company?.name}</p>
               <h1 className="text-2xl font-bold mb-2">{job.title}</h1>
               <div className="flex items-center gap-3 flex-wrap">
                 <span
@@ -167,13 +167,13 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                   {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
                 </span>
                 {job.location && (
-                  <span className="flex items-center gap-1 text-sm text-gray-500">
+                  <span className="flex items-center gap-1 text-sm text-zinc-500 dark:text-gray-500">
                     <MapPin className="w-3.5 h-3.5" />
                     {job.location}
                   </span>
                 )}
                 {job.salary_range && (
-                  <span className="flex items-center gap-1 text-sm text-gray-500">
+                  <span className="flex items-center gap-1 text-sm text-zinc-500 dark:text-gray-500">
                     <DollarSign className="w-3.5 h-3.5" />
                     {job.salary_range}
                   </span>
@@ -196,7 +196,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
           {/* Delete button */}
           <button
             onClick={handleDelete}
-            className="p-2 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
+            className="p-2 rounded-lg text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
             title="Delete job"
           >
             <Trash2 className="w-5 h-5" />
@@ -213,7 +213,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap",
                 job.status === opt.id
                   ? "bg-surface-100 text-white shadow-sm"
-                  : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.04]"
+                  : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04]"
               )}
             >
               <div className={cn("w-2 h-2 rounded-full", opt.color)} />
@@ -234,11 +234,11 @@ export default function JobDetail({ jobId }: JobDetailProps) {
               Job Description
             </h2>
             {job.description ? (
-              <div className="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap">
+              <div className="text-sm text-zinc-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">
                 {job.description}
               </div>
             ) : (
-              <p className="text-sm text-gray-600 italic">
+              <p className="text-sm text-zinc-400 dark:text-gray-600 italic">
                 No description available. Add a description by editing this job.
               </p>
             )}
@@ -264,8 +264,8 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                     className="flex items-center gap-3 text-sm"
                   >
                     <div className="w-2 h-2 rounded-full bg-brand-500" />
-                    <span className="text-gray-400 w-20">{event.label}</span>
-                    <span className="text-gray-300">
+                    <span className="text-zinc-600 dark:text-gray-400 w-20">{event.label}</span>
+                    <span className="text-zinc-700 dark:text-gray-300">
                       {event.date ? formatDate(event.date) : "—"}
                     </span>
                   </div>
@@ -283,25 +283,25 @@ export default function JobDetail({ jobId }: JobDetailProps) {
               <div className="grid grid-cols-2 gap-4">
                 {job.comp_details.base_salary && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-0.5">Base Salary</p>
+                    <p className="text-xs text-zinc-500 dark:text-gray-500 mb-0.5">Base Salary</p>
                     <p className="text-lg font-semibold">{job.comp_details.base_salary}</p>
                   </div>
                 )}
                 {job.comp_details.equity && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-0.5">Equity</p>
+                    <p className="text-xs text-zinc-500 dark:text-gray-500 mb-0.5">Equity</p>
                     <p className="text-lg font-semibold">{job.comp_details.equity}</p>
                   </div>
                 )}
                 {job.comp_details.bonus && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-0.5">Bonus</p>
+                    <p className="text-xs text-zinc-500 dark:text-gray-500 mb-0.5">Bonus</p>
                     <p className="text-lg font-semibold">{job.comp_details.bonus}</p>
                   </div>
                 )}
                 {job.comp_details.total_comp && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-0.5">Total Comp</p>
+                    <p className="text-xs text-zinc-500 dark:text-gray-500 mb-0.5">Total Comp</p>
                     <p className="text-lg font-bold text-emerald-400">
                       {job.comp_details.total_comp}
                     </p>
@@ -310,12 +310,12 @@ export default function JobDetail({ jobId }: JobDetailProps) {
               </div>
               {job.comp_details.benefits && job.comp_details.benefits.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-white/[0.06]">
-                  <p className="text-xs text-gray-500 mb-2">Benefits</p>
+                  <p className="text-xs text-zinc-500 dark:text-gray-500 mb-2">Benefits</p>
                   <div className="flex flex-wrap gap-2">
                     {job.comp_details.benefits.map((b) => (
                       <span
                         key={b}
-                        className="px-2 py-1 rounded-md text-xs bg-surface-200 text-gray-400"
+                        className="px-2 py-1 rounded-md text-xs bg-surface-200 text-zinc-600 dark:text-gray-400"
                       >
                         {b}
                       </span>
@@ -347,19 +347,19 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                           job.evaluation.tier === 1
                             ? "text-amber-400 bg-amber-400/10"
                             : job.evaluation.tier === 2
-                            ? "text-gray-400 bg-gray-400/10"
+                            ? "text-zinc-600 dark:text-gray-400 bg-gray-400/10"
                             : "text-amber-700 bg-amber-700/10"
                         )}
                       >
                         Tier {job.evaluation.tier}
                       </span>
                     </div>
-                    <span className="px-2 py-0.5 rounded-md text-xs text-gray-400 bg-surface-200">
+                    <span className="px-2 py-0.5 rounded-md text-xs text-zinc-600 dark:text-gray-400 bg-surface-200">
                       {job.evaluation.archetype}
                     </span>
                   </div>
                 </div>
-                <p className="text-sm text-gray-400 leading-relaxed">
+                <p className="text-sm text-zinc-600 dark:text-gray-400 leading-relaxed">
                   {job.evaluation.match_summary}
                 </p>
               </div>
@@ -372,7 +372,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 </h3>
                 <ul className="space-y-2">
                   {job.evaluation.fit_reasons.map((reason, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                    <li key={i} className="flex items-start gap-2 text-sm text-zinc-600 dark:text-gray-400">
                       <ChevronRight className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0 mt-0.5" />
                       {reason}
                     </li>
@@ -388,7 +388,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 </h3>
                 <ul className="space-y-2">
                   {job.evaluation.concerns.map((concern, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                    <li key={i} className="flex items-start gap-2 text-sm text-zinc-600 dark:text-gray-400">
                       <ChevronRight className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
                       {concern}
                     </li>
@@ -404,7 +404,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 </h3>
                 <ul className="space-y-2">
                   {job.evaluation.key_requirements.map((req, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                    <li key={i} className="flex items-start gap-2 text-sm text-zinc-600 dark:text-gray-400">
                       <Target className="w-3 h-3 text-blue-500 flex-shrink-0 mt-1" />
                       {req}
                     </li>
@@ -414,11 +414,11 @@ export default function JobDetail({ jobId }: JobDetailProps) {
             </>
           ) : (
             <div className="glass rounded-2xl p-6 text-center">
-              <Star className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-              <h3 className="text-sm font-semibold text-gray-400 mb-1">
+              <Star className="w-10 h-10 text-zinc-300 dark:text-gray-700 mx-auto mb-3" />
+              <h3 className="text-sm font-semibold text-zinc-600 dark:text-gray-400 mb-1">
                 Not Evaluated Yet
               </h3>
-              <p className="text-xs text-gray-600 mb-4">
+              <p className="text-xs text-zinc-400 dark:text-gray-600 mb-4">
                 Run AI evaluation to get a fitness score, tier assignment, and detailed
                 analysis.
               </p>
@@ -443,11 +443,11 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                       <div className="p-3">
                         <div className="flex items-center gap-2 mb-2">
                           <FileText className="w-3.5 h-3.5 text-brand-400" />
-                          <span className="text-xs font-medium text-gray-400">
+                          <span className="text-xs font-medium text-zinc-600 dark:text-gray-400">
                             Linked Resume
                           </span>
                         </div>
-                        <p className="text-sm font-medium text-gray-200 mb-2 truncate">
+                        <p className="text-sm font-medium text-zinc-800 dark:text-gray-200 mb-2 truncate">
                           {linkedResume.title}
                         </p>
                         <div className="mb-2">
@@ -456,7 +456,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                         <div className="flex gap-2">
                           <Link
                             href={`/dashboard/resume?view=${linkedResume.id}`}
-                            className="flex-1 text-center px-2 py-1.5 rounded-md text-xs text-gray-400 hover:text-gray-200 bg-surface-200/50 hover:bg-surface-200 transition-all"
+                            className="flex-1 text-center px-2 py-1.5 rounded-md text-xs text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 bg-surface-200/50 hover:bg-surface-200 transition-all"
                           >
                             View Resume
                           </Link>
@@ -490,10 +490,10 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 href="/dashboard/interview"
                 className="flex items-center justify-between p-3 rounded-lg hover:bg-white/[0.04] transition-all group"
               >
-                <span className="text-sm text-gray-400 group-hover:text-gray-200">
+                <span className="text-sm text-zinc-600 dark:text-gray-400 group-hover:text-zinc-800 dark:group-hover:text-gray-200">
                   Start Interview Prep
                 </span>
-                <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-gray-400" />
+                <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-gray-600 group-hover:text-zinc-600 dark:group-hover:text-gray-400" />
               </Link>
             </div>
           </div>

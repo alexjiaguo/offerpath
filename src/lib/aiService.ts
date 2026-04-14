@@ -5,7 +5,7 @@
    Replace mock implementations with real LLM calls later.
    ═══════════════════════════════════════════════════ */
 
-import type { ResumeData, ExperienceEntry } from "@/types";
+import type { ResumeData, ExperienceEntry, Story } from "@/types";
 
 // ── Types ───────────────────────────────────────────
 
@@ -62,7 +62,51 @@ function extractKeywords(text: string): string[] {
   return keywords.filter((kw) => lower.includes(kw.toLowerCase()));
 }
 
-// ── Resume Tailoring ────────────────────────────────
+export interface ATSRequest {
+  resumeData: ResumeData;
+  jobDescription: string;
+}
+
+export interface ATSResult {
+  score: number;
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  feedback: { severity: "high" | "medium" | "low"; message: string }[];
+}
+
+// ── ATS Evaluation ──────────────────────────────────
+
+export async function evaluateATS(req: ATSRequest): Promise<ATSResult> {
+  // Simulate AI processing time
+  await delay(1500 + Math.random() * 1000);
+
+  const jdKeywords = extractKeywords(req.jobDescription);
+  const resumeText = JSON.stringify(req.resumeData).toLowerCase();
+  
+  const matched = jdKeywords.filter(kw => resumeText.includes(kw.toLowerCase()));
+  const missing = jdKeywords.filter(kw => !resumeText.includes(kw.toLowerCase()));
+  
+  const score = Math.min(100, Math.round((matched.length / Math.max(1, jdKeywords.length)) * 100) + 20);
+
+  const feedback: { severity: "high" | "medium" | "low"; message: string }[] = [];
+  
+  if (missing.length > 5) {
+    feedback.push({ severity: "high", message: "Critical missing keywords detected. ATS systems may filter this asset." });
+  }
+  if (!req.resumeData.summary || req.resumeData.summary.length < 100) {
+    feedback.push({ severity: "medium", message: "Professional summary is too brief for optimal indexing." });
+  }
+  if (matched.length > 0) {
+    feedback.push({ severity: "low", message: `Strong alignment on ${matched.slice(0, 3).join(", ")} skills.` });
+  }
+
+  return {
+    score,
+    matchedKeywords: matched,
+    missingKeywords: missing,
+    feedback,
+  };
+}
 
 export async function tailorResume(req: TailorRequest): Promise<TailorResult> {
   // Simulate AI processing time
@@ -252,4 +296,35 @@ ${keywords.map((kw, i) => `${i + 1}. **${kw.charAt(0).toUpperCase() + kw.slice(1
   ];
 
   return { companyResearch, roleAnalysis, questions };
+}
+
+// ── Story Extraction ──────────────────────────────────
+
+export async function extractStoriesFromFile(text: string): Promise<Partial<Story>[]> {
+  // Simulate AI processing time
+  await delay(2500 + Math.random() * 1000);
+
+  // Return realistic mock stories extracted from document text
+  return [
+    {
+      title: "Led cross-functional team to launch MVP",
+      competency: "leadership",
+      situation: "The company needed a new mobile app MVP within 3 months, but the team lacked a clear roadmap and was siloed.",
+      task: "I was tasked with aligning engineering, design, and marketing to deliver the MVP on schedule.",
+      action: "I instituted daily stand-ups, created a shared Jira board, and facilitated weekly alignment meetings to unblock cross-functional dependencies.",
+      result: "We launched the MVP 1 week early, leading to 10k downloads in the first month.",
+      metrics: "1 week early, 10k downloads",
+      tags: ["mvp", "agile", "cross-functional"]
+    },
+    {
+      title: "Resolved critical production database outage",
+      competency: "technical",
+      situation: "During Black Friday, our main database cluster experienced 100% CPU utilization, causing a site-wide outage.",
+      task: "I needed to immediately restore service and ensure we wouldn't go down again during the peak traffic period.",
+      action: "I quickly added read replicas and implemented an aggressive Redis caching layer for the product catalog to reduce database load.",
+      result: "Service was restored within 15 minutes, and the site handled a 3x traffic spike without further issues.",
+      metrics: "15 min recovery, 3x traffic scaling",
+      tags: ["scaling", "outage", "database"]
+    }
+  ];
 }

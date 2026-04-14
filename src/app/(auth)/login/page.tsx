@@ -39,14 +39,14 @@ export default function LoginPage() {
     <>
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold mb-2">Welcome back</h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-zinc-500 dark:text-gray-500">
           Sign in to continue your job search journey
         </p>
       </div>
 
       {/* Social Login */}
       <div className="space-y-3 mb-6">
-        <button className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-surface-200 border border-white/[0.06] text-sm font-medium text-gray-300 hover:text-white hover:bg-surface-300 transition-all">
+        <button className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-surface-200 border border-white/[0.06] text-sm font-medium text-zinc-700 dark:text-gray-300 hover:text-white hover:bg-surface-300 transition-all">
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
@@ -68,7 +68,7 @@ export default function LoginPage() {
           Continue with Google
         </button>
 
-        <button className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-surface-200 border border-white/[0.06] text-sm font-medium text-gray-300 hover:text-white hover:bg-surface-300 transition-all">
+        <button className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-surface-200 border border-white/[0.06] text-sm font-medium text-zinc-700 dark:text-gray-300 hover:text-white hover:bg-surface-300 transition-all">
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
           </svg>
@@ -79,7 +79,7 @@ export default function LoginPage() {
       {/* Divider */}
       <div className="flex items-center gap-4 mb-6">
         <div className="flex-1 h-px bg-white/[0.06]" />
-        <span className="text-xs text-gray-600 uppercase tracking-wider">
+        <span className="text-xs text-zinc-400 dark:text-gray-600 uppercase tracking-wider">
           or
         </span>
         <div className="flex-1 h-px bg-white/[0.06]" />
@@ -95,39 +95,39 @@ export default function LoginPage() {
 
         {/* Email */}
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1.5">
+          <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
             Email address
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full pl-10 pr-4 py-3 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
             />
           </div>
         </div>
 
         {/* Password */}
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1.5">
+          <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
             Password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
             <input
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full pl-10 pr-12 py-3 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+              className="w-full pl-10 pr-12 py-3 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors"
             >
               {showPassword ? (
                 <EyeOff className="w-4 h-4" />
@@ -166,7 +166,7 @@ export default function LoginPage() {
       </form>
 
       {/* Sign Up Link */}
-      <p className="text-center text-sm text-gray-500 mt-6">
+      <p className="text-center text-sm text-zinc-500 dark:text-gray-500 mt-6">
         Don&apos;t have an account?{" "}
         <Link
           href="/register"

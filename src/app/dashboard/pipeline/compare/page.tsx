@@ -33,7 +33,7 @@ export default function OfferComparePage() {
         </div>
         <Link
           href="/dashboard/pipeline"
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Board
@@ -42,9 +42,9 @@ export default function OfferComparePage() {
 
       {offeredJobs.length === 0 ? (
         <div className="glass rounded-2xl p-12 text-center">
-          <Scale className="w-10 h-10 text-gray-600 mx-auto mb-4" />
+          <Scale className="w-10 h-10 text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">No offers to compare</h2>
-          <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
+          <p className="text-sm text-zinc-500 dark:text-gray-500 mb-6 max-w-md mx-auto">
             Move jobs to the &quot;Offered&quot; column in your pipeline to compare
             offers side by side.
           </p>
@@ -59,7 +59,7 @@ export default function OfferComparePage() {
         <div className="space-y-6">
           <div className="glass rounded-2xl p-6 text-center">
             <Trophy className="w-8 h-8 text-amber-400 mx-auto mb-3" />
-            <p className="text-sm text-gray-400 mb-4">
+            <p className="text-sm text-zinc-600 dark:text-gray-400 mb-4">
               You have one offer. Add more offers to compare them side by side.
             </p>
           </div>
@@ -80,13 +80,13 @@ export default function OfferComparePage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/[0.06]">
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-zinc-500 dark:text-gray-500 uppercase tracking-wider">
                     Factor
                   </th>
                   {offeredJobs.map((job) => (
                     <th
                       key={job.id}
-                      className="text-left px-5 py-3 text-xs font-semibold text-gray-300"
+                      className="text-left px-5 py-3 text-xs font-semibold text-zinc-700 dark:text-gray-300"
                     >
                       {job.title}
                     </th>
@@ -142,11 +142,11 @@ export default function OfferComparePage() {
                       ri % 2 === 0 ? "bg-white/[0.01]" : ""
                     )}
                   >
-                    <td className="px-5 py-3 text-xs font-medium text-gray-400">
+                    <td className="px-5 py-3 text-xs font-medium text-zinc-600 dark:text-gray-400">
                       {row.label}
                     </td>
                     {offeredJobs.map((job) => (
-                      <td key={job.id} className="px-5 py-3 text-sm text-gray-300">
+                      <td key={job.id} className="px-5 py-3 text-sm text-zinc-700 dark:text-gray-300">
                         {row.render(job)}
                       </td>
                     ))}
@@ -190,15 +190,15 @@ function OfferCard({
         </div>
         <div>
           <h3 className="text-base font-bold">{job.title}</h3>
-          <p className="text-sm text-gray-500">{job.company?.name}</p>
+          <p className="text-sm text-zinc-500 dark:text-gray-500">{job.company?.name}</p>
         </div>
       </div>
 
       {/* Details */}
       <div className="space-y-3">
         {job.location && (
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <MapPin className="w-4 h-4 text-gray-500" />
+          <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-gray-400">
+            <MapPin className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
             {job.location}
           </div>
         )}
@@ -215,7 +215,7 @@ function OfferCard({
         {job.score !== undefined && (
           <div className="flex items-center gap-2 text-sm">
             <Star className="w-4 h-4 text-amber-400" />
-            <span className="text-gray-300">
+            <span className="text-zinc-700 dark:text-gray-300">
               Score: <strong>{job.score.toFixed(1)}</strong>/5.0
             </span>
           </div>
@@ -226,19 +226,19 @@ function OfferCard({
           <div className="mt-3 p-3 rounded-lg bg-surface-200/30 text-xs space-y-1.5">
             {job.comp_details.equity && (
               <div className="flex items-center justify-between">
-                <span className="text-gray-500">Equity</span>
-                <span className="text-gray-300">{job.comp_details.equity}</span>
+                <span className="text-zinc-500 dark:text-gray-500">Equity</span>
+                <span className="text-zinc-700 dark:text-gray-300">{job.comp_details.equity}</span>
               </div>
             )}
             {job.comp_details.bonus && (
               <div className="flex items-center justify-between">
-                <span className="text-gray-500">Bonus</span>
-                <span className="text-gray-300">{job.comp_details.bonus}</span>
+                <span className="text-zinc-500 dark:text-gray-500">Bonus</span>
+                <span className="text-zinc-700 dark:text-gray-300">{job.comp_details.bonus}</span>
               </div>
             )}
             {job.comp_details.total_comp && (
               <div className="flex items-center justify-between border-t border-white/[0.06] pt-1.5">
-                <span className="text-gray-400 font-medium">Total Comp</span>
+                <span className="text-zinc-600 dark:text-gray-400 font-medium">Total Comp</span>
                 <span className="font-semibold text-emerald-300">
                   {job.comp_details.total_comp}
                 </span>
@@ -251,13 +251,13 @@ function OfferCard({
         {job.evaluation && (
           <div className="mt-3 space-y-1.5">
             {job.evaluation.fit_reasons.slice(0, 2).map((reason, i) => (
-              <div key={i} className="flex items-start gap-1.5 text-xs text-gray-400">
+              <div key={i} className="flex items-start gap-1.5 text-xs text-zinc-600 dark:text-gray-400">
                 <Check className="w-3 h-3 text-emerald-400 flex-shrink-0 mt-0.5" />
                 {reason}
               </div>
             ))}
             {job.evaluation.concerns.slice(0, 1).map((concern, i) => (
-              <div key={i} className="flex items-start gap-1.5 text-xs text-gray-400">
+              <div key={i} className="flex items-start gap-1.5 text-xs text-zinc-600 dark:text-gray-400">
                 <AlertCircle className="w-3 h-3 text-amber-400 flex-shrink-0 mt-0.5" />
                 {concern}
               </div>

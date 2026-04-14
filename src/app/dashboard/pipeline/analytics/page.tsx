@@ -20,7 +20,7 @@ export default function AnalyticsPage() {
         </div>
         <Link
           href="/dashboard/pipeline"
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Board

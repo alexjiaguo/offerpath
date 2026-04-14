@@ -61,8 +61,8 @@ function ToolbarButton({
       className={cn(
         "p-1.5 rounded-md transition-all",
         active
-          ? "bg-brand-500/20 text-brand-300"
-          : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.04]",
+          ? "bg-brand-500/20 text-brand-700 dark:text-brand-300"
+          : "text-zinc-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-black/5 dark:hover:bg-white/[0.04]",
         disabled && "opacity-30 cursor-not-allowed"
       )}
     >
@@ -72,7 +72,7 @@ function ToolbarButton({
 }
 
 function ToolbarDivider() {
-  return <div className="w-px h-5 bg-white/[0.06] mx-1" />;
+  return <div className="w-px h-5 bg-black/10 dark:bg-white/[0.06] mx-1" />;
 }
 
 const HIGHLIGHT_COLORS = [
@@ -111,7 +111,7 @@ export default function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-invert prose-sm max-w-none min-h-[400px] px-5 py-4 focus:outline-none text-gray-200 leading-relaxed [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:text-white [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:mb-2 [&_h2]:text-white [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-2 [&_h3]:text-gray-100 [&_p]:mb-2 [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:mb-1 [&_blockquote]:border-l-2 [&_blockquote]:border-brand-500/40 [&_blockquote]:pl-4 [&_blockquote]:text-gray-400 [&_hr]:border-white/[0.06] [&_mark]:bg-yellow-500/30 [&_mark]:rounded [&_mark]:px-0.5",
+          "prose dark:prose-invert prose-sm max-w-none min-h-[400px] px-5 py-4 focus:outline-none text-zinc-200 dark:text-gray-800 dark:text-gray-200 leading-relaxed [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:text-gray-900 dark:[&_h1]:text-white [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:mb-2 [&_h2]:text-gray-900 dark:[&_h2]:text-white [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-2 [&_h3]:text-zinc-200 dark::text-gray-800 dark:[&_h3]:text-zinc-900 dark::text-gray-100 [&_p]:mb-2 [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:mb-1 [&_blockquote]:border-l-2 [&_blockquote]:border-brand-500/40 [&_blockquote]:pl-4 [&_blockquote]:text-zinc-400 dark::text-gray-600 dark:[&_blockquote]:text-zinc-600 dark::text-gray-400 [&_hr]:border-black/10 dark:[&_hr]:border-white/[0.06] [&_mark]:bg-yellow-200 dark:[&_mark]:bg-yellow-500/30 [&_mark]:rounded [&_mark]:px-0.5",
       },
     },
     onUpdate: ({ editor }) => {
@@ -129,9 +129,9 @@ export default function RichTextEditor({
   if (!editor) return null;
 
   return (
-    <div className="rounded-xl bg-surface-100 border border-white/[0.06] overflow-hidden">
+    <div className="rounded-xl bg-surface-100 border border-border overflow-hidden">
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-3 py-2 border-b border-white/[0.06] bg-surface-200/30 flex-wrap">
+      <div className="flex items-center gap-0.5 px-3 py-2 border-b border-border bg-surface-200/30 flex-wrap">
         {/* Undo / Redo */}
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
@@ -263,7 +263,7 @@ export default function RichTextEditor({
           >
             <Highlighter className="w-4 h-4" />
           </ToolbarButton>
-          <div className="absolute top-full left-0 mt-1 p-2 rounded-lg bg-surface-200 border border-white/[0.06] shadow-xl hidden group-hover:flex gap-1 z-10">
+          <div className="absolute top-full left-0 mt-1 p-2 rounded-lg bg-surface-200 border border-border shadow-xl hidden group-hover:flex gap-1 z-10">
             {HIGHLIGHT_COLORS.map((c) => (
               <button
                 key={c.value}
@@ -291,7 +291,7 @@ export default function RichTextEditor({
           >
             <Palette className="w-4 h-4" />
           </ToolbarButton>
-          <div className="absolute top-full left-0 mt-1 p-2 rounded-lg bg-surface-200 border border-white/[0.06] shadow-xl hidden group-hover:flex gap-1 z-10">
+          <div className="absolute top-full left-0 mt-1 p-2 rounded-lg bg-surface-200 border border-border shadow-xl hidden group-hover:flex gap-1 z-10">
             {TEXT_COLORS.map((c) => (
               <button
                 key={c.label}
@@ -316,7 +316,7 @@ export default function RichTextEditor({
         <BubbleMenu
           editor={editor}
           tippyOptions={{ duration: 150 }}
-          className="flex items-center gap-0.5 px-2 py-1 rounded-lg bg-surface-200 border border-white/[0.06] shadow-xl"
+          className="flex items-center gap-0.5 px-2 py-1 rounded-lg bg-surface-200 border border-border shadow-xl"
         >
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -355,7 +355,7 @@ export default function RichTextEditor({
       <EditorContent editor={editor} />
 
       {/* Word count footer */}
-      <div className="px-4 py-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-gray-600">
+      <div className="px-4 py-2 border-t border-border flex items-center justify-between text-[10px] text-zinc-500 dark:text-gray-500 dark:text-gray-600">
         <span>
           {editor.storage.characterCount?.characters?.() ??
             editor.getText().length}{" "}

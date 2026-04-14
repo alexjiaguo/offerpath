@@ -44,7 +44,7 @@ function MatchBadge({ score, size = "sm" }: { score: number; size?: "sm" | "md" 
     score >= 90 ? "text-emerald-400 bg-emerald-500/10" :
     score >= 80 ? "text-blue-400 bg-blue-500/10" :
     score >= 70 ? "text-amber-400 bg-amber-500/10" :
-    "text-gray-400 bg-gray-500/10";
+    "text-zinc-600 dark:text-gray-400 bg-gray-500/10";
 
   return (
     <span className={cn(
@@ -75,25 +75,25 @@ function CompanyCard({ company }: { company: DiscoveredCompany }) {
             <h3 className="text-sm font-semibold truncate">{company.name}</h3>
             <MatchBadge score={company.match_score} />
           </div>
-          <div className="flex items-center gap-3 text-xs text-gray-500 mb-2 flex-wrap">
+          <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-gray-500 mb-2 flex-wrap">
             <span className="flex items-center gap-1"><Building2 className="w-3 h-3" />{company.industry}</span>
             <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{company.hq}</span>
             <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" />{company.employee_count}</span>
           </div>
-          <p className="text-xs text-gray-500 line-clamp-2 mb-3">{company.notes}</p>
+          <p className="text-xs text-zinc-500 dark:text-gray-500 line-clamp-2 mb-3">{company.notes}</p>
           <div className="flex items-center gap-2 flex-wrap">
             {company.tags.map((tag) => (
-              <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-surface-200 text-gray-400 font-medium">{tag}</span>
+              <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-surface-200 text-zinc-600 dark:text-gray-400 font-medium">{tag}</span>
             ))}
           </div>
         </div>
       </div>
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.04]">
-        <span className="text-[10px] text-gray-600">
+        <span className="text-[10px] text-zinc-400 dark:text-gray-600">
           {jobCount} open {jobCount === 1 ? "role" : "roles"} matched
         </span>
         <div className="flex gap-2">
-          <a href={company.career_url} target="_blank" rel="noopener" className="text-xs text-gray-500 hover:text-brand-400 transition-colors flex items-center gap-1">
+          <a href={company.career_url} target="_blank" rel="noopener" className="text-xs text-zinc-500 dark:text-gray-500 hover:text-brand-400 transition-colors flex items-center gap-1">
             Career Page <ExternalLink className="w-3 h-3" />
           </a>
         </div>
@@ -136,15 +136,15 @@ function JobCard({ jobId }: { jobId: string }) {
               {job.title}
             </h3>
           </Link>
-          <div className="flex items-center gap-3 text-xs text-gray-500 mt-1 flex-wrap">
-            <span className="flex items-center gap-1 font-medium text-gray-400">{job.company_name}</span>
+          <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-gray-500 mt-1 flex-wrap">
+            <span className="flex items-center gap-1 font-medium text-zinc-600 dark:text-gray-400">{job.company_name}</span>
             <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{job.location}</span>
             <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" />{job.level}</span>
           </div>
         </div>
       </div>
 
-      <p className="text-xs text-gray-500 mt-3 line-clamp-2 leading-relaxed">{job.description}</p>
+      <p className="text-xs text-zinc-500 dark:text-gray-500 mt-3 line-clamp-2 leading-relaxed">{job.description}</p>
 
       <div className="flex items-center gap-2 mt-3 flex-wrap">
         {job.tags.slice(0, 4).map((tag) => (
@@ -158,7 +158,7 @@ function JobCard({ jobId }: { jobId: string }) {
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.04]">
         <div className="flex items-center gap-3">
           <MatchBadge score={job.match_score} size="md" />
-          <span className="text-[10px] text-gray-600 flex items-center gap-1">
+          <span className="text-[10px] text-zinc-400 dark:text-gray-600 flex items-center gap-1">
             <Clock className="w-3 h-3" />
             {new Date(job.posted_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
           </span>
@@ -168,14 +168,14 @@ function JobCard({ jobId }: { jobId: string }) {
             onClick={() => toggleSaved(job.id)}
             className={cn(
               "p-1.5 rounded-lg transition-all",
-              job.saved ? "text-brand-400 bg-brand-500/10" : "text-gray-600 hover:text-brand-400 hover:bg-brand-500/10"
+              job.saved ? "text-brand-400 bg-brand-500/10" : "text-zinc-400 dark:text-gray-600 hover:text-brand-400 hover:bg-brand-500/10"
             )}
           >
             {job.saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
           </button>
           <button
             onClick={() => dismissJob(job.id)}
-            className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
+            className="p-1.5 rounded-lg text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
           >
             <X className="w-4 h-4" />
           </button>
@@ -300,7 +300,7 @@ export default function DiscoverPage() {
           <Compass className="w-6 h-6 text-brand-400" />
           <div>
             <h1 className="text-2xl font-bold">Job Discovery</h1>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-zinc-500 dark:text-gray-500 mt-0.5">
               {filteredJobs.length} leads from {store.companies.length} companies
             </p>
           </div>
@@ -331,7 +331,7 @@ export default function DiscoverPage() {
             <stat.icon className={cn("w-5 h-5", stat.color)} />
             <div>
               <div className="text-lg font-bold">{stat.value}</div>
-              <div className="text-[10px] text-gray-500 uppercase tracking-wider">{stat.label}</div>
+              <div className="text-[10px] text-zinc-500 dark:text-gray-500 uppercase tracking-wider">{stat.label}</div>
             </div>
           </div>
         ))}
@@ -346,13 +346,13 @@ export default function DiscoverPage() {
             ) : latestScan.status === "completed" ? (
               <CheckCircle className="w-5 h-5 text-emerald-400" />
             ) : (
-              <ScanLine className="w-5 h-5 text-gray-400" />
+              <ScanLine className="w-5 h-5 text-zinc-600 dark:text-gray-400" />
             )}
             <div>
               <div className="text-sm font-medium">
                 {latestScan.status === "running" ? "Scan in progress..." : "Last scan completed"}
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-zinc-500 dark:text-gray-500">
                 {latestScan.status === "completed"
                   ? `${latestScan.companies_scanned} companies scanned · ${latestScan.new_jobs_found} new leads · ${new Date(latestScan.completed_at!).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}`
                   : "Scanning career pages and job boards..."}
@@ -377,7 +377,7 @@ export default function DiscoverPage() {
               "flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-all",
               store.activeTab === tab.id
                 ? "text-brand-400 border-brand-400"
-                : "text-gray-500 border-transparent hover:text-gray-300"
+                : "text-zinc-500 dark:text-gray-500 border-transparent hover:text-zinc-700 dark:hover:text-gray-300"
             )}
           >
             <tab.icon className="w-4 h-4" />
@@ -396,32 +396,32 @@ export default function DiscoverPage() {
         <div className="mb-5 space-y-3">
           <div className="flex items-center gap-3">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
               <input
                 type="text"
                 value={store.searchQuery}
                 onChange={(e) => store.setSearchQuery(e.target.value)}
                 placeholder="Search jobs by title, company, or keyword..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={cn(
                 "flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
-                showFilters ? "bg-brand-500/10 text-brand-400" : "bg-surface-100 text-gray-400 hover:text-gray-300"
+                showFilters ? "bg-brand-500/10 text-brand-400" : "bg-surface-100 text-zinc-600 dark:text-gray-400 hover:text-zinc-700 dark:hover:text-gray-300"
               )}
             >
               <Filter className="w-4 h-4" />
               Filters
               <ChevronDown className={cn("w-3 h-3 transition-transform", showFilters && "rotate-180")} />
             </button>
-            <div className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-surface-100 text-sm text-gray-400">
+            <div className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-surface-100 text-sm text-zinc-600 dark:text-gray-400">
               <ArrowUpDown className="w-3.5 h-3.5" />
               <select
                 value={store.sortBy}
                 onChange={(e) => store.setSortBy(e.target.value as SortKey)}
-                className="bg-transparent text-sm text-gray-300 focus:outline-none cursor-pointer"
+                className="bg-transparent text-sm text-zinc-700 dark:text-gray-300 focus:outline-none cursor-pointer"
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -433,40 +433,40 @@ export default function DiscoverPage() {
           {showFilters && (
             <div className="glass rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-3 animate-slide-up">
               <div>
-                <label className="text-[10px] text-gray-500 uppercase tracking-wider font-medium mb-1 block">Industry</label>
+                <label className="text-[10px] text-zinc-500 dark:text-gray-500 uppercase tracking-wider font-medium mb-1 block">Industry</label>
                 <select
                   value={store.filterIndustry}
                   onChange={(e) => store.setFilterIndustry(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-200 text-sm text-gray-300 border border-white/[0.04] focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-surface-200 text-sm text-zinc-700 dark:text-gray-300 border border-white/[0.04] focus:outline-none"
                 >
                   <option value="">All Industries</option>
                   {industries.map((i) => <option key={i} value={i}>{i}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-gray-500 uppercase tracking-wider font-medium mb-1 block">Location</label>
+                <label className="text-[10px] text-zinc-500 dark:text-gray-500 uppercase tracking-wider font-medium mb-1 block">Location</label>
                 <select
                   value={store.filterLocation}
                   onChange={(e) => store.setFilterLocation(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-200 text-sm text-gray-300 border border-white/[0.04] focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-surface-200 text-sm text-zinc-700 dark:text-gray-300 border border-white/[0.04] focus:outline-none"
                 >
                   <option value="">All Locations</option>
                   {locations.map((l) => <option key={l} value={l}>{l}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-gray-500 uppercase tracking-wider font-medium mb-1 block">Level</label>
+                <label className="text-[10px] text-zinc-500 dark:text-gray-500 uppercase tracking-wider font-medium mb-1 block">Level</label>
                 <select
                   value={store.filterLevel}
                   onChange={(e) => store.setFilterLevel(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-surface-200 text-sm text-gray-300 border border-white/[0.04] focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-surface-200 text-sm text-zinc-700 dark:text-gray-300 border border-white/[0.04] focus:outline-none"
                 >
                   <option value="">All Levels</option>
                   {levels.map((l) => <option key={l} value={l}>{l}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-gray-500 uppercase tracking-wider font-medium mb-1 block">Min Match Score</label>
+                <label className="text-[10px] text-zinc-500 dark:text-gray-500 uppercase tracking-wider font-medium mb-1 block">Min Match Score</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="range"
@@ -476,7 +476,7 @@ export default function DiscoverPage() {
                     onChange={(e) => store.setFilterMinScore(Number(e.target.value))}
                     className="flex-1 accent-brand-400"
                   />
-                  <span className="text-xs text-gray-400 font-mono w-8 text-right">{store.filterMinScore}%</span>
+                  <span className="text-xs text-zinc-600 dark:text-gray-400 font-mono w-8 text-right">{store.filterMinScore}%</span>
                 </div>
               </div>
             </div>
@@ -489,9 +489,9 @@ export default function DiscoverPage() {
         <div className="space-y-3">
           {filteredJobs.length === 0 ? (
             <div className="glass rounded-xl p-8 text-center">
-              <Search className="w-8 h-8 text-gray-600 mx-auto mb-3" />
-              <h3 className="text-sm font-medium text-gray-400 mb-1">No matches found</h3>
-              <p className="text-xs text-gray-600">Try adjusting your filters or run a new scan.</p>
+              <Search className="w-8 h-8 text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
+              <h3 className="text-sm font-medium text-zinc-600 dark:text-gray-400 mb-1">No matches found</h3>
+              <p className="text-xs text-zinc-400 dark:text-gray-600">Try adjusting your filters or run a new scan.</p>
             </div>
           ) : (
             filteredJobs.map((job) => <JobCard key={job.id} jobId={job.id} />)
@@ -504,9 +504,9 @@ export default function DiscoverPage() {
         <div className="space-y-3">
           {savedJobs.length === 0 ? (
             <div className="glass rounded-xl p-8 text-center">
-              <Bookmark className="w-8 h-8 text-gray-600 mx-auto mb-3" />
-              <h3 className="text-sm font-medium text-gray-400 mb-1">No saved leads yet</h3>
-              <p className="text-xs text-gray-600">Bookmark interesting jobs to save them here.</p>
+              <Bookmark className="w-8 h-8 text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
+              <h3 className="text-sm font-medium text-zinc-600 dark:text-gray-400 mb-1">No saved leads yet</h3>
+              <p className="text-xs text-zinc-400 dark:text-gray-600">Bookmark interesting jobs to save them here.</p>
             </div>
           ) : (
             savedJobs.map((job) => <JobCard key={job.id} jobId={job.id} />)
@@ -519,7 +519,7 @@ export default function DiscoverPage() {
         <div>
           {/* Add Company button */}
           <div className="flex items-center justify-between mb-4">
-            <p className="text-xs text-gray-500">{topCompanies.length} companies tracked</p>
+            <p className="text-xs text-zinc-500 dark:text-gray-500">{topCompanies.length} companies tracked</p>
             <button
               onClick={() => setShowAddCompany(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg gradient-brand text-white text-xs font-medium hover:opacity-90 transition-opacity"
@@ -561,7 +561,7 @@ export default function DiscoverPage() {
                   });
                   setShowPrefsEditor(true);
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200 text-gray-400 hover:text-brand-300 text-xs font-medium transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200 text-zinc-600 dark:text-gray-400 hover:text-brand-300 text-xs font-medium transition-all"
               >
                 <Pencil className="w-3 h-3" />
                 Edit Preferences
@@ -569,28 +569,28 @@ export default function DiscoverPage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
               <div>
-                <span className="text-gray-500">Target Roles:</span>
-                <div className="text-gray-300 mt-0.5">{store.profile.target_roles.join(", ")}</div>
+                <span className="text-zinc-500 dark:text-gray-500">Target Roles:</span>
+                <div className="text-zinc-700 dark:text-gray-300 mt-0.5">{store.profile.target_roles.join(", ")}</div>
               </div>
               <div>
-                <span className="text-gray-500">Industries:</span>
-                <div className="text-gray-300 mt-0.5">{store.profile.industries.join(", ")}</div>
+                <span className="text-zinc-500 dark:text-gray-500">Industries:</span>
+                <div className="text-zinc-700 dark:text-gray-300 mt-0.5">{store.profile.industries.join(", ")}</div>
               </div>
               <div>
-                <span className="text-gray-500">Locations:</span>
-                <div className="text-gray-300 mt-0.5">{store.profile.locations.join(", ")}</div>
+                <span className="text-zinc-500 dark:text-gray-500">Locations:</span>
+                <div className="text-zinc-700 dark:text-gray-300 mt-0.5">{store.profile.locations.join(", ")}</div>
               </div>
               <div>
-                <span className="text-gray-500">Min Match:</span>
-                <div className="text-gray-300 mt-0.5">{store.profile.min_match_score}%</div>
+                <span className="text-zinc-500 dark:text-gray-500">Min Match:</span>
+                <div className="text-zinc-700 dark:text-gray-300 mt-0.5">{store.profile.min_match_score}%</div>
               </div>
               <div>
-                <span className="text-gray-500">Keywords:</span>
-                <div className="text-gray-300 mt-0.5">{store.profile.keywords.slice(0, 3).join(", ")}...</div>
+                <span className="text-zinc-500 dark:text-gray-500">Keywords:</span>
+                <div className="text-zinc-700 dark:text-gray-300 mt-0.5">{store.profile.keywords.slice(0, 3).join(", ")}...</div>
               </div>
               <div>
-                <span className="text-gray-500">Auto-Scan:</span>
-                <div className="text-gray-300 mt-0.5 flex items-center gap-1">
+                <span className="text-zinc-500 dark:text-gray-500">Auto-Scan:</span>
+                <div className="text-zinc-700 dark:text-gray-300 mt-0.5 flex items-center gap-1">
                   {store.profile.auto_scan_enabled ? (
                     <><Globe className="w-3 h-3 text-emerald-400" /> {store.profile.auto_scan_interval}</>
                   ) : "Disabled"}
@@ -608,18 +608,18 @@ export default function DiscoverPage() {
                 ) : run.status === "completed" ? (
                   <CheckCircle className="w-5 h-5 text-emerald-400" />
                 ) : (
-                  <ScanLine className="w-5 h-5 text-gray-500" />
+                  <ScanLine className="w-5 h-5 text-zinc-500 dark:text-gray-500" />
                 )}
                 <div>
                   <div className="text-sm font-medium">
                     {run.source === "career_pages" ? "Career Pages Scan" : "Web Search Scan"}
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">
+                  <div className="text-xs text-zinc-500 dark:text-gray-500 mt-0.5">
                     {new Date(run.started_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-4 text-xs text-gray-500">
+              <div className="flex items-center gap-4 text-xs text-zinc-500 dark:text-gray-500">
                 <span>{run.companies_scanned} companies</span>
                 <span className="text-brand-300 font-medium">+{run.new_jobs_found} new</span>
                 <span>{run.total_matches} total</span>
@@ -645,37 +645,37 @@ export default function DiscoverPage() {
                 <Sparkles className="w-5 h-5 text-brand-400" />
                 <h2 className="text-base font-semibold">Edit Search Preferences</h2>
               </div>
-              <button onClick={() => setShowPrefsEditor(false)} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.04] transition-all">
+              <button onClick={() => setShowPrefsEditor(false)} className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Target Roles</label>
-                <input type="text" value={prefsForm.target_roles} onChange={(e) => setPrefsForm({ ...prefsForm, target_roles: e.target.value })} placeholder="e.g. Product Manager, PM Lead" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
-                <p className="text-[10px] text-gray-600 mt-1">Comma-separated</p>
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Target Roles</label>
+                <input type="text" value={prefsForm.target_roles} onChange={(e) => setPrefsForm({ ...prefsForm, target_roles: e.target.value })} placeholder="e.g. Product Manager, PM Lead" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                <p className="text-[10px] text-zinc-400 dark:text-gray-600 mt-1">Comma-separated</p>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Industries</label>
-                <input type="text" value={prefsForm.industries} onChange={(e) => setPrefsForm({ ...prefsForm, industries: e.target.value })} placeholder="e.g. Technology, Ad Tech, Fintech" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Industries</label>
+                <input type="text" value={prefsForm.industries} onChange={(e) => setPrefsForm({ ...prefsForm, industries: e.target.value })} placeholder="e.g. Technology, Ad Tech, Fintech" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Locations</label>
-                <input type="text" value={prefsForm.locations} onChange={(e) => setPrefsForm({ ...prefsForm, locations: e.target.value })} placeholder="e.g. Singapore, San Francisco, Remote" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Locations</label>
+                <input type="text" value={prefsForm.locations} onChange={(e) => setPrefsForm({ ...prefsForm, locations: e.target.value })} placeholder="e.g. Singapore, San Francisco, Remote" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Keywords</label>
-                <input type="text" value={prefsForm.keywords} onChange={(e) => setPrefsForm({ ...prefsForm, keywords: e.target.value })} placeholder="e.g. AI, ML, revenue, platform" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Keywords</label>
+                <input type="text" value={prefsForm.keywords} onChange={(e) => setPrefsForm({ ...prefsForm, keywords: e.target.value })} placeholder="e.g. AI, ML, revenue, platform" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Experience Level</label>
-                  <select value={prefsForm.experience_years} onChange={(e) => setPrefsForm({ ...prefsForm, experience_years: e.target.value })} className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 focus:outline-none focus:border-brand-500/40 transition-all appearance-none cursor-pointer">
+                  <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Experience Level</label>
+                  <select value={prefsForm.experience_years} onChange={(e) => setPrefsForm({ ...prefsForm, experience_years: e.target.value })} className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 transition-all appearance-none cursor-pointer">
                     <option value="0-2">0–2 years</option>
                     <option value="3-5">3–5 years</option>
                     <option value="5-8">5–8 years</option>
@@ -684,25 +684,25 @@ export default function DiscoverPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Min Match Score</label>
+                  <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Min Match Score</label>
                   <div className="flex items-center gap-2">
                     <input type="range" min={0} max={100} value={prefsForm.min_match_score} onChange={(e) => setPrefsForm({ ...prefsForm, min_match_score: Number(e.target.value) })} className="flex-1 accent-brand-400" />
-                    <span className="text-xs text-gray-400 font-mono w-8 text-right">{prefsForm.min_match_score}%</span>
+                    <span className="text-xs text-zinc-600 dark:text-gray-400 font-mono w-8 text-right">{prefsForm.min_match_score}%</span>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between p-3 rounded-xl bg-surface-100 border border-white/[0.04]">
                 <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-gray-400" />
+                  <Globe className="w-4 h-4 text-zinc-600 dark:text-gray-400" />
                   <div>
                     <p className="text-sm font-medium">Auto-Scan</p>
-                    <p className="text-[10px] text-gray-500">Automatically scan for new jobs</p>
+                    <p className="text-[10px] text-zinc-500 dark:text-gray-500">Automatically scan for new jobs</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {prefsForm.auto_scan_enabled && (
-                    <select value={prefsForm.auto_scan_interval} onChange={(e) => setPrefsForm({ ...prefsForm, auto_scan_interval: e.target.value as "daily" | "weekly" | "biweekly" })} className="px-2 py-1 rounded-lg bg-surface-200 text-xs text-gray-300 border border-white/[0.04] focus:outline-none">
+                    <select value={prefsForm.auto_scan_interval} onChange={(e) => setPrefsForm({ ...prefsForm, auto_scan_interval: e.target.value as "daily" | "weekly" | "biweekly" })} className="px-2 py-1 rounded-lg bg-surface-200 text-xs text-zinc-700 dark:text-gray-300 border border-white/[0.04] focus:outline-none">
                       <option value="daily">Daily</option>
                       <option value="weekly">Weekly</option>
                       <option value="biweekly">Biweekly</option>
@@ -716,7 +716,7 @@ export default function DiscoverPage() {
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowPrefsEditor(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 bg-surface-200 hover:bg-surface-300 transition-all">Cancel</button>
+              <button onClick={() => setShowPrefsEditor(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-zinc-600 dark:text-gray-400 bg-surface-200 hover:bg-surface-300 transition-all">Cancel</button>
               <button onClick={handleSavePrefs} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium gradient-brand text-white hover:opacity-90 transition-opacity">
                 <Save className="w-4 h-4" />
                 Save Preferences
@@ -735,7 +735,7 @@ export default function DiscoverPage() {
                 <Building2 className="w-5 h-5 text-brand-400" />
                 <h2 className="text-base font-semibold">Add Company</h2>
               </div>
-              <button onClick={() => setShowAddCompany(false)} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.04] transition-all">
+              <button onClick={() => setShowAddCompany(false)} className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -743,34 +743,34 @@ export default function DiscoverPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Emoji</label>
+                  <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Emoji</label>
                   <input type="text" value={companyForm.logo_emoji} onChange={(e) => setCompanyForm({ ...companyForm, logo_emoji: e.target.value })} className="w-14 px-2 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-lg text-center focus:outline-none focus:border-brand-500/40 transition-all" />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Company Name *</label>
-                  <input type="text" value={companyForm.name} onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })} placeholder="e.g. Stripe" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                  <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Company Name *</label>
+                  <input type="text" value={companyForm.name} onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })} placeholder="e.g. Stripe" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Industry</label>
-                  <input type="text" value={companyForm.industry} onChange={(e) => setCompanyForm({ ...companyForm, industry: e.target.value })} placeholder="e.g. Fintech" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
+                  <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Industry</label>
+                  <input type="text" value={companyForm.industry} onChange={(e) => setCompanyForm({ ...companyForm, industry: e.target.value })} placeholder="e.g. Fintech" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">HQ Location</label>
-                  <input type="text" value={companyForm.hq} onChange={(e) => setCompanyForm({ ...companyForm, hq: e.target.value })} placeholder="e.g. San Francisco, CA" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
+                  <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">HQ Location</label>
+                  <input type="text" value={companyForm.hq} onChange={(e) => setCompanyForm({ ...companyForm, hq: e.target.value })} placeholder="e.g. San Francisco, CA" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Employee Count</label>
-                  <input type="text" value={companyForm.employee_count} onChange={(e) => setCompanyForm({ ...companyForm, employee_count: e.target.value })} placeholder="e.g. 5,000+" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
+                  <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Employee Count</label>
+                  <input type="text" value={companyForm.employee_count} onChange={(e) => setCompanyForm({ ...companyForm, employee_count: e.target.value })} placeholder="e.g. 5,000+" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">Tier</label>
-                  <select value={companyForm.tier} onChange={(e) => setCompanyForm({ ...companyForm, tier: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 focus:outline-none focus:border-brand-500/40 transition-all appearance-none cursor-pointer">
+                  <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Tier</label>
+                  <select value={companyForm.tier} onChange={(e) => setCompanyForm({ ...companyForm, tier: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 transition-all appearance-none cursor-pointer">
                     <option value={1}>Tier 1 — Dream</option>
                     <option value={2}>Tier 2 — Strong</option>
                     <option value={3}>Tier 3 — Good Fit</option>
@@ -779,25 +779,25 @@ export default function DiscoverPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Career Page URL</label>
-                <input type="url" value={companyForm.career_url} onChange={(e) => setCompanyForm({ ...companyForm, career_url: e.target.value })} placeholder="https://careers.stripe.com" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Career Page URL</label>
+                <input type="url" value={companyForm.career_url} onChange={(e) => setCompanyForm({ ...companyForm, career_url: e.target.value })} placeholder="https://careers.stripe.com" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Tags</label>
-                <input type="text" value={companyForm.tags} onChange={(e) => setCompanyForm({ ...companyForm, tags: e.target.value })} placeholder="e.g. payments, API, developer tools" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
-                <p className="text-[10px] text-gray-600 mt-1">Comma-separated</p>
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Tags</label>
+                <input type="text" value={companyForm.tags} onChange={(e) => setCompanyForm({ ...companyForm, tags: e.target.value })} placeholder="e.g. payments, API, developer tools" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all" />
+                <p className="text-[10px] text-zinc-400 dark:text-gray-600 mt-1">Comma-separated</p>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Notes</label>
-                <textarea value={companyForm.notes} onChange={(e) => setCompanyForm({ ...companyForm, notes: e.target.value })} rows={2} placeholder="Why this company interests you..." className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all resize-none" />
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Notes</label>
+                <textarea value={companyForm.notes} onChange={(e) => setCompanyForm({ ...companyForm, notes: e.target.value })} rows={2} placeholder="Why this company interests you..." className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 transition-all resize-none" />
               </div>
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowAddCompany(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 bg-surface-200 hover:bg-surface-300 transition-all">Cancel</button>
-              <button onClick={handleAddCompany} disabled={!companyForm.name.trim()} className={cn("flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all", companyForm.name.trim() ? "gradient-brand text-white hover:opacity-90" : "bg-surface-300 text-gray-600 cursor-not-allowed")}>
+              <button onClick={() => setShowAddCompany(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-zinc-600 dark:text-gray-400 bg-surface-200 hover:bg-surface-300 transition-all">Cancel</button>
+              <button onClick={handleAddCompany} disabled={!companyForm.name.trim()} className={cn("flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all", companyForm.name.trim() ? "gradient-brand text-white hover:opacity-90" : "bg-surface-300 text-zinc-400 dark:text-gray-600 cursor-not-allowed")}>
                 <Plus className="w-4 h-4" />
                 Add Company
               </button>

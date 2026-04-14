@@ -153,7 +153,7 @@ export default function AddJobDialog() {
             <h2 className="text-lg font-semibold">Add Job</h2>
             <button
               onClick={handleClose}
-              className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.06] transition-all"
+              className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.06] transition-all"
             >
               <X className="w-5 h-5" />
             </button>
@@ -168,7 +168,7 @@ export default function AddJobDialog() {
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
                   mode === "url"
                     ? "bg-surface-100 text-white shadow-sm"
-                    : "text-gray-500 hover:text-gray-300"
+                    : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300"
                 )}
               >
                 <Link2 className="w-3.5 h-3.5" />
@@ -180,7 +180,7 @@ export default function AddJobDialog() {
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
                   mode === "text"
                     ? "bg-surface-100 text-white shadow-sm"
-                    : "text-gray-500 hover:text-gray-300"
+                    : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300"
                 )}
               >
                 <FileText className="w-3.5 h-3.5" />
@@ -193,7 +193,7 @@ export default function AddJobDialog() {
           <div className="px-6 py-4 space-y-4 max-h-[60vh] overflow-y-auto">
             {mode === "url" && (
               <div>
-                <label className="text-xs font-medium text-gray-500 mb-1.5 block">
+                <label className="text-xs font-medium text-zinc-500 dark:text-gray-500 mb-1.5 block">
                   Job Posting URL
                 </label>
                 <input
@@ -201,14 +201,14 @@ export default function AddJobDialog() {
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="https://careers.google.com/jobs/..."
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-gray-500 mb-1.5 block">
+                <label className="text-xs font-medium text-zinc-500 dark:text-gray-500 mb-1.5 block">
                   Job Title *
                 </label>
                 <input
@@ -216,11 +216,11 @@ export default function AddJobDialog() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Senior Product Manager"
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-500 mb-1.5 block">
+                <label className="text-xs font-medium text-zinc-500 dark:text-gray-500 mb-1.5 block">
                   Company
                 </label>
                 <input
@@ -228,14 +228,14 @@ export default function AddJobDialog() {
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Google"
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-gray-500 mb-1.5 block">
+                <label className="text-xs font-medium text-zinc-500 dark:text-gray-500 mb-1.5 block">
                   Location
                 </label>
                 <input
@@ -243,11 +243,11 @@ export default function AddJobDialog() {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="Singapore"
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-500 mb-1.5 block">
+                <label className="text-xs font-medium text-zinc-500 dark:text-gray-500 mb-1.5 block">
                   Salary Range
                 </label>
                 <input
@@ -255,14 +255,14 @@ export default function AddJobDialog() {
                   value={salaryRange}
                   onChange={(e) => setSalaryRange(e.target.value)}
                   placeholder="$200K–$300K"
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             </div>
 
             {mode === "text" && (
               <div>
-                <label className="text-xs font-medium text-gray-500 mb-1.5 block">
+                <label className="text-xs font-medium text-zinc-500 dark:text-gray-500 mb-1.5 block">
                   Job Description
                 </label>
                 <textarea
@@ -270,7 +270,7 @@ export default function AddJobDialog() {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Paste the full job description here..."
                   rows={6}
-                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
+                  className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
                 />
               </div>
             )}
@@ -285,7 +285,7 @@ export default function AddJobDialog() {
                 <div className="flex items-center gap-4 mb-2">
                   <div>
                     <span className="text-2xl font-bold">{evaluation.score.toFixed(1)}</span>
-                    <span className="text-xs text-gray-500 ml-1">/ 5.0</span>
+                    <span className="text-xs text-zinc-500 dark:text-gray-500 ml-1">/ 5.0</span>
                   </div>
                   <span
                     className={cn(
@@ -293,17 +293,17 @@ export default function AddJobDialog() {
                       evaluation.tier === 1
                         ? "text-amber-400 bg-amber-400/10"
                         : evaluation.tier === 2
-                        ? "text-gray-400 bg-gray-400/10"
+                        ? "text-zinc-600 dark:text-gray-400 bg-gray-400/10"
                         : "text-amber-700 bg-amber-700/10"
                     )}
                   >
                     Tier {evaluation.tier}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md text-xs text-gray-400 bg-surface-200">
+                  <span className="px-2 py-0.5 rounded-md text-xs text-zinc-600 dark:text-gray-400 bg-surface-200">
                     {evaluation.archetype}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500">{evaluation.match_summary}</p>
+                <p className="text-xs text-zinc-500 dark:text-gray-500">{evaluation.match_summary}</p>
               </div>
             )}
           </div>
@@ -331,7 +331,7 @@ export default function AddJobDialog() {
             <div className="flex gap-2">
               <button
                 onClick={handleClose}
-                className="px-4 py-2 rounded-lg text-sm text-gray-400 hover:text-gray-200 hover:bg-white/[0.04] transition-all"
+                className="px-4 py-2 rounded-lg text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04] transition-all"
               >
                 Cancel
               </button>

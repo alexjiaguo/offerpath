@@ -90,20 +90,20 @@ export default function ResumePicker() {
           <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
             <div>
               <h2 className="text-lg font-semibold">Link Resume to Application</h2>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-zinc-500 dark:text-gray-500 mt-0.5">
                 Applying for{" "}
-                <span className="text-gray-300">{job.title}</span>
+                <span className="text-zinc-700 dark:text-gray-300">{job.title}</span>
                 {job.company?.name && (
                   <>
                     {" "}at{" "}
-                    <span className="text-gray-300">{job.company.name}</span>
+                    <span className="text-zinc-700 dark:text-gray-300">{job.company.name}</span>
                   </>
                 )}
               </p>
             </div>
             <button
               onClick={handleClose}
-              className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.06] transition-all"
+              className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.06] transition-all"
             >
               <X className="w-5 h-5" />
             </button>
@@ -113,9 +113,9 @@ export default function ResumePicker() {
           <div className="px-6 py-4 space-y-2.5 max-h-[400px] overflow-y-auto">
             {sortedResumes.length === 0 ? (
               <div className="text-center py-8">
-                <FileText className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                <p className="text-sm text-gray-500">No resumes yet</p>
-                <p className="text-xs text-gray-600 mt-1">
+                <FileText className="w-10 h-10 text-zinc-300 dark:text-gray-700 mx-auto mb-3" />
+                <p className="text-sm text-zinc-500 dark:text-gray-500">No resumes yet</p>
+                <p className="text-xs text-zinc-400 dark:text-gray-600 mt-1">
                   Create your first resume to link to applications
                 </p>
               </div>
@@ -166,7 +166,7 @@ export default function ResumePicker() {
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-200 truncate">
+                      <p className="text-sm font-medium text-zinc-800 dark:text-gray-200 truncate">
                         {resume.title}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
@@ -180,7 +180,7 @@ export default function ResumePicker() {
                         >
                           {resume.is_base ? "Base" : "Tailored"}
                         </span>
-                        <span className="text-[10px] text-gray-600">
+                        <span className="text-[10px] text-zinc-400 dark:text-gray-600">
                           Updated{" "}
                           {new Date(resume.updated_at).toLocaleDateString("en-US", {
                             month: "short",
@@ -207,14 +207,14 @@ export default function ResumePicker() {
                 <Plus className="w-4 h-4 text-brand-400" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-300 group-hover:text-gray-100 transition-colors">
+                <p className="text-sm font-medium text-zinc-700 dark:text-gray-300 group-hover:text-zinc-900 dark:group-hover:text-gray-100 transition-colors">
                   Create Tailored Resume
                 </p>
-                <p className="text-[10px] text-gray-600">
+                <p className="text-[10px] text-zinc-400 dark:text-gray-600">
                   Start from a base resume, optimized for this role
                 </p>
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-brand-400 transition-colors" />
+              <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-gray-600 group-hover:text-brand-400 transition-colors" />
             </Link>
           </div>
 
@@ -222,14 +222,14 @@ export default function ResumePicker() {
           <div className="flex items-center justify-between px-6 py-4 border-t border-white/[0.06] bg-surface-100/30">
             <button
               onClick={handleSkip}
-              className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
+              className="text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors"
             >
               Skip for now
             </button>
             <div className="flex gap-2">
               <button
                 onClick={handleClose}
-                className="px-4 py-2 rounded-lg text-sm text-gray-400 hover:text-gray-200 hover:bg-white/[0.04] transition-all"
+                className="px-4 py-2 rounded-lg text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04] transition-all"
               >
                 Cancel
               </button>

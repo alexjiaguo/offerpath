@@ -4,19 +4,40 @@
    ═══════════════════════════════════════════════════ */
 
 import { create } from "zustand";
-import type { Resume, SectionKey, ResumeTheme } from "@/types";
+import type { Resume, SectionKey, ResumeTheme, ResumeData } from "@/types";
 import { DEFAULT_SECTION_VISIBILITY } from "@/types";
 
 // ── Store Types ─────────────────────────────────────
 
+export interface HistorySnapshot {
+  data: ResumeData;
+  template: string;
+  theme: ResumeTheme;
+}
+
 export interface ResumeState {
   resumes: Resume[];
+  history: {
+    past: HistorySnapshot[];
+    future: HistorySnapshot[];
+  };
 
   // Actions
   addResume: (resume: Omit<Resume, "id" | "user_id" | "created_at" | "updated_at">) => string;
   updateResume: (id: string, updates: Partial<Resume>) => void;
   deleteResume: (id: string) => void;
   duplicateResume: (id: string, newTitle?: string) => string | null;
+  
+  // History Actions
+  saveToHistory: (id: string) => void;
+  undo: (id: string) => void;
+  redo: (id: string) => void;
+  canUndo: boolean;
+  canRedo: boolean;
+
+  // Section Management
+  moveSection: (id: string, sectionKey: SectionKey, direction: "up" | "down") => void;
+  toggleVisibility: (id: string, template: string, sectionKey: SectionKey) => void;
 
   // Computed
   getResumeById: (id: string) => Resume | undefined;
@@ -340,6 +361,89 @@ function generateId(): string {
 
 export const useResumeStore = create<ResumeState>((set, get) => ({
   resumes: MOCK_RESUMES,
+  history: { past: [], future: [] },
+  canUndo: false,
+  canRedo: false,
+
+  // ── History Helpers ──
+
+  saveToHistory: (id) => {
+    const resume = get().resumes.find((r) => r.id === id);
+    if (!resume) return;
+
+    const snapshot: HistorySnapshot = {
+      data: JSON.parse(JSON.stringify(resume.data)),
+      template: resume.template,
+      theme: { ...resume.theme },
+    };
+
+    set((state) => ({
+      history: {
+        past: [...state.history.past, snapshot].slice(-50),
+        future: [],
+      },
+      canUndo: true,
+      canRedo: false,
+    }));
+  },
+
+  undo: (id) => {
+    const { past, future } = get().history;
+    if (past.length === 0) return;
+
+    const resume = get().resumes.find((r) => r.id === id);
+    if (!resume) return;
+
+    const currentSnapshot: HistorySnapshot = {
+      data: JSON.parse(JSON.stringify(resume.data)),
+      template: resume.template,
+      theme: { ...resume.theme },
+    };
+
+    const previous = past[past.length - 1];
+    const newPast = past.slice(0, -1);
+
+    set((state) => ({
+      resumes: state.resumes.map((r) =>
+        r.id === id ? { ...r, ...previous, updated_at: new Date().toISOString() } : r
+      ),
+      history: {
+        past: newPast,
+        future: [currentSnapshot, ...future],
+      },
+      canUndo: newPast.length > 0,
+      canRedo: true,
+    }));
+  },
+
+  redo: (id) => {
+    const { past, future } = get().history;
+    if (future.length === 0) return;
+
+    const resume = get().resumes.find((r) => r.id === id);
+    if (!resume) return;
+
+    const currentSnapshot: HistorySnapshot = {
+      data: JSON.parse(JSON.stringify(resume.data)),
+      template: resume.template,
+      theme: { ...resume.theme },
+    };
+
+    const next = future[0];
+    const newFuture = future.slice(1);
+
+    set((state) => ({
+      resumes: state.resumes.map((r) =>
+        r.id === id ? { ...r, ...next, updated_at: new Date().toISOString() } : r
+      ),
+      history: {
+        past: [...past, currentSnapshot],
+        future: newFuture,
+      },
+      canUndo: true,
+      canRedo: newFuture.length > 0,
+    }));
+  },
 
   // ── CRUD ──
 
@@ -357,6 +461,8 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   },
 
   updateResume: (id, updates) => {
+    // Note: We don't auto-save to history on every keystroke
+    // The editor should call saveToHistory on blur or major changes
     set((state) => ({
       resumes: state.resumes.map((r) =>
         r.id === id ? { ...r, ...updates, updated_at: new Date().toISOString() } : r
@@ -383,6 +489,41 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
     };
     set((state) => ({ resumes: [duplicate, ...state.resumes] }));
     return newId;
+  },
+
+  // ── Section Management ──
+
+  moveSection: (id, sectionKey, direction) => {
+    const resume = get().resumes.find((r) => r.id === id);
+    if (!resume) return;
+
+    get().saveToHistory(id);
+
+    const order = [...(resume.section_order || DEFAULT_SECTION_ORDER)];
+    const idx = order.indexOf(sectionKey);
+    if (idx < 0) return;
+
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= order.length) return;
+
+    [order[idx], order[swapIdx]] = [order[swapIdx], order[idx]];
+
+    get().updateResume(id, { section_order: order });
+  },
+
+  toggleVisibility: (id, template, sectionKey) => {
+    const resume = get().resumes.find((r) => r.id === id);
+    if (!resume) return;
+
+    get().saveToHistory(id);
+
+    const currentVis = { ...resume.section_visibility };
+    const templateVis = { ...(currentVis[template] || DEFAULT_SECTION_VISIBILITY) };
+    
+    templateVis[sectionKey] = !templateVis[sectionKey];
+    currentVis[template] = templateVis;
+
+    get().updateResume(id, { section_visibility: currentVis });
   },
 
   // ── Computed ──

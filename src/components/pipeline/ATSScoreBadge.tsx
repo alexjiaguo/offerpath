@@ -100,7 +100,7 @@ export default function ATSScoreBadge({
       {/* Label */}
       {showLabel && (
         <div className="flex flex-col">
-          <span className={cn("font-medium text-gray-300", config.labelSize)}>
+          <span className={cn("font-medium text-zinc-700 dark:text-gray-300", config.labelSize)}>
             ATS Match
           </span>
           <span className={cn("font-semibold", config.labelSize)} style={{ color }}>

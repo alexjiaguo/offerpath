@@ -30,6 +30,7 @@ interface ResumePreviewProps {
   sectionOrder?: SectionKey[];
   sectionVisibility?: Record<SectionKey, boolean>;
   className?: string;
+  fullScale?: boolean;
 }
 
 // ── Default theme values ─────────────────────────────
@@ -85,6 +86,7 @@ export default function ResumePreview({
   sectionOrder,
   sectionVisibility,
   className,
+  fullScale = false,
 }: ResumePreviewProps) {
   const TemplateComponent = TEMPLATES[template] || ClassicMinimal;
 
@@ -99,10 +101,26 @@ export default function ResumePreview({
   const mergedVisibility = sectionVisibility || DEFAULT_SECTION_VISIBILITY;
 
   return (
-    <div className={cn("print-preview", className)}>
+    <div className={cn("print-preview", className, "flex justify-center")}>
       {/* A4 paper simulation — uses transform for scaling in editor */}
-      <div className="relative bg-white rounded-lg shadow-2xl overflow-hidden" style={{ aspectRatio: "210/297" }}>
-        <div className="absolute inset-0 overflow-y-auto" style={{ transform: "scale(0.38)", transformOrigin: "top left", width: "263.2%", height: "263.2%" }}>
+      <div 
+        className={cn(
+          "relative bg-white shadow-2xl transition-all duration-500",
+          fullScale ? "w-[210mm] min-h-[297mm]" : "w-full overflow-hidden"
+        )} 
+        style={!fullScale ? { aspectRatio: "210/297" } : {}}
+      >
+        <div 
+          className={cn(
+            "origin-top-left",
+            !fullScale ? "absolute inset-0 overflow-hidden" : "w-full h-full"
+          )} 
+          style={!fullScale ? { 
+            transform: "scale(0.38)", 
+            width: "210mm", 
+            height: "297mm" 
+          } : {}}
+        >
           <TemplateComponent
             data={data}
             theme={mergedTheme}

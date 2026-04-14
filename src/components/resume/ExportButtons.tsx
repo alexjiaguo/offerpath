@@ -39,7 +39,7 @@ export default function ExportButtons({
       {/* PDF Export */}
       <button
         onClick={exportPDF}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-200 text-gray-300 text-sm font-medium hover:text-white hover:bg-surface-300 transition-all"
+        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-200 text-zinc-300 dark:text-gray-700 dark:text-gray-300 text-sm font-medium hover:text-gray-900 dark:hover:text-white hover:bg-surface-300 transition-all"
         title="Export as PDF (opens print dialog)"
       >
         <FileText className="w-4 h-4" />
@@ -50,7 +50,7 @@ export default function ExportButtons({
       <button
         onClick={handleDocxExport}
         disabled={exportingDocx}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-200 text-gray-300 text-sm font-medium hover:text-white hover:bg-surface-300 transition-all disabled:opacity-50"
+        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-200 text-zinc-300 dark:text-gray-700 dark:text-gray-300 text-sm font-medium hover:text-gray-900 dark:hover:text-white hover:bg-surface-300 transition-all disabled:opacity-50"
         title="Export as DOCX"
       >
         {exportingDocx ? (

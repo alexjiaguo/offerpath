@@ -58,13 +58,13 @@ export default function InterviewPage() {
             <Brain className="w-7 h-7 text-brand-400" />
             Interview Prep
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-zinc-500 dark:text-gray-500">
             Prepare for interviews with AI-powered research, question banks, and mock sessions.
           </p>
         </div>
         <Link
           href="/dashboard/interview/stories"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-200 text-gray-300 text-sm font-medium hover:text-white hover:bg-surface-300 transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-200 text-zinc-700 dark:text-gray-300 text-sm font-medium hover:text-white hover:bg-surface-300 transition-all"
         >
           <Library className="w-4 h-4" />
           Story Bank ({stories.length})
@@ -102,7 +102,7 @@ export default function InterviewPage() {
           <div key={stat.label} className="glass rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <stat.icon className={cn("w-4 h-4", stat.color)} />
-              <span className="text-xs text-gray-500">{stat.label}</span>
+              <span className="text-xs text-zinc-500 dark:text-gray-500">{stat.label}</span>
             </div>
             <p className="text-2xl font-bold">{stat.value}</p>
           </div>
@@ -131,7 +131,7 @@ export default function InterviewPage() {
                     <p className="text-sm font-semibold group-hover:text-brand-300 transition-colors">
                       {job.title}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-zinc-500 dark:text-gray-500">
                       {job.company?.name} · {job.status}
                     </p>
                   </div>
@@ -154,8 +154,8 @@ export default function InterviewPage() {
         </h2>
         {jobsWithPrep.length === 0 ? (
           <div className="glass rounded-2xl p-8 text-center">
-            <Brain className="w-10 h-10 text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm mb-4">
+            <Brain className="w-10 h-10 text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
+            <p className="text-zinc-500 dark:text-gray-500 text-sm mb-4">
               No prep packages yet. Move jobs to &quot;Applied&quot; or &quot;Interviewing&quot; and generate a prep package.
             </p>
             <Link
@@ -189,13 +189,13 @@ export default function InterviewPage() {
                         <p className="text-sm font-semibold group-hover:text-brand-300 transition-colors">
                           {job.title}
                         </p>
-                        <p className="text-xs text-gray-500">{job.company?.name}</p>
+                        <p className="text-xs text-zinc-500 dark:text-gray-500">{job.company?.name}</p>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-brand-400 transition-colors" />
+                    <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-gray-600 group-hover:text-brand-400 transition-colors" />
                   </div>
 
-                  <div className="flex items-center gap-3 text-xs text-gray-500">
+                  <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-gray-500">
                     {prep && (
                       <span className="flex items-center gap-1">
                         <Brain className="w-3 h-3" />
@@ -251,7 +251,7 @@ export default function InterviewPage() {
                         {mockJob ? mockJob.title : "Mock Interview"}
                         {mockJob?.company?.name && ` · ${mockJob.company.name}`}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-zinc-500 dark:text-gray-500">
                         {new Date(mock.created_at).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
@@ -266,7 +266,7 @@ export default function InterviewPage() {
                       <p className="text-lg font-bold text-brand-400">
                         {mock.score.toFixed(1)}
                       </p>
-                      <p className="text-[10px] text-gray-600">score</p>
+                      <p className="text-[10px] text-zinc-400 dark:text-gray-600">score</p>
                     </div>
                   )}
                 </Link>

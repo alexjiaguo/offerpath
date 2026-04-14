@@ -112,7 +112,7 @@ export default function SettingsPage() {
               {profile.fullName.charAt(0)}
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-300">
+              <p className="text-sm font-medium text-zinc-700 dark:text-gray-300">
                 Profile Photo
               </p>
               <button className="text-xs text-brand-400 hover:text-brand-300 mt-1 transition-colors">
@@ -123,25 +123,25 @@ export default function SettingsPage() {
 
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                 Full Name
               </label>
               <input
                 type="text"
                 value={profile.fullName}
                 onChange={(e) => updateProfile({ fullName: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                 Email
               </label>
               <input
                 type="email"
                 value={profile.email}
                 onChange={(e) => updateProfile({ email: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
               />
             </div>
           </div>
@@ -155,14 +155,14 @@ export default function SettingsPage() {
               Professional Background
             </h2>
           </div>
-          <p className="text-xs text-gray-500 mb-5">
+          <p className="text-xs text-zinc-500 dark:text-gray-500 mb-5">
             This information is used as ground truth for AI resume tailoring,
             job matching, and interview prep generation.
           </p>
 
           {/* Resume Upload Dropzone */}
           <div className="mb-6">
-            <label className="block text-xs font-medium text-gray-400 mb-2">
+            <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-2">
               Resume / CV File
             </label>
 
@@ -175,18 +175,18 @@ export default function SettingsPage() {
                       <FileText className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-200">
+                      <p className="text-sm font-medium text-zinc-800 dark:text-gray-200">
                         {uploadedResume.fileName}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-gray-500">
+                        <span className="text-[10px] text-zinc-500 dark:text-gray-500">
                           {(uploadedResume.fileSize / 1024).toFixed(1)} KB
                         </span>
                         <span className="text-[10px] text-emerald-400 flex items-center gap-0.5">
                           <CheckCircle className="w-3 h-3" /> Parsed
                           successfully
                         </span>
-                        <span className="text-[10px] text-gray-600">
+                        <span className="text-[10px] text-zinc-400 dark:text-gray-600">
                           {new Date(
                             uploadedResume.uploadedAt
                           ).toLocaleDateString("en-US", {
@@ -206,7 +206,7 @@ export default function SettingsPage() {
                     </button>
                     <button
                       onClick={clearResume}
-                      className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                      className="p-1.5 rounded-lg text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -215,10 +215,10 @@ export default function SettingsPage() {
 
                 {/* Parsed preview */}
                 <details className="mt-3 group">
-                  <summary className="text-[10px] text-gray-500 cursor-pointer hover:text-gray-300 transition-colors">
+                  <summary className="text-[10px] text-zinc-500 dark:text-gray-500 cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 transition-colors">
                     View parsed content →
                   </summary>
-                  <div className="mt-2 p-3 rounded-lg bg-surface-200/30 text-xs text-gray-400 leading-relaxed max-h-48 overflow-y-auto whitespace-pre-wrap font-mono">
+                  <div className="mt-2 p-3 rounded-lg bg-surface-200/30 text-xs text-zinc-600 dark:text-gray-400 leading-relaxed max-h-48 overflow-y-auto whitespace-pre-wrap font-mono">
                     {uploadedResume.parsedText}
                   </div>
                 </details>
@@ -243,19 +243,19 @@ export default function SettingsPage() {
                 {uploading ? (
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-8 h-8 border-2 border-brand-400 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-sm text-gray-400">Parsing resume...</p>
+                    <p className="text-sm text-zinc-600 dark:text-gray-400">Parsing resume...</p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-surface-200 flex items-center justify-center">
-                      <Upload className="w-6 h-6 text-gray-500" />
+                      <Upload className="w-6 h-6 text-zinc-500 dark:text-gray-500" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-300">
+                      <p className="text-sm font-medium text-zinc-700 dark:text-gray-300">
                         Drop your resume here or{" "}
                         <span className="text-brand-400">browse</span>
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">
+                      <p className="text-xs text-zinc-400 dark:text-gray-600 mt-1">
                         PDF, DOCX, or TXT · Max 10 MB
                       </p>
                     </div>
@@ -279,7 +279,7 @@ export default function SettingsPage() {
           {/* Professional info fields */}
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                 Headline
               </label>
               <input
@@ -289,13 +289,13 @@ export default function SettingsPage() {
                   updateProfile({ headline: e.target.value })
                 }
                 placeholder="e.g. Senior Product Manager | Ad Tech & AI"
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
               />
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                   Current Title
                 </label>
                 <input
@@ -304,11 +304,11 @@ export default function SettingsPage() {
                   onChange={(e) =>
                     updateProfile({ currentTitle: e.target.value })
                   }
-                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                   Current Company
                 </label>
                 <input
@@ -317,14 +317,14 @@ export default function SettingsPage() {
                   onChange={(e) =>
                     updateProfile({ currentCompany: e.target.value })
                   }
-                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                   Years of Experience
                 </label>
                 <input
@@ -333,11 +333,11 @@ export default function SettingsPage() {
                   onChange={(e) =>
                     updateProfile({ yearsOfExperience: e.target.value })
                   }
-                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                   Work Authorization
                 </label>
                 <input
@@ -347,13 +347,13 @@ export default function SettingsPage() {
                     updateProfile({ workAuthorization: e.target.value })
                   }
                   placeholder="e.g. US Citizen, H-1B, Singapore PR"
-                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                 Target Role Summary
               </label>
               <textarea
@@ -363,13 +363,13 @@ export default function SettingsPage() {
                 }
                 rows={3}
                 placeholder="Describe the type of roles you're targeting..."
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
               />
             </div>
 
             {/* Key Skills */}
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                 Key Skills
               </label>
               <div className="flex flex-wrap gap-1.5 mb-2">
@@ -397,13 +397,13 @@ export default function SettingsPage() {
                     if (e.key === "Enter") handleSkillAdd();
                   }}
                   placeholder="Add skill and press Enter"
-                  className="flex-1 px-3 py-2 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+                  className="flex-1 px-3 py-2 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                 Career Goals
               </label>
               <textarea
@@ -412,7 +412,7 @@ export default function SettingsPage() {
                   updateProfile({ careerGoals: e.target.value })
                 }
                 rows={2}
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
               />
             </div>
           </div>
@@ -420,9 +420,9 @@ export default function SettingsPage() {
           {/* Info banner */}
           <div className="mt-5 flex items-start gap-2.5 p-3 rounded-xl bg-brand-500/5 border border-brand-500/10">
             <Sparkles className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-gray-400 leading-relaxed">
+            <p className="text-xs text-zinc-600 dark:text-gray-400 leading-relaxed">
               Your professional background and uploaded resume are used as{" "}
-              <span className="text-gray-300 font-medium">ground truth</span>{" "}
+              <span className="text-zinc-700 dark:text-gray-300 font-medium">ground truth</span>{" "}
               for AI-powered resume tailoring, job matching scores, and
               personalized interview prep generation.
             </p>
@@ -459,7 +459,7 @@ export default function SettingsPage() {
               >
                 <div>
                   <p className="text-sm font-medium">{item.label}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <p className="text-xs text-zinc-500 dark:text-gray-500 mt-0.5">
                     {item.description}
                   </p>
                 </div>
@@ -491,13 +491,13 @@ export default function SettingsPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
                 Default Resume Template
               </label>
               <select
                 value={defaultTemplate}
                 onChange={(e) => setDefaultTemplate(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all appearance-none cursor-pointer"
+                className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all appearance-none cursor-pointer"
               >
                 <option value="modern">Modern</option>
                 <option value="professional">Professional</option>
@@ -509,10 +509,10 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.02] transition-all">
               <div className="flex items-center gap-3">
-                <Moon className="w-4 h-4 text-gray-400" />
+                <Moon className="w-4 h-4 text-zinc-600 dark:text-gray-400" />
                 <div>
                   <p className="text-sm font-medium">Dark Mode</p>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <p className="text-xs text-zinc-500 dark:text-gray-500 mt-0.5">
                     Currently active
                   </p>
                 </div>
@@ -529,7 +529,7 @@ export default function SettingsPage() {
           <h2 className="text-base font-semibold text-red-400 mb-3">
             Danger Zone
           </h2>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-zinc-500 dark:text-gray-500 mb-4">
             Once you delete your account, there is no going back.
           </p>
           <button className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium hover:bg-red-500/20 transition-all">

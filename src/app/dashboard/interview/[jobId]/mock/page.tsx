@@ -87,7 +87,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
         <div className="flex items-center gap-3">
           <Link
             href={`/dashboard/interview/${jobId}`}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.04] transition-all"
+            className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -97,7 +97,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
               Mock Interview
             </h1>
             {job && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-zinc-500 dark:text-gray-500">
                 {job.title} · {job.company?.name}
               </p>
             )}
@@ -123,7 +123,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
               <MessageSquare className="w-8 h-8 text-brand-400" />
             </div>
             <h2 className="text-xl font-semibold mb-2">Ready for Practice?</h2>
-            <p className="text-sm text-gray-500 mb-8 leading-relaxed">
+            <p className="text-sm text-zinc-500 dark:text-gray-500 mb-8 leading-relaxed">
               The AI interviewer will ask you questions based on the job description.
               Type your answers naturally — you&apos;ll receive a detailed scorecard
               when you end the session.
@@ -143,11 +143,11 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
           {/* Overall Score */}
           <div className="glass rounded-2xl p-8 text-center">
             <Trophy className="w-10 h-10 text-amber-400 mx-auto mb-4" />
-            <p className="text-sm text-gray-500 mb-1">Overall Score</p>
+            <p className="text-sm text-zinc-500 dark:text-gray-500 mb-1">Overall Score</p>
             <p className="text-5xl font-bold gradient-text mb-2">
               {session.feedback.overall_score.toFixed(1)}
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-zinc-500 dark:text-gray-500">
               out of 5.0
               {session.duration_seconds && (
                 <span className="ml-2 inline-flex items-center gap-1">
@@ -169,7 +169,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
                 {Object.entries(session.feedback.category_scores).map(([category, score]) => (
                   <div key={category}>
                     <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-gray-400">{category}</span>
+                      <span className="text-zinc-600 dark:text-gray-400">{category}</span>
                       <span className="font-medium">{(score as number).toFixed(1)}</span>
                     </div>
                     <div className="h-2 rounded-full bg-surface-200 overflow-hidden">
@@ -193,7 +193,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
               </div>
               <ul className="space-y-2">
                 {session.feedback.strengths.map((s, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                  <li key={i} className="flex items-start gap-2 text-sm text-zinc-700 dark:text-gray-300">
                     <span className="text-emerald-400 mt-0.5">✓</span>
                     {s}
                   </li>
@@ -207,7 +207,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
               </div>
               <ul className="space-y-2">
                 {session.feedback.improvements.map((s, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                  <li key={i} className="flex items-start gap-2 text-sm text-zinc-700 dark:text-gray-300">
                     <span className="text-amber-400 mt-0.5">→</span>
                     {s}
                   </li>
@@ -224,7 +224,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
             </div>
             <ul className="space-y-2">
               {session.feedback.tips.map((tip, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                <li key={i} className="flex items-start gap-2 text-sm text-zinc-700 dark:text-gray-300">
                   <Lightbulb className="w-3.5 h-3.5 text-brand-400 mt-0.5 flex-shrink-0" />
                   {tip}
                 </li>
@@ -260,14 +260,14 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
                   className={cn(
                     "max-w-[85%] rounded-2xl px-4 py-3",
                     msg.role === "candidate"
-                      ? "bg-brand-600/30 border border-brand-500/20 text-gray-100"
-                      : "glass text-gray-200"
+                      ? "bg-brand-600/30 border border-brand-500/20 text-zinc-900 dark:text-gray-100"
+                      : "glass text-zinc-800 dark:text-gray-200"
                   )}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className={cn(
                       "text-[10px] font-semibold uppercase tracking-wider",
-                      msg.role === "candidate" ? "text-brand-300" : "text-gray-500"
+                      msg.role === "candidate" ? "text-brand-300" : "text-zinc-500 dark:text-gray-500"
                     )}>
                       {msg.role === "candidate" ? "You" : "Interviewer"}
                     </span>
@@ -301,7 +301,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
               onKeyDown={handleKeyDown}
               placeholder="Type your answer…"
               rows={2}
-              className="flex-1 bg-transparent text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none resize-none"
+              className="flex-1 bg-transparent text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none resize-none"
             />
             <button
               onClick={handleSend}

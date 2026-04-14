@@ -44,7 +44,7 @@ export default function DiscoverJobDetailPage({
     return (
       <div className="max-w-4xl mx-auto animate-fade-in p-8 text-center">
         <h1 className="text-xl font-bold mb-2">Job Not Found</h1>
-        <p className="text-gray-500 text-sm mb-4">This job listing may have been removed.</p>
+        <p className="text-zinc-500 dark:text-gray-500 text-sm mb-4">This job listing may have been removed.</p>
         <Link href="/dashboard/discover" className="text-brand-400 hover:text-brand-300 text-sm">
           ← Back to Discovery
         </Link>
@@ -59,7 +59,7 @@ export default function DiscoverJobDetailPage({
     job.match_score >= 90 ? "text-emerald-400" :
     job.match_score >= 80 ? "text-blue-400" :
     job.match_score >= 70 ? "text-amber-400" :
-    "text-gray-400";
+    "text-zinc-600 dark:text-gray-400";
 
   const scoreBg =
     job.match_score >= 90 ? "from-emerald-500/20 to-emerald-500/5" :
@@ -72,7 +72,7 @@ export default function DiscoverJobDetailPage({
       {/* Nav */}
       <Link
         href="/dashboard/discover"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors mb-5"
+        className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors mb-5"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Discovery
@@ -90,10 +90,10 @@ export default function DiscoverJobDetailPage({
               )}>
                 {job.source === "career_page" ? "Career Page" : "Web Search"}
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-200 text-gray-400 font-medium">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-200 text-zinc-600 dark:text-gray-400 font-medium">
                 {job.type}
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-200 text-gray-400 font-medium flex items-center gap-1">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-200 text-zinc-600 dark:text-gray-400 font-medium flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 Posted {new Date(job.posted_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </span>
@@ -101,8 +101,8 @@ export default function DiscoverJobDetailPage({
 
             <h1 className="text-2xl font-bold mb-1">{job.title}</h1>
 
-            <div className="flex items-center gap-4 text-sm text-gray-400 flex-wrap mt-2">
-              <span className="flex items-center gap-1.5 font-medium text-gray-300">
+            <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-gray-400 flex-wrap mt-2">
+              <span className="flex items-center gap-1.5 font-medium text-zinc-700 dark:text-gray-300">
                 <Building2 className="w-4 h-4" /> {job.company_name}
               </span>
               <span className="flex items-center gap-1.5">
@@ -127,7 +127,7 @@ export default function DiscoverJobDetailPage({
           )}>
             <Target className={cn("w-5 h-5 mb-1", scoreColor)} />
             <div className={cn("text-2xl font-bold", scoreColor)}>{job.match_score}%</div>
-            <div className="text-[9px] text-gray-500 uppercase">Match</div>
+            <div className="text-[9px] text-zinc-500 dark:text-gray-500 uppercase">Match</div>
           </div>
         </div>
 
@@ -139,7 +139,7 @@ export default function DiscoverJobDetailPage({
               "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
               job.saved
                 ? "bg-brand-500/10 text-brand-400"
-                : "bg-surface-200 text-gray-400 hover:text-brand-400 hover:bg-brand-500/10"
+                : "bg-surface-200 text-zinc-600 dark:text-gray-400 hover:text-brand-400 hover:bg-brand-500/10"
             )}
           >
             {job.saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
@@ -149,7 +149,7 @@ export default function DiscoverJobDetailPage({
             href={job.url}
             target="_blank"
             rel="noopener"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-surface-200 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-surface-200 text-zinc-600 dark:text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
           >
             <ExternalLink className="w-4 h-4" /> View Original
           </a>
@@ -171,7 +171,7 @@ export default function DiscoverJobDetailPage({
               <Briefcase className="w-4 h-4 text-brand-400" />
               Job Description
             </h2>
-            <p className="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-zinc-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">
               {job.description}
             </p>
           </div>
@@ -185,7 +185,7 @@ export default function DiscoverJobDetailPage({
               </h2>
               <ul className="space-y-2">
                 {job.requirements.map((req, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                  <li key={i} className="flex items-start gap-2 text-sm text-zinc-600 dark:text-gray-400">
                     <ChevronRight className="w-3.5 h-3.5 text-brand-400 mt-0.5 flex-shrink-0" />
                     {req}
                   </li>
@@ -224,10 +224,10 @@ export default function DiscoverJobDetailPage({
                   <span className="text-2xl">{company.logo_emoji}</span>
                   <div>
                     <div className="font-medium text-sm">{company.name}</div>
-                    <div className="text-gray-500">{company.industry}</div>
+                    <div className="text-zinc-500 dark:text-gray-500">{company.industry}</div>
                   </div>
                 </div>
-                <div className="space-y-1.5 text-gray-400">
+                <div className="space-y-1.5 text-zinc-600 dark:text-gray-400">
                   <div className="flex items-center gap-2"><MapPin className="w-3 h-3" /> {company.hq}</div>
                   <div className="flex items-center gap-2"><Briefcase className="w-3 h-3" /> {company.employee_count} employees</div>
                   <div className="flex items-center gap-2">
@@ -241,10 +241,10 @@ export default function DiscoverJobDetailPage({
                     )}>{company.match_score}% match</span>
                   </div>
                 </div>
-                <p className="text-gray-500 leading-relaxed">{company.notes}</p>
+                <p className="text-zinc-500 dark:text-gray-500 leading-relaxed">{company.notes}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {company.tags.map((tag) => (
-                    <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-surface-200 text-gray-400">{tag}</span>
+                    <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-surface-200 text-zinc-600 dark:text-gray-400">{tag}</span>
                   ))}
                 </div>
                 <a
@@ -273,7 +273,7 @@ export default function DiscoverJobDetailPage({
                     className="block p-3 rounded-lg bg-surface-200/50 hover:bg-surface-200 transition-all group/related"
                   >
                     <div className="text-xs font-medium group-hover/related:text-brand-400 transition-colors">{rj.title}</div>
-                    <div className="flex items-center gap-2 text-[10px] text-gray-500 mt-1">
+                    <div className="flex items-center gap-2 text-[10px] text-zinc-500 dark:text-gray-500 mt-1">
                       <span>{rj.location}</span>
                       <span className={cn(
                         "font-bold",
@@ -294,7 +294,7 @@ export default function DiscoverJobDetailPage({
               <Sparkles className="w-4 h-4 text-brand-400" />
               Tailor Your Resume
             </h3>
-            <p className="text-xs text-gray-500 mb-3">
+            <p className="text-xs text-zinc-500 dark:text-gray-500 mb-3">
               Create a tailored resume for this role to maximize your ATS score.
             </p>
             <Link
