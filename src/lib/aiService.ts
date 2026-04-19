@@ -7,6 +7,14 @@
 
 import type { ResumeData, ExperienceEntry, Story } from "@/types";
 
+import DOMPurify from 'dompurify';
+
+const SANITIZE_ALLOWED_TAGS = ['strong', 'em', 'u', 'b', 'i', 'br', 'span', 'mark'];
+
+function sanitizeHtml(text: string): string {
+  return DOMPurify.sanitize(text, { ALLOWED_TAGS: SANITIZE_ALLOWED_TAGS, ALLOWED_ATTR: [] });
+}
+
 // ── Types ───────────────────────────────────────────
 
 export interface TailorRequest {
@@ -146,7 +154,7 @@ export async function tailorResume(req: TailorRequest): Promise<TailorResult> {
         keywords.includes("AI") &&
         bullet.toLowerCase().includes("ml")
       ) {
-        return bullet.replace("ML-powered", "<strong>AI/ML-powered</strong>");
+        return sanitizeHtml(bullet.replace("ML-powered", "<strong>AI/ML-powered</strong>"));
       }
       if (
         req.companyName &&
@@ -300,7 +308,7 @@ ${keywords.map((kw, i) => `${i + 1}. **${kw.charAt(0).toUpperCase() + kw.slice(1
 
 // ── Story Extraction ──────────────────────────────────
 
-export async function extractStoriesFromFile(text: string): Promise<Partial<Story>[]> {
+export async function extractStoriesFromFile(_text: string): Promise<Partial<Story>[]> {
   // Simulate AI processing time
   await delay(2500 + Math.random() * 1000);
 

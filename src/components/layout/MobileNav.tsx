@@ -3,87 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import {
-  Menu,
-  X,
-  Target,
-  LayoutDashboard,
-  FileText,
-  Kanban,
-  MessageSquare,
-  Settings,
-  CreditCard,
-  Key,
-  BarChart3,
-  Library,
-  Brain,
-  Compass,
-} from "lucide-react";
+import { BsBullseye, BsList, BsX } from 'react-icons/bs';
 import { cn } from "@/lib/utils";
+import { NAV_ITEMS } from "@/lib/navConfig";
 
 /* ═══════════════════════════════════════════════════
    MobileNav — Hamburger drawer for small screens
    ═══════════════════════════════════════════════════ */
-
-interface NavSubItem {
-  label: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
-
-interface NavItemDef {
-  label: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  subItems?: NavSubItem[];
-}
-
-interface NavSection {
-  section: string;
-  items: NavItemDef[];
-}
-
-const NAV_ITEMS: NavSection[] = [
-  {
-    section: "Overview",
-    items: [
-      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    ],
-  },
-  {
-    section: "Modules",
-    items: [
-      {
-        label: "Pipeline",
-        href: "/dashboard/pipeline",
-        icon: Kanban,
-        subItems: [
-          { label: "Board", href: "/dashboard/pipeline", icon: Kanban },
-          { label: "Analytics", href: "/dashboard/pipeline/analytics", icon: BarChart3 },
-        ],
-      },
-      { label: "Resumes", href: "/dashboard/resume", icon: FileText },
-      { label: "Discover", href: "/dashboard/discover", icon: Compass },
-      {
-        label: "Interview Prep",
-        href: "/dashboard/interview",
-        icon: MessageSquare,
-        subItems: [
-          { label: "Overview", href: "/dashboard/interview", icon: Brain },
-          { label: "Stories", href: "/dashboard/interview/stories", icon: Library },
-        ],
-      },
-    ],
-  },
-  {
-    section: "Account",
-    items: [
-      { label: "Settings", href: "/dashboard/settings", icon: Settings },
-      { label: "Billing", href: "/dashboard/settings/billing", icon: CreditCard },
-      { label: "API Keys", href: "/dashboard/settings/api-keys", icon: Key },
-    ],
-  },
-];
 
 export default function MobileNav() {
   const pathname = usePathname();
@@ -111,10 +37,10 @@ export default function MobileNav() {
       {/* Hamburger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="md:hidden p-2 rounded-lg text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04] transition-all"
+        className="md:hidden p-2 rounded-lg text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04] transition-all"
         aria-label="Open navigation menu"
       >
-        <Menu className="w-5 h-5" />
+        <BsList className="w-5 h-5" />
       </button>
 
       {/* Backdrop */}
@@ -140,7 +66,7 @@ export default function MobileNav() {
             onClick={() => setIsOpen(false)}
           >
             <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
-              <Target className="w-4 h-4 text-zinc-900 dark:text-white" />
+              <BsBullseye className="w-4 h-4 text-zinc-900 dark:text-white" />
             </div>
             <span className="text-base font-bold tracking-tight">
               Offer<span className="gradient-text">Path</span>
@@ -148,9 +74,9 @@ export default function MobileNav() {
           </Link>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all"
+            className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all"
           >
-            <X className="w-5 h-5" />
+            <BsX className="w-5 h-5" />
           </button>
         </div>
 
@@ -176,7 +102,7 @@ export default function MobileNav() {
                           "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all",
                           isActive
                             ? "bg-brand-500/10 text-brand-300"
-                            : "text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04]"
+                            : "text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04]"
                         )}
                       >
                         <item.icon
@@ -201,10 +127,10 @@ export default function MobileNav() {
                                     "flex items-center gap-2 px-2 py-2 rounded-md text-xs font-medium transition-all",
                                     subActive
                                       ? "text-brand-300"
-                                      : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
+                                      : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300"
                                   )}
                                 >
-                                  <sub.icon className="w-3 h-3" />
+                                  {sub.icon && <sub.icon className="w-3 h-3" />}
                                   {sub.label}
                                 </Link>
                               </li>

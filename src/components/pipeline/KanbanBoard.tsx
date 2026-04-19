@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -23,8 +23,18 @@ import type { Job, JobStatus } from "@/types";
    ═══════════════════════════════════════════════════ */
 
 export default function KanbanBoard() {
-  const { getJobsByStatus, moveJob, setAddJobDialogOpen } = usePipelineStore();
+  const { getJobsByStatus, moveJob, setAddJobDialogOpen, jobs, filters } = usePipelineStore();
   const [activeJob, setActiveJob] = useState<Job | null>(null);
+
+  // Memoize column jobs to prevent unnecessary re-renders
+  const columnJobs = useMemo(() => {
+    const result: Record<string, Job[]> = {};
+    for (const col of KANBAN_COLUMNS) {
+      result[col.id] = getJobsByStatus(col.id);
+    }
+    return result;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobs, filters, getJobsByStatus]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -91,7 +101,7 @@ export default function KanbanBoard() {
           <KanbanColumn
             key={col.id}
             config={col}
-            jobs={getJobsByStatus(col.id)}
+            jobs={columnJobs[col.id] || []}
             onAddClick={col.id === "new" ? () => setAddJobDialogOpen(true) : undefined}
           />
         ))}

@@ -2,16 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Loader2,
-  Target,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  ChevronDown,
-  ChevronUp,
-  Sparkles,
-} from "lucide-react";
+import { BsArrowRepeat, BsBullseye, BsCheckCircleFill, BsChevronDown, BsChevronUp, BsExclamationTriangle, BsStars, BsXCircle } from 'react-icons/bs';
 import type { ResumeData } from "@/types";
 import { cn } from "@/lib/utils";
 import { evaluateATS } from "@/lib/aiService";
@@ -74,11 +65,11 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-            <Target className="w-4.5 h-4.5 text-brand-400" />
+            <BsBullseye className="w-4.5 h-4.5 text-brand-400" />
           </div>
           <span className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white">ATS Intelligence</span>
         </div>
-        {isExpanded ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-500" />}
+        {isExpanded ? <BsChevronUp className="w-4 h-4 text-zinc-500" /> : <BsChevronDown className="w-4 h-4 text-zinc-500" />}
       </button>
 
       <AnimatePresence>
@@ -108,9 +99,9 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
                     className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all disabled:opacity-50"
                   >
                     {loading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <BsArrowRepeat className="w-4 h-4 animate-spin" />
                     ) : (
-                      <Sparkles className="w-4 h-4" />
+                      <BsStars className="w-4 h-4" />
                     )}
                     {loading ? "Scanning Protocols..." : "Initialize Analysis"}
                   </button>
@@ -165,7 +156,7 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Matched
+                        <BsCheckCircleFill className="w-3.5 h-3.5" /> Matched
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {result.matchedKeywords.map((kw, i) => (
@@ -177,7 +168,7 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
                     </div>
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-[10px] font-bold text-red-400 uppercase tracking-widest">
-                        <XCircle className="w-3.5 h-3.5" /> Missing
+                        <BsXCircle className="w-3.5 h-3.5" /> Missing
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {result.missingKeywords.map((kw, i) => (
@@ -192,7 +183,7 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
                   {/* Feedback */}
                   <div className="space-y-3">
                     <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                      <AlertTriangle className="w-3.5 h-3.5" /> System Suggestions
+                      <BsExclamationTriangle className="w-3.5 h-3.5" /> System Suggestions
                     </div>
                     <div className="space-y-2">
                       {result.feedback.map((fb, i) => (

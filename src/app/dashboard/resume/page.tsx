@@ -2,19 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {
-  FileText,
-  Plus,
-  Sparkles,
-  ArrowLeft,
-  Briefcase,
-  MapPin,
-  Copy,
-  Crown,
-  ChevronRight,
-  Clock,
-  Upload,
-} from "lucide-react";
+import { BsArrowLeft, BsBriefcase, BsChevronRight, BsClock, BsCopy, BsFileEarmarkText, BsGeoAlt, BsPlus, BsStarFill, BsStars, BsUpload } from 'react-icons/bs';
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
 import { cn } from "@/lib/utils";
@@ -93,7 +81,7 @@ function ResumePageContent() {
             href={`/dashboard/pipeline/${tailorJob.id}`}
             className="inline-flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest group"
           >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <BsArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Abort Tailoring
           </Link>
 
@@ -105,13 +93,13 @@ function ResumePageContent() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4 text-brand-400" />
+                  <BsStars className="w-4 h-4 text-brand-400" />
                   <span className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.2em]">Synthesis Protocol Active</span>
                 </div>
                 <h2 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{tailorJob.title}</h2>
                 <div className="flex items-center gap-4 text-[11px] font-bold text-zinc-500 uppercase tracking-widest mt-2">
-                  <span className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" /> {tailorJob.company?.name}</span>
-                  {tailorJob.location && <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> {tailorJob.location}</span>}
+                  <span className="flex items-center gap-1.5"><BsBriefcase className="w-3.5 h-3.5" /> {tailorJob.company?.name}</span>
+                  {tailorJob.location && <span className="flex items-center gap-1.5"><BsGeoAlt className="w-3.5 h-3.5" /> {tailorJob.location}</span>}
                 </div>
               </div>
             </div>
@@ -140,14 +128,14 @@ function ResumePageContent() {
               href="/dashboard/resume/new"
               className="group flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-black/5 dark:bg-white/[0.03] border border-border text-zinc-600 dark:text-zinc-300 text-sm font-bold hover:bg-black/10 dark:hover:bg-white/[0.05] hover:text-zinc-900 dark:hover:text-white transition-all"
             >
-              <Upload className="w-5 h-5" />
+              <BsUpload className="w-5 h-5" />
               Ingest Node
             </Link>
             <Link
               href="/dashboard/resume/new"
               className="group flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-black text-sm font-bold hover:bg-black dark:hover:bg-zinc-100 transition-all shadow-xl shadow-black/5 dark:shadow-white/5"
             >
-              <Plus className="w-5 h-5" />
+              <BsPlus className="w-5 h-5" />
               Initialize Asset
             </Link>
           </div>
@@ -176,7 +164,7 @@ function ResumePageContent() {
                       "w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg transition-transform duration-500 group-hover:scale-110",
                       resume.is_base ? "bg-brand-500/10 border border-brand-500/20" : "bg-purple-500/10 border border-purple-500/20"
                     )}>
-                      <FileText className={cn("w-6 h-6", resume.is_base ? "text-brand-400" : "text-purple-400")} />
+                      <BsFileEarmarkText className={cn("w-6 h-6", resume.is_base ? "text-brand-400" : "text-purple-400")} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -190,7 +178,7 @@ function ResumePageContent() {
                           {resume.is_base ? "Protocol: Base" : "Protocol: Tailored"}
                         </span>
                         <span className="flex items-center gap-1 text-[9px] font-bold text-zinc-600 uppercase tracking-widest">
-                          <Clock className="w-3 h-3" />
+                          <BsClock className="w-3 h-3" />
                           {new Date(resume.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </span>
                       </div>
@@ -209,7 +197,7 @@ function ResumePageContent() {
                         onClick={() => handleUseAsBase(resume.id)}
                         className="flex-1 flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-black text-xs font-bold uppercase tracking-widest hover:bg-black dark:hover:bg-zinc-200 transition-all shadow-lg"
                       >
-                        <Copy className="w-4 h-4" />
+                        <BsCopy className="w-4 h-4" />
                         Select Base
                       </button>
                     ) : (
@@ -240,7 +228,7 @@ function ResumePageContent() {
       {!tailorJob && resumes.length === 0 && (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="liquid-glass rounded-[40px] p-16 text-center">
           <div className="w-20 h-20 rounded-[24px] bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mx-auto mb-8 animate-pulse">
-            <Sparkles className="w-10 h-10 text-brand-400" />
+            <BsStars className="w-10 h-10 text-brand-400" />
           </div>
           <h2 className="text-3xl font-bold text-zinc-900 dark:text-white font-display mb-4">Initialize Your First Asset</h2>
           <p className="text-zinc-500 text-lg font-light max-w-md mx-auto mb-10 leading-relaxed">
@@ -250,7 +238,7 @@ function ResumePageContent() {
             href="/dashboard/resume/new"
             className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest hover:bg-black dark:hover:bg-zinc-200 transition-all shadow-2xl shadow-black/5 dark:shadow-white/5"
           >
-            <Plus className="w-5 h-5" />
+            <BsPlus className="w-5 h-5" />
             Begin Initialization
           </Link>
         </motion.div>
@@ -282,7 +270,7 @@ function ResumePageContent() {
                 >
                   {tmpl.pro && (
                     <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500 text-black shadow-lg">
-                      <Crown className="w-3 h-3" />
+                      <BsStarFill className="w-3 h-3" />
                       <span className="text-[9px] font-black uppercase tracking-tighter">Elite</span>
                     </div>
                   )}
@@ -303,7 +291,7 @@ function ResumePageContent() {
                   
                   <div className="mt-4 pt-4 border-t border-border flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
                     <span className="text-[10px] font-bold text-brand-400 uppercase tracking-widest">Deploy layout</span>
-                    <ChevronRight className="w-4 h-4 text-brand-400" />
+                    <BsChevronRight className="w-4 h-4 text-brand-400" />
                   </div>
                 </Link>
               </motion.div>

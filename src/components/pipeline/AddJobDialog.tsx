@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Sparkles, Link2, FileText, Loader2 } from "lucide-react";
+import { BsArrowRepeat, BsFileEarmarkText, BsLink45Deg, BsStars, BsX } from 'react-icons/bs';
 import { cn } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
 import type { JobEvaluation } from "@/types";
@@ -102,6 +102,10 @@ export default function AddJobDialog() {
 
   const handleSubmit = () => {
     if (!title.trim()) return;
+    if (url.trim() && !/^https?:\/\/.+/.test(url.trim())) {
+      alert("Please enter a valid URL starting with http:// or https://");
+      return;
+    }
 
     // Find or create company reference
     const existingCompany = companies.find(
@@ -155,7 +159,7 @@ export default function AddJobDialog() {
               onClick={handleClose}
               className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.06] transition-all"
             >
-              <X className="w-5 h-5" />
+              <BsX className="w-5 h-5" />
             </button>
           </div>
 
@@ -171,7 +175,7 @@ export default function AddJobDialog() {
                     : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300"
                 )}
               >
-                <Link2 className="w-3.5 h-3.5" />
+                <BsLink45Deg className="w-3.5 h-3.5" />
                 Paste URL
               </button>
               <button
@@ -183,7 +187,7 @@ export default function AddJobDialog() {
                     : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300"
                 )}
               >
-                <FileText className="w-3.5 h-3.5" />
+                <BsFileEarmarkText className="w-3.5 h-3.5" />
                 Paste JD
               </button>
             </div>
@@ -279,7 +283,7 @@ export default function AddJobDialog() {
             {evaluated && evaluation && (
               <div className="rounded-xl border border-white/[0.08] bg-surface-100/50 p-4 animate-scale-in">
                 <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="w-4 h-4 text-brand-400" />
+                  <BsStars className="w-4 h-4 text-brand-400" />
                   <span className="text-sm font-medium">AI Evaluation</span>
                 </div>
                 <div className="flex items-center gap-4 mb-2">
@@ -321,9 +325,9 @@ export default function AddJobDialog() {
               )}
             >
               {isEvaluating ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <BsArrowRepeat className="w-4 h-4 animate-spin" />
               ) : (
-                <Sparkles className="w-4 h-4" />
+                <BsStars className="w-4 h-4" />
               )}
               {isEvaluating ? "Evaluating…" : evaluated ? "Re-evaluate" : "Evaluate with AI"}
             </button>

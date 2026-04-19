@@ -2,84 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Target,
-  LayoutDashboard,
-  FileText,
-  Kanban,
-  MessageSquare,
-  Settings,
-  CreditCard,
-  Key,
-  ChevronLeft,
-  ChevronRight,
-  BarChart3,
-  Library,
-  Brain,
-  Compass,
-} from "lucide-react";
+import { BsBullseye, BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface NavSubItem {
-  label: string;
-  href: string;
-}
-
-interface NavItemDef {
-  label: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  subItems?: NavSubItem[];
-}
-
-interface NavSection {
-  section: string;
-  items: NavItemDef[];
-}
-
-const NAV_ITEMS: NavSection[] = [
-  {
-    section: "Overview",
-    items: [
-      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    ],
-  },
-  {
-    section: "Modules",
-    items: [
-      {
-        label: "Job Tracker",
-        href: "/dashboard/pipeline",
-        icon: Kanban,
-        subItems: [
-          { label: "Board", href: "/dashboard/pipeline" },
-          { label: "Analytics", href: "/dashboard/pipeline/analytics" },
-        ],
-      },
-      { label: "Resume Studio", href: "/dashboard/resume", icon: FileText },
-      { label: "Job Search", href: "/dashboard/discover", icon: Compass },
-      {
-        label: "Interview Simulator",
-        href: "/dashboard/interview",
-        icon: MessageSquare,
-        subItems: [
-          { label: "Overview", href: "/dashboard/interview" },
-          { label: "Stories", href: "/dashboard/interview/stories" },
-        ],
-      },
-    ],
-  },
-  {
-    section: "Account",
-    items: [
-      { label: "Settings", href: "/dashboard/settings", icon: Settings },
-      { label: "Billing & Plans", href: "/dashboard/settings/billing", icon: CreditCard },
-      { label: "API Configuration", href: "/dashboard/settings/api-keys", icon: Key },
-    ],
-  },
-];
+import { NAV_ITEMS } from "@/lib/navConfig";
+import type { NavItemDef, NavSection } from "@/lib/navConfig";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -99,10 +27,10 @@ export default function Sidebar() {
       <div className="absolute inset-0 bg-mesh-purple opacity-[0.05] pointer-events-none" />
 
       {/* Logo */}
-      <div className="h-20 flex items-center px-6 border-b border-white/[0.03] relative z-10">
+      <div className="h-20 flex items-center px-6 border-b border-zinc-200 dark:border-white/[0.03] relative z-10">
         <Link href="/dashboard" className="flex items-center gap-3.5 overflow-hidden group">
           <div className="w-10 h-10 rounded-xl gradient-futuristic flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform duration-500">
-            <Target className="w-5.5 h-5.5 text-zinc-900 dark:text-white" />
+            <BsBullseye className="w-5.5 h-5.5 text-zinc-900 dark:text-white" />
           </div>
           {!collapsed && (
             <motion.span 
@@ -117,7 +45,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-8 px-4 space-y-8 relative z-10 scrollbar-hide">
+      <nav className="flex-1 overflow-y-auto py-8 px-4 space-y-6 relative z-10 scrollbar-hide">
         {NAV_ITEMS.map((section) => (
           <div key={section.section}>
             {!collapsed && (
@@ -192,10 +120,7 @@ export default function Sidebar() {
                                       : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/[0.02]"
                                   )}
                                 >
-                                  {sub.label === "Analytics" && <BarChart3 className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100" />}
-                                  {sub.label === "Board" && <Kanban className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100" />}
-                                  {sub.label === "Overview" && <Brain className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100" />}
-                                  {sub.label === "Stories" && <Library className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100" />}
+                                  {sub.icon && <sub.icon className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100" />}
                                   {sub.label}
                                 </Link>
                               </li>
@@ -219,11 +144,11 @@ export default function Sidebar() {
           className="flex items-center justify-center w-full py-3 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/[0.05] transition-all group"
         >
           {collapsed ? (
-            <ChevronRight className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            <BsChevronRight className="w-5 h-5 group-hover:scale-110 transition-transform" />
           ) : (
             <div className="flex items-center justify-between w-full px-2">
               <span className="text-xs font-bold uppercase tracking-widest opacity-60">Operations</span>
-              <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <BsChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             </div>
           )}
         </button>

@@ -1,13 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowLeft,
-  CreditCard,
-  Check,
-  Sparkles,
-  Shield,
-} from "lucide-react";
+import { BsArrowLeft, BsCheck, BsCreditCard, BsShield, BsStars } from 'react-icons/bs';
 import { cn } from "@/lib/utils";
 
 /* ═══════════════════════════════════════════════════
@@ -72,14 +66,14 @@ export default function BillingPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <CreditCard className="w-6 h-6 text-brand-400" />
+          <BsCreditCard className="w-6 h-6 text-brand-400" />
           <h1 className="text-2xl font-bold">Billing</h1>
         </div>
         <Link
           href="/dashboard/settings"
           className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <BsArrowLeft className="w-4 h-4" />
           Settings
         </Link>
       </div>
@@ -137,7 +131,7 @@ export default function BillingPage() {
 
       {/* Plan Comparison */}
       <h2 className="text-base font-semibold mb-4 flex items-center gap-2">
-        <Sparkles className="w-4 h-4 text-brand-400" />
+        <BsStars className="w-4 h-4 text-brand-400" />
         Choose Your Plan
       </h2>
 
@@ -171,7 +165,7 @@ export default function BillingPage() {
               <ul className="space-y-2.5 mb-6">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-2 text-sm text-zinc-700 dark:text-gray-300">
-                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <BsCheck className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                     {feature}
                   </li>
                 ))}
@@ -197,7 +191,7 @@ export default function BillingPage() {
 
       {/* Security Note */}
       <div className="glass rounded-xl p-4 flex items-center gap-3">
-        <Shield className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+        <BsShield className="w-5 h-5 text-emerald-400 flex-shrink-0" />
         <p className="text-xs text-zinc-500 dark:text-gray-500">
           Payments are securely processed by Stripe. We never store your card details.
           You can cancel or change your plan at any time.

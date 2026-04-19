@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { TemplateProps, vis, formatDates, getSkills, getTechSkills, paperStyle } from './shared';
+import { TemplateProps, vis, formatDates, getSkills, getTechSkills, paperStyle, sanitizeHtml } from './shared';
 
 const ATSExecutive: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sectionVisibility }) => {
   const skills = getSkills(data);
@@ -15,7 +15,7 @@ const ATSExecutive: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sect
   const sections: Record<string, () => React.ReactNode> = {
     summary: () => data.summary ? (
       <section key="summary" style={{ marginBottom: `${theme.sectionSpacing || 12}px` }}>
-        <div style={{ fontSize: '11px', color: '#3a3a3a', lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+        <div style={{ fontSize: '11px', color: '#3a3a3a', lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.summary) }} />
       </section>
     ) : null,
 
@@ -31,7 +31,7 @@ const ATSExecutive: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sect
             <div style={{ fontSize: '11px', color: '#555', fontStyle: 'italic', marginBottom: '2px' }}>{item.title}</div>
             <ul style={{ paddingLeft: '16px', margin: '2px 0 0 0' }}>
               {item.bullets.map((b, i) => (
-                <li key={i} style={{ fontSize: '11px', color: theme.textColor, marginBottom: '2px', lineHeight: theme.lineHeight || 1.4 }} dangerouslySetInnerHTML={{ __html: b }} />
+                <li key={i} style={{ fontSize: '11px', color: theme.textColor, marginBottom: '2px', lineHeight: theme.lineHeight || 1.4 }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(b) }} />
               ))}
             </ul>
           </div>

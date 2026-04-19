@@ -2,24 +2,9 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import {
-  Search,
-  FileText,
-  MessageSquare,
-  ArrowRight,
-  Star,
-  CheckCircle2,
-  Sparkles,
-  Zap,
-  Target,
-  Shield,
-  Compass,
-  ChevronRight,
-  Globe,
-  Layers,
-  Cpu,
-} from "lucide-react";
+import { BsArrowRight, BsBullseye, BsChatSquareText, BsCheckCircleFill, BsChevronRight, BsCompass, BsCpu, BsFileEarmarkText, BsGlobe, BsLayers, BsLightningFill, BsSearch, BsShield, BsStar, BsStars } from 'react-icons/bs';
 
 /* ═══════════════════════════════════════════════════════
    OfferPath — Landing Page v3
@@ -38,7 +23,7 @@ interface ModuleDef {
 
 const MODULES: ModuleDef[] = [
   {
-    icon: Search,
+    icon: BsSearch,
     title: "Job Tracker",
     desc: "A powerful Kanban-style pipeline to manage every application. AI analyzes job descriptions to score your fit and prioritize your next move.",
     features: ["JD Analysis", "Kanban Pipeline", "Match Scoring", "Application History"],
@@ -47,7 +32,7 @@ const MODULES: ModuleDef[] = [
     delay: 0.1,
   },
   {
-    icon: FileText,
+    icon: BsFileEarmarkText,
     title: "Resume Builder",
     desc: "Build stunning, ATS-optimized resumes in minutes. Use AI to tailor your summary and experience for every specific role you apply to.",
     features: ["9 Professional Templates", "AI Resume Tailoring", "ATS Optimization", "PDF & DOCX Export"],
@@ -56,7 +41,7 @@ const MODULES: ModuleDef[] = [
     delay: 0.2,
   },
   {
-    icon: Compass,
+    icon: BsCompass,
     title: "Job Discovery",
     desc: "Discover matching opportunities across the web. Our engine scans top-tier companies to find roles that align with your unique profile.",
     features: ["Smart Job Feed", "Company Monitoring", "Keyword Matching", "Lead Generation"],
@@ -65,7 +50,7 @@ const MODULES: ModuleDef[] = [
     delay: 0.3,
   },
   {
-    icon: MessageSquare,
+    icon: BsChatSquareText,
     title: "Interview Prep",
     desc: "Master your interviews with AI-generated prep guides. Practice with simulated mock sessions and build a reusable STAR story bank.",
     features: ["Mock Interviews", "STAR Story Bank", "Company Research", "Custom Question Sets"],
@@ -78,7 +63,7 @@ const MODULES: ModuleDef[] = [
 const STATS = [
   { value: "12,480", label: "Jobs Tracked", suffix: "+" },
   { value: "92.4", label: "Interview Rate", suffix: "%" },
-  { value: "4.95", label: "User Rating", icon: Star },
+  { value: "4.95", label: "User Rating", icon: BsStar },
   { value: "18.2", label: "Avg. Days to Offer", suffix: "d" },
 ];
 
@@ -134,7 +119,7 @@ const PRICING: PricingPlan[] = [
   },
   {
     name: "Pro",
-    price: "$19",
+    price: "$15",
     period: "/month",
     desc: "Unlimited power for serious job seekers.",
     features: [
@@ -151,8 +136,8 @@ const PRICING: PricingPlan[] = [
   },
   {
     name: "Team",
-    price: "$49",
-    period: "/mo",
+    price: "$29",
+    period: "/seat/mo",
     desc: "For career coaches and recruitment teams.",
     features: [
       "Multi-user Workspace",
@@ -191,7 +176,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-9 h-9 rounded-xl gradient-futuristic flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform duration-500">
-              <Target className="w-5 h-5 text-zinc-900 dark:text-white" />
+              <BsBullseye className="w-5 h-5 text-zinc-900 dark:text-white" />
             </div>
             <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">
               Offer<span className="text-gradient-futuristic">Path</span>
@@ -237,7 +222,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-zinc-700 dark:text-zinc-400 text-xs font-medium tracking-wider uppercase mb-10"
           >
-            <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+            <BsStars className="w-3.5 h-3.5 text-brand-400" />
             All-in-one Job Hunting Toolkit
           </motion.div>
 
@@ -272,7 +257,7 @@ export default function LandingPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-r from-brand-400/0 via-brand-400/20 to-brand-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
               Start Your Search
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <BsArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <a
               href="#features"
@@ -321,10 +306,10 @@ export default function LandingPage() {
             </div>
             <div className="flex gap-4">
               <div className="p-4 rounded-2xl bg-white/5 border border-zinc-200 dark:border-white/10">
-                <Globe className="w-6 h-6 text-brand-400" />
+                <BsGlobe className="w-6 h-6 text-brand-400" />
               </div>
               <div className="p-4 rounded-2xl bg-white/5 border border-zinc-200 dark:border-white/10">
-                <Cpu className="w-6 h-6 text-purple-400" />
+                <BsCpu className="w-6 h-6 text-purple-400" />
               </div>
             </div>
           </div>
@@ -350,8 +335,11 @@ export default function LandingPage() {
               className="relative p-2 rounded-3xl bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] shadow-2xl overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent" />
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
+					width={1200}
+					height={800}
+					priority
                 alt="Resume Editor Interface"
                 className="rounded-2xl opacity-80 mix-blend-luminosity grayscale hover:grayscale-0 transition-all duration-1000"
               />
@@ -389,12 +377,12 @@ export default function LandingPage() {
             <div className="grid sm:grid-cols-2 gap-8 pt-6">
               {[
                 {
-                  icon: Layers,
+                  icon: BsLayers,
                   title: "Smart Tailoring",
                   desc: "Automatically adjust your experience bullets to match job descriptions perfectly.",
                 },
                 {
-                  icon: Shield,
+                  icon: BsShield,
                   title: "ATS-Ready",
                   desc: "Templates designed to be easily readable by both human recruiters and software.",
                 },
@@ -421,7 +409,7 @@ export default function LandingPage() {
             </h2>
             <div className="flex items-center justify-center gap-1.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 text-zinc-900 dark:text-white fill-white" />
+                <BsStar key={i} className="w-5 h-5 text-zinc-900 dark:text-white fill-white" />
               ))}
               <span className="ml-2 text-zinc-500 font-medium uppercase tracking-widest text-xs italic">Exceptional Feedback</span>
             </div>
@@ -485,7 +473,7 @@ export default function LandingPage() {
         >
           <div className="absolute inset-0 bg-gradient-to-br from-brand-600/20 via-purple-600/10 to-blue-600/20 rounded-[40px] blur-[80px] opacity-50 group-hover:opacity-80 transition-opacity duration-1000" />
           <div className="relative liquid-glass rounded-[40px] p-16 md:p-24 text-center border border-white/[0.08]">
-            <Zap className="w-16 h-16 text-brand-400 mx-auto mb-10 animate-pulse-subtle" />
+            <BsLightningFill className="w-16 h-16 text-brand-400 mx-auto mb-10 animate-pulse-subtle" />
             <h2 className="text-4xl md:text-7xl font-bold mb-8 font-display tracking-tighter text-zinc-900 dark:text-white">
               Ready to land <br />
               <span className="text-gradient-futuristic italic text-5xl md:text-8xl">your next role?</span>
@@ -498,7 +486,7 @@ export default function LandingPage() {
               className="inline-flex items-center gap-4 px-12 py-5 rounded-2xl bg-white text-black font-bold hover:bg-zinc-200 transition-all text-xl shadow-2xl shadow-white/10 group/btn"
             >
               Get Started for Free
-              <ChevronRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
+              <BsChevronRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
             </Link>
           </div>
         </motion.div>
@@ -511,7 +499,7 @@ export default function LandingPage() {
             <div className="md:col-span-5">
               <Link href="/" className="flex items-center gap-3 mb-8">
                 <div className="w-8 h-8 rounded-xl gradient-futuristic flex items-center justify-center">
-                  <Target className="w-4.5 h-4.5 text-zinc-900 dark:text-white" />
+                  <BsBullseye className="w-4.5 h-4.5 text-zinc-900 dark:text-white" />
                 </div>
                 <span className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white font-display uppercase tracking-[0.15em]">
                   OfferPath
@@ -521,7 +509,7 @@ export default function LandingPage() {
                 The all-in-one operating system for your professional career search.
               </p>
               <div className="flex items-center gap-4 text-zinc-500">
-                <Shield className="w-5 h-5" />
+                <BsShield className="w-5 h-5" />
                 <span className="text-xs uppercase tracking-widest font-bold">Secure & Private Protocol</span>
               </div>
             </div>
@@ -618,7 +606,7 @@ function ModuleCard({ mod, index }: { mod: ModuleDef; index: number }) {
       
       <div className="mt-8 pt-8 border-t border-white/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
         <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-white">
-          Get Started <ChevronRight className="w-4 h-4" />
+          Get Started <BsChevronRight className="w-4 h-4" />
         </button>
       </div>
     </motion.div>
@@ -672,7 +660,7 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
         <ul className="space-y-4">
           {plan.features.map((f: string) => (
             <li key={f} className="flex items-start gap-3.5 text-sm text-zinc-700 dark:text-zinc-400 group-hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors">
-              <CheckCircle2 className="w-5 h-5 text-brand-500 flex-shrink-0 mt-[-2px]" />
+              <BsCheckCircleFill className="w-5 h-5 text-brand-500 flex-shrink-0 mt-[-2px]" />
               <span className="font-light leading-tight">{f}</span>
             </li>
           ))}

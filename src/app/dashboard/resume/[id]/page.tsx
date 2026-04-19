@@ -3,36 +3,7 @@
 import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import {
-  ArrowLeft,
-  FileText,
-  Plus,
-  Trash2,
-  Save,
-  Eye,
-  EyeOff,
-  User,
-  Briefcase,
-  GraduationCap,
-  Wrench,
-  AlertCircle,
-  PenTool,
-  FormInput,
-  Palette,
-  Sparkles,
-  Loader2,
-  X,
-  CheckCircle,
-  Undo2,
-  Redo2,
-  Maximize2,
-  Minimize2,
-  ChevronUp,
-  ChevronDown,
-  Layout,
-  PanelLeftClose,
-  PanelLeftOpen,
-} from "lucide-react";
+import { BsArrowClockwise, BsArrowCounterclockwise, BsArrowLeft, BsArrowRepeat, BsArrowsAngleContract, BsArrowsAngleExpand, BsBriefcase, BsCheckCircle, BsChevronDown, BsChevronUp, BsExclamationCircle, BsEye, BsEyeSlash, BsFileEarmarkText, BsFloppy, BsInputCursorText, BsLayoutSidebarInset, BsLayoutSidebarInsetReverse, BsMortarboard, BsPalette, BsPen, BsPerson, BsPlus, BsStars, BsTrash, BsWindow, BsWrench, BsX } from 'react-icons/bs';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -179,7 +150,7 @@ export default function ResumeEditorPage({
     return (
       <div className="max-w-4xl mx-auto animate-fade-in">
         <div className="glass rounded-2xl p-12 text-center">
-          <AlertCircle className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
+          <BsExclamationCircle className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">Resume not found</h2>
           <Link
             href="/dashboard/resume"
@@ -247,11 +218,11 @@ export default function ResumeEditorPage({
   };
 
   const SECTIONS = [
-    { key: "personal", label: "Identity", icon: User },
-    { key: "summary", label: "Summary", icon: FileText },
-    { key: "experience", label: "Experience", icon: Briefcase },
-    { key: "education", label: "Education", icon: GraduationCap },
-    { key: "skills", label: "Skills", icon: Wrench },
+    { key: "personal", label: "Identity", icon: BsPerson },
+    { key: "summary", label: "Summary", icon: BsFileEarmarkText },
+    { key: "experience", label: "Experience", icon: BsBriefcase },
+    { key: "education", label: "Education", icon: BsMortarboard },
+    { key: "skills", label: "Skills", icon: BsWrench },
   ];
 
   const sectionOrder = resume.section_order || [
@@ -275,7 +246,7 @@ export default function ResumeEditorPage({
                   onClick={() => setIsFullscreenPreview(false)}
                   className="p-2 rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-zinc-300 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all"
                 >
-                  <Minimize2 className="w-5 h-5" />
+                  <BsArrowsAngleContract className="w-5 h-5" />
                 </button>
                 <div>
                   <h2 className="text-lg font-bold text-zinc-900 dark:text-white font-display">{resume.title}</h2>
@@ -315,7 +286,7 @@ export default function ResumeEditorPage({
             href="/dashboard/resume"
             className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <BsArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -333,7 +304,7 @@ export default function ResumeEditorPage({
             className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
             title={isEditorCollapsed ? "Open Editor" : "Collapse Editor"}
           >
-            {isEditorCollapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+            {isEditorCollapsed ? <BsLayoutSidebarInsetReverse className="w-5 h-5" /> : <BsLayoutSidebarInset className="w-5 h-5" />}
           </button>
 
           <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1 gap-1 mr-2">
@@ -346,7 +317,7 @@ export default function ResumeEditorPage({
               )}
               title="Undo"
             >
-              <Undo2 className="w-4 h-4" />
+              <BsArrowCounterclockwise className="w-4 h-4" />
             </button>
             <button
               onClick={() => redo(id)}
@@ -357,7 +328,7 @@ export default function ResumeEditorPage({
               )}
               title="Redo"
             >
-              <Redo2 className="w-4 h-4" />
+              <BsArrowClockwise className="w-4 h-4" />
             </button>
           </div>
 
@@ -371,7 +342,7 @@ export default function ResumeEditorPage({
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
               )}
             >
-              <FormInput className="w-3.5 h-3.5" />
+              <BsInputCursorText className="w-3.5 h-3.5" />
               Form
             </button>
             <button
@@ -383,7 +354,7 @@ export default function ResumeEditorPage({
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
               )}
             >
-              <PenTool className="w-3.5 h-3.5" />
+              <BsPen className="w-3.5 h-3.5" />
               Editor
             </button>
           </div>
@@ -400,9 +371,9 @@ export default function ResumeEditorPage({
             )}
           >
             {showPreview ? (
-              <EyeOff className="w-4.5 h-4.5" />
+              <BsEyeSlash className="w-4.5 h-4.5" />
             ) : (
-              <Eye className="w-4.5 h-4.5" />
+              <BsEye className="w-4.5 h-4.5" />
             )}
             <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Preview</span>
           </button>
@@ -418,7 +389,7 @@ export default function ResumeEditorPage({
                 : "bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
             )}
           >
-            <Save className="w-4.5 h-4.5" />
+            <BsFloppy className="w-4.5 h-4.5" />
             <span className="uppercase tracking-widest text-[11px]">{saved ? "Saved" : "Save Changes"}</span>
           </button>
         </div>
@@ -444,7 +415,7 @@ export default function ResumeEditorPage({
               <div className="flex items-center justify-between relative z-10">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-purple-400" />
+                    <BsStars className="w-6 h-6 text-purple-400" />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-widest">AI Tailoring</h3>
@@ -462,7 +433,7 @@ export default function ResumeEditorPage({
 
             {/* Template Picker */}
             <div className="flex items-center gap-3 pb-4">
-              <Layout className="w-5 h-5 text-zinc-600 flex-shrink-0" />
+              <BsWindow className="w-5 h-5 text-zinc-600 flex-shrink-0" />
               <div className="relative w-full max-w-xs">
                 <select
                   value={selectedTemplate}
@@ -480,7 +451,7 @@ export default function ResumeEditorPage({
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-zinc-500">
-                  <ChevronDown className="w-4 h-4" />
+                  <BsChevronDown className="w-4 h-4" />
                 </div>
               </div>
             </div>
@@ -488,7 +459,16 @@ export default function ResumeEditorPage({
             {editorMode === "richtext" ? (
               <RichTextEditor
                 content={resumeHtml}
-                onChange={() => {}}
+                onChange={(html) => {
+                  // Extract plain text summary from the first paragraph after the "Professional Summary" heading
+                  const summaryMatch = html.match(/Professional Summary<\/h\d>\s*<p>([\s\S]*?)<\/p>/i);
+                  if (summaryMatch && summaryMatch[1]) {
+                    const plainText = summaryMatch[1].replace(/<[^>]*>/g, '').trim();
+                    if (plainText !== (data.summary || '')) {
+                      updateResume(id, { data: { ...data, summary: plainText } });
+                    }
+                  }
+                }}
               />
             ) : (
               <>
@@ -512,10 +492,10 @@ export default function ResumeEditorPage({
                         </button>
                         <div className="flex flex-col gap-0.5">
                           <button onClick={() => moveSection(id, section.key as SectionKey, "up")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
-                            <ChevronUp className="w-3 h-3" />
+                            <BsChevronUp className="w-3 h-3" />
                           </button>
                           <button onClick={() => moveSection(id, section.key as SectionKey, "down")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
-                            <ChevronDown className="w-3 h-3" />
+                            <BsChevronDown className="w-3 h-3" />
                           </button>
                         </div>
                       </div>
@@ -580,12 +560,12 @@ export default function ResumeEditorPage({
                           }}
                           className="p-2 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-all"
                         >
-                          <Plus className="w-4 h-4" />
+                          <BsPlus className="w-4 h-4" />
                         </button>
                       </div>
                       <div className="space-y-4">
                         {(data.experience || []).map((exp, index) => (
-                          <div key={index} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
+                          <div key={`exp-${exp.company}-${exp.title}-${exp.start_date}-${index}`} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
                             <button
                               onClick={() => {
                                 saveToHistory(id);
@@ -595,7 +575,7 @@ export default function ResumeEditorPage({
                               }}
                               className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-all"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <BsTrash className="w-4 h-4" />
                             </button>
                             <div className="space-y-4">
                               <div className="pr-8">
@@ -633,7 +613,7 @@ export default function ResumeEditorPage({
                               <div className="pt-2">
                                 <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1 mb-2">Bullet Points</label>
                                 {(exp.bullets || [""]).map((bullet, bi) => (
-                                  <div key={bi} className="flex items-start gap-2 mb-2 group/bullet">
+                                  <div key={`bullet-${index}-${bi}-${bullet.slice(0,20)}`} className="flex items-start gap-2 mb-2 group/bullet">
                                     <div className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600 mt-2 flex-shrink-0" />
                                     <textarea
                                       value={bullet}
@@ -660,7 +640,7 @@ export default function ResumeEditorPage({
                                       }}
                                       className="mt-2 p-1 text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover/bullet:opacity-100"
                                     >
-                                      <X className="w-3.5 h-3.5" />
+                                      <BsX className="w-3.5 h-3.5" />
                                     </button>
                                   </div>
                                 ))}
@@ -696,13 +676,13 @@ export default function ResumeEditorPage({
                           }}
                           className="p-2 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-all"
                         >
-                          <Plus className="w-4 h-4" />
+                          <BsPlus className="w-4 h-4" />
                         </button>
                       </div>
 
                       <div className="space-y-4">
                         {(data.education || []).map((edu, index) => (
-                          <div key={index} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
+                          <div key={`edu-${edu.institution}-${edu.degree}-${index}`} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
                             <button
                               onClick={() => {
                                 saveToHistory(id);
@@ -712,7 +692,7 @@ export default function ResumeEditorPage({
                               }}
                               className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-all"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <BsTrash className="w-4 h-4" />
                             </button>
                             <div className="space-y-4 pr-8">
                               <input type="text" value={edu.institution} onBlur={() => saveToHistory(id)} onChange={(e) => {
@@ -760,7 +740,7 @@ export default function ResumeEditorPage({
                       <div className="flex flex-wrap gap-2">
                         {(data.skills || []).map((skill, index) => (
                           <div
-                            key={index}
+                            key={typeof skill === 'string' ? `skill-${index}-${skill}` : skill.id}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.05] text-xs font-bold text-zinc-700 dark:text-zinc-300 group transition-all"
                           >
                             <span>{typeof skill === 'string' ? skill : skill.name}</span>
@@ -773,7 +753,7 @@ export default function ResumeEditorPage({
                               }}
                               className="text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 -mr-1"
                             >
-                              <X className="w-3.5 h-3.5" />
+                              <BsX className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         ))}
@@ -828,7 +808,7 @@ export default function ResumeEditorPage({
                   className="p-2 rounded-lg bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:bg-white/10 dark:hover:text-white transition-all group"
                   title="Fullscreen Preview"
                 >
-                  <Maximize2 className="w-4 h-4 group-hover:scale-110" />
+                  <BsArrowsAngleExpand className="w-4 h-4 group-hover:scale-110" />
                 </button>
               </div>
             </div>
@@ -871,12 +851,12 @@ export default function ResumeEditorPage({
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-purple-400" />
+                  <BsStars className="w-6 h-6 text-purple-400" />
                 </div>
                 <h2 className="text-xl font-bold font-display text-zinc-900 dark:text-white">AI Resume Tailoring</h2>
               </div>
               <button onClick={() => { setShowTailorDialog(false); setDraftResult(null); }} className="p-2 rounded-xl text-zinc-500 dark:text-gray-500 hover:text-zinc-900 dark:text-white hover:bg-zinc-100 dark:bg-white/[0.04] transition-all">
-                <X className="w-5 h-5" />
+                <BsX className="w-5 h-5" />
               </button>
             </div>
 
@@ -899,14 +879,14 @@ export default function ResumeEditorPage({
                 <div className="flex gap-4">
                   <button onClick={() => setShowTailorDialog(false)} className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-zinc-500 bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/5 hover:bg-zinc-200 dark:bg-white/10 transition-all uppercase tracking-widest">Cancel</button>
                   <button onClick={handleTailorWithAI} disabled={tailoring || !tailorJD.trim()} className={cn("flex-[2] flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl text-sm font-bold transition-all shadow-lg", tailoring || !tailorJD.trim() ? "bg-zinc-800 text-zinc-600 cursor-not-allowed" : "bg-purple-500 text-zinc-900 dark:text-white hover:bg-purple-400 shadow-purple-500/20")}>
-                    {tailoring ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : <><Sparkles className="w-5 h-5" /> Start Tailoring</>}
+                    {tailoring ? <><BsArrowRepeat className="w-5 h-5 animate-spin" /> Processing...</> : <><BsStars className="w-5 h-5" /> Start Tailoring</>}
                   </button>
                 </div>
               </div>
             ) : (
               <div className="space-y-8 animate-fade-in">
                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-                  <CheckCircle className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                  <BsCheckCircle className="w-6 h-6 text-emerald-400 flex-shrink-0" />
                   <div>
                     <p className="text-sm text-emerald-300 font-bold uppercase tracking-widest">AI Synthesis Complete</p>
                     <p className="text-[10px] text-emerald-500/70 font-medium uppercase tracking-widest mt-0.5">Review and commit changes.</p>

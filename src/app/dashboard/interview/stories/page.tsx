@@ -1,20 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import {
-  Library,
-  Plus,
-  Search,
-  Tag,
-  ChevronDown,
-  ChevronUp,
-  Edit3,
-  Trash2,
-  BarChart3,
-  X,
-  FileUp,
-  Loader2,
-} from "lucide-react";
+import { BsArrowRepeat, BsBarChartFill, BsChevronDown, BsChevronUp, BsCollection, BsFileEarmarkArrowUp, BsPen, BsPlus, BsSearch, BsTag, BsTrash, BsX } from 'react-icons/bs';
 import { useInterviewStore } from "@/store/interviewStore";
 import { cn } from "@/lib/utils";
 import StoryDialog from "@/components/interview/StoryDialog";
@@ -110,7 +97,7 @@ export default function StoriesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Library className="w-6 h-6 text-brand-400" />
+          <BsCollection className="w-6 h-6 text-brand-400" />
           <h1 className="text-2xl font-bold">Story Bank</h1>
           <span className="text-sm text-zinc-500 dark:text-gray-500">
             {stories.length} {stories.length === 1 ? "story" : "stories"}
@@ -130,9 +117,9 @@ export default function StoriesPage() {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-600 dark:text-zinc-300 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-white/[0.05] hover:text-zinc-900 dark:hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isExtracting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <BsArrowRepeat className="w-4 h-4 animate-spin" />
             ) : (
-              <FileUp className="w-4 h-4" />
+              <BsFileEarmarkArrowUp className="w-4 h-4" />
             )}
             Import Document
           </button>
@@ -140,7 +127,7 @@ export default function StoriesPage() {
             onClick={handleNew}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
           >
-            <Plus className="w-4 h-4" />
+            <BsPlus className="w-4 h-4" />
             Add Story
           </button>
         </div>
@@ -149,7 +136,7 @@ export default function StoriesPage() {
       {/* Search + Filter Bar */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
+          <BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
           <input
             type="text"
             value={search}
@@ -162,7 +149,7 @@ export default function StoriesPage() {
               onClick={() => setSearch("")}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
             >
-              <X className="w-3.5 h-3.5" />
+              <BsX className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
@@ -200,7 +187,7 @@ export default function StoriesPage() {
       {/* Stories Grid */}
       {filteredStories.length === 0 ? (
         <div className="glass rounded-2xl p-12 text-center">
-          <Library className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
+          <BsCollection className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">
             {stories.length === 0 ? "Build your story bank" : "No matching stories"}
           </h3>
@@ -214,7 +201,7 @@ export default function StoriesPage() {
               onClick={handleNew}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
             >
-              <Plus className="w-4 h-4" />
+              <BsPlus className="w-4 h-4" />
               Add Your First Story
             </button>
           )}
@@ -251,7 +238,7 @@ export default function StoriesPage() {
                       {/* Tags */}
                       {story.tags.length > 0 && (
                         <div className="flex items-center gap-1.5 mb-2">
-                          <Tag className="w-3 h-3 text-zinc-700 dark:text-zinc-400 dark:text-gray-600" />
+                          <BsTag className="w-3 h-3 text-zinc-700 dark:text-zinc-400 dark:text-gray-600" />
                           {story.tags.map((tag) => (
                             <span
                               key={tag}
@@ -266,7 +253,7 @@ export default function StoriesPage() {
                       {/* Metrics preview */}
                       {story.metrics && (
                         <p className="text-xs text-zinc-600 dark:text-gray-400 flex items-center gap-1.5">
-                          <BarChart3 className="w-3 h-3 text-emerald-400" />
+                          <BsBarChartFill className="w-3 h-3 text-emerald-400" />
                           {story.metrics}
                         </p>
                       )}
@@ -278,9 +265,9 @@ export default function StoriesPage() {
                         <p className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">uses</p>
                       </div>
                       {isExpanded ? (
-                        <ChevronUp className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
+                        <BsChevronUp className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
                       ) : (
-                        <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
+                        <BsChevronDown className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
                       )}
                     </div>
                   </div>
@@ -316,7 +303,7 @@ export default function StoriesPage() {
                         }}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200/50 text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-zinc-800 dark:hover:text-gray-200 text-xs font-medium transition-all"
                       >
-                        <Edit3 className="w-3 h-3" />
+                        <BsPen className="w-3 h-3" />
                         Edit
                       </button>
                       <button
@@ -329,7 +316,7 @@ export default function StoriesPage() {
                         }}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200/50 text-red-400/70 hover:text-red-400 text-xs font-medium transition-all"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <BsTrash className="w-3 h-3" />
                         Delete
                       </button>
                     </div>

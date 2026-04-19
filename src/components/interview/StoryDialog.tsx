@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { BsX } from 'react-icons/bs';
 import { useInterviewStore } from "@/store/interviewStore";
 import { cn } from "@/lib/utils";
 
@@ -112,7 +112,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
             onClick={onClose}
             className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all"
           >
-            <X className="w-5 h-5" />
+            <BsX className="w-5 h-5" />
           </button>
         </div>
 

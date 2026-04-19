@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { TemplateProps, vis, formatDates, getSkills, getTechSkills, paperStyle } from './shared';
+import { TemplateProps, vis, formatDates, getSkills, getTechSkills, paperStyle, sanitizeHtml } from './shared';
 
 const BoldEngineer: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sectionVisibility }) => {
   const skills = getSkills(data);
@@ -23,7 +23,7 @@ const BoldEngineer: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sect
   const sections: Record<string, () => React.ReactNode> = {
     summary: () => data.summary ? (
       <section key="summary" style={{ marginBottom: `${theme.sectionSpacing || 25}px` }}>
-        <div style={{ fontSize: `${theme.baseFontSize || 11}px`, lineHeight: theme.lineHeight || 1.4, marginBottom: '5px' }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+        <div style={{ fontSize: `${theme.baseFontSize || 11}px`, lineHeight: theme.lineHeight || 1.4, marginBottom: '5px' }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.summary) }} />
       </section>
     ) : null,
 
@@ -38,7 +38,7 @@ const BoldEngineer: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sect
             </div>
             <ul style={{ paddingLeft: '16px', marginTop: '2px', margin: 0 }}>
               {item.bullets.map((b, i) => (
-                <li key={i} style={{ marginBottom: '1px', lineHeight: theme.lineHeight || 1.4 }} dangerouslySetInnerHTML={{ __html: b }} />
+                <li key={i} style={{ marginBottom: '1px', lineHeight: theme.lineHeight || 1.4 }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(b) }} />
               ))}
             </ul>
           </div>

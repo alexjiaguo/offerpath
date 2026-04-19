@@ -1,8 +1,9 @@
 "use client";
 
+import React from "react";
 import { cn } from "@/lib/utils";
 import type { Job } from "@/types";
-import { MapPin, Star, FileText, ChevronRight } from "lucide-react";
+import { BsChevronRight, BsFileEarmarkText, BsGeoAlt, BsStar } from 'react-icons/bs';
 import Link from "next/link";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -55,7 +56,7 @@ interface JobCardProps {
   overlay?: boolean;
 }
 
-export default function JobCard({ job, overlay }: JobCardProps) {
+const JobCard = React.memo(function JobCard({ job, overlay }: JobCardProps) {
   const {
     attributes,
     listeners,
@@ -120,7 +121,7 @@ export default function JobCard({ job, overlay }: JobCardProps) {
               scoreBadgeColor(job.score)
             )}
           >
-            <Star className="w-3 h-3 fill-current" />
+            <BsStar className="w-3 h-3 fill-current" />
             {job.score.toFixed(1)} <span className="opacity-40 font-light">Match</span>
           </div>
         )}
@@ -143,7 +144,7 @@ export default function JobCard({ job, overlay }: JobCardProps) {
         <div className="flex items-center gap-3">
           {job.location && (
             <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
-              <MapPin className="w-3 h-3" />
+              <BsGeoAlt className="w-3 h-3" />
               {job.location.length > 12 ? job.location.slice(0, 10) + "…" : job.location}
             </div>
           )}
@@ -152,7 +153,7 @@ export default function JobCard({ job, overlay }: JobCardProps) {
         <div className="flex items-center gap-2">
           {job.resume_id && (
             <div className="w-6 h-6 rounded-md bg-emerald-500/10 flex items-center justify-center">
-              <FileText className="w-3.5 h-3.5 text-emerald-400" />
+              <BsFileEarmarkText className="w-3.5 h-3.5 text-emerald-400" />
             </div>
           )}
           
@@ -161,15 +162,16 @@ export default function JobCard({ job, overlay }: JobCardProps) {
             onClick={(e) => e.stopPropagation()}
             className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white/10"
           >
-            <ChevronRight className="w-4 h-4 text-zinc-900 dark:text-white" />
+            <BsChevronRight className="w-4 h-4 text-zinc-900 dark:text-white" />
           </Link>
         </div>
       </div>
     </div>
   );
-}
+});
 
-// Overlay version for drag preview
+export default JobCard;
+
 export function JobCardOverlay({ job }: { job: Job }) {
   return <JobCard job={job} overlay />;
 }

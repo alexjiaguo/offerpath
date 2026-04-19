@@ -2,23 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  MapPin,
-  Briefcase,
-  Clock,
-  ExternalLink,
-  Bookmark,
-  BookmarkCheck,
-  Target,
-  Building2,
-  Star,
-  Globe,
-  ChevronRight,
-  Sparkles,
-  CheckCircle2,
-  Send,
-} from "lucide-react";
+import { BsArrowLeft, BsBookmark, BsBookmarkCheck, BsBoxArrowUpRight, BsBriefcase, BsBuildings, BsBullseye, BsCheckCircleFill, BsChevronRight, BsClock, BsGeoAlt, BsGlobe, BsSend, BsStar, BsStars } from 'react-icons/bs';
 import { useDiscoveryStore } from "@/store/discoveryStore";
 import { cn } from "@/lib/utils";
 
@@ -74,7 +58,7 @@ export default function DiscoverJobDetailPage({
         href="/dashboard/discover"
         className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors mb-5"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <BsArrowLeft className="w-4 h-4" />
         Back to Discovery
       </Link>
 
@@ -94,7 +78,7 @@ export default function DiscoverJobDetailPage({
                 {job.type}
               </span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-200 text-zinc-600 dark:text-gray-400 font-medium flex items-center gap-1">
-                <Clock className="w-3 h-3" />
+                <BsClock className="w-3 h-3" />
                 Posted {new Date(job.posted_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </span>
             </div>
@@ -103,13 +87,13 @@ export default function DiscoverJobDetailPage({
 
             <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-gray-400 flex-wrap mt-2">
               <span className="flex items-center gap-1.5 font-medium text-zinc-700 dark:text-gray-300">
-                <Building2 className="w-4 h-4" /> {job.company_name}
+                <BsBuildings className="w-4 h-4" /> {job.company_name}
               </span>
               <span className="flex items-center gap-1.5">
-                <MapPin className="w-4 h-4" /> {job.location}
+                <BsGeoAlt className="w-4 h-4" /> {job.location}
               </span>
               <span className="flex items-center gap-1.5">
-                <Briefcase className="w-4 h-4" /> {job.level}
+                <BsBriefcase className="w-4 h-4" /> {job.level}
               </span>
             </div>
 
@@ -125,7 +109,7 @@ export default function DiscoverJobDetailPage({
             "w-24 h-24 rounded-2xl bg-gradient-to-b flex flex-col items-center justify-center flex-shrink-0",
             scoreBg
           )}>
-            <Target className={cn("w-5 h-5 mb-1", scoreColor)} />
+            <BsBullseye className={cn("w-5 h-5 mb-1", scoreColor)} />
             <div className={cn("text-2xl font-bold", scoreColor)}>{job.match_score}%</div>
             <div className="text-[9px] text-zinc-500 dark:text-gray-500 uppercase">Match</div>
           </div>
@@ -142,7 +126,7 @@ export default function DiscoverJobDetailPage({
                 : "bg-surface-200 text-zinc-600 dark:text-gray-400 hover:text-brand-400 hover:bg-brand-500/10"
             )}
           >
-            {job.saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+            {job.saved ? <BsBookmarkCheck className="w-4 h-4" /> : <BsBookmark className="w-4 h-4" />}
             {job.saved ? "Saved" : "Save"}
           </button>
           <a
@@ -151,13 +135,13 @@ export default function DiscoverJobDetailPage({
             rel="noopener"
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-surface-200 text-zinc-600 dark:text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
           >
-            <ExternalLink className="w-4 h-4" /> View Original
+            <BsBoxArrowUpRight className="w-4 h-4" /> View Original
           </a>
           <Link
             href={`/dashboard/pipeline?addJob=${encodeURIComponent(job.title)}&company=${encodeURIComponent(job.company_name)}`}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity ml-auto"
           >
-            <Send className="w-4 h-4" /> Add to Pipeline
+            <BsSend className="w-4 h-4" /> Add to Pipeline
           </Link>
         </div>
       </div>
@@ -168,7 +152,7 @@ export default function DiscoverJobDetailPage({
           {/* Description */}
           <div className="glass rounded-xl p-5">
             <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-brand-400" />
+              <BsBriefcase className="w-4 h-4 text-brand-400" />
               Job Description
             </h2>
             <p className="text-sm text-zinc-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">
@@ -180,13 +164,13 @@ export default function DiscoverJobDetailPage({
           {job.requirements.length > 0 && (
             <div className="glass rounded-xl p-5">
               <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <BsCheckCircleFill className="w-4 h-4 text-emerald-400" />
                 Requirements
               </h2>
               <ul className="space-y-2">
                 {job.requirements.map((req, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-zinc-600 dark:text-gray-400">
-                    <ChevronRight className="w-3.5 h-3.5 text-brand-400 mt-0.5 flex-shrink-0" />
+                    <BsChevronRight className="w-3.5 h-3.5 text-brand-400 mt-0.5 flex-shrink-0" />
                     {req}
                   </li>
                 ))}
@@ -197,7 +181,7 @@ export default function DiscoverJobDetailPage({
           {/* Tags */}
           <div className="glass rounded-xl p-5">
             <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-400" />
+              <BsStars className="w-4 h-4 text-purple-400" />
               Related Skills & Tags
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -216,7 +200,7 @@ export default function DiscoverJobDetailPage({
           {company && (
             <div className="glass rounded-xl p-5">
               <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-blue-400" />
+                <BsBuildings className="w-4 h-4 text-blue-400" />
                 About {company.name}
               </h3>
               <div className="space-y-3 text-xs">
@@ -228,10 +212,10 @@ export default function DiscoverJobDetailPage({
                   </div>
                 </div>
                 <div className="space-y-1.5 text-zinc-600 dark:text-gray-400">
-                  <div className="flex items-center gap-2"><MapPin className="w-3 h-3" /> {company.hq}</div>
-                  <div className="flex items-center gap-2"><Briefcase className="w-3 h-3" /> {company.employee_count} employees</div>
+                  <div className="flex items-center gap-2"><BsGeoAlt className="w-3 h-3" /> {company.hq}</div>
+                  <div className="flex items-center gap-2"><BsBriefcase className="w-3 h-3" /> {company.employee_count} employees</div>
                   <div className="flex items-center gap-2">
-                    <Star className="w-3 h-3" />
+                    <BsStar className="w-3 h-3" />
                     <span>Tier {company.tier} · </span>
                     <span className={cn(
                       "font-bold",
@@ -253,7 +237,7 @@ export default function DiscoverJobDetailPage({
                   rel="noopener"
                   className="flex items-center gap-1 text-brand-400 hover:text-brand-300 transition-colors mt-2"
                 >
-                  <Globe className="w-3 h-3" /> Career Page <ExternalLink className="w-3 h-3" />
+                  <BsGlobe className="w-3 h-3" /> Career Page <BsBoxArrowUpRight className="w-3 h-3" />
                 </a>
               </div>
             </div>
@@ -291,7 +275,7 @@ export default function DiscoverJobDetailPage({
           {/* Quick action: Tailor resume */}
           <div className="glass rounded-xl p-5 border border-brand-500/20">
             <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-brand-400" />
+              <BsStars className="w-4 h-4 text-brand-400" />
               Tailor Your Resume
             </h3>
             <p className="text-xs text-zinc-500 dark:text-gray-500 mb-3">

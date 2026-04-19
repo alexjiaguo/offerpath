@@ -4,7 +4,9 @@
    ═══════════════════════════════════════════════════ */
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { Job, JobStatus, Company } from "@/types";
+import { generateId } from "@/lib/utils";
 
 // ── Filter & Sort Types ─────────────────────────────
 
@@ -292,9 +294,6 @@ const MOCK_JOBS: Job[] = [
     location: "Remote (APAC)",
     url: "https://shopify.com/careers/101",
     status: "new",
-    score: undefined,
-    tier: undefined,
-    archetype: undefined,
     kanban_order: 0,
     salary_range: "$180K–$250K",
     created_at: "2026-04-08T10:00:00Z",
@@ -402,9 +401,6 @@ const MOCK_JOBS: Job[] = [
     location: "Singapore",
     url: "https://careers.google.com/jobs/results/456",
     status: "new",
-    score: undefined,
-    tier: undefined,
-    archetype: undefined,
     kanban_order: 1,
     created_at: "2026-04-09T10:00:00Z",
     updated_at: "2026-04-09T10:00:00Z",
@@ -452,15 +448,11 @@ const MOCK_JOBS: Job[] = [
   },
 ];
 
-// ── Helper: generate UUID ───────────────────────────
-
-function generateId(): string {
-  return crypto.randomUUID();
-}
-
 // ── Store ───────────────────────────────────────────
 
-export const usePipelineStore = create<PipelineState>((set, get) => ({
+export const usePipelineStore = create<PipelineState>()(
+  persist(
+    (set, get) => ({
   jobs: MOCK_JOBS,
   companies: MOCK_COMPANIES,
   filters: DEFAULT_FILTERS,
@@ -727,4 +719,13 @@ export const usePipelineStore = create<PipelineState>((set, get) => ({
       (j) => j.status === "evaluated" && !j.resume_id
     );
   },
-}));
+    }),
+    {
+      name: "offerpath-pipeline",
+      partialize: (state) => ({
+        jobs: state.jobs,
+        companies: state.companies,
+      }),
+    }
+  )
+);

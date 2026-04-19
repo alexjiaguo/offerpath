@@ -4,26 +4,11 @@ import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
 import { cn } from "@/lib/utils";
 import ATSScoreBadge from "./ATSScoreBadge";
-import {
-  ArrowLeft,
-  Star,
-  MapPin,
-  ExternalLink,
-  Calendar,
-  DollarSign,
-  CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  Shield,
-  Target,
-  Briefcase,
-  Trash2,
-  ChevronRight,
-  FileText,
-  Sparkles,
-} from "lucide-react";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { BsArrowLeft, BsBoxArrowUpRight, BsBriefcase, BsBullseye, BsCalendar3, BsCheckCircleFill, BsChevronRight, BsCurrencyDollar, BsExclamationTriangle, BsFileEarmarkText, BsGeoAlt, BsShield, BsStar, BsStars, BsTrash, BsXCircle } from 'react-icons/bs';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import type { JobStatus } from "@/types";
 import { formatDate, statusColor } from "@/lib/utils";
 
@@ -99,13 +84,14 @@ interface JobDetailProps {
 export default function JobDetail({ jobId }: JobDetailProps) {
   const router = useRouter();
   const { getJobById, moveJob, deleteJob } = usePipelineStore();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { getResumeById, getATSScore } = useResumeStore();
   const job = getJobById(jobId);
 
   if (!job) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
-        <AlertTriangle className="w-12 h-12 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mb-4" />
+        <BsExclamationTriangle className="w-12 h-12 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mb-4" />
         <h2 className="text-xl font-semibold text-zinc-600 dark:text-gray-400 mb-2">Job Not Found</h2>
         <p className="text-sm text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mb-6">
           This job may have been deleted or doesn&apos;t exist.
@@ -114,7 +100,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
           href="/dashboard/pipeline"
           className="flex items-center gap-2 text-sm text-brand-400 hover:text-brand-300 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <BsArrowLeft className="w-4 h-4" />
           Back to Pipeline
         </Link>
       </div>
@@ -126,7 +112,12 @@ export default function JobDetail({ jobId }: JobDetailProps) {
   };
 
   const handleDelete = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
     deleteJob(job.id);
+    setShowDeleteConfirm(false);
     router.push("/dashboard/pipeline");
   };
 
@@ -137,7 +128,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
         href="/dashboard/pipeline"
         className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors mb-6"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <BsArrowLeft className="w-4 h-4" />
         Back to Pipeline
       </Link>
 
@@ -168,13 +159,13 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 </span>
                 {job.location && (
                   <span className="flex items-center gap-1 text-sm text-zinc-500 dark:text-gray-500">
-                    <MapPin className="w-3.5 h-3.5" />
+                    <BsGeoAlt className="w-3.5 h-3.5" />
                     {job.location}
                   </span>
                 )}
                 {job.salary_range && (
                   <span className="flex items-center gap-1 text-sm text-zinc-500 dark:text-gray-500">
-                    <DollarSign className="w-3.5 h-3.5" />
+                    <BsCurrencyDollar className="w-3.5 h-3.5" />
                     {job.salary_range}
                   </span>
                 )}
@@ -185,7 +176,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-sm text-brand-400 hover:text-brand-300 transition-colors"
                   >
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <BsBoxArrowUpRight className="w-3.5 h-3.5" />
                     View Posting
                   </a>
                 )}
@@ -199,7 +190,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
             className="p-2 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
             title="Delete job"
           >
-            <Trash2 className="w-5 h-5" />
+            <BsTrash className="w-5 h-5" />
           </button>
         </div>
 
@@ -230,7 +221,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
           {/* Description */}
           <div className="glass rounded-2xl p-6">
             <h2 className="text-base font-semibold mb-4 flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-brand-400" />
+              <BsBriefcase className="w-4 h-4 text-brand-400" />
               Job Description
             </h2>
             {job.description ? (
@@ -247,7 +238,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
           {/* Timeline */}
           <div className="glass rounded-2xl p-6">
             <h2 className="text-base font-semibold mb-4 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-brand-400" />
+              <BsCalendar3 className="w-4 h-4 text-brand-400" />
               Timeline
             </h2>
             <div className="space-y-3">
@@ -277,7 +268,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
           {job.comp_details && (
             <div className="glass rounded-2xl p-6">
               <h2 className="text-base font-semibold mb-4 flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-emerald-400" />
+                <BsCurrencyDollar className="w-4 h-4 text-emerald-400" />
                 Compensation Details
               </h2>
               <div className="grid grid-cols-2 gap-4">
@@ -334,7 +325,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
               {/* Score card */}
               <div className="glass rounded-2xl p-6">
                 <h2 className="text-base font-semibold mb-4 flex items-center gap-2">
-                  <Star className="w-4 h-4 text-amber-400" />
+                  <BsStar className="w-4 h-4 text-amber-400" />
                   AI Evaluation
                 </h2>
                 <div className="flex items-center gap-5 mb-4">
@@ -367,13 +358,13 @@ export default function JobDetail({ jobId }: JobDetailProps) {
               {/* Fit reasons */}
               <div className="glass rounded-2xl p-6">
                 <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <BsCheckCircleFill className="w-4 h-4 text-emerald-400" />
                   Why It Fits
                 </h3>
                 <ul className="space-y-2">
                   {job.evaluation.fit_reasons.map((reason, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-zinc-600 dark:text-gray-400">
-                      <ChevronRight className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <BsChevronRight className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0 mt-0.5" />
                       {reason}
                     </li>
                   ))}
@@ -383,13 +374,13 @@ export default function JobDetail({ jobId }: JobDetailProps) {
               {/* Concerns */}
               <div className="glass rounded-2xl p-6">
                 <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <XCircle className="w-4 h-4 text-amber-400" />
+                  <BsXCircle className="w-4 h-4 text-amber-400" />
                   Concerns
                 </h3>
                 <ul className="space-y-2">
                   {job.evaluation.concerns.map((concern, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-zinc-600 dark:text-gray-400">
-                      <ChevronRight className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <BsChevronRight className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
                       {concern}
                     </li>
                   ))}
@@ -399,13 +390,13 @@ export default function JobDetail({ jobId }: JobDetailProps) {
               {/* Key requirements */}
               <div className="glass rounded-2xl p-6">
                 <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-blue-400" />
+                  <BsShield className="w-4 h-4 text-blue-400" />
                   Key Requirements
                 </h3>
                 <ul className="space-y-2">
                   {job.evaluation.key_requirements.map((req, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-zinc-600 dark:text-gray-400">
-                      <Target className="w-3 h-3 text-blue-500 flex-shrink-0 mt-1" />
+                      <BsBullseye className="w-3 h-3 text-blue-500 flex-shrink-0 mt-1" />
                       {req}
                     </li>
                   ))}
@@ -414,7 +405,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
             </>
           ) : (
             <div className="glass rounded-2xl p-6 text-center">
-              <Star className="w-10 h-10 text-zinc-700 dark:text-zinc-300 dark:text-gray-700 mx-auto mb-3" />
+              <BsStar className="w-10 h-10 text-zinc-700 dark:text-zinc-300 dark:text-gray-700 mx-auto mb-3" />
               <h3 className="text-sm font-semibold text-zinc-600 dark:text-gray-400 mb-1">
                 Not Evaluated Yet
               </h3>
@@ -422,7 +413,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 Run AI evaluation to get a fitness score, tier assignment, and detailed
                 analysis.
               </p>
-              <button className="px-4 py-2 rounded-lg gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity">
+              <button onClick={() => alert("AI Evaluation feature coming soon!")} className="px-4 py-2 rounded-lg gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity">
                 Evaluate with AI
               </button>
             </div>
@@ -442,7 +433,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                     return linkedResume ? (
                       <div className="p-3">
                         <div className="flex items-center gap-2 mb-2">
-                          <FileText className="w-3.5 h-3.5 text-brand-400" />
+                          <BsFileEarmarkText className="w-3.5 h-3.5 text-brand-400" />
                           <span className="text-xs font-medium text-zinc-600 dark:text-gray-400">
                             Linked Resume
                           </span>
@@ -477,12 +468,12 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                   className="flex items-center justify-between p-3 rounded-lg bg-brand-500/5 border border-brand-500/10 hover:bg-brand-500/10 hover:border-brand-500/20 transition-all group"
                 >
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-brand-400" />
+                    <BsStars className="w-4 h-4 text-brand-400" />
                     <span className="text-sm text-brand-300 font-medium">
                       Tailor Resume for This Job
                     </span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-brand-500 group-hover:text-brand-400" />
+                  <BsChevronRight className="w-4 h-4 text-brand-500 group-hover:text-brand-400" />
                 </Link>
               )}
 
@@ -493,12 +484,22 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 <span className="text-sm text-zinc-600 dark:text-gray-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-900 dark:hover:text-gray-200">
                   Start Interview Prep
                 </span>
-                <ChevronRight className="w-4 h-4 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-900 dark:hover:text-gray-400" />
+                <BsChevronRight className="w-4 h-4 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-900 dark:hover:text-gray-400" />
               </Link>
             </div>
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title="Delete Job"
+        message="Are you sure you want to delete this job? This action cannot be undone."
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 }

@@ -1,5 +1,11 @@
+"use client";
+
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
+
+const AddJobDialog = dynamic(() => import("@/components/pipeline/AddJobDialog"), { ssr: false });
 
 export default function DashboardLayout({
   children,
@@ -12,10 +18,11 @@ export default function DashboardLayout({
       <div className="hidden md:block">
         <Sidebar />
       </div>
-      <div className="md:ml-[240px] transition-all duration-300">
+      <div className="md:ml-[260px] transition-all duration-300">
         <Topbar />
         <main className="p-4 md:p-6">{children}</main>
       </div>
+      <Suspense fallback={null}><AddJobDialog /></Suspense>
     </div>
   );
 }

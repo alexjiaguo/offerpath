@@ -1,17 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  BookOpen,
-  Library,
-  MessageSquare,
-  Brain,
-  Sparkles,
-  ChevronRight,
-  Star,
-  Trophy,
-  ArrowRight,
-} from "lucide-react";
+import { BsArrowRight, BsBook, BsChatSquareText, BsChevronRight, BsCollection, BsCpu, BsStar, BsStars, BsTrophy } from 'react-icons/bs';
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useInterviewStore } from "@/store/interviewStore";
 import { cn } from "@/lib/utils";
@@ -55,7 +45,7 @@ export default function InterviewPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-3 mb-1">
-            <Brain className="w-7 h-7 text-brand-400" />
+            <BsCpu className="w-7 h-7 text-brand-400" />
             Interview Prep
           </h1>
           <p className="text-sm text-zinc-500 dark:text-gray-500">
@@ -66,7 +56,7 @@ export default function InterviewPage() {
           href="/dashboard/interview/stories"
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-200 text-zinc-700 dark:text-gray-300 text-sm font-medium hover:text-zinc-900 dark:hover:text-white hover:bg-surface-300 transition-all"
         >
-          <Library className="w-4 h-4" />
+          <BsCollection className="w-4 h-4" />
           Story Bank ({stories.length})
         </Link>
       </div>
@@ -77,25 +67,25 @@ export default function InterviewPage() {
           {
             label: "Active Preps",
             value: jobsWithPrep.length,
-            icon: BookOpen,
+            icon: BsBook,
             color: "text-blue-400",
           },
           {
             label: "STAR Stories",
             value: stories.length,
-            icon: Library,
+            icon: BsCollection,
             color: "text-purple-400",
           },
           {
             label: "Mock Sessions",
             value: mockSessions.length,
-            icon: MessageSquare,
+            icon: BsChatSquareText,
             color: "text-emerald-400",
           },
           {
             label: "Avg Score",
             value: avgScore > 0 ? avgScore.toFixed(1) : "—",
-            icon: Trophy,
+            icon: BsTrophy,
             color: "text-amber-400",
           },
         ].map((stat) => (
@@ -113,7 +103,7 @@ export default function InterviewPage() {
       {jobsNeedPrep.length > 0 && (
         <div className="mb-8">
           <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-400" />
+            <BsStars className="w-4 h-4 text-amber-400" />
             Needs Prep ({jobsNeedPrep.length})
           </h2>
           <div className="space-y-2">
@@ -125,7 +115,7 @@ export default function InterviewPage() {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-amber-400" />
+                    <BsStars className="w-5 h-5 text-amber-400" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold group-hover:text-brand-300 transition-colors">
@@ -138,7 +128,7 @@ export default function InterviewPage() {
                 </div>
                 <div className="flex items-center gap-2 text-brand-400 opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="text-xs font-medium">Generate Prep</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <BsArrowRight className="w-4 h-4" />
                 </div>
               </Link>
             ))}
@@ -149,12 +139,12 @@ export default function InterviewPage() {
       {/* Active Preps */}
       <div className="mb-8">
         <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-          <BookOpen className="w-4 h-4 text-blue-400" />
+          <BsBook className="w-4 h-4 text-blue-400" />
           Active Prep Packages
         </h2>
         {jobsWithPrep.length === 0 ? (
           <div className="glass rounded-2xl p-8 text-center">
-            <Brain className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
+            <BsCpu className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
             <p className="text-zinc-500 dark:text-gray-500 text-sm mb-4">
               No prep packages yet. Move jobs to &quot;Applied&quot; or &quot;Interviewing&quot; and generate a prep package.
             </p>
@@ -192,23 +182,23 @@ export default function InterviewPage() {
                         <p className="text-xs text-zinc-500 dark:text-gray-500">{job.company?.name}</p>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 group-hover:text-brand-400 transition-colors" />
+                    <BsChevronRight className="w-4 h-4 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 group-hover:text-brand-400 transition-colors" />
                   </div>
 
                   <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-gray-500">
                     {prep && (
                       <span className="flex items-center gap-1">
-                        <Brain className="w-3 h-3" />
+                        <BsCpu className="w-3 h-3" />
                         {prep.questions.length} questions
                       </span>
                     )}
                     <span className="flex items-center gap-1">
-                      <MessageSquare className="w-3 h-3" />
+                      <BsChatSquareText className="w-3 h-3" />
                       {jobMocks.length} mocks
                     </span>
                     {bestScore && (
                       <span className="flex items-center gap-1 text-emerald-400">
-                        <Star className="w-3 h-3" />
+                        <BsStar className="w-3 h-3" />
                         Best: {bestScore.toFixed(1)}
                       </span>
                     )}
@@ -224,7 +214,7 @@ export default function InterviewPage() {
       {recentMocks.length > 0 && (
         <div>
           <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-emerald-400" />
+            <BsChatSquareText className="w-4 h-4 text-emerald-400" />
             Recent Mock Sessions
           </h2>
           <div className="space-y-2">
@@ -241,7 +231,7 @@ export default function InterviewPage() {
                       "w-10 h-10 rounded-lg flex items-center justify-center",
                       mock.feedback ? "bg-emerald-500/10" : "bg-amber-500/10"
                     )}>
-                      <Trophy className={cn(
+                      <BsTrophy className={cn(
                         "w-5 h-5",
                         mock.feedback ? "text-emerald-400" : "text-amber-400"
                       )} />

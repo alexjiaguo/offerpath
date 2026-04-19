@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { TemplateProps, vis, formatDates, getSkills, getTechSkills } from './shared';
+import { TemplateProps, vis, formatDates, getSkills, getTechSkills, sanitizeHtml } from './shared';
 
 const PremiumHeadshot: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sectionVisibility }) => {
   const skills = getSkills(data);
@@ -86,7 +86,7 @@ const PremiumHeadshot: React.FC<TemplateProps> = ({ data, theme, sectionOrder, s
         fontSize: '11px', color: '#3a3a5c', lineHeight: 1.38,
         marginBottom: '8px', padding: '6px 9px',
         background: '#f5f6fa', borderLeft: `2.5px solid ${theme.primaryColor}`,
-      }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+      }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.summary) }} />
     ) : null,
 
     experience: () => (data.experience || []).length > 0 ? (
@@ -101,7 +101,7 @@ const PremiumHeadshot: React.FC<TemplateProps> = ({ data, theme, sectionOrder, s
             <div style={{ fontSize: '11px', color: '#555', fontStyle: 'italic', marginBottom: '3px' }}>{item.title}</div>
             <ul style={{ paddingLeft: '13px', margin: 0 }}>
               {item.bullets.map((b, i) => (
-                <li key={i} style={{ fontSize: '11px', color: theme.textColor, marginBottom: '2px' }} dangerouslySetInnerHTML={{ __html: b }} />
+                <li key={i} style={{ fontSize: '11px', color: theme.textColor, marginBottom: '2px' }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(b) }} />
               ))}
             </ul>
           </div>

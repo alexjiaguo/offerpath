@@ -4,8 +4,10 @@
    ═══════════════════════════════════════════════════ */
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { Resume, SectionKey, ResumeTheme, ResumeData } from "@/types";
 import { DEFAULT_SECTION_VISIBILITY } from "@/types";
+import { generateId } from "@/lib/utils";
 
 // ── Store Types ─────────────────────────────────────
 
@@ -18,6 +20,7 @@ export interface HistorySnapshot {
 export interface ResumeState {
   resumes: Resume[];
   history: {
+    resumeId: string | null;
     past: HistorySnapshot[];
     future: HistorySnapshot[];
   };
@@ -351,17 +354,13 @@ function computeATSScore(resumeId: string, jobId: string): number {
   return 45 + (seed % 44);
 }
 
-// ── Helper: UUID ────────────────────────────────────
-
-function generateId(): string {
-  return crypto.randomUUID();
-}
-
 // ── Store ───────────────────────────────────────────
 
-export const useResumeStore = create<ResumeState>((set, get) => ({
+export const useResumeStore = create<ResumeState>()(
+  persist(
+    (set, get) => ({
   resumes: MOCK_RESUMES,
-  history: { past: [], future: [] },
+  history: { resumeId: null, past: [], future: [] },
   canUndo: false,
   canRedo: false,
 
@@ -371,6 +370,12 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
     const resume = get().resumes.find((r) => r.id === id);
     if (!resume) return;
 
+    // If history belongs to a different resume, reset it
+    const currentHistoryResumeId = get().history.resumeId;
+    if (currentHistoryResumeId && currentHistoryResumeId !== id) {
+      set({ history: { resumeId: id, past: [], future: [] }, canUndo: false, canRedo: false });
+    }
+
     const snapshot: HistorySnapshot = {
       data: JSON.parse(JSON.stringify(resume.data)),
       template: resume.template,
@@ -379,7 +384,8 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
 
     set((state) => ({
       history: {
-        past: [...state.history.past, snapshot].slice(-50),
+        resumeId: id,
+        past: [...(state.history.resumeId === id ? state.history.past : []), snapshot].slice(-50),
         future: [],
       },
       canUndo: true,
@@ -388,8 +394,9 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   },
 
   undo: (id) => {
-    const { past, future } = get().history;
-    if (past.length === 0) return;
+    const { past, future, resumeId } = get().history;
+    // Only allow undo for the resume that owns the history
+    if (past.length === 0 || (resumeId && resumeId !== id)) return;
 
     const resume = get().resumes.find((r) => r.id === id);
     if (!resume) return;
@@ -408,6 +415,7 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
         r.id === id ? { ...r, ...previous, updated_at: new Date().toISOString() } : r
       ),
       history: {
+        resumeId: id,
         past: newPast,
         future: [currentSnapshot, ...future],
       },
@@ -417,8 +425,8 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   },
 
   redo: (id) => {
-    const { past, future } = get().history;
-    if (future.length === 0) return;
+    const { past, future, resumeId } = get().history;
+    if (future.length === 0 || (resumeId && resumeId !== id)) return;
 
     const resume = get().resumes.find((r) => r.id === id);
     if (!resume) return;
@@ -437,6 +445,7 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
         r.id === id ? { ...r, ...next, updated_at: new Date().toISOString() } : r
       ),
       history: {
+        resumeId: id,
         past: [...past, currentSnapshot],
         future: newFuture,
       },
@@ -535,4 +544,12 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   getTailoredResumes: () => get().resumes.filter((r) => !r.is_base),
 
   getATSScore: (resumeId, jobId) => computeATSScore(resumeId, jobId),
-}));
+    }),
+    {
+      name: "offerpath-resume",
+      partialize: (state) => ({
+        resumes: state.resumes,
+      }),
+    }
+  )
+);

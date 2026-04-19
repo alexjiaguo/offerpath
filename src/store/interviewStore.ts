@@ -4,6 +4,7 @@
    ═══════════════════════════════════════════════════ */
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type {
   Story,
   InterviewPrep,
@@ -14,6 +15,7 @@ import type {
   QuestionCategory,
 } from "@/types";
 import { generateInterviewPrep } from "@/lib/aiService";
+import { generateId } from "@/lib/utils";
 
 // ── Store Types ─────────────────────────────────────
 
@@ -330,10 +332,6 @@ const MOCK_INTERVIEW_QUESTIONS = [
 
 // ── Helpers ─────────────────────────────────────────
 
-function generateId(): string {
-  return crypto.randomUUID();
-}
-
 function generateMockFeedback(): MockFeedback {
   return {
     overall_score: 3.5 + Math.random() * 1.5,
@@ -364,7 +362,9 @@ function generateMockFeedback(): MockFeedback {
 
 // ── Store ───────────────────────────────────────────
 
-export const useInterviewStore = create<InterviewState>((set, get) => ({
+export const useInterviewStore = create<InterviewState>()(
+  persist(
+    (set, get) => ({
   stories: MOCK_STORIES,
   preps: MOCK_PREPS,
   mockSessions: MOCK_SESSIONS,
@@ -580,6 +580,12 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
               message: MOCK_INTERVIEW_QUESTIONS[questionIndex],
               timestamp: new Date(Date.now() + 2000).toISOString(),
             });
+          } else {
+            transcript.push({
+              role: "interviewer",
+              message: "Thank you for your time. Do you have any questions for me about the role or the team?",
+              timestamp: new Date(Date.now() + 2000).toISOString(),
+            });
           }
         }
 
@@ -630,4 +636,14 @@ export const useInterviewStore = create<InterviewState>((set, get) => ({
   getStoryById: (id) => get().stories.find((s) => s.id === id),
 
   getMockById: (id) => get().mockSessions.find((m) => m.id === id),
-}));
+    }),
+    {
+      name: "offerpath-interview",
+      partialize: (state) => ({
+        stories: state.stories,
+        preps: state.preps,
+        mockSessions: state.mockSessions,
+      }),
+    }
+  )
+);

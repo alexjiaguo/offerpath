@@ -2,20 +2,8 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  Kanban,
-  FileText,
-  TrendingUp,
-  Star,
-  Briefcase,
-  Plus,
-  CheckCircle2,
-  Compass,
-  ChevronRight,
-  Activity,
-  Zap,
-  ArrowRight,
-} from "lucide-react";
+import { BsActivity, BsArrowRight, BsBriefcase, BsCheckCircleFill, BsChevronRight, BsCompass, BsFileEarmarkText, BsGraphUp, BsKanban, BsLightningFill, BsPlus, BsStar } from 'react-icons/bs';
+import { useMemo } from "react";
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
@@ -29,16 +17,17 @@ import { cn } from "@/lib/utils";
 export default function DashboardPage() {
   const { getStats } = usePipelineStore();
   const { resumes } = useResumeStore();
+  const { jobs: discoveredJobs, companies: discoveredCompanies } = useDiscoveryStore();
   const stats = getStats();
 
   const baseResumes = resumes.filter((r) => r.is_base).length;
   const tailoredResumes = resumes.filter((r) => !r.is_base).length;
 
-  const MODULE_CARDS = [
+  const MODULE_CARDS = useMemo(() => [
     {
       title: "Job Pipeline",
       desc: "Manage and track your active job applications",
-      icon: Kanban,
+      icon: BsKanban,
       href: "/dashboard/pipeline",
       color: "oklch(0.6 0.15 256)",
       stats: [
@@ -50,7 +39,7 @@ export default function DashboardPage() {
     {
       title: "Resume Studio",
       desc: "Create and tailor high-impact resumes",
-      icon: FileText,
+      icon: BsFileEarmarkText,
       href: "/dashboard/resume",
       color: "oklch(0.5 0.22 280)",
       stats: [
@@ -62,35 +51,35 @@ export default function DashboardPage() {
     {
       title: "Job Discovery",
       desc: "Scan for new opportunities across platforms",
-      icon: Compass,
+      icon: BsCompass,
       href: "/dashboard/discover",
       color: "oklch(0.6 0.2 310)",
       stats: [
-        { label: "Leads", value: String(useDiscoveryStore.getState().jobs.filter(j => !j.dismissed).length) },
-        { label: "Companies", value: String(useDiscoveryStore.getState().companies.length) },
+        { label: "Leads", value: String(discoveredJobs.filter(j => !j.dismissed).length) },
+        { label: "Companies", value: String(discoveredCompanies.length) },
       ],
       cta: "Discover Jobs",
     },
-  ];
+  ], [stats, baseResumes, tailoredResumes, discoveredJobs, discoveredCompanies]);
 
-  const QUICK_STATS = [
-    { label: "Total Jobs", value: String(stats.total), icon: Briefcase },
+  const QUICK_STATS = useMemo(() => [
+    { label: "Total Jobs", value: String(stats.total), icon: BsBriefcase },
     {
       label: "Success Rate",
       value: stats.interviewRate > 0 ? `${stats.interviewRate.toFixed(1)}%` : "—",
-      icon: TrendingUp,
+      icon: BsGraphUp,
     },
     {
       label: "Average Score",
       value: stats.avgScore > 0 ? stats.avgScore.toFixed(1) : "—",
-      icon: Star,
+      icon: BsStar,
     },
     {
       label: "Added This Week",
       value: `+${stats.addedThisWeek}`,
-      icon: Activity,
+      icon: BsActivity,
     },
-  ];
+  ], [stats]);
 
   return (
     <div className="max-w-7xl mx-auto space-y-12 pb-20">
@@ -120,7 +109,7 @@ export default function DashboardPage() {
             href="/dashboard/pipeline/add"
             className="group flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-white text-black text-sm font-bold hover:bg-zinc-100 transition-all shadow-xl shadow-white/5"
           >
-            <Plus className="w-5 h-5" />
+            <BsPlus className="w-5 h-5" />
             Add New Job
           </Link>
         </motion.div>
@@ -196,7 +185,7 @@ export default function DashboardPage() {
                 className="group/btn flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-300 uppercase tracking-widest hover:text-zinc-900 dark:hover:text-white transition-all"
               >
                 {mod.cta}
-                <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                <BsChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
               </Link>
             </div>
           </motion.div>
@@ -218,7 +207,7 @@ export default function DashboardPage() {
             className="liquid-glass rounded-[32px] p-8 h-full"
           >
             <div className="flex items-center gap-3 mb-8">
-              <Zap className="w-6 h-6 text-brand-500 dark:text-brand-400" />
+              <BsLightningFill className="w-6 h-6 text-brand-500 dark:text-brand-400" />
               <h2 className="text-xl font-bold font-display text-zinc-900 dark:text-white">Getting Started</h2>
               <div className="ml-auto flex items-center gap-2">
                 <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Progress</div>
@@ -267,7 +256,7 @@ export default function DashboardPage() {
                       ? "bg-brand-500 shadow-[0_0_12px_rgba(99,102,241,0.4)]" 
                       : "border-2 border-zinc-700 group-hover:border-zinc-500"
                   )}>
-                    {item.done && <CheckCircle2 className="w-4 h-4 text-zinc-900 dark:text-white" />}
+                    {item.done && <BsCheckCircleFill className="w-4 h-4 text-zinc-900 dark:text-white" />}
                   </div>
                   <span
                     className={cn(
@@ -278,7 +267,7 @@ export default function DashboardPage() {
                     {item.step}
                   </span>
                   <div className="ml-auto w-8 h-8 rounded-lg bg-zinc-100 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <ArrowRight className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                    <BsArrowRight className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
                   </div>
                 </Link>
               ))}

@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { TemplateProps, vis, formatDates, getSkills, getTechSkills, paperStyle } from './shared';
+import { TemplateProps, vis, formatDates, getSkills, getTechSkills, paperStyle, sanitizeHtml } from './shared';
 
 const ElegantTwoColumn: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sectionVisibility }) => {
   const skills = getSkills(data);
@@ -25,7 +25,7 @@ const ElegantTwoColumn: React.FC<TemplateProps> = ({ data, theme, sectionOrder, 
     summary: () => data.summary ? (
       <section key="summary-r" style={{ marginBottom: '25px' }}>
         {sectionTitle('Profile')}
-        <div style={{ fontSize: '11px', lineHeight: 1.5, color: '#555' }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+        <div style={{ fontSize: '11px', lineHeight: 1.5, color: '#555' }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.summary) }} />
       </section>
     ) : null,
 
@@ -98,7 +98,7 @@ const ElegantTwoColumn: React.FC<TemplateProps> = ({ data, theme, sectionOrder, 
             </div>
             <span style={{ fontStyle: 'italic', color: '#7f8c8d', fontSize: `${theme.companyFontSize || 11}px`, display: 'block', marginBottom: '6px' }}>{item.company}{item.location ? `, ${item.location}` : ''}</span>
             <ul style={{ paddingLeft: '15px', listStyleType: 'circle', margin: 0 }}>
-              {item.bullets.map((b, i) => <li key={i} style={{ marginBottom: '5px', fontSize: '11px', lineHeight: theme.lineHeight || 1.4 }} dangerouslySetInnerHTML={{ __html: b }} />)}
+              {item.bullets.map((b, i) => <li key={i} style={{ marginBottom: '5px', fontSize: '11px', lineHeight: theme.lineHeight || 1.4 }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(b) }} />)}
             </ul>
           </div>
         ))}

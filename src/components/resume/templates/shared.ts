@@ -1,7 +1,15 @@
 'use client';
 
 import React from 'react';
+import DOMPurify from 'dompurify';
 import { ResumeData, ResumeTheme, SectionKey, SkillItem, TechnicalSkillCategory, DEFAULT_SECTION_VISIBILITY } from '@/types';
+
+const ALLOWED_TAGS = ['strong', 'em', 'u', 'b', 'i', 'br', 'span', 'mark', 'ul', 'ol', 'li'];
+const ALLOWED_ATTR: string[] = [];
+
+export function sanitizeHtml(html: string): string {
+  return DOMPurify.sanitize(html, { ALLOWED_TAGS, ALLOWED_ATTR });
+}
 
 /* ─── Shared props for all templates ─── */
 export interface TemplateProps {

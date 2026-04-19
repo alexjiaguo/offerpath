@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { usePipelineStore } from "@/store/pipelineStore";
 import {
   BarChart,
@@ -13,14 +14,7 @@ import {
   PieChart,
   Pie,
 } from "recharts";
-import {
-  TrendingUp,
-  Target,
-  Briefcase,
-  Star,
-  ArrowUpRight,
-  Percent,
-} from "lucide-react";
+import { BsArrowUpRight, BsBriefcase, BsBullseye, BsGraphUp, BsPercent, BsStar } from 'react-icons/bs';
 
 
 /* ═══════════════════════════════════════════════════
@@ -60,95 +54,65 @@ const CustomTooltip = ({
 };
 
 export default function AnalyticsCharts() {
-  const { jobs, getStats, getUniqueArchetypes } = usePipelineStore();
+  const jobs = usePipelineStore((s) => s.jobs);
+  const getStats = usePipelineStore((s) => s.getStats);
+  const getUniqueArchetypes = usePipelineStore((s) => s.getUniqueArchetypes);
   const stats = getStats();
 
   // ── Chart Data ──
 
-  // Pipeline funnel
-  const funnelData = [
+  const funnelData = useMemo(() => [
     { name: "New", count: stats.byStatus.new || 0, color: STATUS_COLORS.new },
     { name: "Evaluated", count: stats.byStatus.evaluated || 0, color: STATUS_COLORS.evaluated },
     { name: "Applied", count: stats.byStatus.applied || 0, color: STATUS_COLORS.applied },
     { name: "Interviewing", count: stats.byStatus.interviewing || 0, color: STATUS_COLORS.interviewing },
     { name: "Offered", count: stats.byStatus.offered || 0, color: STATUS_COLORS.offered },
     { name: "Rejected", count: stats.byStatus.rejected || 0, color: STATUS_COLORS.rejected },
-  ];
+  ], [stats]);
 
-  // Score distribution
-  const scoredJobs = jobs.filter((j) => j.score !== undefined);
-  const scoreDistribution = [
-    {
-      range: "1.0–2.4",
-      count: scoredJobs.filter((j) => j.score! < 2.5).length,
-      color: SCORE_COLORS[0],
-    },
-    {
-      range: "2.5–3.4",
-      count: scoredJobs.filter((j) => j.score! >= 2.5 && j.score! < 3.5).length,
-      color: SCORE_COLORS[1],
-    },
-    {
-      range: "3.5–4.4",
-      count: scoredJobs.filter((j) => j.score! >= 3.5 && j.score! < 4.5).length,
-      color: SCORE_COLORS[2],
-    },
-    {
-      range: "4.5–5.0",
-      count: scoredJobs.filter((j) => j.score! >= 4.5).length,
-      color: SCORE_COLORS[3],
-    },
-  ];
+  const scoreDistribution = useMemo(() => {
+    const scoredJobs = jobs.filter((j) => j.score !== undefined);
+    return [
+      { range: "1.0–2.4", count: scoredJobs.filter((j) => j.score! < 2.5).length, color: SCORE_COLORS[0] },
+      { range: "2.5–3.4", count: scoredJobs.filter((j) => j.score! >= 2.5 && j.score! < 3.5).length, color: SCORE_COLORS[1] },
+      { range: "3.5–4.4", count: scoredJobs.filter((j) => j.score! >= 3.5 && j.score! < 4.5).length, color: SCORE_COLORS[2] },
+      { range: "4.5–5.0", count: scoredJobs.filter((j) => j.score! >= 4.5).length, color: SCORE_COLORS[3] },
+    ];
+  }, [jobs]);
 
-  // Archetype distribution
   const archetypes = getUniqueArchetypes();
-  const archetypeData = archetypes
-    .map((a) => ({
-      name: a,
-      count: jobs.filter((j) => j.archetype === a).length,
-    }))
-    .sort((a, b) => b.count - a.count);
+  const archetypeData = useMemo(() => archetypes
+    .map((a) => ({ name: a, count: jobs.filter((j) => j.archetype === a).length }))
+    .sort((a, b) => b.count - a.count),
+  [jobs, archetypes]);
 
-  // Tier distribution for pie chart
-  const tierData = [
-    {
-      name: "Tier 1",
-      value: jobs.filter((j) => j.tier === 1).length,
-      color: "#fbbf24",
-    },
-    {
-      name: "Tier 2",
-      value: jobs.filter((j) => j.tier === 2).length,
-      color: "#9ca3af",
-    },
-    {
-      name: "Tier 3",
-      value: jobs.filter((j) => j.tier === 3).length,
-      color: "#b45309",
-    },
-  ].filter((d) => d.value > 0);
+  const tierData = useMemo(() => [
+    { name: "Tier 1", value: jobs.filter((j) => j.tier === 1).length, color: "#fbbf24" },
+    { name: "Tier 2", value: jobs.filter((j) => j.tier === 2).length, color: "#9ca3af" },
+    { name: "Tier 3", value: jobs.filter((j) => j.tier === 3).length, color: "#b45309" },
+  ].filter((d) => d.value > 0), [jobs]);
 
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
-          icon={<Briefcase className="w-5 h-5 text-brand-400" />}
+          icon={<BsBriefcase className="w-5 h-5 text-brand-400" />}
           label="Total Jobs"
           value={stats.total.toString()}
         />
         <StatCard
-          icon={<Star className="w-5 h-5 text-amber-400" />}
+          icon={<BsStar className="w-5 h-5 text-amber-400" />}
           label="Avg Score"
           value={stats.avgScore > 0 ? stats.avgScore.toFixed(1) : "—"}
         />
         <StatCard
-          icon={<ArrowUpRight className="w-5 h-5 text-emerald-400" />}
+          icon={<BsArrowUpRight className="w-5 h-5 text-emerald-400" />}
           label="Interview Rate"
           value={stats.interviewRate > 0 ? `${Math.round(stats.interviewRate)}%` : "—"}
         />
         <StatCard
-          icon={<Percent className="w-5 h-5 text-purple-400" />}
+          icon={<BsPercent className="w-5 h-5 text-purple-400" />}
           label="Offer Rate"
           value={stats.offerRate > 0 ? `${Math.round(stats.offerRate)}%` : "—"}
         />
@@ -159,7 +123,7 @@ export default function AnalyticsCharts() {
         {/* Pipeline Funnel */}
         <div className="glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-            <Target className="w-4 h-4 text-brand-400" />
+            <BsBullseye className="w-4 h-4 text-brand-400" />
             Pipeline Funnel
           </h3>
           <ResponsiveContainer width="100%" height={240}>
@@ -185,7 +149,7 @@ export default function AnalyticsCharts() {
         {/* Score Distribution */}
         <div className="glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-            <Star className="w-4 h-4 text-amber-400" />
+            <BsStar className="w-4 h-4 text-amber-400" />
             Score Distribution
           </h3>
           <ResponsiveContainer width="100%" height={240}>
@@ -206,7 +170,7 @@ export default function AnalyticsCharts() {
         {/* Archetype Breakdown */}
         <div className="glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-            <Briefcase className="w-4 h-4 text-blue-400" />
+            <BsBriefcase className="w-4 h-4 text-blue-400" />
             By Archetype
           </h3>
           <ResponsiveContainer width="100%" height={240}>
@@ -228,7 +192,7 @@ export default function AnalyticsCharts() {
         {/* Tier Distribution */}
         <div className="glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <BsGraphUp className="w-4 h-4 text-emerald-400" />
             Tier Breakdown
           </h3>
           <div className="flex items-center gap-8">

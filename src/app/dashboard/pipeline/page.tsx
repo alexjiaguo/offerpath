@@ -1,24 +1,15 @@
 "use client";
 
-import {
-  Kanban,
-  Plus,
-  Filter,
-  ArrowUpDown,
-  BarChart3,
-  Search,
-  X,
-} from "lucide-react";
+import { BsArrowDownUp, BsBarChartFill, BsFilter, BsKanban, BsPlus, BsSearch, BsX } from 'react-icons/bs';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
 import KanbanBoard from "@/components/pipeline/KanbanBoard";
-import AddJobDialog from "@/components/pipeline/AddJobDialog";
 import { useState } from "react";
 import type { SortField } from "@/store/pipelineStore";
 
 /* ═══════════════════════════════════════════════════
-   Pipeline Page — Kanban board + filter/sort toolbar
+   Pipeline Page — BsKanban board + filter/sort toolbar
    ═══════════════════════════════════════════════════ */
 
 const SORT_OPTIONS: { field: SortField; label: string }[] = [
@@ -55,7 +46,7 @@ export default function PipelinePage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <Kanban className="w-6 h-6 text-brand-400" />
+          <BsKanban className="w-6 h-6 text-brand-400" />
           <h1 className="text-2xl font-bold">Pipeline Tracker</h1>
           <span className="text-sm text-zinc-500 dark:text-gray-500">
             {stats.total} {stats.total === 1 ? "job" : "jobs"}
@@ -64,7 +55,7 @@ export default function PipelinePage() {
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 dark:text-gray-500" />
+            <BsSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 dark:text-gray-500" />
             <input
               type="text"
               value={filters.search}
@@ -77,12 +68,12 @@ export default function PipelinePage() {
                 onClick={() => setFilter({ search: "" })}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300"
               >
-                <X className="w-3 h-3" />
+                <BsX className="w-3 h-3" />
               </button>
             )}
           </div>
 
-          {/* Filter toggle */}
+          {/* BsFilter toggle */}
           <div className="relative">
             <button
               onClick={() => {
@@ -96,14 +87,14 @@ export default function PipelinePage() {
                   : "bg-surface-100 border-white/[0.06] text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200"
               )}
             >
-              <Filter className="w-4 h-4" />
-              Filter
+              <BsFilter className="w-4 h-4" />
+              BsFilter
               {hasActiveFilters && (
                 <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
               )}
             </button>
 
-            {/* Filter dropdown */}
+            {/* BsFilter dropdown */}
             {showFilters && (
               <div className="absolute right-0 top-full mt-2 w-64 bg-surface-50 border border-white/[0.08] rounded-xl shadow-2xl p-4 z-20 animate-scale-in">
                 <div className="flex items-center justify-between mb-3">
@@ -177,7 +168,7 @@ export default function PipelinePage() {
               }}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
             >
-              <ArrowUpDown className="w-4 h-4" />
+              <BsArrowDownUp className="w-4 h-4" />
               Sort
             </button>
 
@@ -212,7 +203,7 @@ export default function PipelinePage() {
             href="/dashboard/pipeline/analytics"
             className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
           >
-            <BarChart3 className="w-4 h-4" />
+            <BsBarChartFill className="w-4 h-4" />
             <span className="hidden sm:inline">Analytics</span>
           </Link>
 
@@ -221,7 +212,7 @@ export default function PipelinePage() {
             onClick={() => setAddJobDialogOpen(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-lg gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
           >
-            <Plus className="w-4 h-4" />
+            <BsPlus className="w-4 h-4" />
             Add Job
           </button>
         </div>
@@ -238,11 +229,8 @@ export default function PipelinePage() {
         />
       )}
 
-      {/* Kanban Board */}
+      {/* BsKanban Board */}
       <KanbanBoard />
-
-      {/* Add Job Dialog */}
-      <AddJobDialog />
     </div>
   );
 }

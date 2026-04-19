@@ -42,3 +42,7 @@ export function tierLabel(tier: number): { label: string; color: string } {
   };
   return tiers[tier] || tiers[3];
 }
+
+export function generateId(): string {
+  return crypto.randomUUID();
+}

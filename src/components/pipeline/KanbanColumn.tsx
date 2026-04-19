@@ -8,7 +8,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { Job, JobStatus } from "@/types";
 import JobCard from "./JobCard";
-import { Plus, LayoutGrid, Target, Send, MessageSquare, Award, XCircle } from "lucide-react";
+import { BsAward, BsBullseye, BsChatSquareText, BsGrid3X3, BsPlus, BsSend, BsXCircle } from 'react-icons/bs';
 
 /* ═══════════════════════════════════════════════════
    KanbanColumn v3 — Professional Job Pipeline
@@ -23,12 +23,12 @@ export interface ColumnConfig {
 }
 
 export const KANBAN_COLUMNS: ColumnConfig[] = [
-  { id: "new", title: "To Apply", icon: Target, color: "oklch(0.6 0.15 256)", dotColor: "bg-brand-500" },
-  { id: "evaluated", title: "Evaluated", icon: LayoutGrid, color: "oklch(0.6 0.1 220)", dotColor: "bg-blue-500" },
-  { id: "applied", title: "Applied", icon: Send, color: "oklch(0.6 0.2 150)", dotColor: "bg-emerald-500" },
-  { id: "interviewing", title: "Interviewing", icon: MessageSquare, color: "oklch(0.6 0.15 80)", dotColor: "bg-amber-500" },
-  { id: "offered", title: "Offer Received", icon: Award, color: "oklch(0.6 0.2 310)", dotColor: "bg-purple-500" },
-  { id: "rejected", title: "Archive", icon: XCircle, color: "oklch(0.6 0.1 20)", dotColor: "bg-red-500" },
+  { id: "new", title: "To Apply", icon: BsBullseye, color: "oklch(0.6 0.15 256)", dotColor: "bg-brand-500" },
+  { id: "evaluated", title: "Evaluated", icon: BsGrid3X3, color: "oklch(0.6 0.1 220)", dotColor: "bg-blue-500" },
+  { id: "applied", title: "Applied", icon: BsSend, color: "oklch(0.6 0.2 150)", dotColor: "bg-emerald-500" },
+  { id: "interviewing", title: "Interviewing", icon: BsChatSquareText, color: "oklch(0.6 0.15 80)", dotColor: "bg-amber-500" },
+  { id: "offered", title: "Offer Received", icon: BsAward, color: "oklch(0.6 0.2 310)", dotColor: "bg-purple-500" },
+  { id: "rejected", title: "Archive", icon: BsXCircle, color: "oklch(0.6 0.1 20)", dotColor: "bg-red-500" },
 ];
 
 interface KanbanColumnProps {
@@ -74,7 +74,7 @@ export default function KanbanColumn({ config, jobs, onAddClick }: KanbanColumnP
             onClick={onAddClick}
             className="w-8 h-8 rounded-lg bg-white/5 border border-zinc-200 dark:border-white/10 flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
           >
-            <Plus className="w-4.5 h-4.5" />
+            <BsPlus className="w-4.5 h-4.5" />
           </button>
         )}
       </div>
