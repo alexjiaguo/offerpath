@@ -52,7 +52,7 @@ export default function JobPrepPage({
   if (!job) {
     return (
       <div className="max-w-4xl mx-auto animate-fade-in">
-        <div className="glass rounded-2xl p-12 text-center">
+        <div className="liquid-glass rounded-2xl p-12 text-center">
           <BsExclamationCircle className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">Job not found</h2>
           <p className="text-sm text-zinc-500 dark:text-gray-500 mb-4">
@@ -96,7 +96,7 @@ export default function JobPrepPage({
       </Link>
 
       {/* Job Context Card */}
-      <div className="glass rounded-2xl p-6 mb-6">
+      <div className="liquid-glass rounded-2xl p-6 mb-6">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center text-lg font-bold text-zinc-900 dark:text-white flex-shrink-0">
             {(job.company?.name || "?").charAt(0)}
@@ -129,7 +129,7 @@ export default function JobPrepPage({
 
       {/* No prep yet — generate */}
       {!prep ? (
-        <div className="glass rounded-2xl p-12 text-center">
+        <div className="liquid-glass rounded-2xl p-12 text-center">
           <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mx-auto mb-6">
             <BsStars className="w-8 h-8 text-brand-400" />
           </div>
@@ -185,7 +185,7 @@ export default function JobPrepPage({
             <div className="space-y-5 animate-fade-in">
               {/* Company Research */}
               {prep.company_research && (
-                <div className="glass rounded-2xl p-6">
+                <div className="liquid-glass rounded-2xl p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <BsBook className="w-5 h-5 text-blue-400" />
                     <h2 className="text-base font-semibold">Company Research</h2>
@@ -198,7 +198,7 @@ export default function JobPrepPage({
 
               {/* Role Analysis */}
               {prep.role_analysis && (
-                <div className="glass rounded-2xl p-6">
+                <div className="liquid-glass rounded-2xl p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <BsCpu className="w-5 h-5 text-purple-400" />
                     <h2 className="text-base font-semibold">Role Analysis</h2>
@@ -217,7 +217,7 @@ export default function JobPrepPage({
               {prep.questions.map((q, i) => {
                 const isExpanded = expandedQuestion === q.id;
                 return (
-                  <div key={q.id} className="glass-hover rounded-xl overflow-hidden">
+                  <div key={q.id} className="glass-card rounded-xl overflow-hidden">
                     <button
                       onClick={() => setExpandedQuestion(isExpanded ? null : q.id)}
                       className="w-full p-4 text-left flex items-start gap-3"
@@ -273,7 +273,7 @@ export default function JobPrepPage({
           )}
 
           {/* Mock Interview Section */}
-          <div className="mt-8 glass rounded-2xl p-6">
+          <div className="mt-8 liquid-glass rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <BsChatSquareText className="w-5 h-5 text-brand-400" />

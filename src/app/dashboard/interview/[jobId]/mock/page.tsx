@@ -107,7 +107,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
       {/* No session yet */}
       {!session ? (
         <div className="flex-1 flex items-center justify-center">
-          <div className="glass rounded-2xl p-12 text-center max-w-lg">
+          <div className="liquid-glass rounded-2xl p-12 text-center max-w-lg">
             <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mx-auto mb-6">
               <BsChatSquareText className="w-8 h-8 text-brand-400" />
             </div>
@@ -130,7 +130,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
         /* Scorecard View */
         <div className="flex-1 overflow-y-auto space-y-5 animate-fade-in">
           {/* Overall Score */}
-          <div className="glass rounded-2xl p-8 text-center">
+          <div className="liquid-glass rounded-2xl p-8 text-center">
             <BsTrophy className="w-10 h-10 text-amber-400 mx-auto mb-4" />
             <p className="text-sm text-zinc-500 dark:text-gray-500 mb-1">Overall Score</p>
             <p className="text-5xl font-bold gradient-text mb-2">
@@ -149,7 +149,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
 
           {/* Category Scores */}
           {session.feedback.category_scores && (
-            <div className="glass rounded-2xl p-6">
+            <div className="liquid-glass rounded-2xl p-6">
               <div className="flex items-center gap-2 mb-4">
                 <BsBarChartFill className="w-5 h-5 text-brand-400" />
                 <h3 className="text-base font-semibold">Category Breakdown</h3>
@@ -175,7 +175,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
 
           {/* Strengths & Improvements */}
           <div className="grid md:grid-cols-2 gap-5">
-            <div className="glass rounded-2xl p-6">
+            <div className="liquid-glass rounded-2xl p-6">
               <div className="flex items-center gap-2 mb-4">
                 <BsGraphUp className="w-5 h-5 text-emerald-400" />
                 <h3 className="text-base font-semibold">Strengths</h3>
@@ -189,7 +189,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
                 ))}
               </ul>
             </div>
-            <div className="glass rounded-2xl p-6">
+            <div className="liquid-glass rounded-2xl p-6">
               <div className="flex items-center gap-2 mb-4">
                 <BsExclamationTriangle className="w-5 h-5 text-amber-400" />
                 <h3 className="text-base font-semibold">Areas to Improve</h3>
@@ -206,7 +206,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
           </div>
 
           {/* Tips */}
-          <div className="glass rounded-2xl p-6">
+          <div className="liquid-glass rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-4">
               <BsLightbulb className="w-5 h-5 text-brand-400" />
               <h3 className="text-base font-semibold">Tips for Next Time</h3>
@@ -250,7 +250,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
                     "max-w-[85%] rounded-2xl px-4 py-3",
                     msg.role === "candidate"
                       ? "bg-brand-600/30 border border-brand-500/20 text-zinc-900 dark:text-gray-100"
-                      : "glass text-zinc-800 dark:text-gray-200"
+                      : "liquid-glass text-zinc-800 dark:text-gray-200"
                   )}
                 >
                   <div className="flex items-center gap-2 mb-1">
@@ -269,7 +269,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
             {/* Typing indicator */}
             {isTyping && (
               <div className="flex justify-start animate-fade-in">
-                <div className="glass rounded-2xl px-4 py-3">
+                <div className="liquid-glass rounded-2xl px-4 py-3">
                   <div className="flex items-center gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" />
                     <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" style={{ animationDelay: "0.2s" }} />
@@ -283,7 +283,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
           </div>
 
           {/* Input */}
-          <div className="flex-shrink-0 glass rounded-2xl p-3 flex items-end gap-3">
+          <div className="flex-shrink-0 liquid-glass rounded-2xl p-3 flex items-end gap-3">
             <textarea
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}

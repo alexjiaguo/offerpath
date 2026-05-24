@@ -3,45 +3,32 @@
 import Link from "next/link";
 import { BsArrowLeft, BsCheckCircleFill, BsExclamationCircle, BsEye, BsEyeSlash, BsKey, BsLightningFill, BsPlus, BsTrash } from 'react-icons/bs';
 import { cn } from "@/lib/utils";
+import { useProfileStore, type ApiKeyEntry } from "@/store/profileStore";
 import { useState } from "react";
+import { toast } from "sonner";
+import { validateApiKey } from "@/lib/validateApiKey";
 
 /* ═══════════════════════════════════════════════════
    API Keys Page — BYO API key management
    /dashboard/settings/api-keys
    ═══════════════════════════════════════════════════ */
 
-interface ApiKeyEntry {
-  id: string;
-  provider: "openai" | "gemini" | "deepseek";
-  label: string;
-  key: string;
-  status: "active" | "invalid" | "untested";
-  addedAt: string;
-}
-
 const PROVIDER_INFO: Record<string, { name: string; color: string; icon: string }> = {
   openai: { name: "OpenAI", color: "text-emerald-400 bg-emerald-500/10", icon: "🤖" },
+  anthropic: { name: "Anthropic", color: "text-orange-400 bg-orange-500/10", icon: "🧠" },
   gemini: { name: "Google Gemini", color: "text-blue-400 bg-blue-500/10", icon: "✨" },
   deepseek: { name: "DeepSeek", color: "text-purple-400 bg-purple-500/10", icon: "🔮" },
 };
 
 export default function ApiKeysPage() {
-  const [keys, setKeys] = useState<ApiKeyEntry[]>([
-    {
-      id: "k1",
-      provider: "openai",
-      label: "Primary OpenAI Key",
-      key: "sk-proj-xxxx...xxxx",
-      status: "active",
-      addedAt: "2026-03-15",
-    },
-  ]);
+  const { apiKeys, addApiKey, removeApiKey, updateApiKeyStatus } = useProfileStore();
 
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newProvider, setNewProvider] = useState<"openai" | "gemini" | "deepseek">("openai");
+  const [newProvider, setNewProvider] = useState<ApiKeyEntry["provider"]>("openai");
   const [newLabel, setNewLabel] = useState("");
   const [newKey, setNewKey] = useState("");
   const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
+  const [testingKeys, setTestingKeys] = useState<Set<string>>(new Set());
 
   const toggleReveal = (id: string) => {
     setRevealedKeys((prev) => {
@@ -62,24 +49,39 @@ export default function ApiKeysPage() {
       status: "untested",
       addedAt: new Date().toISOString().split("T")[0],
     };
-    setKeys((prev) => [...prev, entry]);
+    addApiKey(entry);
     setNewLabel("");
     setNewKey("");
     setShowAddForm(false);
+    toast.success(`${PROVIDER_INFO[newProvider].name} key added`);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Remove this API key?")) {
-      setKeys((prev) => prev.filter((k) => k.id !== id));
-    }
+    removeApiKey(id);
+    toast.info("API key removed");
   };
 
-  const handleTest = (id: string) => {
-    setKeys((prev) =>
-      prev.map((k) =>
-        k.id === id ? { ...k, status: "active" as const } : k
-      )
-    );
+  const handleTest = async (id: string) => {
+    const entry = apiKeys.find((k) => k.id === id);
+    if (!entry) return;
+
+    setTestingKeys((prev) => new Set(prev).add(id));
+    try {
+      const result = await validateApiKey(entry.provider, entry.key);
+      if (result.valid) {
+        updateApiKeyStatus(id, "active");
+        toast.success("API key validated successfully");
+      } else {
+        updateApiKeyStatus(id, "invalid");
+        toast.error(result.error ?? "Invalid API key");
+      }
+    } finally {
+      setTestingKeys((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
   };
 
   const maskKey = (key: string) => {
@@ -105,7 +107,7 @@ export default function ApiKeysPage() {
       </div>
 
       {/* Info Banner */}
-      <div className="glass rounded-xl p-4 mb-6 flex items-start gap-3">
+      <div className="liquid-glass rounded-xl p-4 mb-6 flex items-start gap-3">
         <BsLightningFill className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5" />
         <div>
           <p className="text-sm font-medium mb-1">Bring Your Own Key (BYO)</p>
@@ -119,12 +121,12 @@ export default function ApiKeysPage() {
 
       {/* Existing Keys */}
       <div className="space-y-3 mb-6">
-        {keys.map((entry) => {
+        {apiKeys.map((entry) => {
           const provider = PROVIDER_INFO[entry.provider];
           const isRevealed = revealedKeys.has(entry.id);
 
           return (
-            <div key={entry.id} className="glass rounded-xl p-5">
+            <div key={entry.id} className="liquid-glass rounded-xl p-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <div
@@ -194,10 +196,15 @@ export default function ApiKeysPage() {
                 <div className="flex items-center gap-1.5">
                   {entry.status !== "active" && (
                     <button
-                      onClick={() => handleTest(entry.id)}
-                      className="px-3 py-1.5 rounded-lg bg-surface-200/50 text-zinc-600 dark:text-gray-400 hover:text-emerald-400 text-xs font-medium transition-all"
+                      onClick={() => void handleTest(entry.id)}
+                      disabled={testingKeys.has(entry.id)}
+                      className="px-3 py-1.5 rounded-lg bg-surface-200/50 text-zinc-600 dark:text-gray-400 hover:text-emerald-400 text-xs font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed min-w-[52px] flex items-center justify-center"
                     >
-                      Test
+                      {testingKeys.has(entry.id) ? (
+                        <div className="w-3 h-3 border-2 border-emerald-400/30 border-t-emerald-400 rounded-full animate-spin" />
+                      ) : (
+                        "Test"
+                      )}
                     </button>
                   )}
                   <button
@@ -215,7 +222,7 @@ export default function ApiKeysPage() {
 
       {/* Add Key Form */}
       {showAddForm ? (
-        <div className="glass rounded-2xl p-6 animate-fade-in">
+        <div className="liquid-glass rounded-2xl p-6 animate-fade-in">
           <h3 className="text-base font-semibold mb-4">Add New API Key</h3>
 
           <div className="space-y-4">
@@ -225,7 +232,7 @@ export default function ApiKeysPage() {
                 Provider
               </label>
               <div className="flex gap-2">
-                {(["openai", "gemini", "deepseek"] as const).map((p) => (
+                {(["openai", "anthropic", "gemini", "deepseek"] as const).map((p) => (
                   <button
                     key={p}
                     onClick={() => setNewProvider(p)}

@@ -121,7 +121,7 @@ export default function AnalyticsCharts() {
       {/* Charts Grid */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Pipeline Funnel */}
-        <div className="glass rounded-2xl p-6">
+        <div className="liquid-glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
             <BsBullseye className="w-4 h-4 text-brand-400" />
             Pipeline Funnel
@@ -147,7 +147,7 @@ export default function AnalyticsCharts() {
         </div>
 
         {/* Score Distribution */}
-        <div className="glass rounded-2xl p-6">
+        <div className="liquid-glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
             <BsStar className="w-4 h-4 text-amber-400" />
             Score Distribution
@@ -168,7 +168,7 @@ export default function AnalyticsCharts() {
         </div>
 
         {/* Archetype Breakdown */}
-        <div className="glass rounded-2xl p-6">
+        <div className="liquid-glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
             <BsBriefcase className="w-4 h-4 text-blue-400" />
             By Archetype
@@ -190,7 +190,7 @@ export default function AnalyticsCharts() {
         </div>
 
         {/* Tier Distribution */}
-        <div className="glass rounded-2xl p-6">
+        <div className="liquid-glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
             <BsGraphUp className="w-4 h-4 text-emerald-400" />
             Tier Breakdown
@@ -244,7 +244,7 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="glass rounded-xl p-4 flex items-center gap-4 hover:bg-surface-100/80 transition-all">
+    <div className="liquid-glass rounded-xl p-4 flex items-center gap-4 hover:bg-surface-100/80 transition-all">
       <div className="w-10 h-10 rounded-lg bg-surface-200/50 flex items-center justify-center">
         {icon}
       </div>

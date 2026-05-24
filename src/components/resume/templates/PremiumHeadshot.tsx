@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Image from 'next/image';
 import { TemplateProps, vis, formatDates, getSkills, getTechSkills, sanitizeHtml } from './shared';
 
 const PremiumHeadshot: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sectionVisibility }) => {
@@ -130,12 +131,13 @@ const PremiumHeadshot: React.FC<TemplateProps> = ({ data, theme, sectionOrder, s
         {vis(sectionVisibility, 'photo') && (
           <div style={{ textAlign: 'center', marginBottom: '15px' }}>
             <div style={{
+              position: 'relative',
               width: `${theme.headshotSize || 80}px`, height: `${theme.headshotSize || 80}px`,
               borderRadius: '50%', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.2)',
               display: 'block', margin: '0 auto', backgroundColor: '#fff',
             }}>
               {data.personal?.photo_url ? (
-                <img src={data.personal.photo_url} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Image src={data.personal.photo_url} alt="Profile" fill style={{ objectFit: 'cover' }} unoptimized />
               ) : (
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc', fontSize: '11px' }}>Photo</div>
               )}

@@ -4,6 +4,7 @@
    ═══════════════════════════════════════════════════ */
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import {
   MOCK_COMPANIES,
   MOCK_DISCOVERED_JOBS,
@@ -122,7 +123,9 @@ export interface DiscoveryState {
 
 // ── Store ───────────────────────────────────────────
 
-export const useDiscoveryStore = create<DiscoveryState>((set, get) => ({
+export const useDiscoveryStore = create<DiscoveryState>()(
+  persist(
+    (set, get) => ({
   companies: MOCK_COMPANIES,
   jobs: MOCK_DISCOVERED_JOBS,
   profile: DEFAULT_PROFILE,
@@ -300,4 +303,15 @@ export const useDiscoveryStore = create<DiscoveryState>((set, get) => ({
     const levels = new Set(get().jobs.map((j) => j.level));
     return Array.from(levels).sort();
   },
-}));
+    }),
+  {
+    name: "offerpath-discovery",
+    partialize: (state) => ({
+      companies: state.companies,
+      jobs: state.jobs,
+      profile: state.profile,
+      scanRuns: state.scanRuns,
+      activeTab: state.activeTab,
+    }),
+  }
+));

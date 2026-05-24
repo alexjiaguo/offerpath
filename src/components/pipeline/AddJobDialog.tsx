@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { BsArrowRepeat, BsFileEarmarkText, BsLink45Deg, BsStars, BsX } from 'react-icons/bs';
 import { cn } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
@@ -103,7 +104,7 @@ export default function AddJobDialog() {
   const handleSubmit = () => {
     if (!title.trim()) return;
     if (url.trim() && !/^https?:\/\/.+/.test(url.trim())) {
-      alert("Please enter a valid URL starting with http:// or https://");
+      toast.error("Please enter a valid URL starting with http:// or https://");
       return;
     }
 

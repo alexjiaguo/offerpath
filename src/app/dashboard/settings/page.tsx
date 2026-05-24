@@ -2,6 +2,7 @@
 
 import { BsBell, BsBriefcase, BsCheckCircle, BsFileEarmarkText, BsFloppy, BsGear, BsMoonFill, BsPalette, BsPerson, BsStars, BsUpload, BsX } from 'react-icons/bs';
 import { useState, useRef } from "react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/store/profileStore";
 
@@ -88,7 +89,7 @@ export default function SettingsPage() {
       {/* Sections */}
       <div className="space-y-6">
         {/* Profile Section */}
-        <section className="glass rounded-2xl p-6">
+        <section className="liquid-glass rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-5">
             <BsPerson className="w-5 h-5 text-brand-400" />
             <h2 className="text-base font-semibold">Profile</h2>
@@ -102,7 +103,7 @@ export default function SettingsPage() {
               <p className="text-sm font-medium text-zinc-700 dark:text-gray-300">
                 Profile Photo
               </p>
-              <button onClick={() => alert("Change password flow coming soon!")} className="text-xs text-brand-400 hover:text-brand-300 mt-1 transition-colors">
+              <button onClick={() => toast.info("Change password flow coming soon!")} className="text-xs text-brand-400 hover:text-brand-300 mt-1 transition-colors">
                 Upload new photo
               </button>
             </div>
@@ -135,7 +136,7 @@ export default function SettingsPage() {
         </section>
 
         {/* ═══ NEW: Profile & Background Section ═══ */}
-        <section className="glass rounded-2xl p-6">
+        <section className="liquid-glass rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-2">
             <BsBriefcase className="w-5 h-5 text-brand-400" />
             <h2 className="text-base font-semibold">
@@ -417,7 +418,7 @@ export default function SettingsPage() {
         </section>
 
         {/* Notifications */}
-        <section className="glass rounded-2xl p-6">
+        <section className="liquid-glass rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-5">
             <BsBell className="w-5 h-5 text-brand-400" />
             <h2 className="text-base font-semibold">Notifications</h2>
@@ -470,7 +471,7 @@ export default function SettingsPage() {
         </section>
 
         {/* Preferences */}
-        <section className="glass rounded-2xl p-6">
+        <section className="liquid-glass rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-5">
             <BsPalette className="w-5 h-5 text-brand-400" />
             <h2 className="text-base font-semibold">Preferences</h2>
@@ -512,14 +513,14 @@ export default function SettingsPage() {
         </section>
 
         {/* Danger Zone */}
-        <section className="glass rounded-2xl p-6 border-red-500/10">
+        <section className="liquid-glass rounded-2xl p-6 border-red-500/10">
           <h2 className="text-base font-semibold text-red-400 mb-3">
             Danger Zone
           </h2>
           <p className="text-sm text-zinc-500 dark:text-gray-500 mb-4">
             Once you delete your account, there is no going back.
           </p>
-          <button onClick={() => alert("Account deletion not available in demo build.")} className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium hover:bg-red-500/20 transition-all">
+          <button onClick={() => toast.warning("Account deletion not available in demo build.")} className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium hover:bg-red-500/20 transition-all">
             Delete Account
           </button>
         </section>

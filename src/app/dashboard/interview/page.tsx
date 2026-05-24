@@ -89,7 +89,7 @@ export default function InterviewPage() {
             color: "text-amber-400",
           },
         ].map((stat) => (
-          <div key={stat.label} className="glass rounded-xl p-4">
+          <div key={stat.label} className="liquid-glass rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <stat.icon className={cn("w-4 h-4", stat.color)} />
               <span className="text-xs text-zinc-500 dark:text-gray-500">{stat.label}</span>
@@ -111,7 +111,7 @@ export default function InterviewPage() {
               <Link
                 key={job.id}
                 href={`/dashboard/interview/${job.id}`}
-                className="flex items-center justify-between p-4 glass-hover rounded-xl group"
+                className="flex items-center justify-between p-4 glass-card rounded-xl group"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
@@ -143,7 +143,7 @@ export default function InterviewPage() {
           Active Prep Packages
         </h2>
         {jobsWithPrep.length === 0 ? (
-          <div className="glass rounded-2xl p-8 text-center">
+          <div className="liquid-glass rounded-2xl p-8 text-center">
             <BsCpu className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
             <p className="text-zinc-500 dark:text-gray-500 text-sm mb-4">
               No prep packages yet. Move jobs to &quot;Applied&quot; or &quot;Interviewing&quot; and generate a prep package.
@@ -168,7 +168,7 @@ export default function InterviewPage() {
                 <Link
                   key={job.id}
                   href={`/dashboard/interview/${job.id}`}
-                  className="glass-hover rounded-xl p-5 group"
+                  className="glass-card rounded-xl p-5 group"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -224,7 +224,7 @@ export default function InterviewPage() {
                 <Link
                   key={mock.id}
                   href={mockJob ? `/dashboard/interview/${mockJob.id}/mock?session=${mock.id}` : "#"}
-                  className="flex items-center justify-between p-4 glass-hover rounded-xl group"
+                  className="flex items-center justify-between p-4 glass-card rounded-xl group"
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(

@@ -1,18 +1,120 @@
 /* ═══════════════════════════════════════════════════
-   OfferPath — AI Service (Mock)
-   Provides mock AI responses for resume tailoring
-   and interview prep generation.
-   Replace mock implementations with real LLM calls later.
+   OfferPath — AI Service
+   Supports both mock (fallback) and real LLM calls.
+   When API keys are configured in profileStore,
+   routes to OpenAI/Anthropic/Gemini/DeepSeek.
+   Otherwise falls back to mock implementations.
    ═══════════════════════════════════════════════════ */
 
 import type { ResumeData, ExperienceEntry, Story } from "@/types";
-
 import DOMPurify from 'dompurify';
+import { useProfileStore } from "@/store/profileStore";
+
+// ── Real API Integration ───────────────────────────
+
+type LLMProvider = "openai" | "anthropic" | "gemini" | "deepseek";
+
+interface LLMConfig {
+  provider: LLMProvider;
+  apiKey?: string;
+}
+
+/**
+ * Extracts a JSON block (object or array) from a string by finding
+ * the first '{' or '[' and the matching last '}' or ']'.
+ */
+function extractJsonBlock(text: string): string {
+  const firstBrace = text.indexOf("{");
+  const firstBracket = text.indexOf("[");
+  
+  let startIdx = -1;
+  let isArray = false;
+  
+  if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
+    startIdx = firstBrace;
+    isArray = false;
+  } else if (firstBracket !== -1) {
+    startIdx = firstBracket;
+    isArray = true;
+  }
+  
+  if (startIdx === -1) {
+    return text.trim();
+  }
+  
+  const endIdx = isArray ? text.lastIndexOf("]") : text.lastIndexOf("}");
+  
+  if (endIdx === -1 || endIdx < startIdx) {
+    return text.substring(startIdx).trim();
+  }
+  
+  return text.substring(startIdx, endIdx + 1).trim();
+}
+
+async function callLLM(config: LLMConfig, systemPrompt: string, userPrompt: string): Promise<string> {
+  const { provider, apiKey } = config;
+
+  const res = await fetch("/api/ai", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      action: "call-llm",
+      provider,
+      apiKey,
+      systemPrompt,
+      userPrompt,
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    let errMsg = `${provider} proxy error (status ${res.status})`;
+    try {
+      const parsed = JSON.parse(errText);
+      if (parsed.error) errMsg = parsed.error;
+    } catch {
+      if (errText) errMsg += `: ${errText}`;
+    }
+    throw new Error(errMsg);
+  }
+
+  const data = await res.json();
+  if (data.error) {
+    throw new Error(data.error);
+  }
+  return data.content;
+}
+
+/** Get the best available LLM config from the profile store */
+function getLLMConfig(): LLMConfig | null {
+  try {
+    const store = useProfileStore.getState();
+    const priority: LLMProvider[] = ["openai", "anthropic", "deepseek", "gemini"];
+    for (const p of priority) {
+      const key = store.apiKeys.find((k: { provider: string; status: string }) => k.provider === p && k.status === "active");
+      if (key && key.key?.trim()) return { provider: p, apiKey: key.key.trim() };
+    }
+  } catch {
+    // Store not available (SSR, etc.)
+  }
+
+  // Fallback: check environment variables (empty in the client, but we return a config with no apiKey so the server proxy tries its own variables)
+  return { provider: "openai" };
+}
 
 const SANITIZE_ALLOWED_TAGS = ['strong', 'em', 'u', 'b', 'i', 'br', 'span', 'mark'];
 
 function sanitizeHtml(text: string): string {
-  return DOMPurify.sanitize(text, { ALLOWED_TAGS: SANITIZE_ALLOWED_TAGS, ALLOWED_ATTR: [] });
+  if (typeof window === 'undefined') {
+    return text;
+  }
+  const purify = (DOMPurify as unknown as { default?: typeof DOMPurify }).default || DOMPurify;
+  if (purify && typeof purify.sanitize === 'function') {
+    return purify.sanitize(text, { ALLOWED_TAGS: SANITIZE_ALLOWED_TAGS, ALLOWED_ATTR: [] });
+  }
+  return text;
 }
 
 // ── Types ───────────────────────────────────────────
@@ -85,7 +187,35 @@ export interface ATSResult {
 // ── ATS Evaluation ──────────────────────────────────
 
 export async function evaluateATS(req: ATSRequest): Promise<ATSResult> {
-  // Simulate AI processing time
+  const llm = getLLMConfig();
+
+  if (llm) {
+    const systemPrompt = `You are an ATS (Applicant Tracking System) analyzer. Evaluate the resume against the job description. Return JSON:
+{
+  "score": 0-100,
+  "matchedKeywords": ["keyword1", "keyword2"],
+  "missingKeywords": ["keyword1", "keyword2"],
+  "feedback": [{"severity": "high|medium|low", "message": "..."}]
+}`;
+    const userPrompt = `## Resume Data
+${JSON.stringify(req.resumeData, null, 2)}
+
+## Job Description
+${req.jobDescription}
+
+Evaluate ATS compatibility.`;
+
+    try {
+      const response = await callLLM(llm, systemPrompt, userPrompt);
+      const cleaned = extractJsonBlock(response);
+      return JSON.parse(cleaned);
+    } catch (err) {
+      console.warn("Real ATS evaluation failed, falling back to mock:", err);
+      // Fallback to keyword-based mock
+    }
+  }
+
+  // ── Mock fallback ──────────────────────────────────
   await delay(1500 + Math.random() * 1000);
 
   const jdKeywords = extractKeywords(req.jobDescription);
@@ -117,7 +247,52 @@ export async function evaluateATS(req: ATSRequest): Promise<ATSResult> {
 }
 
 export async function tailorResume(req: TailorRequest): Promise<TailorResult> {
-  // Simulate AI processing time
+  const llm = getLLMConfig();
+
+  if (llm) {
+    const systemPrompt = `You are an expert resume tailoring AI. Given a base resume and a job description, produce a tailored version that maximizes ATS match while remaining truthful. Return JSON matching this schema:
+{
+  "summary": "tailored professional summary string",
+  "experience": [{"title": "...", "company": "...", "location": "...", "dates": "...", "bullets": ["..."]}],
+  "skillsToHighlight": ["skill1", "skill2"],
+  "tailoringNotes": "markdown notes about changes made"
+}`;
+    const userPrompt = `## Base Resume
+${JSON.stringify(req.baseResume, null, 2)}
+
+## Target Job
+Title: ${req.jobTitle}
+Company: ${req.companyName}
+
+## Job Description
+${req.jobDescription}
+
+## Candidate Profile
+${req.profileSummary}
+
+Produce a tailored resume as JSON.`;
+
+    try {
+      const response = await callLLM(llm, systemPrompt, userPrompt);
+      try {
+        const cleaned = extractJsonBlock(response);
+        return JSON.parse(cleaned);
+      } catch {
+        // If JSON parse fails, return the raw text as notes
+        return {
+          summary: req.baseResume.summary || "",
+          experience: req.baseResume.experience || [],
+          skillsToHighlight: [],
+          tailoringNotes: `AI response (could not parse as JSON):\n${response}`,
+        };
+      }
+    } catch (err) {
+      console.warn("Real Resume Tailoring failed, falling back to mock:", err);
+      // Fallback to keyword-based mock
+    }
+  }
+
+  // ── Mock fallback ──────────────────────────────────
   await delay(2000 + Math.random() * 1500);
 
   const keywords = extractKeywords(req.jobDescription);
@@ -206,7 +381,46 @@ export async function tailorResume(req: TailorRequest): Promise<TailorResult> {
 export async function generateInterviewPrep(
   req: InterviewPrepRequest
 ): Promise<InterviewPrepResult> {
-  // Simulate AI processing time
+  const llm = getLLMConfig();
+
+  if (llm) {
+    const systemPrompt = `You are an expert interview preparation AI. Given a job description and candidate profile, produce comprehensive interview prep. Return JSON matching this schema:
+{
+  "companyResearch": "markdown research brief",
+  "roleAnalysis": "markdown role analysis",
+  "questions": [{"question": "...", "category": "behavioral|product|technical|leadership|situational", "difficulty": "easy|medium|hard", "suggestedAnswer": "..."}]
+}`;
+    const userPrompt = `## Target Job
+Title: ${req.jobTitle}
+Company: ${req.companyName}
+
+## Job Description
+${req.jobDescription}
+
+## Candidate Profile
+${req.profileSummary}
+
+Generate 8 interview questions with suggested answers.`;
+
+    try {
+      const response = await callLLM(llm, systemPrompt, userPrompt);
+      try {
+        const cleaned = extractJsonBlock(response);
+        return JSON.parse(cleaned);
+      } catch {
+        return {
+          companyResearch: response,
+          roleAnalysis: "",
+          questions: [],
+        };
+      }
+    } catch (err) {
+      console.warn("Real Interview Prep generation failed, falling back to mock:", err);
+      // Fallback to keyword-based mock
+    }
+  }
+
+  // ── Mock fallback ──────────────────────────────────
   await delay(2500 + Math.random() * 1500);
 
   const keywords = extractKeywords(req.jobDescription);
@@ -309,6 +523,7 @@ ${keywords.map((kw, i) => `${i + 1}. **${kw.charAt(0).toUpperCase() + kw.slice(1
 // ── Story Extraction ──────────────────────────────────
 
 export async function extractStoriesFromFile(_text: string): Promise<Partial<Story>[]> {
+  void _text;
   // Simulate AI processing time
   await delay(2500 + Math.random() * 1000);
 

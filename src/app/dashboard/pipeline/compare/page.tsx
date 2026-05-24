@@ -32,7 +32,7 @@ export default function OfferComparePage() {
       </div>
 
       {offeredJobs.length === 0 ? (
-        <div className="glass rounded-2xl p-12 text-center">
+        <div className="liquid-glass rounded-2xl p-12 text-center">
           <BsBank className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">No offers to compare</h2>
           <p className="text-sm text-zinc-500 dark:text-gray-500 mb-6 max-w-md mx-auto">
@@ -48,7 +48,7 @@ export default function OfferComparePage() {
         </div>
       ) : offeredJobs.length === 1 ? (
         <div className="space-y-6">
-          <div className="glass rounded-2xl p-6 text-center">
+          <div className="liquid-glass rounded-2xl p-6 text-center">
             <BsTrophy className="w-8 h-8 text-amber-400 mx-auto mb-3" />
             <p className="text-sm text-zinc-600 dark:text-gray-400 mb-4">
               You have one offer. Add more offers to compare them side by side.
@@ -67,7 +67,7 @@ export default function OfferComparePage() {
           </div>
 
           {/* Comparison Table */}
-          <div className="mt-8 glass rounded-2xl overflow-hidden">
+          <div className="mt-8 liquid-glass rounded-2xl overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-zinc-200 dark:border-white/[0.06]">
@@ -164,7 +164,7 @@ function OfferCard({
   return (
     <div
       className={cn(
-        "glass rounded-2xl p-6 relative",
+        "liquid-glass rounded-2xl p-6 relative",
         isBest && "border-2 border-emerald-500/30"
       )}
     >

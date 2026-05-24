@@ -36,7 +36,10 @@ let pdfjsModule: PDFJS | null = null;
 async function getPdfjs() {
   if (!pdfjsModule) {
     pdfjsModule = await import('pdfjs-dist') as unknown as PDFJS;
-    pdfjsModule.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsModule.version}/pdf.worker.min.mjs`;
+    pdfjsModule.GlobalWorkerOptions.workerSrc = new URL(
+      "pdfjs-dist/build/pdf.worker.min.mjs",
+      import.meta.url,
+    ).toString();
   }
   return pdfjsModule;
 }

@@ -153,8 +153,8 @@ const PRICING: PricingPlan[] = [
 
 export default function LandingPage() {
   const { scrollY } = useScroll();
-  const navBgOpacity = useTransform(scrollY, [0, 100], [0, 0.8]);
-  const navBlur = useTransform(scrollY, [0, 100], [0, 24]);
+  const navBg = useTransform(scrollY, [0, 100], ["rgba(18, 18, 18, 0)", "rgba(18, 18, 18, 0.8)"]);
+  const navFilter = useTransform(scrollY, [0, 100], ["blur(0px)", "blur(24px)"]);
   const heroY = useTransform(scrollY, [0, 500], [0, 150]);
   const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
 
@@ -170,8 +170,8 @@ export default function LandingPage() {
 
       {/* ── Navigation ── */}
       <motion.nav
-        style={{ backgroundColor: `rgba(18, 18, 18, ${navBgOpacity.get()})`, backdropFilter: `blur(${navBlur.get()}px)` }}
-        className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.03] transition-colors"
+        style={{ backgroundColor: navBg, backdropFilter: navFilter }}
+        className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.03]"
       >
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signUpWithEmail } from "@/lib/auth";
 import { BsCheckCircleFill, BsEnvelope, BsEye, BsEyeSlash, BsLock, BsPerson, BsRocket } from 'react-icons/bs';
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 
@@ -58,9 +59,15 @@ export default function RegisterPage() {
     }
 
     setLoading(true);
-    // Simulate registration delay
-    await new Promise((r) => setTimeout(r, 1000));
-    router.push("/dashboard");
+    try {
+      await signUpWithEmail(email, password, { full_name: name });
+      router.refresh();
+      router.push("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

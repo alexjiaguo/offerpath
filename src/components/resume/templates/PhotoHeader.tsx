@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Image from 'next/image';
 import { TemplateProps, vis, formatDates, getSkills, getTechSkills, paperStyle, sanitizeHtml } from './shared';
 
 const PhotoHeader: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sectionVisibility }) => {
@@ -108,8 +109,8 @@ const PhotoHeader: React.FC<TemplateProps> = ({ data, theme, sectionOrder, secti
     <div style={{ ...paperStyle(theme), display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }} className="resume-paper">
       <header style={{ display: 'flex', alignItems: 'center', gap: '30px', marginBottom: '25px', background: '#f0f2f5', padding: '25px 30px', borderRadius: '4px' }}>
         {vis(sectionVisibility, 'photo') && (
-          <div style={{ width: `${theme.headshotSize || 140}px`, height: `${theme.headshotSize || 140}px`, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '5px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', backgroundColor: '#eee' }}>
-            {data.personal?.photo_url ? <img src={data.personal.photo_url} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>Photo</div>}
+          <div style={{ position: 'relative', width: `${theme.headshotSize || 140}px`, height: `${theme.headshotSize || 140}px`, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '5px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', backgroundColor: '#eee' }}>
+            {data.personal?.photo_url ? <Image src={data.personal.photo_url} alt="Profile" fill style={{ objectFit: 'cover' }} unoptimized /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>Photo</div>}
           </div>
         )}
         <div style={{ flex: 1 }}>

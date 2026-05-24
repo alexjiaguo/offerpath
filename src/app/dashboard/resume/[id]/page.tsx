@@ -3,7 +3,8 @@
 import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { BsArrowClockwise, BsArrowCounterclockwise, BsArrowLeft, BsArrowRepeat, BsArrowsAngleContract, BsArrowsAngleExpand, BsBriefcase, BsCheckCircle, BsChevronDown, BsChevronUp, BsExclamationCircle, BsEye, BsEyeSlash, BsFileEarmarkText, BsFloppy, BsInputCursorText, BsLayoutSidebarInset, BsLayoutSidebarInsetReverse, BsMortarboard, BsPalette, BsPen, BsPerson, BsPlus, BsStars, BsTrash, BsWindow, BsWrench, BsX } from 'react-icons/bs';
+import { toast } from "sonner";
+import { BsArrowClockwise, BsArrowCounterclockwise, BsArrowLeft, BsArrowRepeat, BsArrowsAngleContract, BsArrowsAngleExpand, BsBriefcase, BsCheckCircle, BsChevronDown, BsChevronUp, BsExclamationCircle, BsEye, BsEyeSlash, BsFileEarmarkText, BsFloppy, BsInputCursorText, BsLayoutSidebarInset, BsLayoutSidebarInsetReverse, BsMortarboard, BsPen, BsPerson, BsPlus, BsStars, BsTrash, BsWindow, BsWrench, BsX } from 'react-icons/bs';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -45,11 +46,9 @@ function AutoScaledPreview({ children }: { children: React.ReactNode }) {
         const containerWidth = entry.contentRect.width;
         // Padding/margin buffer - we leave 4px buffer
         const availableWidth = containerWidth - 4;
-        if (availableWidth < 794) {
-          setScale(availableWidth / 794);
-        } else {
-          setScale(1);
-        }
+        // Dynamic scaling up to 1.4x for premium readability on wide displays
+        const computedScale = availableWidth / 794;
+        setScale(Math.min(computedScale, 1.4));
       }
     });
 
@@ -92,7 +91,6 @@ export default function ResumeEditorPage({
     canRedo,
     saveToHistory,
     moveSection,
-    toggleVisibility
   } = useResumeStore();
   const { getProfileSummary } = useProfileStore();
   const resume = getResumeById(id);
@@ -103,6 +101,7 @@ export default function ResumeEditorPage({
   const [showPreview, setShowPreview] = useState(true);
   const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
   const [isEditorCollapsed, setIsEditorCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string>(
     resume?.template || "classic-minimal"
   );
@@ -149,7 +148,7 @@ export default function ResumeEditorPage({
   if (!resume) {
     return (
       <div className="max-w-4xl mx-auto animate-fade-in">
-        <div className="glass rounded-2xl p-12 text-center">
+        <div className="liquid-glass rounded-2xl p-12 text-center">
           <BsExclamationCircle className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">Resume not found</h2>
           <Link
@@ -184,7 +183,7 @@ export default function ResumeEditorPage({
       });
       setDraftResult(result);
     } catch {
-      alert("Tailoring failed. Please try again.");
+      toast.error("Tailoring failed. Please try again.");
     } finally {
       setTailoring(false);
     }
@@ -306,6 +305,21 @@ export default function ResumeEditorPage({
           >
             {isEditorCollapsed ? <BsLayoutSidebarInsetReverse className="w-5 h-5" /> : <BsLayoutSidebarInset className="w-5 h-5" />}
           </button>
+
+          {/* Collapse Sidebar Toggle */}
+          {showPreview && (
+            <button
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
+              title={isSidebarCollapsed ? "Open Intelligence Sidebar" : "Collapse Intelligence Sidebar"}
+            >
+              {isSidebarCollapsed ? (
+                <BsLayoutSidebarInset className="w-5 h-5 rotate-180" />
+              ) : (
+                <BsLayoutSidebarInsetReverse className="w-5 h-5 rotate-180" />
+              )}
+            </button>
+          )}
 
           <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1 gap-1 mr-2">
             <button
@@ -813,7 +827,12 @@ export default function ResumeEditorPage({
               </div>
             </div>
             
-            <div className="grid lg:grid-cols-[1fr_320px] gap-8 items-start">
+            <div
+              className={cn(
+                "grid gap-8 items-start transition-all duration-500",
+                isSidebarCollapsed ? "grid-cols-1" : "lg:grid-cols-[1fr_320px]"
+              )}
+            >
               <div className="bg-zinc-50 dark:bg-zinc-900/30 rounded-[40px] p-4 sm:p-8 lg:p-12 border border-zinc-200 dark:border-white/[0.03] shadow-inner overflow-hidden min-h-[800px] flex justify-center">
                 <AutoScaledPreview>
                   <ResumePreview
@@ -829,16 +848,18 @@ export default function ResumeEditorPage({
               </div>
 
               {/* Intelligence Panels Sidebar */}
-              <div className="space-y-6">
-                <ATSCheckerPanel resumeData={data} />
-                <ThemePicker
-                  theme={resume.theme}
-                  onChange={(updates) => {
-                    saveToHistory(id);
-                    updateResume(id, { theme: { ...resume.theme, ...updates } as ResumeTheme });
-                  }}
-                />
-              </div>
+              {!isSidebarCollapsed && (
+                <div className="space-y-6 animate-slide-up">
+                  <ATSCheckerPanel resumeData={data} />
+                  <ThemePicker
+                    theme={resume.theme}
+                    onChange={(updates) => {
+                      saveToHistory(id);
+                      updateResume(id, { theme: { ...resume.theme, ...updates } as ResumeTheme });
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -1,33 +1,30 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════
-   OfferPath — Design System v3.1 (Multi-Theme)
-   Aesthetic: Liquid Glass, Professional Clarity
+   OfferPath — Design System v4.0 (Light Premium)
+   Aesthetic: Charcoal, Platinum, and Ice Turquoise
    ═══════════════════════════════════════════════════ */
 
-@custom-variant dark (&:where(.dark, .dark *));
-
-
 @theme {
-  /* ── Brand Colors (OKLCH) ── */
-  --color-brand-50: oklch(0.97 0.01 256.41);
-  --color-brand-100: oklch(0.94 0.03 256.41);
-  --color-brand-200: oklch(0.88 0.06 256.41);
-  --color-brand-300: oklch(0.81 0.1 256.41);
-  --color-brand-400: oklch(0.7 0.15 256.41);
-  --color-brand-500: oklch(0.6 0.2 256.41);
-  --color-brand-600: oklch(0.5 0.22 256.41);
-  --color-brand-700: oklch(0.4 0.2 256.41);
-  --color-brand-800: oklch(0.3 0.15 256.41);
-  --color-brand-900: oklch(0.2 0.1 256.41);
+  /* ── Brand Colors (Vibrant Turquoise & Ice Blue Theme) ── */
+  --color-brand-50: #f1fbfc;
+  --color-brand-100: #e2f8fa;
+  --color-brand-200: #c5f2ec;
+  --color-brand-300: #92dce5; /* Soft Ice Blue */
+  --color-brand-400: #52dee5; /* Vibrant Turquoise */
+  --color-brand-500: #39cbd2;
+  --color-brand-600: #25a4ab;
+  --color-brand-700: #1c8087;
+  --color-brand-800: #176369;
+  --color-brand-900: #134e53;
 
-  /* ── Surface Colors (Adaptive) ── */
-  --color-surface-0: light-dark(oklch(0.98 0.005 256.41), oklch(0.12 0.01 256.41));
-  --color-surface-50: light-dark(oklch(0.96 0.01 256.41), oklch(0.14 0.015 256.41));
-  --color-surface-100: light-dark(oklch(0.94 0.015 256.41), oklch(0.18 0.02 256.41));
-  --color-surface-200: light-dark(oklch(0.9 0.02 256.41), oklch(0.24 0.025 256.41));
-  --color-surface-300: light-dark(oklch(0.8 0.03 256.41), oklch(0.32 0.03 256.41));
-  --color-surface-400: light-dark(oklch(0.6 0.04 256.41), oklch(0.45 0.035 256.41));
+  /* ── Surface Colors (Strict Light Theme) ── */
+  --color-surface-0: #ffffff;
+  --color-surface-50: #faf9fb; /* Warm light variant */
+  --color-surface-100: #eee5e9; /* Light Platinum */
+  --color-surface-200: #e2dbe0;
+  --color-surface-300: #7c7c7c; /* Slate Grey */
+  --color-surface-400: #383d3b; /* Charcoal Dark */
 
   /* ── Typography ── */
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
@@ -63,27 +60,24 @@
 /* ── Base Layer ── */
 @layer base {
   * {
-    @apply border-surface-300/30 transition-colors duration-300;
+    @apply border-surface-200 transition-colors duration-300;
   }
 
   html {
     @apply antialiased scroll-smooth;
     -webkit-tap-highlight-color: transparent;
     color-scheme: light !important;
-  }
-  
-  html.dark {
-    color-scheme: dark !important;
+    scrollbar-gutter: stable;
   }
 
   body {
-    @apply bg-surface-0 text-zinc-800 dark:text-zinc-200 font-sans selection:bg-brand-500/30 selection:text-zinc-900 dark:selection:text-white;
+    @apply bg-surface-50 text-surface-400 font-sans selection:bg-brand-300/30 selection:text-surface-400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-semibold tracking-tight text-zinc-900 dark:text-white;
+    @apply font-display font-semibold tracking-tight text-surface-400;
   }
 
   ::-webkit-scrollbar {
@@ -94,20 +88,20 @@
     @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-surface-300/50 rounded-full hover:bg-surface-300/80 transition-colors;
+    @apply bg-surface-100/80 rounded-full hover:bg-surface-200 transition-colors;
   }
 }
 
 @layer utilities {
-  /* Liquid Glass — Multi-layered transparency and refraction */
+  /* Liquid Glass — Multi-layered transparency and refraction in light theme */
   .liquid-glass {
-    background: light-dark(oklch(1 0 0 / 70%), oklch(0.12 0.01 256.41 / 80%));
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid light-dark(oklch(0 0 0 / 5%), oklch(100% 0 0 / 8%));
+    border: 1px solid rgba(238, 229, 233, 0.6);
     box-shadow: 
-      0 4px 24px -1px light-dark(oklch(0 0 0 / 5%), oklch(0% 0 0 / 30%)),
-      inset 0 1px 1px light-dark(oklch(1 0 0 / 50%), oklch(100% 0 0 / 10%));
+      0 4px 24px -1px rgba(56, 61, 59, 0.05),
+      inset 0 1px 1px rgba(255, 255, 255, 0.8);
     position: relative;
     overflow: hidden;
 
@@ -115,20 +109,20 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, light-dark(oklch(1 0 0 / 20%), oklch(100% 0 0 / 5%)) 0%, transparent 50%, light-dark(oklch(0 0 0 / 2%), oklch(100% 0 0 / 2%)) 100%);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(56, 61, 59, 0.01) 100%);
       pointer-events: none;
     }
   }
 
-  /* Interactive Glass — Adaptive glow on hover */
+  /* Interactive Glass — Elegant light theme card states */
   .glass-card {
-    background: light-dark(oklch(1 0 0 / 70%), oklch(0.18 0.02 256.41 / 60%));
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid light-dark(oklch(0 0 0 / 5%), oklch(100% 0 0 / 8%));
+    border: 1px solid rgba(238, 229, 233, 0.6);
     box-shadow: 
-      0 4px 24px -1px light-dark(oklch(0 0 0 / 5%), oklch(0% 0 0 / 30%)),
-      inset 0 1px 1px light-dark(oklch(1 0 0 / 50%), oklch(100% 0 0 / 10%));
+      0 4px 20px -1px rgba(56, 61, 59, 0.04),
+      inset 0 1px 1px rgba(255, 255, 255, 0.8);
     position: relative;
     overflow: hidden;
     @apply transition-all duration-500 ease-out;
@@ -137,27 +131,26 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, light-dark(oklch(1 0 0 / 20%), oklch(100% 0 0 / 5%)) 0%, transparent 50%, light-dark(oklch(0 0 0 / 2%), oklch(100% 0 0 / 2%)) 100%);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(56, 61, 59, 0.01) 100%);
       pointer-events: none;
     }
 
     &:hover {
-      background: light-dark(oklch(1 0 0 / 90%), oklch(0.24 0.025 256.41 / 70%));
-      border-color: light-dark(oklch(0 0 0 / 10%), oklch(100% 0 0 / 15%));
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(146, 220, 229, 0.5);
       box-shadow: 
-        0 12px 40px -4px light-dark(oklch(0 0 0 / 10%), oklch(0% 0 0 / 50%)),
-        0 0 0 1px oklch(0.6 0.2 256.41 / 10%),
-        inset 0 1px 2px light-dark(oklch(1 0 0 / 60%), oklch(100% 0 0 / 15%));
+        0 12px 30px -4px rgba(56, 61, 59, 0.08),
+        0 0 0 1px rgba(82, 222, 229, 0.15),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
       transform: translateY(-4px) scale(1.01);
     }
   }
 
-  /* Futuristic Gradient — Perceptually vibrant shift */
+  /* Modern Gradient — Perceptually vibrant turquoise-blue shift */
   .gradient-futuristic {
     background: linear-gradient(135deg, 
-      oklch(0.65 0.25 256.41) 0%, 
-      oklch(0.55 0.2 280) 50%, 
-      oklch(0.45 0.22 310) 100%
+      #52dee5 0%, 
+      #92dce5 100%
     );
   }
 
@@ -165,23 +158,35 @@
   .text-gradient-futuristic {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, 
-      oklch(0.6 0.2 256) 0%, 
-      oklch(0.4 0.25 256) 100%
+      #383d3b 0%, 
+      #25a4ab 100%
     );
   }
 
-  /* Adaptive Mesh Backgrounds */
+  /* Soft Light Mesh Backgrounds using Palette HEX */
   .bg-mesh-purple {
     background-image: 
-      radial-gradient(at 0% 0%, oklch(0.5 0.22 256.41 / 10%) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, oklch(0.5 0.2 310 / 5%) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, oklch(0.4 0.2 256.41 / 10%) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, oklch(0.4 0.15 280 / 5%) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(82, 222, 229, 0.12) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(146, 220, 229, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(82, 222, 229, 0.08) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(238, 229, 233, 0.15) 0px, transparent 50%);
   }
 
-  .glow-sm { box-shadow: 0 0 20px -5px oklch(0.6 0.2 256.41 / 20%); }
-  .glow-md { box-shadow: 0 0 40px -10px oklch(0.6 0.2 256.41 / 30%); }
+  .glow-sm { box-shadow: 0 0 20px -5px rgba(82, 222, 229, 0.15); }
+  .glow-md { box-shadow: 0 0 40px -10px rgba(82, 222, 229, 0.25); }
 
   .perspective-1000 { perspective: 1000px; }
   .preserve-3d { transform-style: preserve-3d; }
+
+  /* Kanban performance containment */
+  .kanban-column-area {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px auto 500px;
+  }
+  
+  @supports not (content-visibility: auto) {
+    .kanban-column-area {
+      contain: layout style paint;
+    }
+  }
 }

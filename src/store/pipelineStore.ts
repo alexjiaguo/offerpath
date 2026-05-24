@@ -30,6 +30,8 @@ export interface PipelineState {
   sortDirection: SortDirection;
   selectedJobId: string | null;
   addJobDialogOpen: boolean;
+  weeklyGoalCount: number;
+  setWeeklyGoalCount: (count: number) => void;
 
   // Resume picker state
   resumePickerOpen: boolean;
@@ -460,6 +462,8 @@ export const usePipelineStore = create<PipelineState>()(
   sortDirection: "desc",
   selectedJobId: null,
   addJobDialogOpen: false,
+  weeklyGoalCount: 5,
+  setWeeklyGoalCount: (count) => set({ weeklyGoalCount: count }),
   resumePickerOpen: false,
   resumePickerJobId: null,
 
@@ -725,6 +729,7 @@ export const usePipelineStore = create<PipelineState>()(
       partialize: (state) => ({
         jobs: state.jobs,
         companies: state.companies,
+        weeklyGoalCount: state.weeklyGoalCount,
       }),
     }
   )

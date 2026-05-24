@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { BsBullseye, BsChevronLeft, BsChevronRight } from 'react-icons/bs';
+import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_ITEMS } from "@/lib/navConfig";
-import type { NavItemDef, NavSection } from "@/lib/navConfig";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -19,7 +19,7 @@ export default function Sidebar() {
       animate={{ width: collapsed ? 80 : 260 }}
       className={cn(
         "fixed left-0 top-0 h-screen flex flex-col z-40",
-        "bg-surface-0/40 backdrop-blur-2xl border-r border-zinc-200 dark:border-white/[0.05]",
+        "bg-surface-0/40 backdrop-blur-2xl border-r border-zinc-200",
         "transition-all duration-500 ease-out"
       )}
     >
@@ -27,16 +27,20 @@ export default function Sidebar() {
       <div className="absolute inset-0 bg-mesh-purple opacity-[0.05] pointer-events-none" />
 
       {/* Logo */}
-      <div className="h-20 flex items-center px-6 border-b border-zinc-200 dark:border-white/[0.03] relative z-10">
-        <Link href="/dashboard" className="flex items-center gap-3.5 overflow-hidden group">
-          <div className="w-10 h-10 rounded-xl gradient-futuristic flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform duration-500">
-            <BsBullseye className="w-5.5 h-5.5 text-zinc-900 dark:text-white" />
-          </div>
+      <div className="h-20 flex items-center px-6 border-b border-zinc-200 relative z-10">
+        <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden group">
+          <Image 
+            src="/logo.png" 
+            alt="OfferPath Logo" 
+            width={40}
+            height={40}
+            className="rounded-xl flex-shrink-0 shadow-md shadow-brand-400/10 group-hover:scale-105 transition-transform duration-500" 
+          />
           {!collapsed && (
             <motion.span 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="text-lg font-bold tracking-tight whitespace-nowrap font-display text-zinc-900 dark:text-white"
+              className="text-lg font-bold tracking-tight whitespace-nowrap font-display text-surface-400"
             >
               Offer<span className="text-gradient-futuristic">Path</span>
             </motion.span>

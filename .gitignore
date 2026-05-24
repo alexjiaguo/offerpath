@@ -36,3 +36,15 @@ next-env.d.ts
 
 # Vercel
 .vercel
+
+# Local Session and Agent Directories
+.claude/
+.claude-flow/
+.hive-mind/
+.sessions/
+.swarm/
+.playwright-mcp/
+
+# Sensitive Data / Credentials
+cookies.json
+

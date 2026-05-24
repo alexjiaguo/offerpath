@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { BsBullseye, BsList, BsX } from 'react-icons/bs';
+import { BsList, BsX } from 'react-icons/bs';
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "@/lib/navConfig";
 
@@ -37,7 +38,7 @@ export default function MobileNav() {
       {/* Hamburger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="md:hidden p-2 rounded-lg text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04] transition-all"
+        className="md:hidden p-2 rounded-lg text-zinc-600 hover:text-zinc-800 hover:bg-white/[0.04] transition-all"
         aria-label="Open navigation menu"
       >
         <BsList className="w-5 h-5" />
@@ -65,16 +66,20 @@ export default function MobileNav() {
             className="flex items-center gap-2.5"
             onClick={() => setIsOpen(false)}
           >
-            <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
-              <BsBullseye className="w-4 h-4 text-zinc-900 dark:text-white" />
-            </div>
-            <span className="text-base font-bold tracking-tight">
-              Offer<span className="gradient-text">Path</span>
+            <Image 
+              src="/logo.png" 
+              alt="OfferPath Logo" 
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-lg flex-shrink-0" 
+            />
+            <span className="text-base font-bold tracking-tight text-surface-400">
+              Offer<span className="text-gradient-futuristic">Path</span>
             </span>
           </Link>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all"
+            className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-700 hover:bg-white/[0.04] transition-all"
           >
             <BsX className="w-5 h-5" />
           </button>

@@ -8,7 +8,14 @@ const ALLOWED_TAGS = ['strong', 'em', 'u', 'b', 'i', 'br', 'span', 'mark', 'ul',
 const ALLOWED_ATTR: string[] = [];
 
 export function sanitizeHtml(html: string): string {
-  return DOMPurify.sanitize(html, { ALLOWED_TAGS, ALLOWED_ATTR });
+  if (typeof window === 'undefined') {
+    return html;
+  }
+  const purify = (DOMPurify as unknown as { default?: typeof DOMPurify }).default || DOMPurify;
+  if (purify && typeof purify.sanitize === 'function') {
+    return purify.sanitize(html, { ALLOWED_TAGS, ALLOWED_ATTR });
+  }
+  return html;
 }
 
 /* ─── Shared props for all templates ─── */

@@ -10,7 +10,6 @@ import {
   useSensors,
   type DragStartEvent,
   type DragEndEvent,
-  type DragOverEvent,
 } from "@dnd-kit/core";
 import { usePipelineStore } from "@/store/pipelineStore";
 import KanbanColumn, { KANBAN_COLUMNS } from "./KanbanColumn";
@@ -53,10 +52,6 @@ export default function KanbanBoard() {
     []
   );
 
-  const handleDragOver = useCallback((_event: DragOverEvent) => {
-    // Visual feedback handled by KanbanColumn's isOver
-  }, []);
-
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
@@ -93,7 +88,6 @@ export default function KanbanBoard() {
       sensors={sensors}
       collisionDetection={closestCorners}
       onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="flex gap-4 overflow-x-auto pb-4 h-[calc(100vh-220px)]">

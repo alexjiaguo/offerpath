@@ -1,6 +1,6 @@
 "use client";
 
-import { BsBell, BsCommand, BsMoonFill, BsPlus, BsSearch, BsSunFill } from 'react-icons/bs';
+import { BsBell, BsCommand, BsPlus, BsSearch } from 'react-icons/bs';
 import { useState, useEffect, useCallback } from "react";
 import MobileNav from "./MobileNav";
 import { motion } from "framer-motion";
@@ -8,30 +8,12 @@ import { usePipelineStore } from "@/store/pipelineStore";
 
 export default function Topbar() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const setAddJobDialogOpen = usePipelineStore((s) => s.setAddJobDialogOpen);
   const setFilter = usePipelineStore((s) => s.setFilter);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as "dark" | "light" | null;
-    if (savedTheme === "light") {
-      setTheme("light");
-      document.documentElement.classList.remove("dark");
-    } else {
-      setTheme("dark");
-      document.documentElement.classList.add("dark");
-      if (!savedTheme) {
-        localStorage.setItem("theme", "dark");
-      }
-    }
+    document.documentElement.classList.remove("dark");
   }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-  };
 
   const handleSearchChange = useCallback((value: string) => {
     setSearchQuery(value);
@@ -78,15 +60,6 @@ export default function Topbar() {
 
       {/* Actions */}
       <div className="flex items-center gap-4 ml-8">
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="p-3 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/[0.05] transition-all group"
-          title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        >
-          {theme === "dark" ? <BsSunFill className="w-5 h-5" /> : <BsMoonFill className="w-5 h-5" />}
-        </button>
-
         {/* Quick Add */}
         <motion.button
           onClick={() => setAddJobDialogOpen(true)}

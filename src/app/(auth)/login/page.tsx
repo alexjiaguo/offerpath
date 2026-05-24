@@ -1,17 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { BsBoxArrowInRight, BsEnvelope, BsEye, BsEyeSlash, BsLock } from 'react-icons/bs';
+import { useRouter, useSearchParams } from "next/navigation";
+import { BsBoxArrowInRight, BsEnvelope, BsEye, BsEyeSlash, BsLock } from "react-icons/bs";
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
+import { signInWithEmail } from "@/lib/auth";
 
 /* ═══════════════════════════════════════════════════
    Login Page — Glassmorphism auth form
    ═══════════════════════════════════════════════════ */
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/dashboard";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -21,25 +25,27 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
-
-    // Simulate auth delay
-    await new Promise((r) => setTimeout(r, 800));
 
     if (!email || !password) {
       setError("Please fill in all fields");
-      setLoading(false);
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError("Please enter a valid email address");
-      setLoading(false);
       return;
     }
 
-    // Mock login — always succeed
-    router.push("/dashboard");
+    setLoading(true);
+    try {
+      await signInWithEmail(email, password);
+      router.refresh();
+      router.push(redirect);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Sign in failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,10 +57,8 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Social Login */}
       <SocialLoginButtons />
 
-      {/* Divider */}
       <div className="flex items-center gap-4 mb-6">
         <div className="flex-1 h-px bg-white/[0.06]" />
         <span className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600 uppercase tracking-wider">
@@ -63,7 +67,6 @@ export default function LoginPage() {
         <div className="flex-1 h-px bg-white/[0.06]" />
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-300">
@@ -71,7 +74,6 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Email */}
         <div>
           <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
             Email address
@@ -88,7 +90,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Password */}
         <div>
           <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
             Password
@@ -116,18 +117,17 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Forgot Password */}
-        <div className="flex justify-end">
-          <button
-            onClick={() => alert("Password reset coming soon!")}
-            type="button"
-            className="text-xs text-brand-400 hover:text-brand-300 transition-colors"
-          >
-            Forgot password?
-          </button>
-        </div>
+        <a
+          href="#reset"
+          onClick={(e) => {
+            e.preventDefault();
+            setError("Password reset is not implemented yet.");
+          }}
+          className="text-xs text-brand-400 hover:text-brand-300 transition-colors"
+        >
+          Forgot password?
+        </a>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
@@ -144,7 +144,6 @@ export default function LoginPage() {
         </button>
       </form>
 
-      {/* Sign Up Link */}
       <p className="text-center text-sm text-zinc-500 dark:text-gray-500 mt-6">
         Don&apos;t have an account?{" "}
         <Link
@@ -155,5 +154,19 @@ export default function LoginPage() {
         </Link>
       </p>
     </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center py-12">
+          <div className="w-6 h-6 border-2 border-brand-500/30 border-t-brand-400 rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

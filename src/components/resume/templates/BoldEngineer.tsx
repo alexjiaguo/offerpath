@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Image from 'next/image';
 import { TemplateProps, vis, formatDates, getSkills, getTechSkills, paperStyle, sanitizeHtml } from './shared';
 
 const BoldEngineer: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sectionVisibility }) => {
@@ -115,8 +116,8 @@ const BoldEngineer: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sect
           </div>
         </div>
         {vis(sectionVisibility, 'photo') && (
-          <div style={{ width: `${theme.headshotSize || 130}px`, height: `${theme.headshotSize || 130}px`, borderRadius: `${theme.headshotRadius || 4}px`, overflow: 'hidden', backgroundColor: '#eee', flexShrink: 0 }}>
-            {data.personal?.photo_url ? <img src={data.personal.photo_url} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>Photo</div>}
+          <div style={{ position: 'relative', width: `${theme.headshotSize || 130}px`, height: `${theme.headshotSize || 130}px`, borderRadius: `${theme.headshotRadius || 4}px`, overflow: 'hidden', backgroundColor: '#eee', flexShrink: 0 }}>
+            {data.personal?.photo_url ? <Image src={data.personal.photo_url} alt="Profile" fill style={{ objectFit: 'cover' }} unoptimized /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>Photo</div>}
           </div>
         )}
       </div>

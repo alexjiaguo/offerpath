@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -42,24 +43,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                if (localStorage.theme === 'light') {
-                  document.documentElement.classList.remove('dark')
-                } else {
-                  document.documentElement.classList.add('dark')
-                }
-              } catch (_) {}
-            `,
+    <html lang="en" className="scroll-smooth">
+      <head />
+      <body className={`${outfit.variable} ${plusJakarta.variable} font-sans antialiased bg-surface-50 text-surface-400`}>
+        {children}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: "white",
+              color: "#383d3b",
+              border: "1px solid #eee5e9",
+            },
           }}
         />
-      </head>
-      <body className={`${outfit.variable} ${plusJakarta.variable} font-sans antialiased bg-surface-0 text-zinc-800 dark:text-zinc-100`}>
-        {children}
       </body>
     </html>
   );

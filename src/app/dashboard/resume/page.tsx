@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { BsArrowLeft, BsBriefcase, BsChevronRight, BsClock, BsCopy, BsFileEarmarkText, BsGeoAlt, BsPlus, BsStarFill, BsStars, BsUpload } from 'react-icons/bs';
 import { usePipelineStore } from "@/store/pipelineStore";
+import { useDiscoveryStore } from "@/store/discoveryStore";
 import { useResumeStore } from "@/store/resumeStore";
 import { cn } from "@/lib/utils";
 import { ATSScoreInline } from "@/components/pipeline/ATSScoreBadge";
@@ -58,17 +59,28 @@ function ResumePageContent() {
   const searchParams = useSearchParams();
   const tailorForJobId = searchParams.get("tailorFor");
 
-  const { getJobById } = usePipelineStore();
+  const { getJobById: getPipelineJob } = usePipelineStore();
+  const { getJobById: getDiscoveryJob } = useDiscoveryStore();
   const { resumes, getATSScore, duplicateResume } = useResumeStore();
 
-  const tailorJob = tailorForJobId ? getJobById(tailorForJobId) : null;
+  // Check both pipeline and discovery stores for the tailor job
+  const pipelineJob = tailorForJobId ? getPipelineJob(tailorForJobId) : null;
+  const discoveryJob = tailorForJobId ? getDiscoveryJob(tailorForJobId) : null;
+
+  // Normalize to common interface
+  const tailorJob = pipelineJob
+    ? { ...pipelineJob, source: "pipeline" as const }
+    : discoveryJob
+    ? {
+        ...discoveryJob,
+        company: { name: discoveryJob.company_name || "" },
+        source: "discovery" as const,
+      }
+    : null;
 
   const handleUseAsBase = (resumeId: string) => {
-    if (!tailorForJobId) return;
-    const job = getJobById(tailorForJobId);
-    const newTitle = job
-      ? `Tailored — ${job.company?.name || ""} ${job.title}`.trim()
-      : undefined;
+    if (!tailorForJobId || !tailorJob) return;
+    const newTitle = `Tailored — ${tailorJob.company?.name || ""} ${tailorJob.title}`.trim();
     duplicateResume(resumeId, newTitle);
   };
 
@@ -78,7 +90,7 @@ function ResumePageContent() {
       {tailorJob && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
           <Link
-            href={`/dashboard/pipeline/${tailorJob.id}`}
+            href={tailorJob.source === "discovery" ? `/dashboard/discover/${tailorJob.id}` : `/dashboard/pipeline/${tailorJob.id}`}
             className="inline-flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest group"
           >
             <BsArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />

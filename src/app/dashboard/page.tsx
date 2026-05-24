@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BsActivity, BsArrowRight, BsBriefcase, BsCheckCircleFill, BsChevronRight, BsCompass, BsFileEarmarkText, BsGraphUp, BsKanban, BsLightningFill, BsPlus, BsStar } from 'react-icons/bs';
+import { BsActivity, BsArrowRight, BsBriefcase, BsCheckCircleFill, BsChevronRight, BsCompass, BsFileEarmarkText, BsGraphUp, BsKanban, BsPlus, BsStar, BsBullseye, BsTrophy } from 'react-icons/bs';
 import { useMemo } from "react";
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
+import { useInterviewStore } from "@/store/interviewStore";
+import { useProfileStore } from "@/store/profileStore";
 import NeedsTailoringWidget from "@/components/dashboard/NeedsTailoringWidget";
 import { cn } from "@/lib/utils";
 
@@ -15,9 +17,11 @@ import { cn } from "@/lib/utils";
    ═══════════════════════════════════════════════════════ */
 
 export default function DashboardPage() {
-  const { getStats } = usePipelineStore();
+  const { getStats, weeklyGoalCount, setWeeklyGoalCount } = usePipelineStore();
   const { resumes } = useResumeStore();
   const { jobs: discoveredJobs, companies: discoveredCompanies } = useDiscoveryStore();
+  const { stories } = useInterviewStore();
+  const { apiKeys } = useProfileStore();
   const stats = getStats();
 
   const baseResumes = resumes.filter((r) => r.is_base).length;
@@ -198,32 +202,18 @@ export default function DashboardPage() {
           <NeedsTailoringWidget />
         </div>
 
-        {/* System Onboarding */}
-        <div className="lg:col-span-5">
+        {/* System Onboarding & Weekly Goals */}
+        <div className="lg:col-span-5 flex flex-col gap-8">
+          {/* Circular Onboarding Checklist */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="liquid-glass rounded-[32px] p-8 h-full"
+            className="liquid-glass rounded-[32px] p-8"
           >
-            <div className="flex items-center gap-3 mb-8">
-              <BsLightningFill className="w-6 h-6 text-brand-500 dark:text-brand-400" />
-              <h2 className="text-xl font-bold font-display text-zinc-900 dark:text-white">Getting Started</h2>
-              <div className="ml-auto flex items-center gap-2">
-                <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Progress</div>
-                <div className="px-2 py-0.5 rounded-md bg-brand-500/10 border border-brand-500/20 text-[10px] font-bold text-brand-400">
-                  {Math.round(([
-                    stats.total > 0,
-                    resumes.length > 0,
-                    false, // story bank
-                    false, // api key
-                  ].filter(Boolean).length / 4) * 100)}%
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {[
+            {/* Compute checklist */}
+            {(() => {
+              const onboardingSteps = [
                 {
                   step: "Add your first job application",
                   href: "/dashboard/pipeline",
@@ -237,41 +227,173 @@ export default function DashboardPage() {
                 {
                   step: "Add your first interview story",
                   href: "/dashboard/interview/stories",
-                  done: false,
+                  done: stories.length > 0,
                 },
                 {
                   step: "Configure your AI settings",
                   href: "/dashboard/settings/api-keys",
-                  done: false,
+                  done: apiKeys.length > 0,
                 },
-              ].map((item) => (
-                <Link
-                  key={item.step}
-                  href={item.href}
-                  className="flex items-center gap-4 p-4 rounded-2xl hover:bg-zinc-100 dark:hover:bg-white/[0.04] border border-transparent hover:border-zinc-200 dark:hover:border-white/[0.05] transition-all group"
-                >
-                  <div className={cn(
-                    "w-6 h-6 rounded-full flex items-center justify-center transition-all duration-500",
-                    item.done 
-                      ? "bg-brand-500 shadow-[0_0_12px_rgba(99,102,241,0.4)]" 
-                      : "border-2 border-zinc-700 group-hover:border-zinc-500"
-                  )}>
-                    {item.done && <BsCheckCircleFill className="w-4 h-4 text-zinc-900 dark:text-white" />}
+              ];
+
+              const doneCount = onboardingSteps.filter((s) => s.done).length;
+              const percent = Math.round((doneCount / onboardingSteps.length) * 100);
+
+              const badgeTitle = (() => {
+                if (percent === 100) return "Dream Hunter Pro";
+                if (percent >= 75) return "Interview Explorer";
+                if (percent >= 50) return "SaaS Navigator";
+                if (percent >= 25) return "Tracker Apprentice";
+                return "Career Newbie";
+              })();
+
+              return (
+                <>
+                  <div className="flex flex-col sm:flex-row items-center gap-6 mb-8 pb-6 border-b border-zinc-200/50 dark:border-white/[0.05]">
+                    {/* SVG Progress Dial */}
+                    <div className="relative w-20 h-20 flex-shrink-0">
+                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle
+                          className="text-zinc-100 dark:text-white/[0.03] stroke-current"
+                          strokeWidth="8"
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          fill="transparent"
+                        />
+                        <motion.circle
+                          className="text-brand-500 stroke-current"
+                          strokeWidth="8"
+                          strokeLinecap="round"
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          fill="transparent"
+                          initial={{ strokeDasharray: "251.2", strokeDashoffset: "251.2" }}
+                          animate={{ strokeDashoffset: String(251.2 - (251.2 * percent) / 100) }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white font-display leading-none">
+                          {percent}%
+                        </span>
+                        <span className="text-[7px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">
+                          Strength
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="text-center sm:text-left">
+                      <div className="flex items-center justify-center sm:justify-start gap-1.5 px-2 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-[9px] font-bold text-brand-500 dark:text-brand-400 uppercase tracking-widest w-fit">
+                        <BsTrophy className="w-2.5 h-2.5" />
+                        {badgeTitle}
+                      </div>
+                      <p className="text-xs text-zinc-500 mt-2 font-light leading-snug">
+                        {doneCount === onboardingSteps.length
+                          ? "Your profile is fully configured to land dream offers!"
+                          : `Complete ${onboardingSteps.length - doneCount} more steps to level up.`}
+                      </p>
+                    </div>
                   </div>
-                  <span
-                    className={cn(
-                      "text-sm font-medium tracking-tight transition-all duration-500",
-                      item.done ? "text-zinc-500 line-through" : "text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 dark:hover:text-white"
-                    )}
+
+                  <div className="space-y-3">
+                    {onboardingSteps.map((item) => (
+                      <Link
+                        key={item.step}
+                        href={item.href}
+                        className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-zinc-200 dark:border-white/[0.05] hover:bg-zinc-100 dark:hover:bg-white/[0.04] hover:border-zinc-300 dark:hover:border-white/[0.08] transition-all group"
+                      >
+                        <div className={cn(
+                          "w-6 h-6 rounded-full flex items-center justify-center transition-all duration-500",
+                          item.done 
+                            ? "bg-brand-500 shadow-[0_0_12px_rgba(99,102,241,0.4)]" 
+                            : "border-2 border-zinc-300 dark:border-zinc-700 group-hover:border-zinc-500"
+                        )}>
+                          {item.done && <BsCheckCircleFill className="w-4 h-4 text-white dark:text-zinc-900" />}
+                        </div>
+                        <span
+                          className={cn(
+                            "text-sm font-medium tracking-tight transition-all duration-500",
+                            item.done ? "text-zinc-400 line-through dark:text-zinc-600" : "text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-950 dark:group-hover:text-white"
+                          )}
+                        >
+                          {item.step}
+                        </span>
+                        <div className="ml-auto w-8 h-8 rounded-lg bg-zinc-100 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <BsArrowRight className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
+          </motion.div>
+
+          {/* Weekly Application Goals Widget */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="liquid-glass rounded-[32px] p-8"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <BsBullseye className="w-6 h-6 text-brand-500 dark:text-brand-400" />
+              <h2 className="text-xl font-bold font-display text-zinc-900 dark:text-white">Weekly Goal</h2>
+              <div className="ml-auto flex items-center gap-2">
+                <span className="text-xs font-semibold text-zinc-500 dark:text-gray-500 uppercase tracking-wider">Target:</span>
+                <div className="flex items-center gap-1">
+                  <button 
+                    onClick={() => setWeeklyGoalCount(Math.max(1, weeklyGoalCount - 1))}
+                    className="w-5 h-5 rounded bg-zinc-100 dark:bg-white/5 flex items-center justify-center text-xs hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors"
                   >
-                    {item.step}
-                  </span>
-                  <div className="ml-auto w-8 h-8 rounded-lg bg-zinc-100 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <BsArrowRight className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                  </div>
-                </Link>
-              ))}
+                    -
+                  </button>
+                  <span className="text-sm font-bold text-zinc-900 dark:text-white px-1.5 min-w-[20px] text-center">{weeklyGoalCount}</span>
+                  <button 
+                    onClick={() => setWeeklyGoalCount(weeklyGoalCount + 1)}
+                    className="w-5 h-5 rounded bg-zinc-100 dark:bg-white/5 flex items-center justify-center text-xs hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
             </div>
+
+            {/* Progress calculation */}
+            {(() => {
+              const currentGoalProgress = stats.addedThisWeek;
+              const goalPercent = Math.min(100, Math.round((currentGoalProgress / weeklyGoalCount) * 100));
+
+              return (
+                <div className="space-y-4">
+                  <div className="flex items-baseline justify-between">
+                    <div>
+                      <span className="text-3xl font-light font-display text-zinc-900 dark:text-white">{currentGoalProgress}</span>
+                      <span className="text-zinc-500 text-sm font-medium ml-1">/ {weeklyGoalCount} applied</span>
+                    </div>
+                    <span className="text-sm font-bold text-brand-500 dark:text-brand-400">{goalPercent}%</span>
+                  </div>
+
+                  {/* Goal Progress bar */}
+                  <div className="h-2 w-full bg-zinc-100 dark:bg-white/10 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full gradient-futuristic"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${goalPercent}%` }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                    />
+                  </div>
+
+                  <p className="text-xs text-zinc-500 leading-normal font-light">
+                    {currentGoalProgress >= weeklyGoalCount 
+                      ? "🎉 Stellar job! You have reached your weekly job application target." 
+                      : `Keep going! Apply to ${weeklyGoalCount - currentGoalProgress} more roles to reach your goal.`}
+                  </p>
+                </div>
+              );
+            })()}
           </motion.div>
         </div>
       </div>

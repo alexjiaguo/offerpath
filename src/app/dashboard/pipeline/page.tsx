@@ -1,12 +1,14 @@
 "use client";
 
-import { BsArrowDownUp, BsBarChartFill, BsFilter, BsKanban, BsPlus, BsSearch, BsX } from 'react-icons/bs';
+import { BsArrowDownUp, BsBarChartFill, BsFilter, BsKanban, BsPlus, BsSearch, BsX, BsDownload, BsUpload } from 'react-icons/bs';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
 import KanbanBoard from "@/components/pipeline/KanbanBoard";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { SortField } from "@/store/pipelineStore";
+import { exportJobsToCSV, importJobsFromCSV } from "@/lib/csvUtility";
+import { toast } from "sonner";
 
 /* ═══════════════════════════════════════════════════
    Pipeline Page — BsKanban board + filter/sort toolbar
@@ -21,6 +23,8 @@ const SORT_OPTIONS: { field: SortField; label: string }[] = [
 
 export default function PipelinePage() {
   const {
+    jobs,
+    addJob,
     filters,
     setFilter,
     clearFilters,
@@ -34,6 +38,64 @@ export default function PipelinePage() {
   const stats = getStats();
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleExportCSV = () => {
+    try {
+      const csv = exportJobsToCSV(jobs);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `offerpath_pipeline_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("Pipeline exported successfully as CSV!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export pipeline to CSV");
+    }
+  };
+
+  const handleImportCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        if (!text) return;
+        const imported = importJobsFromCSV(text);
+        if (imported.length === 0) {
+          toast.error("No valid jobs found in the CSV");
+          return;
+        }
+        
+        imported.forEach((job) => {
+          addJob({
+            title: job.title,
+            company: job.company,
+            location: job.location,
+            url: job.url,
+            status: job.status,
+            score: job.score,
+            tier: job.tier,
+            salary_range: job.salary_range,
+            notes: job.notes
+          });
+        });
+        
+        toast.success(`Successfully imported ${imported.length} jobs!`);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      } catch (err) {
+        console.error(err);
+        toast.error("Error parsing or importing CSV file");
+      }
+    };
+    reader.readAsText(file);
+  };
 
   const hasActiveFilters =
     filters.search ||
@@ -88,7 +150,7 @@ export default function PipelinePage() {
               )}
             >
               <BsFilter className="w-4 h-4" />
-              BsFilter
+              <span className="sr-only">Filter</span>
               {hasActiveFilters && (
                 <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
               )}
@@ -206,6 +268,33 @@ export default function PipelinePage() {
             <BsBarChartFill className="w-4 h-4" />
             <span className="hidden sm:inline">Analytics</span>
           </Link>
+
+          {/* Export CSV */}
+          <button
+            onClick={handleExportCSV}
+            title="Export to CSV"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
+          >
+            <BsDownload className="w-4 h-4" />
+            <span className="hidden lg:inline">Export CSV</span>
+          </button>
+
+          {/* Import CSV */}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            title="Import from CSV"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
+          >
+            <BsUpload className="w-4 h-4" />
+            <span className="hidden lg:inline">Import CSV</span>
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".csv"
+            onChange={handleImportCSV}
+            className="hidden"
+          />
 
           {/* Add Job */}
           <button

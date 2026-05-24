@@ -63,7 +63,7 @@ export default function DiscoverJobDetailPage({
       </Link>
 
       {/* Hero Card */}
-      <div className="glass rounded-2xl p-6 mb-6">
+      <div className="liquid-glass rounded-2xl p-6 mb-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -150,7 +150,7 @@ export default function DiscoverJobDetailPage({
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Description */}
-          <div className="glass rounded-xl p-5">
+          <div className="liquid-glass rounded-xl p-5">
             <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
               <BsBriefcase className="w-4 h-4 text-brand-400" />
               Job Description
@@ -162,7 +162,7 @@ export default function DiscoverJobDetailPage({
 
           {/* Requirements */}
           {job.requirements.length > 0 && (
-            <div className="glass rounded-xl p-5">
+            <div className="liquid-glass rounded-xl p-5">
               <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
                 <BsCheckCircleFill className="w-4 h-4 text-emerald-400" />
                 Requirements
@@ -179,7 +179,7 @@ export default function DiscoverJobDetailPage({
           )}
 
           {/* Tags */}
-          <div className="glass rounded-xl p-5">
+          <div className="liquid-glass rounded-xl p-5">
             <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
               <BsStars className="w-4 h-4 text-purple-400" />
               Related Skills & Tags
@@ -198,7 +198,7 @@ export default function DiscoverJobDetailPage({
         <div className="space-y-5">
           {/* Company Info */}
           {company && (
-            <div className="glass rounded-xl p-5">
+            <div className="liquid-glass rounded-xl p-5">
               <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                 <BsBuildings className="w-4 h-4 text-blue-400" />
                 About {company.name}
@@ -245,7 +245,7 @@ export default function DiscoverJobDetailPage({
 
           {/* More roles at this company */}
           {relatedJobs.length > 0 && (
-            <div className="glass rounded-xl p-5">
+            <div className="liquid-glass rounded-xl p-5">
               <h3 className="text-sm font-semibold mb-3">
                 More at {job.company_name}
               </h3>
@@ -273,7 +273,7 @@ export default function DiscoverJobDetailPage({
           )}
 
           {/* Quick action: Tailor resume */}
-          <div className="glass rounded-xl p-5 border border-brand-500/20">
+          <div className="liquid-glass rounded-xl p-5 border border-brand-500/20">
             <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
               <BsStars className="w-4 h-4 text-brand-400" />
               Tailor Your Resume

@@ -46,7 +46,7 @@ export default function AuthLayout({
         </Link>
 
         {/* Card */}
-        <div className="glass rounded-2xl p-8 animate-scale-in">
+        <div className="liquid-glass rounded-2xl p-8 animate-scale-in">
           {children}
         </div>
 

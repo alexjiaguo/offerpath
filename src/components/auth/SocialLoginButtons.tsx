@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 export function GoogleIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24">
@@ -24,7 +26,7 @@ interface SocialLoginButtonsProps {
 }
 
 export default function SocialLoginButtons({ variant = "full" }: SocialLoginButtonsProps) {
-  const handleClick = () => alert("Social login coming soon!");
+  const handleClick = () => toast.info("Social login coming soon!");
 
   if (variant === "compact") {
     return (

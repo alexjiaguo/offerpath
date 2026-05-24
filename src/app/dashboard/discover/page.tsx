@@ -39,7 +39,7 @@ function CompanyCard({ company }: { company: DiscoveredCompany }) {
   const jobCount = getJobsByCompany(company.id).length;
 
   return (
-    <div className="glass-hover rounded-xl p-5 group">
+    <div className="glass-card rounded-xl p-5 group">
       <div className="flex items-start gap-3">
         <div className="w-11 h-11 rounded-xl bg-surface-200 flex items-center justify-center text-xl flex-shrink-0">
           {company.logo_emoji}
@@ -85,7 +85,7 @@ function JobCard({ jobId }: { jobId: string }) {
 
   return (
     <div className={cn(
-      "glass-hover rounded-xl p-5 group relative transition-opacity",
+      "glass-card rounded-xl p-5 group relative transition-opacity",
       job.dismissed && "opacity-40"
     )}>
       {/* Source badge */}
@@ -301,7 +301,7 @@ export default function DiscoverPage() {
           { label: "Companies", value: store.companies.length, icon: BsBuildings, color: "text-blue-400" },
           { label: "Avg. Match", value: `${Math.round(filteredJobs.reduce((a, j) => a + j.match_score, 0) / (filteredJobs.length || 1))}%`, icon: BsGraphUp, color: "text-amber-400" },
         ].map((stat) => (
-          <div key={stat.label} className="glass rounded-xl p-4 flex items-center gap-3">
+          <div key={stat.label} className="liquid-glass rounded-xl p-4 flex items-center gap-3">
             <stat.icon className={cn("w-5 h-5", stat.color)} />
             <div>
               <div className="text-lg font-bold">{stat.value}</div>
@@ -313,7 +313,7 @@ export default function DiscoverPage() {
 
       {/* Scan Status Banner */}
       {latestScan && (
-        <div className="glass rounded-xl p-4 mb-6 flex items-center justify-between flex-wrap gap-3">
+        <div className="liquid-glass rounded-xl p-4 mb-6 flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
             {latestScan.status === "running" ? (
               <BsArrowRepeat className="w-5 h-5 text-brand-400 animate-spin" />
@@ -405,7 +405,7 @@ export default function DiscoverPage() {
           </div>
 
           {showFilters && (
-            <div className="glass rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-3 animate-slide-up">
+            <div className="liquid-glass rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-3 animate-slide-up">
               <div>
                 <label className="text-[10px] text-zinc-500 dark:text-gray-500 uppercase tracking-wider font-medium mb-1 block">Industry</label>
                 <select
@@ -462,7 +462,7 @@ export default function DiscoverPage() {
       {store.activeTab === "all" && (
         <div className="space-y-3">
           {filteredJobs.length === 0 ? (
-            <div className="glass rounded-xl p-8 text-center">
+            <div className="liquid-glass rounded-xl p-8 text-center">
               <BsSearch className="w-8 h-8 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
               <h3 className="text-sm font-medium text-zinc-600 dark:text-gray-400 mb-1">No matches found</h3>
               <p className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600">Try adjusting your filters or run a new scan.</p>
@@ -477,7 +477,7 @@ export default function DiscoverPage() {
       {store.activeTab === "saved" && (
         <div className="space-y-3">
           {savedJobs.length === 0 ? (
-            <div className="glass rounded-xl p-8 text-center">
+            <div className="liquid-glass rounded-xl p-8 text-center">
               <BsBookmark className="w-8 h-8 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
               <h3 className="text-sm font-medium text-zinc-600 dark:text-gray-400 mb-1">No saved leads yet</h3>
               <p className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600">BsBookmark interesting jobs to save them here.</p>
@@ -514,7 +514,7 @@ export default function DiscoverPage() {
       {store.activeTab === "scans" && (
         <div className="space-y-3">
           {/* Search Profile summary */}
-          <div className="glass rounded-xl p-5 mb-4">
+          <div className="liquid-glass rounded-xl p-5 mb-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <BsStars className="w-4 h-4 text-brand-400" />
@@ -575,7 +575,7 @@ export default function DiscoverPage() {
 
           {/* Scan runs */}
           {store.scanRuns.map((run) => (
-            <div key={run.id} className="glass-hover rounded-xl p-4 flex items-center justify-between">
+            <div key={run.id} className="glass-card rounded-xl p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {run.status === "running" ? (
                   <BsArrowRepeat className="w-5 h-5 text-brand-400 animate-spin" />

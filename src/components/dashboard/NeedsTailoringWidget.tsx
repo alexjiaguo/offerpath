@@ -17,7 +17,7 @@ export default function NeedsTailoringWidget() {
   if (jobs.length === 0) return null;
 
   return (
-    <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.3s" }}>
+    <div className="liquid-glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.3s" }}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
         <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">

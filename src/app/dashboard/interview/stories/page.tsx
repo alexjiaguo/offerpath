@@ -36,6 +36,7 @@ export default function StoriesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingStoryId, setEditingStoryId] = useState<string | null>(null);
   const [isExtracting, setIsExtracting] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const competencies = getAllCompetencies();
@@ -63,7 +64,7 @@ export default function StoriesPage() {
       });
     } catch (error) {
       console.error("Failed to extract stories:", error);
-      alert("Failed to parse the file. Only PDF, DOCX, TXT, and MD are supported.");
+      setUploadError("Failed to parse the file. Only PDF, DOCX, TXT, and MD are supported.");
     } finally {
       setIsExtracting(false);
       if (fileInputRef.current) {
@@ -94,6 +95,19 @@ export default function StoriesPage() {
 
   return (
     <div className="max-w-5xl mx-auto animate-fade-in">
+      {/* Error Banner */}
+      {uploadError && (
+        <div className="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-300 flex items-center justify-between">
+          <span>{uploadError}</span>
+          <button
+            onClick={() => setUploadError(null)}
+            className="p-1 hover:bg-white/5 rounded"
+          >
+            <BsX className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -186,7 +200,7 @@ export default function StoriesPage() {
 
       {/* Stories Grid */}
       {filteredStories.length === 0 ? (
-        <div className="glass rounded-2xl p-12 text-center">
+        <div className="liquid-glass rounded-2xl p-12 text-center">
           <BsCollection className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">
             {stories.length === 0 ? "Build your story bank" : "No matching stories"}
@@ -214,7 +228,7 @@ export default function StoriesPage() {
             return (
               <div
                 key={story.id}
-                className="glass-hover rounded-xl overflow-hidden"
+                className="glass-card rounded-xl overflow-hidden"
               >
                 {/* Card Header */}
                 <div

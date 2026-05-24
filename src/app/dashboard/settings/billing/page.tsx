@@ -79,7 +79,7 @@ export default function BillingPage() {
       </div>
 
       {/* Current Plan Card */}
-      <div className="glass rounded-2xl p-6 mb-8">
+      <div className="liquid-glass rounded-2xl p-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-zinc-500 dark:text-gray-500 uppercase tracking-wider mb-1">Current Plan</p>
@@ -145,7 +145,7 @@ export default function BillingPage() {
                 "rounded-2xl p-6 relative transition-all",
                 plan.highlight
                   ? "bg-gradient-to-b from-brand-500/10 to-purple-500/5 border-2 border-brand-500/30"
-                  : "glass"
+                  : "liquid-glass"
               )}
             >
               {plan.highlight && (
@@ -190,7 +190,7 @@ export default function BillingPage() {
       </div>
 
       {/* Security Note */}
-      <div className="glass rounded-xl p-4 flex items-center gap-3">
+      <div className="liquid-glass rounded-xl p-4 flex items-center gap-3">
         <BsShield className="w-5 h-5 text-emerald-400 flex-shrink-0" />
         <p className="text-xs text-zinc-500 dark:text-gray-500">
           Payments are securely processed by Stripe. We never store your card details.
