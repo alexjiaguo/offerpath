@@ -1,7 +1,7 @@
 "use client";
 
 import { usePipelineStore } from "@/store/pipelineStore";
-import { BsArrowRight, BsExclamationCircle, BsStars } from 'react-icons/bs';
+import { ArrowRight, WarningCircle, Sparkle } from '@phosphor-icons/react';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,7 @@ export default function NeedsTailoringWidget() {
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
         <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
-          <BsExclamationCircle className="w-4.5 h-4.5 text-amber-400" />
+          <WarningCircle className="w-4.5 h-4.5 text-amber-400" />
         </div>
         <div className="flex-1">
           <h3 className="text-sm font-semibold">Resumes Needed</h3>
@@ -69,9 +69,9 @@ export default function NeedsTailoringWidget() {
 
             {/* CTA */}
             <div className="flex items-center gap-1 text-xs text-brand-400 opacity-0 group-hover:opacity-100 transition-all">
-              <BsStars className="w-3 h-3" />
+              <Sparkle className="w-3 h-3" />
               <span className="whitespace-nowrap">Tailor</span>
-              <BsArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3 h-3" />
             </div>
           </Link>
         ))}
@@ -84,7 +84,7 @@ export default function NeedsTailoringWidget() {
           className="flex items-center justify-center gap-1 mt-3 pt-3 border-t border-zinc-200 dark:border-white/[0.06] text-xs text-zinc-500 dark:text-gray-500 hover:text-brand-400 transition-colors"
         >
           View all {jobs.length} jobs
-          <BsArrowRight className="w-3 h-3" />
+          <ArrowRight className="w-3 h-3" />
         </Link>
       )}
     </div>

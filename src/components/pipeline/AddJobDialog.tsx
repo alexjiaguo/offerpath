@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { BsArrowRepeat, BsFileEarmarkText, BsLink45Deg, BsStars, BsX } from 'react-icons/bs';
+import { ArrowsClockwise, FileText, Link, Sparkle, X } from '@phosphor-icons/react';
 import { cn } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
 import type { JobEvaluation } from "@/types";
@@ -160,7 +160,7 @@ export default function AddJobDialog() {
               onClick={handleClose}
               className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.06] transition-all"
             >
-              <BsX className="w-5 h-5" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
@@ -176,7 +176,7 @@ export default function AddJobDialog() {
                     : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300"
                 )}
               >
-                <BsLink45Deg className="w-3.5 h-3.5" />
+                <Link className="w-3.5 h-3.5" />
                 Paste URL
               </button>
               <button
@@ -188,7 +188,7 @@ export default function AddJobDialog() {
                     : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300"
                 )}
               >
-                <BsFileEarmarkText className="w-3.5 h-3.5" />
+                <FileText className="w-3.5 h-3.5" />
                 Paste JD
               </button>
             </div>
@@ -284,7 +284,7 @@ export default function AddJobDialog() {
             {evaluated && evaluation && (
               <div className="rounded-xl border border-white/[0.08] bg-surface-100/50 p-4 animate-scale-in">
                 <div className="flex items-center gap-2 mb-3">
-                  <BsStars className="w-4 h-4 text-brand-400" />
+                  <Sparkle className="w-4 h-4 text-brand-400" />
                   <span className="text-sm font-medium">AI Evaluation</span>
                 </div>
                 <div className="flex items-center gap-4 mb-2">
@@ -326,9 +326,9 @@ export default function AddJobDialog() {
               )}
             >
               {isEvaluating ? (
-                <BsArrowRepeat className="w-4 h-4 animate-spin" />
+                <ArrowsClockwise className="w-4 h-4 animate-spin" />
               ) : (
-                <BsStars className="w-4 h-4" />
+                <Sparkle className="w-4 h-4" />
               )}
               {isEvaluating ? "Evaluating…" : evaluated ? "Re-evaluate" : "Evaluate with AI"}
             </button>

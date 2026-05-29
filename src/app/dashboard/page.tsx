@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BsActivity, BsArrowRight, BsBriefcase, BsCheckCircleFill, BsChevronRight, BsCompass, BsFileEarmarkText, BsGraphUp, BsKanban, BsPlus, BsStar, BsBullseye, BsTrophy } from 'react-icons/bs';
+import { Pulse, ArrowRight, Briefcase, CheckCircle, CaretRight, Compass, FileText, TrendUp, Kanban, Plus, Star, Target, Trophy } from '@phosphor-icons/react';
 import { useMemo } from "react";
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
@@ -29,64 +29,61 @@ export default function DashboardPage() {
 
   const MODULE_CARDS = useMemo(() => [
     {
-      title: "Job Pipeline",
+      title: "Application Tracker",
       desc: "Manage and track your active job applications",
-      icon: BsKanban,
+      icon: Kanban,
       href: "/dashboard/pipeline",
-      color: "oklch(0.6 0.15 256)",
       stats: [
         { label: "Active Jobs", value: String(stats.total) },
         { label: "Interviews", value: String(stats.byStatus?.interviewing || 0) },
       ],
-      cta: "Open Pipeline",
+      cta: "Open Tracker",
     },
     {
-      title: "Resume Studio",
+      title: "Resume Builder",
       desc: "Create and tailor high-impact resumes",
-      icon: BsFileEarmarkText,
+      icon: FileText,
       href: "/dashboard/resume",
-      color: "oklch(0.5 0.22 280)",
       stats: [
         { label: "Total Resumes", value: String(baseResumes + tailoredResumes) },
         { label: "Tailored", value: String(tailoredResumes) },
       ],
-      cta: "Open Studio",
+      cta: "Open Builder",
     },
     {
-      title: "Job Discovery",
+      title: "Find Jobs",
       desc: "Scan for new opportunities across platforms",
-      icon: BsCompass,
+      icon: Compass,
       href: "/dashboard/discover",
-      color: "oklch(0.6 0.2 310)",
       stats: [
         { label: "Leads", value: String(discoveredJobs.filter(j => !j.dismissed).length) },
         { label: "Companies", value: String(discoveredCompanies.length) },
       ],
-      cta: "Discover Jobs",
+      cta: "Search Jobs",
     },
   ], [stats, baseResumes, tailoredResumes, discoveredJobs, discoveredCompanies]);
 
   const QUICK_STATS = useMemo(() => [
-    { label: "Total Jobs", value: String(stats.total), icon: BsBriefcase },
+    { label: "Total Jobs", value: String(stats.total), icon: Briefcase },
     {
       label: "Success Rate",
       value: stats.interviewRate > 0 ? `${stats.interviewRate.toFixed(1)}%` : "—",
-      icon: BsGraphUp,
+      icon: TrendUp,
     },
     {
       label: "Average Score",
       value: stats.avgScore > 0 ? stats.avgScore.toFixed(1) : "—",
-      icon: BsStar,
+      icon: Star,
     },
     {
       label: "Added This Week",
       value: `+${stats.addedThisWeek}`,
-      icon: BsActivity,
+      icon: Pulse,
     },
   ], [stats]);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-12 pb-20">
+    <div className="w-full space-y-12 pb-20">
       {/* Welcome header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <motion.div
@@ -113,7 +110,7 @@ export default function DashboardPage() {
             href="/dashboard/pipeline/add"
             className="group flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-white text-black text-sm font-bold hover:bg-zinc-100 transition-all shadow-xl shadow-white/5"
           >
-            <BsPlus className="w-5 h-5" />
+            <Plus className="w-5 h-5" />
             Add New Job
           </Link>
         </motion.div>
@@ -158,9 +155,9 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between mb-8">
               <div 
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
-                style={{ background: `linear-gradient(135deg, ${mod.color}, oklch(0.4 0.1 256))` }}
+                style={{ background: 'linear-gradient(135deg, var(--color-brand-400), var(--color-brand-600))' }}
               >
-                <mod.icon className="w-6 h-6 text-zinc-900 dark:text-white" />
+                <mod.icon className="w-6 h-6 text-white" />
               </div>
               <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="px-2.5 py-1 rounded-full bg-white/5 border border-zinc-200 dark:border-white/10 text-[9px] font-bold text-zinc-700 dark:text-zinc-400 uppercase tracking-widest">
@@ -189,7 +186,7 @@ export default function DashboardPage() {
                 className="group/btn flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-300 uppercase tracking-widest hover:text-zinc-900 dark:hover:text-white transition-all"
               >
                 {mod.cta}
-                <BsChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                <CaretRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
               </Link>
             </div>
           </motion.div>
@@ -286,7 +283,7 @@ export default function DashboardPage() {
 
                     <div className="text-center sm:text-left">
                       <div className="flex items-center justify-center sm:justify-start gap-1.5 px-2 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-[9px] font-bold text-brand-500 dark:text-brand-400 uppercase tracking-widest w-fit">
-                        <BsTrophy className="w-2.5 h-2.5" />
+                        <Trophy className="w-2.5 h-2.5" />
                         {badgeTitle}
                       </div>
                       <p className="text-xs text-zinc-500 mt-2 font-light leading-snug">
@@ -310,7 +307,7 @@ export default function DashboardPage() {
                             ? "bg-brand-500 shadow-[0_0_12px_rgba(99,102,241,0.4)]" 
                             : "border-2 border-zinc-300 dark:border-zinc-700 group-hover:border-zinc-500"
                         )}>
-                          {item.done && <BsCheckCircleFill className="w-4 h-4 text-white dark:text-zinc-900" />}
+                          {item.done && <CheckCircle className="w-4 h-4 text-white dark:text-zinc-900"  weight="fill" />}
                         </div>
                         <span
                           className={cn(
@@ -321,7 +318,7 @@ export default function DashboardPage() {
                           {item.step}
                         </span>
                         <div className="ml-auto w-8 h-8 rounded-lg bg-zinc-100 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <BsArrowRight className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                          <ArrowRight className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
                         </div>
                       </Link>
                     ))}
@@ -339,7 +336,7 @@ export default function DashboardPage() {
             className="liquid-glass rounded-[32px] p-8"
           >
             <div className="flex items-center gap-3 mb-6">
-              <BsBullseye className="w-6 h-6 text-brand-500 dark:text-brand-400" />
+              <Target className="w-6 h-6 text-brand-500 dark:text-brand-400" />
               <h2 className="text-xl font-bold font-display text-zinc-900 dark:text-white">Weekly Goal</h2>
               <div className="ml-auto flex items-center gap-2">
                 <span className="text-xs font-semibold text-zinc-500 dark:text-gray-500 uppercase tracking-wider">Target:</span>

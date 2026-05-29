@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BsArrowLeft, BsCheckCircleFill, BsExclamationCircle, BsEye, BsEyeSlash, BsKey, BsLightningFill, BsPlus, BsTrash } from 'react-icons/bs';
+import { ArrowLeft, CheckCircle, WarningCircle, Eye, EyeSlash, Key, Lightning, Plus, Trash } from '@phosphor-icons/react';
 import { cn } from "@/lib/utils";
 import { useProfileStore, type ApiKeyEntry } from "@/store/profileStore";
 import { useState } from "react";
@@ -90,25 +90,25 @@ export default function ApiKeysPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto animate-fade-in">
+    <div className="w-full animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <BsKey className="w-6 h-6 text-brand-400" />
+          <Key className="w-6 h-6 text-brand-400" />
           <h1 className="text-2xl font-bold">API Keys</h1>
         </div>
         <Link
           href="/dashboard/settings"
           className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors"
         >
-          <BsArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4" />
           Settings
         </Link>
       </div>
 
       {/* Info Banner */}
       <div className="liquid-glass rounded-xl p-4 mb-6 flex items-start gap-3">
-        <BsLightningFill className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5" />
+        <Lightning className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5"  weight="fill" />
         <div>
           <p className="text-sm font-medium mb-1">Bring Your Own Key (BYO)</p>
           <p className="text-xs text-zinc-500 dark:text-gray-500 leading-relaxed">
@@ -158,9 +158,9 @@ export default function ApiKeysPage() {
                         className="p-1 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 hover:text-zinc-600 dark:hover:text-gray-400 transition-colors"
                       >
                         {isRevealed ? (
-                          <BsEyeSlash className="w-3 h-3" />
+                          <EyeSlash className="w-3 h-3" />
                         ) : (
-                          <BsEye className="w-3 h-3" />
+                          <Eye className="w-3 h-3" />
                         )}
                       </button>
                     </div>
@@ -176,9 +176,9 @@ export default function ApiKeysPage() {
                         )}
                       >
                         {entry.status === "active" ? (
-                          <BsCheckCircleFill className="w-3 h-3" />
+                          <CheckCircle className="w-3 h-3"  weight="fill" />
                         ) : (
-                          <BsExclamationCircle className="w-3 h-3" />
+                          <WarningCircle className="w-3 h-3" />
                         )}
                         {entry.status === "active"
                           ? "Connected"
@@ -211,7 +211,7 @@ export default function ApiKeysPage() {
                     onClick={() => handleDelete(entry.id)}
                     className="p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
                   >
-                    <BsTrash className="w-4 h-4" />
+                    <Trash className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -301,7 +301,7 @@ export default function ApiKeysPage() {
           onClick={() => setShowAddForm(true)}
           className="w-full py-4 rounded-2xl border-2 border-dashed border-white/[0.08] text-zinc-500 dark:text-gray-500 hover:text-brand-400 hover:border-brand-500/30 transition-all flex items-center justify-center gap-2 text-sm font-medium"
         >
-          <BsPlus className="w-4 h-4" />
+          <Plus className="w-4 h-4" />
           Add API Key
         </button>
       )}

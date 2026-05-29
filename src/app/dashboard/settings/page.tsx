@@ -1,6 +1,6 @@
 "use client";
 
-import { BsBell, BsBriefcase, BsCheckCircle, BsFileEarmarkText, BsFloppy, BsGear, BsMoonFill, BsPalette, BsPerson, BsStars, BsUpload, BsX } from 'react-icons/bs';
+import { Bell, Briefcase, CheckCircle, FileText, FloppyDisk, Gear, Moon, Palette, User, Sparkle, UploadSimple, X } from '@phosphor-icons/react';
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -65,11 +65,11 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto animate-fade-in">
+    <div className="w-full animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <BsGear className="w-6 h-6 text-brand-400" />
+          <Gear className="w-6 h-6 text-brand-400" />
           <h1 className="text-2xl font-bold">Settings</h1>
         </div>
         <button
@@ -81,8 +81,8 @@ export default function SettingsPage() {
               : "gradient-brand text-white hover:opacity-90"
           )}
         >
-          <BsFloppy className="w-4 h-4" />
-          {saved ? "Saved!" : "Save Changes"}
+          <FloppyDisk className="w-4 h-4" />
+          {saved ? "Saved!" : "Save"}
         </button>
       </div>
 
@@ -91,7 +91,7 @@ export default function SettingsPage() {
         {/* Profile Section */}
         <section className="liquid-glass rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-5">
-            <BsPerson className="w-5 h-5 text-brand-400" />
+            <User className="w-5 h-5 text-brand-400" />
             <h2 className="text-base font-semibold">Profile</h2>
           </div>
 
@@ -138,7 +138,7 @@ export default function SettingsPage() {
         {/* ═══ NEW: Profile & Background Section ═══ */}
         <section className="liquid-glass rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-2">
-            <BsBriefcase className="w-5 h-5 text-brand-400" />
+            <Briefcase className="w-5 h-5 text-brand-400" />
             <h2 className="text-base font-semibold">
               Professional Background
             </h2>
@@ -148,7 +148,7 @@ export default function SettingsPage() {
             job matching, and interview prep generation.
           </p>
 
-          {/* Resume BsUpload Dropzone */}
+          {/* Resume Upload Dropzone */}
           <div className="mb-6">
             <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-2">
               Resume / CV File
@@ -160,7 +160,7 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                      <BsFileEarmarkText className="w-5 h-5 text-emerald-400" />
+                      <FileText className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-zinc-800 dark:text-gray-200">
@@ -171,7 +171,7 @@ export default function SettingsPage() {
                           {(uploadedResume.fileSize / 1024).toFixed(1)} KB
                         </span>
                         <span className="text-[10px] text-emerald-400 flex items-center gap-0.5">
-                          <BsCheckCircle className="w-3 h-3" /> Parsed
+                          <CheckCircle className="w-3 h-3" /> Parsed
                           successfully
                         </span>
                         <span className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">
@@ -196,7 +196,7 @@ export default function SettingsPage() {
                       onClick={clearResume}
                       className="p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
                     >
-                      <BsX className="w-4 h-4" />
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -236,7 +236,7 @@ export default function SettingsPage() {
                 ) : (
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-surface-200 flex items-center justify-center">
-                      <BsUpload className="w-6 h-6 text-zinc-500 dark:text-gray-500" />
+                      <UploadSimple className="w-6 h-6 text-zinc-500 dark:text-gray-500" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-zinc-700 dark:text-gray-300">
@@ -407,7 +407,7 @@ export default function SettingsPage() {
 
           {/* Info banner */}
           <div className="mt-5 flex items-start gap-2.5 p-3 rounded-xl bg-brand-500/5 border border-brand-500/10">
-            <BsStars className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
+            <Sparkle className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
             <p className="text-xs text-zinc-600 dark:text-gray-400 leading-relaxed">
               Your professional background and uploaded resume are used as{" "}
               <span className="text-zinc-700 dark:text-gray-300 font-medium">ground truth</span>{" "}
@@ -420,7 +420,7 @@ export default function SettingsPage() {
         {/* Notifications */}
         <section className="liquid-glass rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-5">
-            <BsBell className="w-5 h-5 text-brand-400" />
+            <Bell className="w-5 h-5 text-brand-400" />
             <h2 className="text-base font-semibold">Notifications</h2>
           </div>
 
@@ -473,7 +473,7 @@ export default function SettingsPage() {
         {/* Preferences */}
         <section className="liquid-glass rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-5">
-            <BsPalette className="w-5 h-5 text-brand-400" />
+            <Palette className="w-5 h-5 text-brand-400" />
             <h2 className="text-base font-semibold">Preferences</h2>
           </div>
 
@@ -497,7 +497,7 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.02] transition-all">
               <div className="flex items-center gap-3">
-                <BsMoonFill className="w-4 h-4 text-zinc-600 dark:text-gray-400" />
+                <Moon className="w-4 h-4 text-zinc-600 dark:text-gray-400"  weight="fill" />
                 <div>
                   <p className="text-sm font-medium">Dark Mode</p>
                   <p className="text-xs text-zinc-500 dark:text-gray-500 mt-0.5">

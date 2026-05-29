@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BsArrowDownUp, BsArrowRepeat, BsBookmark, BsBookmarkCheck, BsBoxArrowUpRight, BsBriefcase, BsBuildings, BsBullseye, BsCheckCircle, BsChevronDown, BsClock, BsCompass, BsFilter, BsFloppy, BsGeoAlt, BsGlobe, BsGraphUp, BsLightningFill, BsPencil, BsPlayFill, BsPlus, BsSearch, BsStars, BsUpcScan, BsX } from 'react-icons/bs';
+import { ArrowsDownUp, ArrowsClockwise, BookmarkSimple, ArrowSquareOut, Briefcase, Buildings, Target, CheckCircle, CaretDown, Clock, Compass, Funnel, FloppyDisk, MapPin, Globe, TrendUp, Lightning, Pencil, Play, Plus, MagnifyingGlass, Sparkle, Barcode, X } from '@phosphor-icons/react';
 import { useDiscoveryStore } from "@/store/discoveryStore";
+import { usePipelineStore } from "@/store/pipelineStore";
 import type { DiscoveryTab, SortKey, DiscoveredCompany } from "@/store/discoveryStore";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +27,7 @@ function MatchBadge({ score, size = "sm" }: { score: number; size?: "sm" | "md" 
       color,
       size === "sm" ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs",
     )}>
-      <BsBullseye className={size === "sm" ? "w-2.5 h-2.5" : "w-3 h-3"} />
+      <Target className={size === "sm" ? "w-2.5 h-2.5" : "w-3 h-3"} />
       {score}%
     </span>
   );
@@ -50,9 +51,9 @@ function CompanyCard({ company }: { company: DiscoveredCompany }) {
             <MatchBadge score={company.match_score} />
           </div>
           <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-gray-500 mb-2 flex-wrap">
-            <span className="flex items-center gap-1"><BsBuildings className="w-3 h-3" />{company.industry}</span>
-            <span className="flex items-center gap-1"><BsGeoAlt className="w-3 h-3" />{company.hq}</span>
-            <span className="flex items-center gap-1"><BsBriefcase className="w-3 h-3" />{company.employee_count}</span>
+            <span className="flex items-center gap-1"><Buildings className="w-3 h-3" />{company.industry}</span>
+            <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{company.hq}</span>
+            <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" />{company.employee_count}</span>
           </div>
           <p className="text-xs text-zinc-500 dark:text-gray-500 line-clamp-2 mb-3">{company.notes}</p>
           <div className="flex items-center gap-2 flex-wrap">
@@ -68,7 +69,7 @@ function CompanyCard({ company }: { company: DiscoveredCompany }) {
         </span>
         <div className="flex gap-2">
           <a href={company.career_url} target="_blank" rel="noopener" className="text-xs text-zinc-500 dark:text-gray-500 hover:text-brand-400 transition-colors flex items-center gap-1">
-            Career Page <BsBoxArrowUpRight className="w-3 h-3" />
+            Career Page <ArrowSquareOut className="w-3 h-3" />
           </a>
         </div>
       </div>
@@ -112,8 +113,8 @@ function JobCard({ jobId }: { jobId: string }) {
           </Link>
           <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-gray-500 mt-1 flex-wrap">
             <span className="flex items-center gap-1 font-medium text-zinc-600 dark:text-gray-400">{job.company_name}</span>
-            <span className="flex items-center gap-1"><BsGeoAlt className="w-3 h-3" />{job.location}</span>
-            <span className="flex items-center gap-1"><BsBriefcase className="w-3 h-3" />{job.level}</span>
+            <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{job.location}</span>
+            <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" />{job.level}</span>
           </div>
         </div>
       </div>
@@ -133,7 +134,7 @@ function JobCard({ jobId }: { jobId: string }) {
         <div className="flex items-center gap-3">
           <MatchBadge score={job.match_score} size="md" />
           <span className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600 flex items-center gap-1">
-            <BsClock className="w-3 h-3" />
+            <Clock className="w-3 h-3" />
             {new Date(job.posted_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
           </span>
         </div>
@@ -145,13 +146,13 @@ function JobCard({ jobId }: { jobId: string }) {
               job.saved ? "text-brand-400 bg-brand-500/10" : "text-zinc-400 dark:text-gray-600 hover:text-brand-400 hover:bg-brand-500/10"
             )}
           >
-            {job.saved ? <BsBookmarkCheck className="w-4 h-4" /> : <BsBookmark className="w-4 h-4" />}
+            {job.saved ? <BookmarkSimple className="w-4 h-4" /> : <BookmarkSimple className="w-4 h-4" />}
           </button>
           <button
             onClick={() => dismissJob(job.id)}
             className="p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
           >
-            <BsX className="w-4 h-4" />
+            <X className="w-4 h-4" />
           </button>
           <Link
             href={`/dashboard/discover/${job.id}`}
@@ -178,10 +179,10 @@ const MOCK_COMPANY_EMOJI: Record<string, string> = {
 // ── Tabs ─────────────────────────────────────────────
 
 const TABS: { id: DiscoveryTab; label: string; icon: React.ElementType }[] = [
-  { id: "all", label: "All Leads", icon: BsCompass },
-  { id: "saved", label: "Saved", icon: BsBookmarkCheck },
-  { id: "companies", label: "Companies", icon: BsBuildings },
-  { id: "scans", label: "Scan History", icon: BsUpcScan },
+  { id: "all", label: "All Leads", icon: Compass },
+  { id: "saved", label: "Saved", icon: BookmarkSimple },
+  { id: "companies", label: "Companies", icon: Buildings },
+  { id: "scans", label: "Scan History", icon: Barcode },
 ];
 
 // ── Sort Options ─────────────────────────────────────
@@ -267,11 +268,11 @@ export default function DiscoverPage() {
   const latestScan = store.scanRuns[0];
 
   return (
-    <div className="max-w-6xl mx-auto animate-fade-in">
+    <div className="w-full animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <BsCompass className="w-6 h-6 text-brand-400" />
+          <Compass className="w-6 h-6 text-brand-400" />
           <div>
             <h1 className="text-2xl font-bold">Job Discovery</h1>
             <p className="text-xs text-zinc-500 dark:text-gray-500 mt-0.5">
@@ -285,9 +286,9 @@ export default function DiscoverPage() {
             className="flex items-center gap-2 px-4 py-2 rounded-lg gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
           >
             {latestScan?.status === "running" ? (
-              <><BsArrowRepeat className="w-4 h-4 animate-spin" /> Scanning...</>
+              <><ArrowsClockwise className="w-4 h-4 animate-spin" /> Scanning...</>
             ) : (
-              <><BsPlayFill className="w-4 h-4" /> Run Scan</>
+              <><Play className="w-4 h-4"  weight="fill" /> Run Scan</>
             )}
           </button>
         </div>
@@ -296,10 +297,10 @@ export default function DiscoverPage() {
       {/* Stats strip */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {[
-          { label: "Total Leads", value: filteredJobs.length, icon: BsCompass, color: "text-brand-400" },
-          { label: "Saved", value: savedJobs.length, icon: BsBookmarkCheck, color: "text-emerald-400" },
-          { label: "Companies", value: store.companies.length, icon: BsBuildings, color: "text-blue-400" },
-          { label: "Avg. Match", value: `${Math.round(filteredJobs.reduce((a, j) => a + j.match_score, 0) / (filteredJobs.length || 1))}%`, icon: BsGraphUp, color: "text-amber-400" },
+          { label: "Total Leads", value: filteredJobs.length, icon: Compass, color: "text-brand-400" },
+          { label: "Saved", value: savedJobs.length, icon: BookmarkSimple, color: "text-emerald-400" },
+          { label: "Companies", value: store.companies.length, icon: Buildings, color: "text-blue-400" },
+          { label: "Avg. Match", value: `${Math.round(filteredJobs.reduce((a, j) => a + j.match_score, 0) / (filteredJobs.length || 1))}%`, icon: TrendUp, color: "text-amber-400" },
         ].map((stat) => (
           <div key={stat.label} className="liquid-glass rounded-xl p-4 flex items-center gap-3">
             <stat.icon className={cn("w-5 h-5", stat.color)} />
@@ -316,11 +317,11 @@ export default function DiscoverPage() {
         <div className="liquid-glass rounded-xl p-4 mb-6 flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
             {latestScan.status === "running" ? (
-              <BsArrowRepeat className="w-5 h-5 text-brand-400 animate-spin" />
+              <ArrowsClockwise className="w-5 h-5 text-brand-400 animate-spin" />
             ) : latestScan.status === "completed" ? (
-              <BsCheckCircle className="w-5 h-5 text-emerald-400" />
+              <CheckCircle className="w-5 h-5 text-emerald-400" />
             ) : (
-              <BsUpcScan className="w-5 h-5 text-zinc-600 dark:text-gray-400" />
+              <Barcode className="w-5 h-5 text-zinc-600 dark:text-gray-400" />
             )}
             <div>
               <div className="text-sm font-medium">
@@ -335,7 +336,7 @@ export default function DiscoverPage() {
           </div>
           {store.profile.auto_scan_enabled && (
             <span className="text-[10px] px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-300 font-medium flex items-center gap-1">
-              <BsLightningFill className="w-3 h-3" /> Auto-scan {store.profile.auto_scan_interval}
+              <Lightning className="w-3 h-3"  weight="fill" /> Auto-scan {store.profile.auto_scan_interval}
             </span>
           )}
         </div>
@@ -370,11 +371,14 @@ export default function DiscoverPage() {
         <div className="mb-5 space-y-3">
           <div className="flex items-center gap-3">
             <div className="flex-1 relative">
-              <BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
               <input
                 type="text"
                 value={store.searchQuery}
-                onChange={(e) => store.setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  store.setSearchQuery(e.target.value);
+                  usePipelineStore.getState().setFilter({ search: e.target.value });
+                }}
                 placeholder="Search jobs by title, company, or keyword..."
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
               />
@@ -386,12 +390,12 @@ export default function DiscoverPage() {
                 showFilters ? "bg-brand-500/10 text-brand-400" : "bg-surface-100 text-zinc-600 dark:text-gray-400 hover:text-zinc-700 dark:hover:text-gray-300"
               )}
             >
-              <BsFilter className="w-4 h-4" />
+              <Funnel className="w-4 h-4" />
               Filters
-              <BsChevronDown className={cn("w-3 h-3 transition-transform", showFilters && "rotate-180")} />
+              <CaretDown className={cn("w-3 h-3 transition-transform", showFilters && "rotate-180")} />
             </button>
             <div className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-surface-100 text-sm text-zinc-600 dark:text-gray-400">
-              <BsArrowDownUp className="w-3.5 h-3.5" />
+              <ArrowsDownUp className="w-3.5 h-3.5" />
               <select
                 value={store.sortBy}
                 onChange={(e) => store.setSortBy(e.target.value as SortKey)}
@@ -463,7 +467,7 @@ export default function DiscoverPage() {
         <div className="space-y-3">
           {filteredJobs.length === 0 ? (
             <div className="liquid-glass rounded-xl p-8 text-center">
-              <BsSearch className="w-8 h-8 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
+              <MagnifyingGlass className="w-8 h-8 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
               <h3 className="text-sm font-medium text-zinc-600 dark:text-gray-400 mb-1">No matches found</h3>
               <p className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600">Try adjusting your filters or run a new scan.</p>
             </div>
@@ -478,9 +482,9 @@ export default function DiscoverPage() {
         <div className="space-y-3">
           {savedJobs.length === 0 ? (
             <div className="liquid-glass rounded-xl p-8 text-center">
-              <BsBookmark className="w-8 h-8 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
+              <BookmarkSimple className="w-8 h-8 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
               <h3 className="text-sm font-medium text-zinc-600 dark:text-gray-400 mb-1">No saved leads yet</h3>
-              <p className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600">BsBookmark interesting jobs to save them here.</p>
+              <p className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600">Bookmark interesting jobs to save them here.</p>
             </div>
           ) : (
             savedJobs.map((job) => <JobCard key={job.id} jobId={job.id} />)
@@ -498,7 +502,7 @@ export default function DiscoverPage() {
               onClick={() => setShowAddCompany(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg gradient-brand text-white text-xs font-medium hover:opacity-90 transition-opacity"
             >
-              <BsPlus className="w-3.5 h-3.5" />
+              <Plus className="w-3.5 h-3.5" />
               Add Company
             </button>
           </div>
@@ -517,7 +521,7 @@ export default function DiscoverPage() {
           <div className="liquid-glass rounded-xl p-5 mb-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <BsStars className="w-4 h-4 text-brand-400" />
+                <Sparkle className="w-4 h-4 text-brand-400" />
                 <h3 className="text-sm font-semibold">Search Profile</h3>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 font-medium">Active</span>
               </div>
@@ -537,13 +541,13 @@ export default function DiscoverPage() {
                 }}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200 text-zinc-600 dark:text-gray-400 hover:text-brand-300 text-xs font-medium transition-all"
               >
-                <BsPencil className="w-3 h-3" />
+                <Pencil className="w-3 h-3" />
                 Edit Preferences
               </button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
               <div>
-                <span className="text-zinc-500 dark:text-gray-500">BsBullseye Roles:</span>
+                <span className="text-zinc-500 dark:text-gray-500">Target Roles:</span>
                 <div className="text-zinc-700 dark:text-gray-300 mt-0.5">{store.profile.target_roles.join(", ")}</div>
               </div>
               <div>
@@ -566,7 +570,7 @@ export default function DiscoverPage() {
                 <span className="text-zinc-500 dark:text-gray-500">Auto-Scan:</span>
                 <div className="text-zinc-700 dark:text-gray-300 mt-0.5 flex items-center gap-1">
                   {store.profile.auto_scan_enabled ? (
-                    <><BsGlobe className="w-3 h-3 text-emerald-400" /> {store.profile.auto_scan_interval}</>
+                    <><Globe className="w-3 h-3 text-emerald-400" /> {store.profile.auto_scan_interval}</>
                   ) : "Disabled"}
                 </div>
               </div>
@@ -578,11 +582,11 @@ export default function DiscoverPage() {
             <div key={run.id} className="glass-card rounded-xl p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {run.status === "running" ? (
-                  <BsArrowRepeat className="w-5 h-5 text-brand-400 animate-spin" />
+                  <ArrowsClockwise className="w-5 h-5 text-brand-400 animate-spin" />
                 ) : run.status === "completed" ? (
-                  <BsCheckCircle className="w-5 h-5 text-emerald-400" />
+                  <CheckCircle className="w-5 h-5 text-emerald-400" />
                 ) : (
-                  <BsUpcScan className="w-5 h-5 text-zinc-500 dark:text-gray-500" />
+                  <Barcode className="w-5 h-5 text-zinc-500 dark:text-gray-500" />
                 )}
                 <div>
                   <div className="text-sm font-medium">
@@ -616,17 +620,17 @@ export default function DiscoverPage() {
           <div className="bg-surface-50 border border-white/[0.08] rounded-2xl w-full max-w-lg mx-4 p-6 shadow-2xl animate-slide-up max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <BsStars className="w-5 h-5 text-brand-400" />
+                <Sparkle className="w-5 h-5 text-brand-400" />
                 <h2 className="text-base font-semibold">Edit Search Preferences</h2>
               </div>
               <button onClick={() => setShowPrefsEditor(false)} className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all">
-                <BsX className="w-4 h-4" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">BsBullseye Roles</label>
+                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">Target Roles</label>
                 <input type="text" value={prefsForm.target_roles} onChange={(e) => setPrefsForm({ ...prefsForm, target_roles: e.target.value })} placeholder="e.g. Product Manager, PM Lead" className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all" />
                 <p className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mt-1">Comma-separated</p>
               </div>
@@ -668,7 +672,7 @@ export default function DiscoverPage() {
 
               <div className="flex items-center justify-between p-3 rounded-xl bg-surface-100 border border-white/[0.04]">
                 <div className="flex items-center gap-2">
-                  <BsGlobe className="w-4 h-4 text-zinc-600 dark:text-gray-400" />
+                  <Globe className="w-4 h-4 text-zinc-600 dark:text-gray-400" />
                   <div>
                     <p className="text-sm font-medium">Auto-Scan</p>
                     <p className="text-[10px] text-zinc-500 dark:text-gray-500">Automatically scan for new jobs</p>
@@ -692,7 +696,7 @@ export default function DiscoverPage() {
             <div className="flex gap-3 mt-6">
               <button onClick={() => setShowPrefsEditor(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-zinc-600 dark:text-gray-400 bg-surface-200 hover:bg-surface-300 transition-all">Cancel</button>
               <button onClick={handleSavePrefs} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium gradient-brand text-white hover:opacity-90 transition-opacity">
-                <BsFloppy className="w-4 h-4" />
+                <FloppyDisk className="w-4 h-4" />
                 Save Preferences
               </button>
             </div>
@@ -706,11 +710,11 @@ export default function DiscoverPage() {
           <div className="bg-surface-50 border border-white/[0.08] rounded-2xl w-full max-w-lg mx-4 p-6 shadow-2xl animate-slide-up max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <BsBuildings className="w-5 h-5 text-brand-400" />
+                <Buildings className="w-5 h-5 text-brand-400" />
                 <h2 className="text-base font-semibold">Add Company</h2>
               </div>
               <button onClick={() => setShowAddCompany(false)} className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all">
-                <BsX className="w-4 h-4" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
@@ -772,7 +776,7 @@ export default function DiscoverPage() {
             <div className="flex gap-3 mt-6">
               <button onClick={() => setShowAddCompany(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-zinc-600 dark:text-gray-400 bg-surface-200 hover:bg-surface-300 transition-all">Cancel</button>
               <button onClick={handleAddCompany} disabled={!companyForm.name.trim()} className={cn("flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all", companyForm.name.trim() ? "gradient-brand text-white hover:opacity-90" : "bg-surface-300 text-zinc-400 dark:text-gray-600 cursor-not-allowed")}>
-                <BsPlus className="w-4 h-4" />
+                <Plus className="w-4 h-4" />
                 Add Company
               </button>
             </div>

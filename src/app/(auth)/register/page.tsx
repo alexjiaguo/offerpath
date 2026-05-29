@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signUpWithEmail } from "@/lib/auth";
-import { BsCheckCircleFill, BsEnvelope, BsEye, BsEyeSlash, BsLock, BsPerson, BsRocket } from 'react-icons/bs';
+import { CheckCircle, Envelope, Eye, EyeSlash, Lock, User, Rocket } from '@phosphor-icons/react';
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 
 /* ═══════════════════════════════════════════════════
@@ -83,7 +83,7 @@ export default function RegisterPage() {
       <div className="grid grid-cols-2 gap-2 mb-6">
         {BENEFITS.map((b) => (
           <div key={b} className="flex items-center gap-1.5">
-            <BsCheckCircleFill className="w-3.5 h-3.5 text-brand-400 flex-shrink-0" />
+            <CheckCircle className="w-3.5 h-3.5 text-brand-400 flex-shrink-0"  weight="fill" />
             <span className="text-[11px] text-zinc-600 dark:text-gray-400">{b}</span>
           </div>
         ))}
@@ -115,7 +115,7 @@ export default function RegisterPage() {
             Full name
           </label>
           <div className="relative">
-            <BsPerson className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
             <input
               type="text"
               value={name}
@@ -132,7 +132,7 @@ export default function RegisterPage() {
             Email address
           </label>
           <div className="relative">
-            <BsEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
+            <Envelope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
             <input
               type="email"
               value={email}
@@ -149,7 +149,7 @@ export default function RegisterPage() {
             Password
           </label>
           <div className="relative">
-            <BsLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
             <input
               type={showPassword ? "text" : "password"}
               value={password}
@@ -163,9 +163,9 @@ export default function RegisterPage() {
               className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors"
             >
               {showPassword ? (
-                <BsEyeSlash className="w-4 h-4" />
+                <EyeSlash className="w-4 h-4" />
               ) : (
-                <BsEye className="w-4 h-4" />
+                <Eye className="w-4 h-4" />
               )}
             </button>
           </div>
@@ -177,7 +177,7 @@ export default function RegisterPage() {
             Confirm password
           </label>
           <div className="relative">
-            <BsLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
             <input
               type={showPassword ? "text" : "password"}
               value={confirmPassword}
@@ -218,7 +218,7 @@ export default function RegisterPage() {
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
-              <BsRocket className="w-4 h-4" />
+              <Rocket className="w-4 h-4" />
               Create Account
             </>
           )}

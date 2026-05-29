@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BsBoxArrowInRight, BsEnvelope, BsEye, BsEyeSlash, BsLock } from "react-icons/bs";
+import { SignIn, Envelope, Eye, EyeSlash, Lock } from '@phosphor-icons/react';
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 import { signInWithEmail } from "@/lib/auth";
 
@@ -79,7 +79,7 @@ function LoginForm() {
             Email address
           </label>
           <div className="relative">
-            <BsEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
+            <Envelope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
             <input
               type="email"
               value={email}
@@ -95,7 +95,7 @@ function LoginForm() {
             Password
           </label>
           <div className="relative">
-            <BsLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
             <input
               type={showPassword ? "text" : "password"}
               value={password}
@@ -109,9 +109,9 @@ function LoginForm() {
               className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors"
             >
               {showPassword ? (
-                <BsEyeSlash className="w-4 h-4" />
+                <EyeSlash className="w-4 h-4" />
               ) : (
-                <BsEye className="w-4 h-4" />
+                <Eye className="w-4 h-4" />
               )}
             </button>
           </div>
@@ -137,7 +137,7 @@ function LoginForm() {
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
-              <BsBoxArrowInRight className="w-4 h-4" />
+              <SignIn className="w-4 h-4" />
               Sign In
             </>
           )}

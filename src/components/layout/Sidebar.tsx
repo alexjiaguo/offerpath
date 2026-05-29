@@ -2,62 +2,62 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
+import { usePathname, useRouter } from "next/navigation";
+import { CaretLeft, CaretRight, SignOut } from '@phosphor-icons/react';
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_ITEMS } from "@/lib/navConfig";
+import { signOut } from "@/lib/auth";
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/");
+  };
 
   return (
     <motion.aside
       initial={false}
-      animate={{ width: collapsed ? 80 : 260 }}
+      animate={{ width: collapsed ? 72 : 240 }}
       className={cn(
         "fixed left-0 top-0 h-screen flex flex-col z-40",
-        "bg-surface-0/40 backdrop-blur-2xl border-r border-zinc-200",
-        "transition-all duration-500 ease-out"
+        "bg-surface-0 border-r border-surface-200",
+        "transition-all duration-300 ease-out"
       )}
     >
-      {/* Background Mesh Overlay */}
-      <div className="absolute inset-0 bg-mesh-purple opacity-[0.05] pointer-events-none" />
-
       {/* Logo */}
-      <div className="h-20 flex items-center px-6 border-b border-zinc-200 relative z-10">
+      <div className="h-16 flex items-center px-4 border-b border-surface-200 relative z-10">
         <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden group">
-          <Image 
-            src="/logo.png" 
-            alt="OfferPath Logo" 
-            width={40}
-            height={40}
-            className="rounded-xl flex-shrink-0 shadow-md shadow-brand-400/10 group-hover:scale-105 transition-transform duration-500" 
-          />
+          <div className="w-8 h-8 rounded-md bg-brand-500 flex items-center justify-center flex-shrink-0">
+             <span className="text-white font-bold text-sm">O</span>
+          </div>
           {!collapsed && (
             <motion.span 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="text-lg font-bold tracking-tight whitespace-nowrap font-display text-surface-400"
+              className="text-lg font-medium tracking-tight whitespace-nowrap font-display text-surface-400"
             >
-              Offer<span className="text-gradient-futuristic">Path</span>
+              OfferPath
             </motion.span>
           )}
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-8 px-4 space-y-6 relative z-10 scrollbar-hide">
+      <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-6 relative z-10 scrollbar-hide">
         {NAV_ITEMS.map((section) => (
           <div key={section.section}>
             {!collapsed && (
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 px-4 mb-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-surface-300 px-3 mb-3">
                 {section.section}
               </p>
             )}
-            <ul className="space-y-1.5">
+            <ul className="space-y-1">
               {section.items.map((item) => {
                 const isActive =
                   pathname === item.href ||
@@ -71,35 +71,21 @@ export default function Sidebar() {
                     <Link
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 group relative overflow-hidden",
+                        "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors group relative overflow-hidden",
                         isActive
-                          ? "text-zinc-900 dark:text-white"
-                          : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/[0.03]"
+                          ? "text-surface-400 bg-surface-100 border border-surface-200"
+                          : "text-surface-300 hover:text-surface-400 hover:bg-surface-50 border border-transparent"
                       )}
                       title={collapsed ? item.label : undefined}
                     >
-                      {isActive && (
-                        <motion.div
-                          layoutId="active-pill"
-                          className="absolute inset-0 bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.08]"
-                          transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                        />
-                      )}
-                      
                       <item.icon
+                        weight={isActive ? "fill" : "bold"}
                         className={cn(
-                          "w-[20px] h-[20px] flex-shrink-0 transition-colors relative z-10",
-                          isActive ? "text-brand-400" : "text-zinc-600 group-hover:text-zinc-900 dark:hover:text-zinc-400"
+                          "w-4 h-4 flex-shrink-0 transition-colors relative z-10",
+                          isActive ? "text-brand-500" : "text-surface-300 group-hover:text-surface-400"
                         )}
                       />
                       {!collapsed && <span className="relative z-10 font-sans tracking-tight">{item.label}</span>}
-                      
-                      {isActive && !collapsed && (
-                        <motion.div 
-                          layoutId="active-indicator"
-                          className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-brand-500 rounded-full blur-[2px]"
-                        />
-                      )}
                     </Link>
 
                     {/* Sub-navigation */}
@@ -109,7 +95,7 @@ export default function Sidebar() {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="ml-10 mt-2 space-y-1 border-l border-zinc-200 dark:border-white/[0.05] pl-4 overflow-hidden"
+                          className="ml-8 mt-1 space-y-1 border-l border-surface-200 pl-3 overflow-hidden"
                         >
                           {item.subItems!.map((sub) => {
                             const subActive = pathname === sub.href;
@@ -118,13 +104,13 @@ export default function Sidebar() {
                                 <Link
                                   href={sub.href}
                                   className={cn(
-                                    "flex items-center gap-2 px-2 py-2 rounded-lg text-xs font-medium transition-all group",
+                                    "flex items-center gap-2 px-2 py-1.5 rounded text-xs font-medium transition-colors group",
                                     subActive
-                                      ? "text-brand-400 bg-brand-500/5"
-                                      : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/[0.02]"
+                                      ? "text-brand-500 bg-surface-100"
+                                      : "text-surface-300 hover:text-surface-400 hover:bg-surface-50"
                                   )}
                                 >
-                                  {sub.icon && <sub.icon className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100" />}
+                                  {sub.icon && <sub.icon weight={subActive ? "fill" : "bold"} className="w-3.5 h-3.5" />}
                                   {sub.label}
                                 </Link>
                               </li>
@@ -141,18 +127,33 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* User / Settings Footer */}
-      <div className="p-6 border-t border-zinc-200 dark:border-white/[0.03] relative z-10 bg-surface-50/20">
+      {/* Footer */}
+      <div className="p-3 border-t border-surface-200 relative z-10 bg-surface-0 space-y-2">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center w-full py-3 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/[0.05] transition-all group"
+          className="flex items-center justify-center w-full py-2 rounded-md border border-transparent hover:border-surface-200 text-surface-300 hover:text-surface-400 hover:bg-surface-50 transition-colors group"
         >
           {collapsed ? (
-            <BsChevronRight className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            <CaretRight weight="bold" className="w-4 h-4" />
           ) : (
             <div className="flex items-center justify-between w-full px-2">
-              <span className="text-xs font-bold uppercase tracking-widest opacity-60">Operations</span>
-              <BsChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="text-xs font-bold uppercase tracking-widest opacity-80">Collapse</span>
+              <CaretLeft weight="bold" className="w-4 h-4" />
+            </div>
+          )}
+        </button>
+
+        <button
+          onClick={handleSignOut}
+          className="flex items-center justify-center w-full py-2 rounded-md border border-transparent hover:border-surface-200 text-surface-300 hover:text-surface-400 hover:bg-surface-50 transition-colors group"
+          title={collapsed ? "Sign Out" : undefined}
+        >
+          {collapsed ? (
+            <SignOut weight="bold" className="w-4 h-4" />
+          ) : (
+            <div className="flex items-center gap-2 px-2 w-full text-left">
+              <SignOut weight="bold" className="w-4 h-4" />
+              <span className="text-xs font-semibold tracking-tight">Sign Out</span>
             </div>
           )}
         </button>

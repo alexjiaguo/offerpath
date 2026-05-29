@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { BsArrowRepeat, BsBarChartFill, BsChevronDown, BsChevronUp, BsCollection, BsFileEarmarkArrowUp, BsPen, BsPlus, BsSearch, BsTag, BsTrash, BsX } from 'react-icons/bs';
+import { ArrowsClockwise, ChartBar, CaretDown, CaretUp, Cards, FileArrowUp, PenNib, Plus, MagnifyingGlass, Tag, Trash, X } from '@phosphor-icons/react';
 import { useInterviewStore } from "@/store/interviewStore";
+import { usePipelineStore } from "@/store/pipelineStore";
+import { useDiscoveryStore } from "@/store/discoveryStore";
 import { cn } from "@/lib/utils";
 import StoryDialog from "@/components/interview/StoryDialog";
 import { FileParserService } from "@/lib/FileParserService";
@@ -30,7 +32,11 @@ function getCompetencyStyle(competency: string) {
 
 export default function StoriesPage() {
   const { stories, deleteStory, getAllCompetencies, addStory } = useInterviewStore();
-  const [search, setSearch] = useState("");
+  const search = usePipelineStore((s) => s.filters.search);
+  const setSearch = (val: string) => {
+    usePipelineStore.getState().setFilter({ search: val });
+    useDiscoveryStore.getState().setSearchQuery(val);
+  };
   const [filterCompetency, setFilterCompetency] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -94,7 +100,7 @@ export default function StoriesPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto animate-fade-in">
+    <div className="w-full animate-fade-in">
       {/* Error Banner */}
       {uploadError && (
         <div className="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-300 flex items-center justify-between">
@@ -103,7 +109,7 @@ export default function StoriesPage() {
             onClick={() => setUploadError(null)}
             className="p-1 hover:bg-white/5 rounded"
           >
-            <BsX className="w-4 h-4" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
@@ -111,7 +117,7 @@ export default function StoriesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <BsCollection className="w-6 h-6 text-brand-400" />
+          <Cards className="w-6 h-6 text-brand-400" />
           <h1 className="text-2xl font-bold">Story Bank</h1>
           <span className="text-sm text-zinc-500 dark:text-gray-500">
             {stories.length} {stories.length === 1 ? "story" : "stories"}
@@ -131,9 +137,9 @@ export default function StoriesPage() {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-600 dark:text-zinc-300 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-white/[0.05] hover:text-zinc-900 dark:hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isExtracting ? (
-              <BsArrowRepeat className="w-4 h-4 animate-spin" />
+              <ArrowsClockwise className="w-4 h-4 animate-spin" />
             ) : (
-              <BsFileEarmarkArrowUp className="w-4 h-4" />
+              <FileArrowUp className="w-4 h-4" />
             )}
             Import Document
           </button>
@@ -141,7 +147,7 @@ export default function StoriesPage() {
             onClick={handleNew}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
           >
-            <BsPlus className="w-4 h-4" />
+            <Plus className="w-4 h-4" />
             Add Story
           </button>
         </div>
@@ -150,7 +156,7 @@ export default function StoriesPage() {
       {/* Search + Filter Bar */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="relative flex-1 min-w-[200px]">
-          <BsSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
+          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
           <input
             type="text"
             value={search}
@@ -163,7 +169,7 @@ export default function StoriesPage() {
               onClick={() => setSearch("")}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
             >
-              <BsX className="w-3.5 h-3.5" />
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
@@ -201,7 +207,7 @@ export default function StoriesPage() {
       {/* Stories Grid */}
       {filteredStories.length === 0 ? (
         <div className="liquid-glass rounded-2xl p-12 text-center">
-          <BsCollection className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
+          <Cards className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">
             {stories.length === 0 ? "Build your story bank" : "No matching stories"}
           </h3>
@@ -215,7 +221,7 @@ export default function StoriesPage() {
               onClick={handleNew}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
             >
-              <BsPlus className="w-4 h-4" />
+              <Plus className="w-4 h-4" />
               Add Your First Story
             </button>
           )}
@@ -252,7 +258,7 @@ export default function StoriesPage() {
                       {/* Tags */}
                       {story.tags.length > 0 && (
                         <div className="flex items-center gap-1.5 mb-2">
-                          <BsTag className="w-3 h-3 text-zinc-700 dark:text-zinc-400 dark:text-gray-600" />
+                          <Tag className="w-3 h-3 text-zinc-700 dark:text-zinc-400 dark:text-gray-600" />
                           {story.tags.map((tag) => (
                             <span
                               key={tag}
@@ -267,7 +273,7 @@ export default function StoriesPage() {
                       {/* Metrics preview */}
                       {story.metrics && (
                         <p className="text-xs text-zinc-600 dark:text-gray-400 flex items-center gap-1.5">
-                          <BsBarChartFill className="w-3 h-3 text-emerald-400" />
+                          <ChartBar className="w-3 h-3 text-emerald-400"  weight="fill" />
                           {story.metrics}
                         </p>
                       )}
@@ -279,9 +285,9 @@ export default function StoriesPage() {
                         <p className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">uses</p>
                       </div>
                       {isExpanded ? (
-                        <BsChevronUp className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
+                        <CaretUp className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
                       ) : (
-                        <BsChevronDown className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
+                        <CaretDown className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
                       )}
                     </div>
                   </div>
@@ -317,7 +323,7 @@ export default function StoriesPage() {
                         }}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200/50 text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-zinc-800 dark:hover:text-gray-200 text-xs font-medium transition-all"
                       >
-                        <BsPen className="w-3 h-3" />
+                        <PenNib className="w-3 h-3" />
                         Edit
                       </button>
                       <button
@@ -330,7 +336,7 @@ export default function StoriesPage() {
                         }}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200/50 text-red-400/70 hover:text-red-400 text-xs font-medium transition-all"
                       >
-                        <BsTrash className="w-3 h-3" />
+                        <Trash className="w-3 h-3" />
                         Delete
                       </button>
                     </div>

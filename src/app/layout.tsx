@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
-import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Newsreader, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const outfit = Outfit({
+const newsreader = Newsreader({
   subsets: ["latin"],
-  variable: "--font-outfit",
+  variable: "--font-newsreader",
   weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-jakarta",
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-jetbrains",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -45,15 +46,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head />
-      <body className={`${outfit.variable} ${plusJakarta.variable} font-sans antialiased bg-surface-50 text-surface-400`}>
+      <body className={`${newsreader.variable} ${jetbrainsMono.variable} font-sans antialiased bg-surface-50 text-surface-400`}>
         {children}
         <Toaster
           position="top-right"
           toastOptions={{
             style: {
               background: "white",
-              color: "#383d3b",
-              border: "1px solid #eee5e9",
+              color: "#111111",
+              border: "1px solid #EAEAEA",
+              borderRadius: "8px",
             },
           }}
         />

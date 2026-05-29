@@ -612,8 +612,8 @@ export const usePipelineStore = create<PipelineState>()(
       const q = filters.search.toLowerCase();
       filtered = filtered.filter(
         (j) =>
-          j.title.toLowerCase().includes(q) ||
-          j.company?.name.toLowerCase().includes(q) ||
+          j.title?.toLowerCase().includes(q) ||
+          j.company?.name?.toLowerCase().includes(q) ||
           j.archetype?.toLowerCase().includes(q) ||
           j.location?.toLowerCase().includes(q)
       );

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { BsArrowLeft, BsBriefcase, BsBuilding, BsGlobe, BsGeoAlt, BsCashCoin, BsPlus } from "react-icons/bs";
+import { ArrowLeft, Briefcase, Buildings, Globe, MapPin, Coins, Plus } from '@phosphor-icons/react';
 import { usePipelineStore } from "@/store/pipelineStore";
 
 const JOB_TIERS = [1, 2, 3] as const;
@@ -45,8 +45,22 @@ export default function AddJobPage() {
     setSubmitting(true);
 
     try {
+      const existingCompany = usePipelineStore.getState().companies.find(
+        (c) => c.name.toLowerCase() === form.company_name.toLowerCase()
+      );
+
       addJob({
         title: form.title,
+        company_id: existingCompany?.id,
+        company: existingCompany || (form.company_name
+          ? {
+              id: `temp-${Date.now()}`,
+              user_id: "demo",
+              name: form.company_name,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            }
+          : undefined),
         status: "new",
         location: form.location,
         salary_range: form.salary_range,
@@ -83,7 +97,7 @@ export default function AddJobPage() {
           href="/dashboard/pipeline"
           className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-white/[0.04] transition-colors"
         >
-          <BsArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
           <h1 className="text-2xl font-bold">Add New Job</h1>
@@ -107,7 +121,7 @@ export default function AddJobPage() {
             Job Title <span className="text-red-400">*</span>
           </label>
           <div className="relative">
-            <BsBriefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input
               type="text"
               value={form.title}
@@ -126,7 +140,7 @@ export default function AddJobPage() {
               Company Name <span className="text-red-400">*</span>
             </label>
             <div className="relative">
-              <BsBuilding className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Buildings className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <input
                 type="text"
                 value={form.company_name}
@@ -141,7 +155,7 @@ export default function AddJobPage() {
           <div>
             <label className="block text-sm font-medium mb-1.5">Company Website</label>
             <div className="relative">
-              <BsGlobe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <input
                 type="url"
                 value={form.company_url}
@@ -158,7 +172,7 @@ export default function AddJobPage() {
           <div>
             <label className="block text-sm font-medium mb-1.5">Location</label>
             <div className="relative">
-              <BsGeoAlt className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <input
                 type="text"
                 value={form.location}
@@ -172,7 +186,7 @@ export default function AddJobPage() {
           <div>
             <label className="block text-sm font-medium mb-1.5">Salary Range</label>
             <div className="relative">
-              <BsCashCoin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Coins className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <input
                 type="text"
                 value={form.salary_range}
@@ -277,7 +291,7 @@ export default function AddJobPage() {
               </>
             ) : (
               <>
-                <BsPlus className="w-4 h-4" />
+                <Plus className="w-4 h-4" />
                 Add to Pipeline
               </>
             )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BsCheck, BsChevronDown, BsChevronUp, BsPalette, BsSliders2, BsType } from 'react-icons/bs';
+import { Check, CaretDown, CaretUp, Palette, SlidersHorizontal, TextT } from '@phosphor-icons/react';
 import { cn } from "@/lib/utils";
 import type { ResumeTheme } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
@@ -79,11 +79,11 @@ export default function ThemePicker({ theme, onChange }: ThemePickerProps) {
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-            <BsPalette className="w-4.5 h-4.5 text-brand-400" />
+            <Palette className="w-4.5 h-4.5 text-brand-400" />
           </div>
           <span className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white">Visual DNA</span>
         </div>
-        {expanded ? <BsChevronUp className="w-4 h-4 text-zinc-500" /> : <BsChevronDown className="w-4 h-4 text-zinc-500" />}
+        {expanded ? <CaretUp className="w-4 h-4 text-zinc-500" /> : <CaretDown className="w-4 h-4 text-zinc-500" />}
       </button>
 
       <AnimatePresence>
@@ -119,7 +119,7 @@ export default function ThemePicker({ theme, onChange }: ThemePickerProps) {
                         <div className="absolute bottom-0 right-0 w-1/2 h-1/2 rounded-tl-lg" style={{ backgroundColor: preset.accent }} />
                         {isActive && (
                           <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
-                            <BsCheck className="w-4 h-4 text-zinc-900 dark:text-white" strokeWidth={3} />
+                            <Check className="w-4 h-4 text-zinc-900 dark:text-white" strokeWidth={3} />
                           </div>
                         )}
                       </button>
@@ -139,7 +139,7 @@ export default function ThemePicker({ theme, onChange }: ThemePickerProps) {
                   onClick={() => setShowCustom(!showCustom)}
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all"
                 >
-                  <BsSliders2 className="w-3.5 h-3.5" />
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
                   {showCustom ? "Close Custom" : "Custom DNA"}
                 </button>
               </div>
@@ -170,7 +170,7 @@ export default function ThemePicker({ theme, onChange }: ThemePickerProps) {
               {/* Font Config */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-zinc-500">
-                  <BsType className="w-3.5 h-3.5" />
+                  <TextT className="w-3.5 h-3.5" />
                   <span className="text-[10px] font-bold uppercase tracking-widest">Font Archetype</span>
                 </div>
                 <select

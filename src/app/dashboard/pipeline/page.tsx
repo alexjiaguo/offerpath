@@ -1,9 +1,10 @@
 "use client";
 
-import { BsArrowDownUp, BsBarChartFill, BsFilter, BsKanban, BsPlus, BsSearch, BsX, BsDownload, BsUpload } from 'react-icons/bs';
+import { ArrowsDownUp, ChartBar, Funnel, Kanban, Plus, MagnifyingGlass, X, DownloadSimple, UploadSimple } from '@phosphor-icons/react';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
+import { useDiscoveryStore } from "@/store/discoveryStore";
 import KanbanBoard from "@/components/pipeline/KanbanBoard";
 import { useState, useRef } from "react";
 import type { SortField } from "@/store/pipelineStore";
@@ -11,7 +12,7 @@ import { exportJobsToCSV, importJobsFromCSV } from "@/lib/csvUtility";
 import { toast } from "sonner";
 
 /* ═══════════════════════════════════════════════════
-   Pipeline Page — BsKanban board + filter/sort toolbar
+   Pipeline Page — Kanban board + filter/sort toolbar (Minimalist)
    ═══════════════════════════════════════════════════ */
 
 const SORT_OPTIONS: { field: SortField; label: string }[] = [
@@ -104,38 +105,58 @@ export default function PipelinePage() {
     filters.archetypes.length > 0;
 
   return (
-    <div className="animate-fade-in">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+    <div className="animate-fade-in p-6">
+      {/* Header Row */}
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <BsKanban className="w-6 h-6 text-brand-400" />
-          <h1 className="text-2xl font-bold">Pipeline Tracker</h1>
-          <span className="text-sm text-zinc-500 dark:text-gray-500">
+          <Kanban weight="bold" className="w-6 h-6 text-brand-500" />
+          <h1 className="text-2xl font-bold font-display">Pipeline Tracker</h1>
+          <span className="text-sm font-semibold text-surface-300">
             {stats.total} {stats.total === 1 ? "job" : "jobs"}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* Add Job */}
+        <button
+          onClick={() => setAddJobDialogOpen(true)}
+          className="btn-primary flex items-center gap-2"
+        >
+          <Plus weight="bold" className="w-4 h-4" />
+          Add Job
+        </button>
+      </div>
+
+      {/* Toolbar Row */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6 bg-surface-0 p-3 rounded-lg border border-surface-200">
+        {/* Left Side: Search, Filters & Sort */}
+        <div className="flex items-center flex-wrap gap-2 flex-grow">
           {/* Search */}
-          <div className="relative">
-            <BsSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 dark:text-gray-500" />
+          <div className="relative w-full sm:w-64">
+            <MagnifyingGlass weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-300" />
             <input
               type="text"
               value={filters.search}
-              onChange={(e) => setFilter({ search: e.target.value })}
-              placeholder="Search…"
-              className="pl-8 pr-3 py-2 w-44 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+              onChange={(e) => {
+                setFilter({ search: e.target.value });
+                useDiscoveryStore.getState().setSearchQuery(e.target.value);
+              }}
+              placeholder="Search pipeline..."
+              className="pl-9 pr-8 py-1.5 w-full rounded-md bg-surface-50 border border-surface-200 text-sm text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-300 transition-all"
             />
             {filters.search && (
               <button
-                onClick={() => setFilter({ search: "" })}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300"
+                onClick={() => {
+                  setFilter({ search: "" });
+                  useDiscoveryStore.getState().setSearchQuery("");
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-surface-100 text-surface-300"
               >
-                <BsX className="w-3 h-3" />
+                <X weight="bold" className="w-3 h-3" />
               </button>
             )}
           </div>
 
-          {/* BsFilter toggle */}
+          {/* Filter toggle */}
           <div className="relative">
             <button
               onClick={() => {
@@ -143,28 +164,25 @@ export default function PipelinePage() {
                 setShowSort(false);
               }}
               className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-all",
+                "flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm transition-all h-[34px]",
                 hasActiveFilters
-                  ? "bg-brand-500/10 border-brand-500/30 text-brand-300"
-                  : "bg-surface-100 border-white/[0.06] text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200"
+                  ? "bg-brand-100 border-brand-500 text-brand-500 font-bold"
+                  : "border-surface-200 bg-surface-50 text-surface-300 hover:text-surface-400 hover:bg-surface-100"
               )}
             >
-              <BsFilter className="w-4 h-4" />
-              <span className="sr-only">Filter</span>
-              {hasActiveFilters && (
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
-              )}
+              <Funnel weight={hasActiveFilters ? "fill" : "bold"} className="w-4 h-4" />
+              <span>Filter</span>
             </button>
 
-            {/* BsFilter dropdown */}
+            {/* Filter dropdown */}
             {showFilters && (
-              <div className="absolute right-0 top-full mt-2 w-64 bg-surface-50 border border-white/[0.08] rounded-xl shadow-2xl p-4 z-20 animate-scale-in">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium">Filters</span>
+              <div className="absolute left-0 top-full mt-2 w-64 bg-surface-0 border border-surface-200 rounded-md shadow-lg p-4 z-20">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-bold">Filters</span>
                   {hasActiveFilters && (
                     <button
                       onClick={clearFilters}
-                      className="text-xs text-brand-400 hover:text-brand-300"
+                      className="text-xs font-bold text-brand-500 hover:text-brand-600"
                     >
                       Clear all
                     </button>
@@ -172,9 +190,9 @@ export default function PipelinePage() {
                 </div>
 
                 {/* Tier filter */}
-                <div className="mb-3">
-                  <p className="text-xs text-zinc-500 dark:text-gray-500 mb-1.5">Tier</p>
-                  <div className="flex gap-1.5">
+                <div className="mb-4">
+                  <p className="text-xs font-bold text-surface-300 uppercase tracking-widest mb-2">Tier</p>
+                  <div className="flex gap-2">
                     {[1, 2, 3].map((t) => (
                       <button
                         key={t}
@@ -185,10 +203,10 @@ export default function PipelinePage() {
                           setFilter({ tiers });
                         }}
                         className={cn(
-                          "px-2.5 py-1 rounded-md text-xs font-medium transition-all",
+                          "px-3 py-1 rounded-md text-xs font-bold transition-all border",
                           filters.tiers.includes(t)
-                            ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                            : "bg-surface-200 text-zinc-500 dark:text-gray-500 border border-transparent hover:text-zinc-700 dark:hover:text-gray-300"
+                            ? "bg-brand-500 text-surface-0 border-brand-500"
+                            : "bg-surface-50 text-surface-300 border-surface-200 hover:bg-surface-100"
                         )}
                       >
                         T{t}
@@ -199,17 +217,17 @@ export default function PipelinePage() {
 
                 {/* Score range */}
                 <div>
-                  <p className="text-xs text-zinc-500 dark:text-gray-500 mb-1.5">Min Score</p>
-                  <div className="flex gap-1.5">
+                  <p className="text-xs font-bold text-surface-300 uppercase tracking-widest mb-2">Min Score</p>
+                  <div className="flex gap-2 flex-wrap">
                     {[null, 3.0, 3.5, 4.0, 4.5].map((s) => (
                       <button
                         key={s ?? "all"}
                         onClick={() => setFilter({ scoreMin: s })}
                         className={cn(
-                          "px-2 py-1 rounded-md text-xs font-medium transition-all",
+                          "px-3 py-1 rounded-md text-xs font-bold transition-all border",
                           filters.scoreMin === s
-                            ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                            : "bg-surface-200 text-zinc-500 dark:text-gray-500 border border-transparent hover:text-zinc-700 dark:hover:text-gray-300"
+                            ? "bg-brand-500 text-surface-0 border-brand-500"
+                            : "bg-surface-50 text-surface-300 border-surface-200 hover:bg-surface-100"
                         )}
                       >
                         {s === null ? "All" : `≥${s}`}
@@ -228,14 +246,14 @@ export default function PipelinePage() {
                 setShowSort(!showSort);
                 setShowFilters(false);
               }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-sm text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all h-[34px]"
             >
-              <BsArrowDownUp className="w-4 h-4" />
-              Sort
+              <ArrowsDownUp weight="bold" className="w-4 h-4" />
+              <span>Sort</span>
             </button>
 
             {showSort && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-surface-50 border border-white/[0.08] rounded-xl shadow-2xl p-2 z-20 animate-scale-in">
+              <div className="absolute left-0 top-full mt-2 w-48 bg-surface-0 border border-surface-200 rounded-md shadow-lg py-1 z-20">
                 {SORT_OPTIONS.map((opt) => (
                   <button
                     key={opt.field}
@@ -244,49 +262,49 @@ export default function PipelinePage() {
                       setShowSort(false);
                     }}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all",
+                      "w-full flex items-center justify-between px-3 py-2 text-sm transition-all",
                       sortField === opt.field
-                        ? "bg-brand-500/10 text-brand-300"
-                        : "text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04]"
+                        ? "bg-brand-100 text-brand-500 font-bold"
+                        : "text-surface-300 hover:text-surface-400 hover:bg-surface-50"
                     )}
                   >
                     {opt.label}
                     {sortField === opt.field && (
-                      <span className="text-xs">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                      <span className="text-xs font-bold">{sortDirection === "asc" ? "↑" : "↓"}</span>
                     )}
                   </button>
                 ))}
               </div>
             )}
           </div>
+        </div>
 
-          {/* Analytics link */}
+        {/* Right Side: Analytics, Export & Import CSV */}
+        <div className="flex items-center gap-2 flex-shrink-0">
           <Link
             href="/dashboard/pipeline/analytics"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-sm text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all h-[34px]"
           >
-            <BsBarChartFill className="w-4 h-4" />
-            <span className="hidden sm:inline">Analytics</span>
+            <ChartBar weight="bold" className="w-4 h-4" />
+            <span className="hidden sm:inline font-medium">Analytics</span>
           </Link>
 
-          {/* Export CSV */}
           <button
             onClick={handleExportCSV}
             title="Export to CSV"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-sm text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all h-[34px]"
           >
-            <BsDownload className="w-4 h-4" />
-            <span className="hidden lg:inline">Export CSV</span>
+            <DownloadSimple weight="bold" className="w-4 h-4" />
+            <span className="hidden lg:inline font-medium">Export</span>
           </button>
 
-          {/* Import CSV */}
           <button
             onClick={() => fileInputRef.current?.click()}
             title="Import from CSV"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 transition-all"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-sm text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all h-[34px]"
           >
-            <BsUpload className="w-4 h-4" />
-            <span className="hidden lg:inline">Import CSV</span>
+            <UploadSimple weight="bold" className="w-4 h-4" />
+            <span className="hidden lg:inline font-medium">Import</span>
           </button>
           <input
             type="file"
@@ -295,15 +313,6 @@ export default function PipelinePage() {
             onChange={handleImportCSV}
             className="hidden"
           />
-
-          {/* Add Job */}
-          <button
-            onClick={() => setAddJobDialogOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            <BsPlus className="w-4 h-4" />
-            Add Job
-          </button>
         </div>
       </div>
 
@@ -318,7 +327,7 @@ export default function PipelinePage() {
         />
       )}
 
-      {/* BsKanban Board */}
+      {/* Kanban Board */}
       <KanbanBoard />
     </div>
   );

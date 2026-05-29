@@ -1,192 +1,166 @@
 @import "tailwindcss";
 
+/* Override default prefers-color-scheme media-query dark mode to class-based (.dark) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+
 /* ═══════════════════════════════════════════════════
-   OfferPath — Design System v4.0 (Light Premium)
-   Aesthetic: Charcoal, Platinum, and Ice Turquoise
+   OfferPath — Design System v5.0 (Minimalist Editorial)
+   Aesthetic: Warm Monochrome, High Contrast, Spot Pastels
    ═══════════════════════════════════════════════════ */
 
 @theme {
-  /* ── Brand Colors (Vibrant Turquoise & Ice Blue Theme) ── */
-  --color-brand-50: #f1fbfc;
-  --color-brand-100: #e2f8fa;
-  --color-brand-200: #c5f2ec;
-  --color-brand-300: #92dce5; /* Soft Ice Blue */
-  --color-brand-400: #52dee5; /* Vibrant Turquoise */
-  --color-brand-500: #39cbd2;
-  --color-brand-600: #25a4ab;
-  --color-brand-700: #1c8087;
-  --color-brand-800: #176369;
-  --color-brand-900: #134e53;
+  /* ── Brand Colors (Warm Monochrome + Spot Pastels) ── */
+  --color-brand-100: #E1F3FE; /* Pale Blue Background */
+  --color-brand-300: #9F2F2D; /* Red Text */
+  --color-brand-400: #1F6C9F; /* Blue Text */
+  --color-brand-500: #111111; /* Solid Black */
+  --color-brand-600: #333333;
+  --color-brand-700: #111111;
+  --color-brand-800: #111111;
+  --color-brand-900: #111111;
 
   /* ── Surface Colors (Strict Light Theme) ── */
-  --color-surface-0: #ffffff;
-  --color-surface-50: #faf9fb; /* Warm light variant */
-  --color-surface-100: #eee5e9; /* Light Platinum */
-  --color-surface-200: #e2dbe0;
-  --color-surface-300: #7c7c7c; /* Slate Grey */
-  --color-surface-400: #383d3b; /* Charcoal Dark */
+  --color-surface-0: #FFFFFF;
+  --color-surface-50: #F7F6F3; /* Warm Bone/Off-White */
+  --color-surface-100: #FBFBFA;
+  --color-surface-200: #EAEAEA; /* Structural Border Gray */
+  --color-surface-300: #787774; /* Muted Gray Text */
+  --color-surface-400: #111111; /* Off-black/Charcoal Text */
 
   /* ── Typography ── */
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: 'SF Pro Display', 'Geist Sans', 'Helvetica Neue', 'Switzer', -apple-system, sans-serif;
+  --font-display: var(--font-newsreader), 'Lyon Text', 'Playfair Display', serif;
+  --font-mono: var(--font-jetbrains), 'Geist Mono', 'SF Mono', monospace;
 
   /* ── Enhanced Animations ── */
-  --animate-reveal-up: reveal-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-  --animate-reveal-right: reveal-right 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-  --animate-liquid-float: liquid-float 6s ease-in-out infinite;
-  --animate-pulse-subtle: pulse-subtle 4s ease-in-out infinite;
+  --animate-reveal-up: reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-reveal-right: reveal-right 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-stagger-in: stagger-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* ── Keyframes ── */
 @keyframes reveal-up {
-  from { opacity: 0; transform: translateY(24px) scale(0.98); filter: blur(8px); }
-  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 @keyframes reveal-right {
-  from { opacity: 0; transform: translateX(-24px) scale(0.98); filter: blur(8px); }
-  to { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
 }
-@keyframes liquid-float {
-  0%, 100% { transform: translateY(0) rotate(0); }
-  33% { transform: translateY(-8px) rotate(0.5deg); }
-  66% { transform: translateY(4px) rotate(-0.5deg); }
-}
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.05); }
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Base Layer ── */
 @layer base {
   * {
-    @apply border-surface-200 transition-colors duration-300;
+    @apply border-surface-200;
   }
 
   html {
     @apply antialiased scroll-smooth;
     -webkit-tap-highlight-color: transparent;
     color-scheme: light !important;
-    scrollbar-gutter: stable;
   }
 
   body {
-    @apply bg-surface-50 text-surface-400 font-sans selection:bg-brand-300/30 selection:text-surface-400;
+    @apply bg-surface-50 text-surface-400 font-sans leading-relaxed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-semibold tracking-tight text-surface-400;
+  ::selection {
+    background-color: var(--color-surface-200) !important;
+    color: var(--color-surface-400) !important;
   }
 
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-surface-400 tracking-tight leading-tight;
   }
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    @apply bg-surface-100/80 rounded-full hover:bg-surface-200 transition-colors;
+
+  h1, h2 {
+    @apply font-display tracking-tight text-balance;
   }
 }
 
 @layer utilities {
-  /* Liquid Glass — Multi-layered transparency and refraction in light theme */
-  .liquid-glass {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(238, 229, 233, 0.6);
-    box-shadow: 
-      0 4px 24px -1px rgba(56, 61, 59, 0.05),
-      inset 0 1px 1px rgba(255, 255, 255, 0.8);
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(56, 61, 59, 0.01) 100%);
-      pointer-events: none;
-    }
-  }
-
-  /* Interactive Glass — Elegant light theme card states */
+  /* Minimalist Cards / Bento Grid Items */
   .glass-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(238, 229, 233, 0.6);
-    box-shadow: 
-      0 4px 20px -1px rgba(56, 61, 59, 0.04),
-      inset 0 1px 1px rgba(255, 255, 255, 0.8);
-    position: relative;
-    overflow: hidden;
-    @apply transition-all duration-500 ease-out;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(56, 61, 59, 0.01) 100%);
-      pointer-events: none;
-    }
+    background: var(--color-surface-0);
+    border: 1px solid var(--color-surface-200);
+    border-radius: 12px;
+    box-shadow: none;
+    @apply transition-all duration-200 ease-out;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.95);
-      border-color: rgba(146, 220, 229, 0.5);
-      box-shadow: 
-        0 12px 30px -4px rgba(56, 61, 59, 0.08),
-        0 0 0 1px rgba(82, 222, 229, 0.15),
-        inset 0 1px 2px rgba(255, 255, 255, 0.9);
-      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transform: translateY(-2px);
     }
   }
 
-  /* Modern Gradient — Perceptually vibrant turquoise-blue shift */
-  .gradient-futuristic {
-    background: linear-gradient(135deg, 
-      #52dee5 0%, 
-      #92dce5 100%
-    );
+  /* Solid call to action button style */
+  .btn-primary {
+    @apply bg-surface-400 text-surface-0 border-none rounded-md px-6 py-3 font-medium transition-all duration-200 ease-out;
+    &:hover {
+      @apply bg-brand-600;
+    }
+    &:active {
+      transform: scale(0.98);
+    }
   }
 
-  /* Refined Text Gradient */
-  .text-gradient-futuristic {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, 
-      #383d3b 0%, 
-      #25a4ab 100%
-    );
+  .btn-secondary {
+    @apply bg-transparent text-surface-400 border border-surface-200 rounded-md px-6 py-3 font-medium transition-all duration-200 ease-out;
+    &:hover {
+      @apply bg-surface-100 border-surface-300;
+    }
+    &:active {
+      transform: scale(0.98);
+    }
   }
 
-  /* Soft Light Mesh Backgrounds using Palette HEX */
-  .bg-mesh-purple {
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(82, 222, 229, 0.12) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(146, 220, 229, 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(82, 222, 229, 0.08) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, rgba(238, 229, 233, 0.15) 0px, transparent 50%);
+  /* Spot Pastel Tags */
+  .tag-blue {
+    @apply bg-brand-100 text-brand-400 px-2 py-0.5 rounded-full text-xs uppercase tracking-widest font-bold;
   }
 
-  .glow-sm { box-shadow: 0 0 20px -5px rgba(82, 222, 229, 0.15); }
-  .glow-md { box-shadow: 0 0 40px -10px rgba(82, 222, 229, 0.25); }
+  .tag-red {
+    background-color: #FDEBEC;
+    color: #9F2F2D;
+    @apply px-2 py-0.5 rounded-full text-xs uppercase tracking-widest font-bold;
+  }
 
-  .perspective-1000 { perspective: 1000px; }
-  .preserve-3d { transform-style: preserve-3d; }
-
-  /* Kanban performance containment */
-  .kanban-column-area {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 320px auto 500px;
+  .tag-green {
+    background-color: #EDF3EC;
+    color: #346538;
+    @apply px-2 py-0.5 rounded-full text-xs uppercase tracking-widest font-bold;
   }
   
-  @supports not (content-visibility: auto) {
-    .kanban-column-area {
-      contain: layout style paint;
-    }
+  .tag-yellow {
+    background-color: #FBF3DB;
+    color: #956400;
+    @apply px-2 py-0.5 rounded-full text-xs uppercase tracking-widest font-bold;
+  }
+
+  /* Minimalist overrides for legacy classes to prevent layout breaking during transition */
+  .liquid-glass {
+    @apply bg-surface-0 border border-surface-200 rounded-xl shadow-none;
+  }
+
+  .gradient-futuristic, .gradient-brand {
+    @apply bg-surface-400 text-surface-0;
+  }
+
+  .text-gradient-futuristic, .gradient-text {
+    @apply text-surface-400;
+    background: none;
+    -webkit-text-fill-color: var(--color-surface-400);
+  }
+
+  .bg-mesh-purple {
+    background: none;
   }
 }
+

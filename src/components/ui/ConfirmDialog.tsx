@@ -1,6 +1,6 @@
 "use client";
 
-import { BsExclamationTriangle, BsX } from 'react-icons/bs';
+import { Warning, X } from '@phosphor-icons/react';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -30,11 +30,11 @@ export default function ConfirmDialog({
         <div className="w-full max-w-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/[0.08] rounded-2xl shadow-2xl animate-scale-in" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-white/[0.06]">
             <div className="flex items-center gap-3">
-              <BsExclamationTriangle className="w-5 h-5 text-red-500" />
+              <Warning className="w-5 h-5 text-red-500" />
               <h3 className="text-sm font-bold text-zinc-900 dark:text-white">{title}</h3>
             </div>
             <button onClick={onCancel} className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/[0.06] transition-all">
-              <BsX className="w-4 h-4" />
+              <X className="w-4 h-4" />
             </button>
           </div>
           <div className="px-6 py-4">

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
 import { ATSScoreInline } from "./ATSScoreBadge";
-import { BsCheck, BsChevronRight, BsFileEarmarkText, BsPlus, BsX } from 'react-icons/bs';
+import { Check, CaretRight, FileText, Plus, X } from '@phosphor-icons/react';
 import Link from "next/link";
 import { useState } from "react";
 
@@ -99,7 +99,7 @@ export default function ResumePicker() {
               onClick={handleClose}
               className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.06] transition-all"
             >
-              <BsX className="w-5 h-5" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
@@ -107,7 +107,7 @@ export default function ResumePicker() {
           <div className="px-6 py-4 space-y-2.5 max-h-[400px] overflow-y-auto">
             {sortedResumes.length === 0 ? (
               <div className="text-center py-8">
-                <BsFileEarmarkText className="w-10 h-10 text-zinc-700 dark:text-zinc-300 dark:text-gray-700 mx-auto mb-3" />
+                <FileText className="w-10 h-10 text-zinc-700 dark:text-zinc-300 dark:text-gray-700 mx-auto mb-3" />
                 <p className="text-sm text-zinc-500 dark:text-gray-500">No resumes yet</p>
                 <p className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mt-1">
                   Create your first resume to link to applications
@@ -138,7 +138,7 @@ export default function ResumePicker() {
                           : "border-gray-600"
                       )}
                     >
-                      {isSelected && <BsCheck className="w-3 h-3 text-zinc-900 dark:text-white" />}
+                      {isSelected && <Check className="w-3 h-3 text-zinc-900 dark:text-white" />}
                     </div>
 
                     {/* Resume icon */}
@@ -150,7 +150,7 @@ export default function ResumePicker() {
                           : "bg-brand-500/10"
                       )}
                     >
-                      <BsFileEarmarkText
+                      <FileText
                         className={cn(
                           "w-4 h-4",
                           resume.is_base ? "text-blue-400" : "text-brand-400"
@@ -198,7 +198,7 @@ export default function ResumePicker() {
               className="flex items-center gap-3 p-3.5 rounded-xl border border-dashed border-white/[0.1] hover:border-brand-500/30 hover:bg-brand-500/5 transition-all group"
             >
               <div className="w-9 h-9 rounded-lg bg-brand-500/10 flex items-center justify-center group-hover:bg-brand-500/20 transition-colors">
-                <BsPlus className="w-4 h-4 text-brand-400" />
+                <Plus className="w-4 h-4 text-brand-400" />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-zinc-700 dark:text-gray-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 dark:hover:text-gray-100 transition-colors">
@@ -208,7 +208,7 @@ export default function ResumePicker() {
                   Start from a base resume, optimized for this role
                 </p>
               </div>
-              <BsChevronRight className="w-4 h-4 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 group-hover:text-brand-400 transition-colors" />
+              <CaretRight className="w-4 h-4 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 group-hover:text-brand-400 transition-colors" />
             </Link>
           </div>
 

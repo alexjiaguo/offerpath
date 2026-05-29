@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { BsList, BsX } from 'react-icons/bs';
+import { List, X } from '@phosphor-icons/react';
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "@/lib/navConfig";
 
@@ -41,7 +41,7 @@ export default function MobileNav() {
         className="md:hidden p-2 rounded-lg text-zinc-600 hover:text-zinc-800 hover:bg-white/[0.04] transition-all"
         aria-label="Open navigation menu"
       >
-        <BsList className="w-5 h-5" />
+        <List className="w-5 h-5" />
       </button>
 
       {/* Backdrop */}
@@ -81,7 +81,7 @@ export default function MobileNav() {
             onClick={() => setIsOpen(false)}
             className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-700 hover:bg-white/[0.04] transition-all"
           >
-            <BsX className="w-5 h-5" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 

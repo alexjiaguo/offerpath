@@ -1,15 +1,15 @@
-import { BsBarChartFill, BsChatSquareText, BsCollection, BsCompass, BsCpu, BsCreditCard, BsFileEarmarkText, BsGear, BsGrid1X2, BsKanban, BsKey } from "react-icons/bs";
+import { ChartBar, ChatCircleText, Folders, Compass, Cpu, CreditCard, FileText, Gear, SquaresFour, Kanban, Key, IconProps } from "@phosphor-icons/react";
 
 export interface NavSubItem {
   label: string;
   href: string;
-  icon?: React.ComponentType<{ className?: string }>;
+  icon?: React.ComponentType<IconProps>;
 }
 
 export interface NavItemDef {
   label: string;
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<IconProps>;
   subItems?: NavSubItem[];
 }
 
@@ -22,7 +22,7 @@ export const NAV_ITEMS: NavSection[] = [
   {
     section: "Overview",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: BsGrid1X2 },
+      { label: "Dashboard", href: "/dashboard", icon: SquaresFour },
     ],
   },
   {
@@ -31,21 +31,21 @@ export const NAV_ITEMS: NavSection[] = [
       {
         label: "Job Tracker",
         href: "/dashboard/pipeline",
-        icon: BsKanban,
+        icon: Kanban,
         subItems: [
-          { label: "Board", href: "/dashboard/pipeline", icon: BsKanban },
-          { label: "Analytics", href: "/dashboard/pipeline/analytics", icon: BsBarChartFill },
+          { label: "Board", href: "/dashboard/pipeline", icon: Kanban },
+          { label: "Analytics", href: "/dashboard/pipeline/analytics", icon: ChartBar },
         ],
       },
-      { label: "Resume Studio", href: "/dashboard/resume", icon: BsFileEarmarkText },
-      { label: "Job Search", href: "/dashboard/discover", icon: BsCompass },
+      { label: "Resume Studio", href: "/dashboard/resume", icon: FileText },
+      { label: "Job Search", href: "/dashboard/discover", icon: Compass },
       {
         label: "Interview Simulator",
         href: "/dashboard/interview",
-        icon: BsChatSquareText,
+        icon: ChatCircleText,
         subItems: [
-          { label: "Overview", href: "/dashboard/interview", icon: BsCpu },
-          { label: "Stories", href: "/dashboard/interview/stories", icon: BsCollection },
+          { label: "Overview", href: "/dashboard/interview", icon: Cpu },
+          { label: "Stories", href: "/dashboard/interview/stories", icon: Folders },
         ],
       },
     ],
@@ -53,9 +53,9 @@ export const NAV_ITEMS: NavSection[] = [
   {
     section: "Account",
     items: [
-      { label: "Settings", href: "/dashboard/settings", icon: BsGear },
-      { label: "Billing & Plans", href: "/dashboard/settings/billing", icon: BsCreditCard },
-      { label: "API Configuration", href: "/dashboard/settings/api-keys", icon: BsKey },
+      { label: "Settings", href: "/dashboard/settings", icon: Gear },
+      { label: "Billing & Plans", href: "/dashboard/settings/billing", icon: CreditCard },
+      { label: "API Configuration", href: "/dashboard/settings/api-keys", icon: Key },
     ],
   },
 ];

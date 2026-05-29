@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BsX } from 'react-icons/bs';
+import { X } from '@phosphor-icons/react';
 import { useInterviewStore } from "@/store/interviewStore";
 import { cn } from "@/lib/utils";
 
@@ -112,7 +112,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
             onClick={onClose}
             className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all"
           >
-            <BsX className="w-5 h-5" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
@@ -223,7 +223,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
             disabled={!title.trim()}
             className="px-5 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
           >
-            {editingStoryId ? "Save Changes" : "Add Story"}
+            {editingStoryId ? "Save" : "Add Story"}
           </button>
         </div>
       </div>

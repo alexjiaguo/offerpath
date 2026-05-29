@@ -14,7 +14,7 @@ import {
   PieChart,
   Pie,
 } from "recharts";
-import { BsArrowUpRight, BsBriefcase, BsBullseye, BsGraphUp, BsPercent, BsStar } from 'react-icons/bs';
+import { ArrowUpRight, Briefcase, Target, TrendUp, Percent, Star } from '@phosphor-icons/react';
 
 
 /* ═══════════════════════════════════════════════════
@@ -97,22 +97,22 @@ export default function AnalyticsCharts() {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
-          icon={<BsBriefcase className="w-5 h-5 text-brand-400" />}
+          icon={<Briefcase className="w-5 h-5 text-brand-400" />}
           label="Total Jobs"
           value={stats.total.toString()}
         />
         <StatCard
-          icon={<BsStar className="w-5 h-5 text-amber-400" />}
+          icon={<Star className="w-5 h-5 text-amber-400" />}
           label="Avg Score"
           value={stats.avgScore > 0 ? stats.avgScore.toFixed(1) : "—"}
         />
         <StatCard
-          icon={<BsArrowUpRight className="w-5 h-5 text-emerald-400" />}
+          icon={<ArrowUpRight className="w-5 h-5 text-emerald-400" />}
           label="Interview Rate"
           value={stats.interviewRate > 0 ? `${Math.round(stats.interviewRate)}%` : "—"}
         />
         <StatCard
-          icon={<BsPercent className="w-5 h-5 text-purple-400" />}
+          icon={<Percent className="w-5 h-5 text-purple-400" />}
           label="Offer Rate"
           value={stats.offerRate > 0 ? `${Math.round(stats.offerRate)}%` : "—"}
         />
@@ -123,7 +123,7 @@ export default function AnalyticsCharts() {
         {/* Pipeline Funnel */}
         <div className="liquid-glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-            <BsBullseye className="w-4 h-4 text-brand-400" />
+            <Target className="w-4 h-4 text-brand-400" />
             Pipeline Funnel
           </h3>
           <ResponsiveContainer width="100%" height={240}>
@@ -149,7 +149,7 @@ export default function AnalyticsCharts() {
         {/* Score Distribution */}
         <div className="liquid-glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-            <BsStar className="w-4 h-4 text-amber-400" />
+            <Star className="w-4 h-4 text-amber-400" />
             Score Distribution
           </h3>
           <ResponsiveContainer width="100%" height={240}>
@@ -170,7 +170,7 @@ export default function AnalyticsCharts() {
         {/* Archetype Breakdown */}
         <div className="liquid-glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-            <BsBriefcase className="w-4 h-4 text-blue-400" />
+            <Briefcase className="w-4 h-4 text-blue-400" />
             By Archetype
           </h3>
           <ResponsiveContainer width="100%" height={240}>
@@ -192,7 +192,7 @@ export default function AnalyticsCharts() {
         {/* Tier Distribution */}
         <div className="liquid-glass rounded-2xl p-6">
           <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-            <BsGraphUp className="w-4 h-4 text-emerald-400" />
+            <TrendUp className="w-4 h-4 text-emerald-400" />
             Tier Breakdown
           </h3>
           <div className="flex items-center gap-8">

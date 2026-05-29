@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BsArrowRepeat, BsCheck, BsFileEarmark, BsFileEarmarkText } from 'react-icons/bs';
+import { ArrowsClockwise, Check, File, FileText } from '@phosphor-icons/react';
 import type { ResumeData } from "@/types";
 
 /* ═══════════════════════════════════════════════════
@@ -43,33 +43,33 @@ export default function ExportButtons({
       {/* PDF Export */}
       <button
         onClick={() => window.print()}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-200 text-zinc-300 dark:text-gray-700 dark:text-gray-300 text-sm font-medium hover:text-gray-900 dark:hover:text-white hover:bg-surface-300 transition-all"
+        className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface-200 text-surface-400 font-semibold text-sm hover:text-brand-600 hover:bg-surface-100 transition-all"
         title="Export as PDF (opens print dialog)"
       >
-        <BsFileEarmarkText className="w-4 h-4" />
-        <span className="hidden sm:inline">PDF</span>
+        <FileText className="w-4 h-4 text-surface-400" />
+        <span className="hidden sm:inline">Download PDF</span>
       </button>
 
       {/* DOCX Export */}
       <button
         onClick={handleDocxExport}
         disabled={exportingDocx}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-200 text-zinc-300 dark:text-gray-700 dark:text-gray-300 text-sm font-medium hover:text-gray-900 dark:hover:text-white hover:bg-surface-300 transition-all disabled:opacity-50"
+        className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface-200 text-surface-400 font-semibold text-sm hover:text-brand-600 hover:bg-surface-100 transition-all disabled:opacity-50"
         title="Export as DOCX"
       >
         {exportingDocx ? (
-          <BsArrowRepeat className="w-4 h-4 animate-spin" />
+          <ArrowsClockwise className="w-4 h-4 animate-spin text-surface-400" />
         ) : exportedDocx ? (
-          <BsCheck className="w-4 h-4 text-emerald-400" />
+          <Check className="w-4 h-4 text-emerald-500" />
         ) : (
-          <BsFileEarmark className="w-4 h-4" />
+          <File className="w-4 h-4 text-surface-400" />
         )}
         <span className="hidden sm:inline">
-          {exportedDocx ? "Downloaded!" : "DOCX"}
+          {exportedDocx ? "Downloaded!" : "Download Word"}
         </span>
       </button>
       {exportError && (
-        <span className="text-xs text-red-400">{exportError}</span>
+        <span className="text-xs text-red-500">{exportError}</span>
       )}
     </div>
   );

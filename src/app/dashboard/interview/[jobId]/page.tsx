@@ -2,7 +2,7 @@
 
 import { use, useState } from "react";
 import Link from "next/link";
-import { BsArrowLeft, BsArrowRepeat, BsBook, BsBriefcase, BsChatSquareText, BsCheckCircleFill, BsChevronDown, BsChevronUp, BsCpu, BsExclamationCircle, BsGeoAlt, BsPlayFill, BsStar, BsStars } from 'react-icons/bs';
+import { ArrowLeft, ArrowsClockwise, Book, Briefcase, ChatCircleText, CheckCircle, CaretDown, CaretUp, Cpu, WarningCircle, MapPin, Play, Star, Sparkle } from '@phosphor-icons/react';
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useInterviewStore } from "@/store/interviewStore";
 import { useProfileStore } from "@/store/profileStore";
@@ -51,9 +51,9 @@ export default function JobPrepPage({
 
   if (!job) {
     return (
-      <div className="max-w-4xl mx-auto animate-fade-in">
+      <div className="w-full animate-fade-in">
         <div className="liquid-glass rounded-2xl p-12 text-center">
-          <BsExclamationCircle className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
+          <WarningCircle className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">Job not found</h2>
           <p className="text-sm text-zinc-500 dark:text-gray-500 mb-4">
             This job may have been removed from your pipeline.
@@ -85,13 +85,13 @@ export default function JobPrepPage({
   };
 
   return (
-    <div className="max-w-4xl mx-auto animate-fade-in">
+    <div className="w-full animate-fade-in">
       {/* Back link */}
       <Link
         href="/dashboard/interview"
         className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 transition-colors mb-4"
       >
-        <BsArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4" />
         Back to Interview Prep
       </Link>
 
@@ -106,19 +106,19 @@ export default function JobPrepPage({
             <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-gray-500 flex-wrap">
               {job.company?.name && (
                 <span className="flex items-center gap-1">
-                  <BsBriefcase className="w-3.5 h-3.5" />
+                  <Briefcase className="w-3.5 h-3.5" />
                   {job.company.name}
                 </span>
               )}
               {job.location && (
                 <span className="flex items-center gap-1">
-                  <BsGeoAlt className="w-3.5 h-3.5" />
+                  <MapPin className="w-3.5 h-3.5" />
                   {job.location}
                 </span>
               )}
               {job.score !== undefined && (
                 <span className="flex items-center gap-1">
-                  <BsStar className="w-3.5 h-3.5" />
+                  <Star className="w-3.5 h-3.5" />
                   Score: {job.score.toFixed(1)}
                 </span>
               )}
@@ -131,7 +131,7 @@ export default function JobPrepPage({
       {!prep ? (
         <div className="liquid-glass rounded-2xl p-12 text-center">
           <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mx-auto mb-6">
-            <BsStars className="w-8 h-8 text-brand-400" />
+            <Sparkle className="w-8 h-8 text-brand-400" />
           </div>
           <h2 className="text-xl font-semibold mb-2">Generate Prep Package</h2>
           <p className="text-sm text-zinc-500 dark:text-gray-500 max-w-md mx-auto mb-8">
@@ -150,9 +150,9 @@ export default function JobPrepPage({
             )}
           >
             {generating ? (
-              <><BsArrowRepeat className="w-4 h-4 animate-spin" /> Generating...</>
+              <><ArrowsClockwise className="w-4 h-4 animate-spin" /> Generating...</>
             ) : (
-              <><BsStars className="w-4 h-4" /> Generate AI Prep Package</>
+              <><Sparkle className="w-4 h-4" /> Generate AI Prep Package</>
             )}
           </button>
         </div>
@@ -161,8 +161,8 @@ export default function JobPrepPage({
           {/* Tab Navigation */}
           <div className="flex items-center gap-1 mb-6 bg-surface-100 rounded-xl p-1">
             {[
-              { key: "research" as const, label: "Research & Analysis", icon: BsBook },
-              { key: "questions" as const, label: `Questions (${prep.questions.length})`, icon: BsCpu },
+              { key: "research" as const, label: "Research & Analysis", icon: Book },
+              { key: "questions" as const, label: `Questions (${prep.questions.length})`, icon: Cpu },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -187,7 +187,7 @@ export default function JobPrepPage({
               {prep.company_research && (
                 <div className="liquid-glass rounded-2xl p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <BsBook className="w-5 h-5 text-blue-400" />
+                    <Book className="w-5 h-5 text-blue-400" />
                     <h2 className="text-base font-semibold">Company Research</h2>
                   </div>
                   <div className="prose prose-invert prose-sm max-w-none text-zinc-700 dark:text-gray-300 leading-relaxed [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-zinc-700 dark::text-zinc-700 dark::text-gray-300 [&_h3]:mt-4 [&_h3]:mb-1.5 [&_ul]:space-y-1 [&_li]:text-sm [&_strong]:text-zinc-800">
@@ -200,7 +200,7 @@ export default function JobPrepPage({
               {prep.role_analysis && (
                 <div className="liquid-glass rounded-2xl p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <BsCpu className="w-5 h-5 text-purple-400" />
+                    <Cpu className="w-5 h-5 text-purple-400" />
                     <h2 className="text-base font-semibold">Role Analysis</h2>
                   </div>
                   <div className="prose prose-invert prose-sm max-w-none text-zinc-700 dark:text-gray-300 leading-relaxed [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-zinc-800 dark::text-zinc-800 dark::text-gray-200 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-zinc-700 dark::text-zinc-700 dark::text-gray-300 [&_h3]:mt-4 [&_h3]:mb-1.5 [&_ul]:space-y-1 [&_li]:text-sm [&_strong]:text-zinc-800">
@@ -245,9 +245,9 @@ export default function JobPrepPage({
                         </div>
                       </div>
                       {isExpanded ? (
-                        <BsChevronUp className="w-4 h-4 text-zinc-500 dark:text-gray-500 flex-shrink-0 mt-0.5" />
+                        <CaretUp className="w-4 h-4 text-zinc-500 dark:text-gray-500 flex-shrink-0 mt-0.5" />
                       ) : (
-                        <BsChevronDown className="w-4 h-4 text-zinc-500 dark:text-gray-500 flex-shrink-0 mt-0.5" />
+                        <CaretDown className="w-4 h-4 text-zinc-500 dark:text-gray-500 flex-shrink-0 mt-0.5" />
                       )}
                     </button>
 
@@ -255,7 +255,7 @@ export default function JobPrepPage({
                       <div className="px-4 pb-4 border-t border-white/[0.04] pt-3 ml-9 animate-fade-in">
                         <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
                           <div className="flex items-center gap-1.5 mb-2">
-                            <BsCheckCircleFill className="w-3.5 h-3.5 text-emerald-400" />
+                            <CheckCircle className="w-3.5 h-3.5 text-emerald-400"  weight="fill" />
                             <span className="text-xs font-semibold text-emerald-400">
                               Suggested Approach
                             </span>
@@ -276,14 +276,14 @@ export default function JobPrepPage({
           <div className="mt-8 liquid-glass rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <BsChatSquareText className="w-5 h-5 text-brand-400" />
+                <ChatCircleText className="w-5 h-5 text-brand-400" />
                 <h2 className="text-base font-semibold">Mock Interviews</h2>
               </div>
               <Link
                 href={`/dashboard/interview/${jobId}/mock`}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
               >
-                <BsPlayFill className="w-3.5 h-3.5" />
+                <Play className="w-3.5 h-3.5"  weight="fill" />
                 Start Mock
               </Link>
             </div>
@@ -305,7 +305,7 @@ export default function JobPrepPage({
                         "w-8 h-8 rounded-lg flex items-center justify-center",
                         m.feedback ? "bg-emerald-500/10" : "bg-amber-500/10"
                       )}>
-                        <BsChatSquareText className={cn(
+                        <ChatCircleText className={cn(
                           "w-4 h-4",
                           m.feedback ? "text-emerald-400" : "text-amber-400"
                         )} />

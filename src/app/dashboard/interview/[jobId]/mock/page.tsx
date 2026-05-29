@@ -2,7 +2,7 @@
 
 import { use, useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { BsArrowLeft, BsBarChartFill, BsChatSquareText, BsClock, BsExclamationTriangle, BsGraphUp, BsLightbulb, BsSend, BsSquare, BsTrophy } from 'react-icons/bs';
+import { ArrowLeft, ChartBar, ChatCircleText, Clock, Warning, TrendUp, Lightbulb, PaperPlaneRight, Square, Trophy } from '@phosphor-icons/react';
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useInterviewStore } from "@/store/interviewStore";
 import { cn } from "@/lib/utils";
@@ -78,11 +78,11 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
             href={`/dashboard/interview/${jobId}`}
             className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all"
           >
-            <BsArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
             <h1 className="text-lg font-bold flex items-center gap-2">
-              <BsChatSquareText className="w-5 h-5 text-brand-400" />
+              <ChatCircleText className="w-5 h-5 text-brand-400" />
               Mock Interview
             </h1>
             {job && (
@@ -98,7 +98,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
             onClick={handleEnd}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium hover:bg-red-500/20 transition-all"
           >
-            <BsSquare className="w-3.5 h-3.5" />
+            <Square className="w-3.5 h-3.5" />
             End Session
           </button>
         )}
@@ -109,7 +109,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
         <div className="flex-1 flex items-center justify-center">
           <div className="liquid-glass rounded-2xl p-12 text-center max-w-lg">
             <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mx-auto mb-6">
-              <BsChatSquareText className="w-8 h-8 text-brand-400" />
+              <ChatCircleText className="w-8 h-8 text-brand-400" />
             </div>
             <h2 className="text-xl font-semibold mb-2">Ready for Practice?</h2>
             <p className="text-sm text-zinc-500 dark:text-gray-500 mb-8 leading-relaxed">
@@ -121,7 +121,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
               onClick={handleStart}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl gradient-brand text-white font-medium hover:opacity-90 transition-opacity"
             >
-              <BsChatSquareText className="w-4 h-4" />
+              <ChatCircleText className="w-4 h-4" />
               Start Mock Interview
             </button>
           </div>
@@ -131,7 +131,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
         <div className="flex-1 overflow-y-auto space-y-5 animate-fade-in">
           {/* Overall Score */}
           <div className="liquid-glass rounded-2xl p-8 text-center">
-            <BsTrophy className="w-10 h-10 text-amber-400 mx-auto mb-4" />
+            <Trophy className="w-10 h-10 text-amber-400 mx-auto mb-4" />
             <p className="text-sm text-zinc-500 dark:text-gray-500 mb-1">Overall Score</p>
             <p className="text-5xl font-bold gradient-text mb-2">
               {session.feedback.overall_score.toFixed(1)}
@@ -140,7 +140,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
               out of 5.0
               {session.duration_seconds && (
                 <span className="ml-2 inline-flex items-center gap-1">
-                  <BsClock className="w-3 h-3" />
+                  <Clock className="w-3 h-3" />
                   {Math.ceil(session.duration_seconds / 60)} minutes
                 </span>
               )}
@@ -151,7 +151,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
           {session.feedback.category_scores && (
             <div className="liquid-glass rounded-2xl p-6">
               <div className="flex items-center gap-2 mb-4">
-                <BsBarChartFill className="w-5 h-5 text-brand-400" />
+                <ChartBar className="w-5 h-5 text-brand-400"  weight="fill" />
                 <h3 className="text-base font-semibold">Category Breakdown</h3>
               </div>
               <div className="space-y-3">
@@ -177,7 +177,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
           <div className="grid md:grid-cols-2 gap-5">
             <div className="liquid-glass rounded-2xl p-6">
               <div className="flex items-center gap-2 mb-4">
-                <BsGraphUp className="w-5 h-5 text-emerald-400" />
+                <TrendUp className="w-5 h-5 text-emerald-400" />
                 <h3 className="text-base font-semibold">Strengths</h3>
               </div>
               <ul className="space-y-2">
@@ -191,7 +191,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
             </div>
             <div className="liquid-glass rounded-2xl p-6">
               <div className="flex items-center gap-2 mb-4">
-                <BsExclamationTriangle className="w-5 h-5 text-amber-400" />
+                <Warning className="w-5 h-5 text-amber-400" />
                 <h3 className="text-base font-semibold">Areas to Improve</h3>
               </div>
               <ul className="space-y-2">
@@ -208,13 +208,13 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
           {/* Tips */}
           <div className="liquid-glass rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-4">
-              <BsLightbulb className="w-5 h-5 text-brand-400" />
+              <Lightbulb className="w-5 h-5 text-brand-400" />
               <h3 className="text-base font-semibold">Tips for Next Time</h3>
             </div>
             <ul className="space-y-2">
               {session.feedback.tips.map((tip, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-zinc-700 dark:text-gray-300">
-                  <BsLightbulb className="w-3.5 h-3.5 text-brand-400 mt-0.5 flex-shrink-0" />
+                  <Lightbulb className="w-3.5 h-3.5 text-brand-400 mt-0.5 flex-shrink-0" />
                   {tip}
                 </li>
               ))}
@@ -297,7 +297,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
               disabled={!userInput.trim()}
               className="p-2.5 rounded-xl gradient-brand text-white hover:opacity-90 transition-opacity disabled:opacity-30 flex-shrink-0"
             >
-              <BsSend className="w-4 h-4" />
+              <PaperPlaneRight className="w-4 h-4" />
             </button>
           </div>
         </div>

@@ -1,24 +1,26 @@
 "use client";
 
-import { BsBell, BsCommand, BsPlus, BsSearch } from 'react-icons/bs';
-import { useState, useEffect, useCallback } from "react";
+import { Bell, Command, Plus, MagnifyingGlass } from '@phosphor-icons/react';
+import { useEffect, useCallback } from "react";
 import MobileNav from "./MobileNav";
 import { motion } from "framer-motion";
 import { usePipelineStore } from "@/store/pipelineStore";
+import { useDiscoveryStore } from "@/store/discoveryStore";
 
 export default function Topbar() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const setAddJobDialogOpen = usePipelineStore((s) => s.setAddJobDialogOpen);
+  const searchQuery = usePipelineStore((s) => s.filters.search);
   const setFilter = usePipelineStore((s) => s.setFilter);
+  const setDiscoverySearchQuery = useDiscoveryStore((s) => s.setSearchQuery);
+  const setAddJobDialogOpen = usePipelineStore((s) => s.setAddJobDialogOpen);
 
   useEffect(() => {
     document.documentElement.classList.remove("dark");
   }, []);
 
   const handleSearchChange = useCallback((value: string) => {
-    setSearchQuery(value);
     setFilter({ search: value });
-  }, [setFilter]);
+    setDiscoverySearchQuery(value);
+  }, [setFilter, setDiscoverySearchQuery]);
 
   // Cmd+K keyboard shortcut
   useEffect(() => {
@@ -33,7 +35,7 @@ export default function Topbar() {
   }, []);
 
   return (
-    <header className="h-20 flex items-center justify-between px-6 md:px-8 border-b border-zinc-200 dark:border-white/[0.03] bg-surface-0/40 backdrop-blur-2xl sticky top-0 z-30">
+    <header className="h-16 flex items-center justify-between px-6 md:px-8 border-b border-surface-200 bg-surface-50 sticky top-0 z-30">
       {/* Mobile Nav + Search */}
       <div className="flex items-center gap-6 flex-1">
         <div className="md:hidden">
@@ -41,19 +43,18 @@ export default function Topbar() {
         </div>
 
         <div className="relative w-full max-w-lg group">
-          <div className="absolute inset-0 bg-brand-500/5 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
-          <BsSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-zinc-500 group-focus-within:text-brand-400 transition-colors" />
+          <MagnifyingGlass weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-300 group-focus-within:text-surface-400 transition-colors" />
           <input
             id="global-search-input"
             type="text"
-            placeholder="Search jobs, resumes, or companies..."
+            placeholder="Search..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full pl-12 pr-14 py-3 rounded-2xl bg-zinc-100/50 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-brand-500/30 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-300 font-sans tracking-tight"
+            className="w-full pl-9 pr-12 py-2 rounded-md bg-surface-0 border border-surface-200 text-sm text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-300 transition-all duration-200 font-sans tracking-tight"
           />
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 px-1.5 py-1 rounded-md bg-white dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.08] pointer-events-none">
-            <BsCommand className="w-3 h-3 text-zinc-500" />
-            <span className="text-[10px] font-bold text-zinc-500 uppercase">K</span>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 px-1.5 py-0.5 rounded border border-surface-200 bg-surface-50 pointer-events-none">
+            <Command weight="bold" className="w-3 h-3 text-surface-300" />
+            <span className="text-[10px] font-bold text-surface-300 uppercase">K</span>
           </div>
         </div>
       </div>
@@ -63,29 +64,27 @@ export default function Topbar() {
         {/* Quick Add */}
         <motion.button
           onClick={() => setAddJobDialogOpen(true)}
-          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black text-sm font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all shadow-lg shadow-black/5 dark:shadow-white/5"
+          className="flex items-center gap-2 px-4 py-2 rounded-md bg-surface-400 text-surface-0 text-sm font-medium hover:bg-brand-600 transition-colors"
         >
-          <BsPlus className="w-4.5 h-4.5" />
+          <Plus weight="bold" className="w-4 h-4" />
           <span className="hidden sm:inline">Add Job</span>
         </motion.button>
 
-        {/* Notifications — feature coming soon */}
-        <button className="relative p-3 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/[0.05] transition-all group" title="Notifications coming soon">
-          <BsBell className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+        {/* Notifications */}
+        <button className="relative p-2 rounded-md border border-surface-200 bg-surface-0 text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-colors" title="Notifications coming soon">
+          <Bell weight="bold" className="w-4 h-4" />
         </button>
 
-        <div className="w-px h-8 bg-zinc-200 dark:bg-white/[0.05] mx-2" />
+        <div className="w-px h-6 bg-surface-200 mx-2" />
 
         {/* Profile */}
-        <button className="flex items-center gap-3 pl-1 pr-3 py-1 rounded-2xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] hover:bg-zinc-50 dark:hover:bg-white/[0.05] transition-all group" title="Profile settings coming soon">
-          <div className="w-9 h-9 rounded-xl gradient-futuristic flex items-center justify-center text-xs font-bold text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
-            U
+        <button className="flex items-center gap-3 pl-1 pr-3 py-1 rounded-md border border-surface-200 bg-surface-0 hover:bg-surface-100 transition-colors" title="Profile settings coming soon">
+          <div className="w-7 h-7 rounded bg-brand-500 flex items-center justify-center text-[10px] font-bold text-white">
+            DU
           </div>
           <div className="hidden lg:block text-left">
-            <div className="text-[11px] font-bold text-zinc-800 dark:text-white leading-none">Demo User</div>
-            <div className="text-[10px] font-medium text-zinc-500 leading-none mt-1">Pro Plan</div>
+            <div className="text-[11px] font-semibold text-surface-400 leading-none">Demo User</div>
           </div>
         </button>
       </div>

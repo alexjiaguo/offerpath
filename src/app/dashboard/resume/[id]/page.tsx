@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { BsArrowClockwise, BsArrowCounterclockwise, BsArrowLeft, BsArrowRepeat, BsArrowsAngleContract, BsArrowsAngleExpand, BsBriefcase, BsCheckCircle, BsChevronDown, BsChevronUp, BsExclamationCircle, BsEye, BsEyeSlash, BsFileEarmarkText, BsFloppy, BsInputCursorText, BsLayoutSidebarInset, BsLayoutSidebarInsetReverse, BsMortarboard, BsPen, BsPerson, BsPlus, BsStars, BsTrash, BsWindow, BsWrench, BsX } from 'react-icons/bs';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -147,9 +147,9 @@ export default function ResumeEditorPage({
 
   if (!resume) {
     return (
-      <div className="max-w-4xl mx-auto animate-fade-in">
+      <div className="w-full animate-fade-in">
         <div className="liquid-glass rounded-2xl p-12 text-center">
-          <BsExclamationCircle className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
+          <WarningCircle className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">Resume not found</h2>
           <Link
             href="/dashboard/resume"
@@ -217,11 +217,11 @@ export default function ResumeEditorPage({
   };
 
   const SECTIONS = [
-    { key: "personal", label: "Identity", icon: BsPerson },
-    { key: "summary", label: "Summary", icon: BsFileEarmarkText },
-    { key: "experience", label: "Experience", icon: BsBriefcase },
-    { key: "education", label: "Education", icon: BsMortarboard },
-    { key: "skills", label: "Skills", icon: BsWrench },
+    { key: "personal", label: "Identity", icon: User },
+    { key: "summary", label: "Summary", icon: FileText },
+    { key: "experience", label: "Experience", icon: Briefcase },
+    { key: "education", label: "Education", icon: GraduationCap },
+    { key: "skills", label: "Skills", icon: Wrench },
   ];
 
   const sectionOrder = resume.section_order || [
@@ -229,7 +229,7 @@ export default function ResumeEditorPage({
   ];
 
   return (
-    <div className="animate-fade-in pb-20 max-w-[1600px] mx-auto">
+    <div className="animate-fade-in pb-20 w-full">
       {/* Immersive Fullscreen Preview */}
       <AnimatePresence>
         {isFullscreenPreview && (
@@ -245,7 +245,7 @@ export default function ResumeEditorPage({
                   onClick={() => setIsFullscreenPreview(false)}
                   className="p-2 rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-zinc-300 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all"
                 >
-                  <BsArrowsAngleContract className="w-5 h-5" />
+                  <ArrowsIn className="w-5 h-5" />
                 </button>
                 <div>
                   <h2 className="text-lg font-bold text-zinc-900 dark:text-white font-display">{resume.title}</h2>
@@ -285,7 +285,7 @@ export default function ResumeEditorPage({
             href="/dashboard/resume"
             className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
           >
-            <BsArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -303,7 +303,7 @@ export default function ResumeEditorPage({
             className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
             title={isEditorCollapsed ? "Open Editor" : "Collapse Editor"}
           >
-            {isEditorCollapsed ? <BsLayoutSidebarInsetReverse className="w-5 h-5" /> : <BsLayoutSidebarInset className="w-5 h-5" />}
+            {isEditorCollapsed ? <Sidebar className="w-5 h-5" /> : <Sidebar className="w-5 h-5" />}
           </button>
 
           {/* Collapse Sidebar Toggle */}
@@ -314,9 +314,9 @@ export default function ResumeEditorPage({
               title={isSidebarCollapsed ? "Open Intelligence Sidebar" : "Collapse Intelligence Sidebar"}
             >
               {isSidebarCollapsed ? (
-                <BsLayoutSidebarInset className="w-5 h-5 rotate-180" />
+                <Sidebar className="w-5 h-5 rotate-180" />
               ) : (
-                <BsLayoutSidebarInsetReverse className="w-5 h-5 rotate-180" />
+                <Sidebar className="w-5 h-5 rotate-180" />
               )}
             </button>
           )}
@@ -331,7 +331,7 @@ export default function ResumeEditorPage({
               )}
               title="Undo"
             >
-              <BsArrowCounterclockwise className="w-4 h-4" />
+              <ArrowCounterClockwise className="w-4 h-4" />
             </button>
             <button
               onClick={() => redo(id)}
@@ -342,7 +342,7 @@ export default function ResumeEditorPage({
               )}
               title="Redo"
             >
-              <BsArrowClockwise className="w-4 h-4" />
+              <ArrowClockwise className="w-4 h-4" />
             </button>
           </div>
 
@@ -356,8 +356,8 @@ export default function ResumeEditorPage({
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
               )}
             >
-              <BsInputCursorText className="w-3.5 h-3.5" />
-              Form
+              <TextT className="w-3.5 h-3.5" />
+              Form View
             </button>
             <button
               onClick={() => setEditorMode("richtext")}
@@ -368,8 +368,8 @@ export default function ResumeEditorPage({
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
               )}
             >
-              <BsPen className="w-3.5 h-3.5" />
-              Editor
+              <PenNib className="w-3.5 h-3.5" />
+              Visual Editor
             </button>
           </div>
 
@@ -385,9 +385,9 @@ export default function ResumeEditorPage({
             )}
           >
             {showPreview ? (
-              <BsEyeSlash className="w-4.5 h-4.5" />
+              <EyeSlash className="w-4.5 h-4.5" />
             ) : (
-              <BsEye className="w-4.5 h-4.5" />
+              <Eye className="w-4.5 h-4.5" />
             )}
             <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Preview</span>
           </button>
@@ -403,8 +403,8 @@ export default function ResumeEditorPage({
                 : "bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
             )}
           >
-            <BsFloppy className="w-4.5 h-4.5" />
-            <span className="uppercase tracking-widest text-[11px]">{saved ? "Saved" : "Save Changes"}</span>
+            <FloppyDisk className="w-4.5 h-4.5" />
+            <span className="uppercase tracking-widest text-[11px]">{saved ? "Saved" : "Save"}</span>
           </button>
         </div>
       </div>
@@ -429,7 +429,7 @@ export default function ResumeEditorPage({
               <div className="flex items-center justify-between relative z-10">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                    <BsStars className="w-6 h-6 text-purple-400" />
+                    <Sparkle className="w-6 h-6 text-purple-400" />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-widest">AI Tailoring</h3>
@@ -447,7 +447,7 @@ export default function ResumeEditorPage({
 
             {/* Template Picker */}
             <div className="flex items-center gap-3 pb-4">
-              <BsWindow className="w-5 h-5 text-zinc-600 flex-shrink-0" />
+              <Browser className="w-5 h-5 text-zinc-600 flex-shrink-0" />
               <div className="relative w-full max-w-xs">
                 <select
                   value={selectedTemplate}
@@ -465,7 +465,7 @@ export default function ResumeEditorPage({
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-zinc-500">
-                  <BsChevronDown className="w-4 h-4" />
+                  <CaretDown className="w-4 h-4" />
                 </div>
               </div>
             </div>
@@ -506,10 +506,10 @@ export default function ResumeEditorPage({
                         </button>
                         <div className="flex flex-col gap-0.5">
                           <button onClick={() => moveSection(id, section.key as SectionKey, "up")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
-                            <BsChevronUp className="w-3 h-3" />
+                            <CaretUp className="w-3 h-3" />
                           </button>
                           <button onClick={() => moveSection(id, section.key as SectionKey, "down")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
-                            <BsChevronDown className="w-3 h-3" />
+                            <CaretDown className="w-3 h-3" />
                           </button>
                         </div>
                       </div>
@@ -574,7 +574,7 @@ export default function ResumeEditorPage({
                           }}
                           className="p-2 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-all"
                         >
-                          <BsPlus className="w-4 h-4" />
+                          <Plus className="w-4 h-4" />
                         </button>
                       </div>
                       <div className="space-y-4">
@@ -589,7 +589,7 @@ export default function ResumeEditorPage({
                               }}
                               className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-all"
                             >
-                              <BsTrash className="w-4 h-4" />
+                              <Trash className="w-4 h-4" />
                             </button>
                             <div className="space-y-4">
                               <div className="pr-8">
@@ -654,7 +654,7 @@ export default function ResumeEditorPage({
                                       }}
                                       className="mt-2 p-1 text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover/bullet:opacity-100"
                                     >
-                                      <BsX className="w-3.5 h-3.5" />
+                                      <X className="w-3.5 h-3.5" />
                                     </button>
                                   </div>
                                 ))}
@@ -690,7 +690,7 @@ export default function ResumeEditorPage({
                           }}
                           className="p-2 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-all"
                         >
-                          <BsPlus className="w-4 h-4" />
+                          <Plus className="w-4 h-4" />
                         </button>
                       </div>
 
@@ -706,7 +706,7 @@ export default function ResumeEditorPage({
                               }}
                               className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-all"
                             >
-                              <BsTrash className="w-4 h-4" />
+                              <Trash className="w-4 h-4" />
                             </button>
                             <div className="space-y-4 pr-8">
                               <input type="text" value={edu.institution} onBlur={() => saveToHistory(id)} onChange={(e) => {
@@ -767,7 +767,7 @@ export default function ResumeEditorPage({
                               }}
                               className="text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 -mr-1"
                             >
-                              <BsX className="w-3.5 h-3.5" />
+                              <X className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         ))}
@@ -822,7 +822,7 @@ export default function ResumeEditorPage({
                   className="p-2 rounded-lg bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:bg-white/10 dark:hover:text-white transition-all group"
                   title="Fullscreen Preview"
                 >
-                  <BsArrowsAngleExpand className="w-4 h-4 group-hover:scale-110" />
+                  <ArrowsOut className="w-4 h-4 group-hover:scale-110" />
                 </button>
               </div>
             </div>
@@ -872,12 +872,12 @@ export default function ResumeEditorPage({
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                  <BsStars className="w-6 h-6 text-purple-400" />
+                  <Sparkle className="w-6 h-6 text-purple-400" />
                 </div>
                 <h2 className="text-xl font-bold font-display text-zinc-900 dark:text-white">AI Resume Tailoring</h2>
               </div>
               <button onClick={() => { setShowTailorDialog(false); setDraftResult(null); }} className="p-2 rounded-xl text-zinc-500 dark:text-gray-500 hover:text-zinc-900 dark:text-white hover:bg-zinc-100 dark:bg-white/[0.04] transition-all">
-                <BsX className="w-5 h-5" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -900,14 +900,14 @@ export default function ResumeEditorPage({
                 <div className="flex gap-4">
                   <button onClick={() => setShowTailorDialog(false)} className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-zinc-500 bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/5 hover:bg-zinc-200 dark:bg-white/10 transition-all uppercase tracking-widest">Cancel</button>
                   <button onClick={handleTailorWithAI} disabled={tailoring || !tailorJD.trim()} className={cn("flex-[2] flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl text-sm font-bold transition-all shadow-lg", tailoring || !tailorJD.trim() ? "bg-zinc-800 text-zinc-600 cursor-not-allowed" : "bg-purple-500 text-zinc-900 dark:text-white hover:bg-purple-400 shadow-purple-500/20")}>
-                    {tailoring ? <><BsArrowRepeat className="w-5 h-5 animate-spin" /> Processing...</> : <><BsStars className="w-5 h-5" /> Start Tailoring</>}
+                    {tailoring ? <><ArrowsClockwise className="w-5 h-5 animate-spin" /> Processing...</> : <><Sparkle className="w-5 h-5" /> Start Tailoring</>}
                   </button>
                 </div>
               </div>
             ) : (
               <div className="space-y-8 animate-fade-in">
                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-                  <BsCheckCircle className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-emerald-400 flex-shrink-0" />
                   <div>
                     <p className="text-sm text-emerald-300 font-bold uppercase tracking-widest">AI Synthesis Complete</p>
                     <p className="text-[10px] text-emerald-500/70 font-medium uppercase tracking-widest mt-0.5">Review and commit changes.</p>

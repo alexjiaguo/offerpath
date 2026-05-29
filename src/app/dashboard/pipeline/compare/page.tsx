@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BsArrowLeft, BsBank, BsCheck, BsCurrencyDollar, BsExclamationCircle, BsGeoAlt, BsStar, BsTrophy } from 'react-icons/bs';
+import { ArrowLeft, Bank, Check, CurrencyDollar, WarningCircle, MapPin, Star, Trophy } from '@phosphor-icons/react';
 import { usePipelineStore } from "@/store/pipelineStore";
 import { cn } from "@/lib/utils";
 
@@ -15,25 +15,25 @@ export default function OfferComparePage() {
   const offeredJobs = jobs.filter((j) => j.status === "offered");
 
   return (
-    <div className="max-w-5xl mx-auto animate-fade-in">
+    <div className="w-full animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <BsBank className="w-6 h-6 text-brand-400" />
+          <Bank className="w-6 h-6 text-brand-400" />
           <h1 className="text-2xl font-bold">Compare Offers</h1>
         </div>
         <Link
           href="/dashboard/pipeline"
           className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300 transition-colors"
         >
-          <BsArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4" />
           Back to Board
         </Link>
       </div>
 
       {offeredJobs.length === 0 ? (
         <div className="liquid-glass rounded-2xl p-12 text-center">
-          <BsBank className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
+          <Bank className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
           <h2 className="text-lg font-semibold mb-2">No offers to compare</h2>
           <p className="text-sm text-zinc-500 dark:text-gray-500 mb-6 max-w-md mx-auto">
             Move jobs to the &quot;Offered&quot; column in your pipeline to compare
@@ -49,7 +49,7 @@ export default function OfferComparePage() {
       ) : offeredJobs.length === 1 ? (
         <div className="space-y-6">
           <div className="liquid-glass rounded-2xl p-6 text-center">
-            <BsTrophy className="w-8 h-8 text-amber-400 mx-auto mb-3" />
+            <Trophy className="w-8 h-8 text-amber-400 mx-auto mb-3" />
             <p className="text-sm text-zinc-600 dark:text-gray-400 mb-4">
               You have one offer. Add more offers to compare them side by side.
             </p>
@@ -189,14 +189,14 @@ function OfferCard({
       <div className="space-y-3">
         {job.location && (
           <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-gray-400">
-            <BsGeoAlt className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
+            <MapPin className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
             {job.location}
           </div>
         )}
 
         {(job.salary_range || job.comp_details?.base_salary) && (
           <div className="flex items-center gap-2 text-sm">
-            <BsCurrencyDollar className="w-4 h-4 text-emerald-400" />
+            <CurrencyDollar className="w-4 h-4 text-emerald-400" />
             <span className="font-medium text-emerald-300">
               {job.salary_range || job.comp_details?.base_salary}
             </span>
@@ -205,7 +205,7 @@ function OfferCard({
 
         {job.score !== undefined && (
           <div className="flex items-center gap-2 text-sm">
-            <BsStar className="w-4 h-4 text-amber-400" />
+            <Star className="w-4 h-4 text-amber-400" />
             <span className="text-zinc-700 dark:text-gray-300">
               Score: <strong>{job.score.toFixed(1)}</strong>/5.0
             </span>
@@ -243,13 +243,13 @@ function OfferCard({
           <div className="mt-3 space-y-1.5">
             {job.evaluation.fit_reasons.slice(0, 2).map((reason, i) => (
               <div key={i} className="flex items-start gap-1.5 text-xs text-zinc-600 dark:text-gray-400">
-                <BsCheck className="w-3 h-3 text-emerald-400 flex-shrink-0 mt-0.5" />
+                <Check className="w-3 h-3 text-emerald-400 flex-shrink-0 mt-0.5" />
                 {reason}
               </div>
             ))}
             {job.evaluation.concerns.slice(0, 1).map((concern, i) => (
               <div key={i} className="flex items-start gap-1.5 text-xs text-zinc-600 dark:text-gray-400">
-                <BsExclamationCircle className="w-3 h-3 text-amber-400 flex-shrink-0 mt-0.5" />
+                <WarningCircle className="w-3 h-3 text-amber-400 flex-shrink-0 mt-0.5" />
                 {concern}
               </div>
             ))}

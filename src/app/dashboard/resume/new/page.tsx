@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BsArrowLeft, BsArrowRight, BsCheckCircleFill, BsExclamationCircle, BsFileEarmarkText, BsStars, BsUpload } from 'react-icons/bs';
+import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, UploadSimple } from '@phosphor-icons/react';
 import Link from "next/link";
 import { useResumeStore } from "@/store/resumeStore";
 import { FileParserService } from "@/lib/FileParserService";
@@ -111,7 +111,7 @@ function NewResumeContent() {
         href="/dashboard/resume"
         className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all mb-8 group"
       >
-        <BsArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         Back to Studio
       </Link>
 
@@ -135,14 +135,14 @@ function NewResumeContent() {
                 className="liquid-glass rounded-[32px] p-8 text-left border border-zinc-200 dark:border-white/[0.05] hover:border-brand-500/30 transition-all group"
               >
                 <div className="w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                  <BsUpload className="w-7 h-7 text-brand-400" />
+                  <UploadSimple className="w-7 h-7 text-brand-400" />
                 </div>
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white font-display mb-2">Import Existing Resume</h3>
                 <p className="text-zinc-600 dark:text-zinc-500 text-sm leading-relaxed mb-8">
-                  BsUpload your current PDF or DOCX resume. Our parser will automatically extract your information into the editor.
+                  Upload your current PDF or DOCX resume. Our parser will automatically extract your information into the editor.
                 </p>
                 <div className="flex items-center gap-2 text-brand-400 text-xs font-bold uppercase tracking-widest mt-auto">
-                  BsUpload File <BsArrowRight className="w-4 h-4" />
+                  Upload File <ArrowRight className="w-4 h-4" />
                 </div>
               </button>
 
@@ -151,14 +151,14 @@ function NewResumeContent() {
                 className="liquid-glass rounded-[32px] p-8 text-left border border-zinc-200 dark:border-white/[0.05] hover:bg-zinc-100 dark:hover:border-white/10 transition-all group"
               >
                 <div className="w-14 h-14 rounded-2xl bg-white/5 border border-zinc-200 dark:border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                  <BsFileEarmarkText className="w-7 h-7 text-zinc-700 dark:text-zinc-400" />
+                  <FileText className="w-7 h-7 text-zinc-700 dark:text-zinc-400" />
                 </div>
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white font-display mb-2">Start from Scratch</h3>
                 <p className="text-zinc-600 dark:text-zinc-500 text-sm leading-relaxed mb-8">
                   Begin with a blank template and fill in your details manually. Best for total career pivots.
                 </p>
                 <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 text-xs font-bold uppercase tracking-widest mt-auto">
-                  Create Empty <BsArrowRight className="w-4 h-4" />
+                  Create Empty <ArrowRight className="w-4 h-4" />
                 </div>
               </button>
             </motion.div>
@@ -180,9 +180,9 @@ function NewResumeContent() {
               />
               <div className="relative z-0">
                 <div className="w-20 h-20 rounded-[24px] bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-700">
-                  <BsUpload className="w-10 h-10 text-brand-400" />
+                  <UploadSimple className="w-10 h-10 text-brand-400" />
                 </div>
-                <h2 className="text-2xl font-bold text-zinc-900 dark:text-white font-display mb-3">BsUpload Your Resume</h2>
+                <h2 className="text-2xl font-bold text-zinc-900 dark:text-white font-display mb-3">Upload Your Resume</h2>
                 <p className="text-zinc-600 dark:text-zinc-500 max-w-sm mx-auto mb-8">
                   Drop your file here or click to browse. Supports PDF, DOCX, MD, and TXT.
                 </p>
@@ -195,7 +195,7 @@ function NewResumeContent() {
               
               {error && (
                 <div className="mt-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-left">
-                  <BsExclamationCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                  <WarningCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
                   <p className="text-xs text-red-300 font-medium">{error}</p>
                 </div>
               )}
@@ -213,7 +213,7 @@ function NewResumeContent() {
                 <div className="absolute inset-0 rounded-full border-4 border-brand-500/10 border-t-brand-500 animate-spin" />
                 <div className="absolute inset-4 rounded-full border-4 border-purple-500/10 border-b-purple-500 animate-spin-slow" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <BsStars className="w-8 h-8 text-brand-400 animate-pulse" />
+                  <Sparkle className="w-8 h-8 text-brand-400 animate-pulse" />
                 </div>
               </div>
               
@@ -230,7 +230,7 @@ function NewResumeContent() {
                 ].map((step, i) => (
                   <div key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest">
                     {step.done ? (
-                      <BsCheckCircleFill className="w-3.5 h-3.5 text-emerald-400" />
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-400"  weight="fill" />
                     ) : (
                       <div className="w-3.5 h-3.5 rounded-full border border-zinc-800" />
                     )}

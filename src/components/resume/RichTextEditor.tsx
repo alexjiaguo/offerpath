@@ -6,7 +6,7 @@ import Underline from "@tiptap/extension-underline";
 import Highlight from "@tiptap/extension-highlight";
 import TextStyle from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
-import { BsArrowClockwise, BsArrowCounterclockwise, BsDash, BsEmojiSmile as UnderlineIcon, BsListOl, BsListUl, BsPaintBucket, BsPalette, BsQuote, BsTypeBold, BsTypeH1, BsTypeH2, BsTypeH3, BsTypeItalic, BsTypeStrikethrough } from 'react-icons/bs';
+import { ArrowClockwise, ArrowCounterClockwise, Minus, TextUnderline as UnderlineIcon, ListNumbers, ListDashes, PaintBucket, Palette, Quotes, TextB, TextHOne, TextHTwo, TextHThree, TextItalic, TextStrikethrough } from '@phosphor-icons/react';
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 
@@ -117,20 +117,20 @@ export default function RichTextEditor({
     <div className="rounded-xl bg-surface-100 border border-border overflow-hidden">
       {/* Toolbar */}
       <div className="flex items-center gap-0.5 px-3 py-2 border-b border-border bg-surface-200/30 flex-wrap">
-        {/* BsArrowCounterclockwise / BsArrowClockwise */}
+        {/* BsArrowCounterclockwise / BsArrowArrowClockwise */}
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().undo()}
           title="Undo"
         >
-          <BsArrowCounterclockwise className="w-4 h-4" />
+          <ArrowCounterClockwise className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().redo()}
           title="Redo"
         >
-          <BsArrowClockwise className="w-4 h-4" />
+          <ArrowClockwise className="w-4 h-4" />
         </ToolbarButton>
 
         <ToolbarDivider />
@@ -143,7 +143,7 @@ export default function RichTextEditor({
           active={editor.isActive("heading", { level: 1 })}
           title="Heading 1"
         >
-          <BsTypeH1 className="w-4 h-4" />
+          <TextHOne className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() =>
@@ -152,7 +152,7 @@ export default function RichTextEditor({
           active={editor.isActive("heading", { level: 2 })}
           title="Heading 2"
         >
-          <BsTypeH2 className="w-4 h-4" />
+          <TextHTwo className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() =>
@@ -161,7 +161,7 @@ export default function RichTextEditor({
           active={editor.isActive("heading", { level: 3 })}
           title="Heading 3"
         >
-          <BsTypeH3 className="w-4 h-4" />
+          <TextHThree className="w-4 h-4" />
         </ToolbarButton>
 
         <ToolbarDivider />
@@ -172,14 +172,14 @@ export default function RichTextEditor({
           active={editor.isActive("bold")}
           title="Bold"
         >
-          <BsTypeBold className="w-4 h-4" />
+          <TextB className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
           active={editor.isActive("italic")}
           title="Italic"
         >
-          <BsTypeItalic className="w-4 h-4" />
+          <TextItalic className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleUnderline().run()}
@@ -193,7 +193,7 @@ export default function RichTextEditor({
           active={editor.isActive("strike")}
           title="Strikethrough"
         >
-          <BsTypeStrikethrough className="w-4 h-4" />
+          <TextStrikethrough className="w-4 h-4" />
         </ToolbarButton>
 
         <ToolbarDivider />
@@ -204,14 +204,14 @@ export default function RichTextEditor({
           active={editor.isActive("bulletList")}
           title="Bullet List"
         >
-          <BsListUl className="w-4 h-4" />
+          <ListDashes className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           active={editor.isActive("orderedList")}
           title="Numbered List"
         >
-          <BsListOl className="w-4 h-4" />
+          <ListNumbers className="w-4 h-4" />
         </ToolbarButton>
 
         <ToolbarDivider />
@@ -222,13 +222,13 @@ export default function RichTextEditor({
           active={editor.isActive("blockquote")}
           title="Blockquote"
         >
-          <BsQuote className="w-4 h-4" />
+          <Quotes className="w-4 h-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().setHorizontalRule().run()}
           title="Horizontal Rule"
         >
-          <BsDash className="w-4 h-4" />
+          <Minus className="w-4 h-4" />
         </ToolbarButton>
 
         <ToolbarDivider />
@@ -246,7 +246,7 @@ export default function RichTextEditor({
             active={editor.isActive("highlight")}
             title="Highlight"
           >
-            <BsPaintBucket className="w-4 h-4" />
+            <PaintBucket className="w-4 h-4" />
           </ToolbarButton>
           <div className="absolute top-full left-0 mt-1 p-2 rounded-lg bg-surface-200 border border-border shadow-xl hidden group-hover:flex gap-1 z-10">
             {HIGHLIGHT_COLORS.map((c) => (
@@ -274,7 +274,7 @@ export default function RichTextEditor({
             active={editor.isActive("textStyle")}
             title="Text Color"
           >
-            <BsPalette className="w-4 h-4" />
+            <Palette className="w-4 h-4" />
           </ToolbarButton>
           <div className="absolute top-full left-0 mt-1 p-2 rounded-lg bg-surface-200 border border-border shadow-xl hidden group-hover:flex gap-1 z-10">
             {TEXT_COLORS.map((c) => (
@@ -307,13 +307,13 @@ export default function RichTextEditor({
             onClick={() => editor.chain().focus().toggleBold().run()}
             active={editor.isActive("bold")}
           >
-            <BsTypeBold className="w-3.5 h-3.5" />
+            <TextB className="w-3.5 h-3.5" />
           </ToolbarButton>
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
             active={editor.isActive("italic")}
           >
-            <BsTypeItalic className="w-3.5 h-3.5" />
+            <TextItalic className="w-3.5 h-3.5" />
           </ToolbarButton>
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleUnderline().run()}
@@ -331,7 +331,7 @@ export default function RichTextEditor({
             }
             active={editor.isActive("highlight")}
           >
-            <BsPaintBucket className="w-3.5 h-3.5" />
+            <PaintBucket className="w-3.5 h-3.5" />
           </ToolbarButton>
         </BubbleMenu>
       )}

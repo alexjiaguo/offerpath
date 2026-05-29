@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { BsArrowLeft, BsBriefcase, BsChevronRight, BsClock, BsCopy, BsFileEarmarkText, BsGeoAlt, BsPlus, BsStarFill, BsStars, BsUpload } from 'react-icons/bs';
+import { ArrowLeft, Briefcase, CaretRight, Clock, Copy, FileText, MapPin, Plus, Star, Sparkle, UploadSimple } from '@phosphor-icons/react';
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
 import { useResumeStore } from "@/store/resumeStore";
@@ -13,42 +13,42 @@ import { Suspense } from "react";
 import { motion } from "framer-motion";
 
 /* ═══════════════════════════════════════════════════
-   Resume Studio v3 — Career Asset Management
+   Resume Studio v4 — Minimalist Career Asset Management
    ═══════════════════════════════════════════════════ */
 
-const TEMPLATE_THUMBS: Record<string, { gradient: string; accent: string }> = {
-  "classic-minimal": { gradient: "from-zinc-600 to-zinc-500", accent: "bg-zinc-400" },
-  "ats-executive": { gradient: "from-zinc-700 to-zinc-600", accent: "bg-zinc-500" },
-  "premium-headshot": { gradient: "from-brand-700 to-brand-600", accent: "bg-brand-500" },
-  "bold-engineer": { gradient: "from-zinc-800 to-zinc-700", accent: "bg-zinc-400" },
-  "clean-layout": { gradient: "from-zinc-500 to-zinc-400", accent: "bg-zinc-300" },
-  "clean-professional": { gradient: "from-stone-600 to-stone-500", accent: "bg-stone-400" },
-  "elegant-two-column": { gradient: "from-zinc-600 to-brand-700", accent: "bg-brand-500" },
-  "photo-header": { gradient: "from-brand-600 to-brand-500", accent: "bg-brand-400" },
-  "academic": { gradient: "from-stone-700 to-stone-600", accent: "bg-stone-500" },
+const TEMPLATE_THUMBS: Record<string, { bg: string; accent: string }> = {
+  "classic-minimal": { bg: "bg-[#F7F6F3]", accent: "bg-[#2D2D2D]" },
+  "ats-executive": { bg: "bg-[#FFFFFF]", accent: "bg-[#111111]" },
+  "premium-headshot": { bg: "bg-[#F3F4F6]", accent: "bg-[#3B82F6]" },
+  "bold-engineer": { bg: "bg-[#EAEAEA]", accent: "bg-[#000000]" },
+  "clean-layout": { bg: "bg-[#FAFAFA]", accent: "bg-[#4B5563]" },
+  "clean-professional": { bg: "bg-[#F9FAFB]", accent: "bg-[#374151]" },
+  "elegant-two-column": { bg: "bg-[#F3F4F6]", accent: "bg-[#2563EB]" },
+  "photo-header": { bg: "bg-[#EFF6FF]", accent: "bg-[#1D4ED8]" },
+  "academic": { bg: "bg-[#F5F5F4]", accent: "bg-[#44403C]" },
 };
 
 function TemplateThumbnail({ templateId }: { templateId: string }) {
   const thumb = TEMPLATE_THUMBS[templateId] || TEMPLATE_THUMBS["classic-minimal"];
 
   return (
-    <div className="w-full aspect-[3/4] rounded-xl overflow-hidden relative group-hover:scale-[1.05] transition-transform duration-700 shadow-2xl">
-      <div className="absolute inset-0 bg-white">
-        <div className={cn("h-[20%] bg-gradient-to-r flex items-center px-4", thumb.gradient)}>
+    <div className="w-full aspect-[3/4] rounded-md border border-surface-200 overflow-hidden relative group-hover:shadow-sm transition-all duration-300">
+      <div className={cn("absolute inset-0", thumb.bg)}>
+        <div className="h-[20%] border-b border-black/10 flex items-center px-4">
           <div className="space-y-1">
-            <div className="w-16 h-2 bg-white/80 rounded-full" />
-            <div className="w-10 h-1.5 bg-white/40 rounded-full" />
+            <div className={cn("w-16 h-1.5 rounded", thumb.accent)} />
+            <div className="w-10 h-1 bg-black/20 rounded" />
           </div>
         </div>
         <div className="p-4 space-y-2">
-          <div className={cn("w-14 h-1.5 rounded-full", thumb.accent)} />
-          <div className="w-full h-1 bg-gray-100 rounded-full" />
-          <div className="w-[85%] h-1 bg-gray-100 rounded-full" />
+          <div className={cn("w-14 h-1 rounded", thumb.accent)} />
+          <div className="w-full h-0.5 bg-black/10 rounded" />
+          <div className="w-[85%] h-0.5 bg-black/10 rounded" />
           <div className="pt-2">
-            <div className={cn("w-10 h-1.5 rounded-full", thumb.accent)} />
+            <div className={cn("w-10 h-1 rounded", thumb.accent)} />
           </div>
-          <div className="w-full h-1 bg-gray-50 rounded-full" />
-          <div className="w-[70%] h-1 bg-gray-50 rounded-full" />
+          <div className="w-full h-0.5 bg-black/5 rounded" />
+          <div className="w-[70%] h-0.5 bg-black/5 rounded" />
         </div>
       </div>
     </div>
@@ -62,6 +62,15 @@ function ResumePageContent() {
   const { getJobById: getPipelineJob } = usePipelineStore();
   const { getJobById: getDiscoveryJob } = useDiscoveryStore();
   const { resumes, getATSScore, duplicateResume } = useResumeStore();
+  const searchQuery = usePipelineStore((s) => s.filters.search);
+
+  const filteredResumes = resumes.filter(
+    (resume) =>
+      !searchQuery ||
+      resume.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (resume.data.personal?.name &&
+        resume.data.personal.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   // Check both pipeline and discovery stores for the tailor job
   const pipelineJob = tailorForJobId ? getPipelineJob(tailorForJobId) : null;
@@ -85,33 +94,32 @@ function ResumePageContent() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 pb-20">
+    <div className="w-full space-y-10 pb-20 p-6 md:p-8">
       {/* Tailoring Context */}
       {tailorJob && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <Link
             href={tailorJob.source === "discovery" ? `/dashboard/discover/${tailorJob.id}` : `/dashboard/pipeline/${tailorJob.id}`}
-            className="inline-flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all uppercase tracking-widest group"
+            className="inline-flex items-center gap-2 text-[11px] font-bold text-surface-400 hover:text-surface-500 transition-colors uppercase tracking-widest group"
           >
-            <BsArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft weight="bold" className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Abort Tailoring
           </Link>
 
-          <div className="liquid-glass rounded-[32px] p-8 border-l-4 border-brand-500 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/5 blur-[100px] rounded-full" />
-            <div className="flex items-start gap-6 relative z-10">
-              <div className="w-16 h-16 rounded-2xl gradient-futuristic flex items-center justify-center text-2xl font-bold text-white shadow-xl shadow-brand-500/20">
+          <div className="bg-surface-0 border border-brand-500 rounded-lg p-6 relative overflow-hidden group shadow-sm">
+            <div className="flex items-start gap-5 relative z-10">
+              <div className="w-12 h-12 rounded bg-brand-50 border border-brand-200 flex items-center justify-center text-xl font-bold text-brand-500">
                 {(tailorJob.company?.name || "?").charAt(0)}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <BsStars className="w-4 h-4 text-brand-400" />
-                  <span className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.2em]">Synthesis Protocol Active</span>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Sparkle weight="fill" className="w-3.5 h-3.5 text-brand-500" />
+                  <span className="text-[10px] font-bold text-brand-500 uppercase tracking-widest">Synthesis Protocol Active</span>
                 </div>
-                <h2 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{tailorJob.title}</h2>
-                <div className="flex items-center gap-4 text-[11px] font-bold text-zinc-500 uppercase tracking-widest mt-2">
-                  <span className="flex items-center gap-1.5"><BsBriefcase className="w-3.5 h-3.5" /> {tailorJob.company?.name}</span>
-                  {tailorJob.location && <span className="flex items-center gap-1.5"><BsGeoAlt className="w-3.5 h-3.5" /> {tailorJob.location}</span>}
+                <h2 className="text-xl font-bold text-surface-400 font-display tracking-tight leading-tight">{tailorJob.title}</h2>
+                <div className="flex items-center gap-4 text-[11px] font-bold text-surface-300 uppercase tracking-widest mt-1.5">
+                  <span className="flex items-center gap-1"><Briefcase weight="bold" className="w-3.5 h-3.5" /> {tailorJob.company?.name}</span>
+                  {tailorJob.location && <span className="flex items-center gap-1"><MapPin weight="bold" className="w-3.5 h-3.5" /> {tailorJob.location}</span>}
                 </div>
               </div>
             </div>
@@ -120,35 +128,31 @@ function ResumePageContent() {
       )}
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-surface-200 pb-6">
         <div>
-          <div className="flex items-center gap-2 mb-2 text-brand-400">
-            <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Asset Studio 2.0</span>
-          </div>
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">
+          <h1 className="text-3xl font-bold tracking-tight text-surface-400 font-display">
             {tailorJob ? "Select Synthesis Base" : "Career Asset Studio"}
           </h1>
-          <p className="text-zinc-500 text-base mt-2 font-light">
+          <p className="text-surface-300 text-sm mt-1">
             {tailorJob ? "Choose an existing asset to deconstruct and re-tailor." : "Orchestrate high-fidelity documents for your next move."}
           </p>
         </div>
         
         {!tailorJob && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <Link
               href="/dashboard/resume/new"
-              className="group flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-black/5 dark:bg-white/[0.03] border border-border text-zinc-600 dark:text-zinc-300 text-sm font-bold hover:bg-black/10 dark:hover:bg-white/[0.05] hover:text-zinc-900 dark:hover:text-white transition-all"
+              className="btn-outline flex items-center gap-2"
             >
-              <BsUpload className="w-5 h-5" />
-              Ingest Node
+              <UploadSimple weight="bold" className="w-4 h-4" />
+              Upload
             </Link>
             <Link
               href="/dashboard/resume/new"
-              className="group flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-black text-sm font-bold hover:bg-black dark:hover:bg-zinc-100 transition-all shadow-xl shadow-black/5 dark:shadow-white/5"
+              className="btn-primary flex items-center gap-2"
             >
-              <BsPlus className="w-5 h-5" />
-              Initialize Asset
+              <Plus weight="bold" className="w-4 h-4" />
+              Create
             </Link>
           </div>
         )}
@@ -156,41 +160,46 @@ function ResumePageContent() {
 
       {/* Existing Assets Grid */}
       {resumes.length > 0 && (
-        <div className="space-y-6">
-          <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] ml-1">
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold text-surface-400 uppercase tracking-widest">
             {tailorJob ? "Deployment Ready Bases" : "Active Career Assets"}
           </h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {resumes.map((resume, i) => {
-              const atsScore = tailorForJobId ? getATSScore(resume.id, tailorForJobId) : null;
+          {filteredResumes.length === 0 ? (
+            <div className="bg-surface-50 rounded-lg p-8 text-center border border-surface-200">
+              <p className="text-sm text-surface-300">No resumes matching &ldquo;{searchQuery}&rdquo; found.</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredResumes.map((resume, i) => {
+                const atsScore = tailorForJobId ? getATSScore(resume.id, tailorForJobId) : null;
               return (
                 <motion.div
                   key={resume.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="glass-card rounded-[32px] p-6 group cursor-default"
+                  className="bg-surface-0 border border-surface-200 rounded-lg p-5 flex flex-col hover:border-surface-300 transition-colors"
                 >
-                  <div className="flex items-start gap-4 mb-6">
+                  <div className="flex items-start gap-4 mb-4">
                     <div className={cn(
-                      "w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg transition-transform duration-500 group-hover:scale-110",
-                      resume.is_base ? "bg-brand-500/10 border border-brand-500/20" : "bg-purple-500/10 border border-purple-500/20"
+                      "w-10 h-10 rounded border flex items-center justify-center flex-shrink-0",
+                      resume.is_base ? "bg-brand-50 border-brand-200" : "bg-surface-50 border-surface-200"
                     )}>
-                      <BsFileEarmarkText className={cn("w-6 h-6", resume.is_base ? "text-brand-400" : "text-purple-400")} />
+                      <FileText weight="duotone" className={cn("w-5 h-5", resume.is_base ? "text-brand-500" : "text-surface-400")} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className="text-sm font-bold text-zinc-900 dark:text-white truncate group-hover:text-brand-400 transition-colors uppercase tracking-tight">{resume.title}</h4>
+                        <h4 className="text-sm font-bold text-surface-400 truncate tracking-tight">{resume.title}</h4>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className={cn(
-                          "text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest",
-                          resume.is_base ? "bg-brand-500/10 text-brand-400" : "bg-purple-500/10 text-purple-400"
+                          "text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-widest border",
+                          resume.is_base ? "bg-brand-50 text-brand-600 border-brand-200" : "bg-surface-50 text-surface-400 border-surface-200"
                         )}>
-                          {resume.is_base ? "Protocol: Base" : "Protocol: Tailored"}
+                          {resume.is_base ? "Base" : "Tailored"}
                         </span>
-                        <span className="flex items-center gap-1 text-[9px] font-bold text-zinc-600 uppercase tracking-widest">
-                          <BsClock className="w-3 h-3" />
+                        <span className="flex items-center gap-1 text-[9px] font-bold text-surface-300 uppercase tracking-widest">
+                          <Clock weight="bold" className="w-3 h-3" />
                           {new Date(resume.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </span>
                       </div>
@@ -198,31 +207,31 @@ function ResumePageContent() {
                   </div>
 
                   {atsScore !== null && (
-                    <div className="mb-6 p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02] border border-border">
+                    <div className="mb-4">
                       <ATSScoreInline score={atsScore} />
                     </div>
                   )}
 
-                  <div className="flex gap-3 mt-auto">
+                  <div className="flex gap-2 mt-auto">
                     {tailorJob ? (
                       <button
                         onClick={() => handleUseAsBase(resume.id)}
-                        className="flex-1 flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-black text-xs font-bold uppercase tracking-widest hover:bg-black dark:hover:bg-zinc-200 transition-all shadow-lg"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded text-xs font-bold bg-surface-400 text-surface-0 hover:bg-surface-500 transition-colors"
                       >
-                        <BsCopy className="w-4 h-4" />
+                        <Copy weight="bold" className="w-4 h-4" />
                         Select Base
                       </button>
                     ) : (
                       <>
                         <Link
                           href={`/dashboard/resume/${resume.id}`}
-                          className="flex-1 text-center px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 bg-black/5 dark:bg-white/5 border border-border hover:bg-black/10 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-all"
+                          className="flex-1 text-center px-3 py-2 rounded text-[10px] font-bold uppercase tracking-widest text-surface-400 bg-surface-50 border border-surface-200 hover:bg-surface-100 transition-colors"
                         >
-                          Editing
+                          Edit
                         </Link>
                         <Link
                           href={`/dashboard/resume/${resume.id}`}
-                          className="flex-1 text-center px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-brand-400 bg-brand-500/5 border border-brand-500/10 hover:bg-brand-500/10 transition-all"
+                          className="flex-1 text-center px-3 py-2 rounded text-[10px] font-bold uppercase tracking-widest text-brand-600 bg-brand-50 border border-brand-200 hover:bg-brand-100 transition-colors"
                         >
                           Preview
                         </Link>
@@ -232,78 +241,80 @@ function ResumePageContent() {
                 </motion.div>
               );
             })}
-          </div>
+            </div>
+          )}
         </div>
       )}
 
       {/* Empty State */}
       {!tailorJob && resumes.length === 0 && (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="liquid-glass rounded-[40px] p-16 text-center">
-          <div className="w-20 h-20 rounded-[24px] bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mx-auto mb-8 animate-pulse">
-            <BsStars className="w-10 h-10 text-brand-400" />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-surface-0 border border-surface-200 rounded-lg p-12 text-center">
+          <div className="w-16 h-16 rounded bg-surface-50 border border-surface-200 flex items-center justify-center mx-auto mb-6">
+            <Sparkle weight="duotone" className="w-8 h-8 text-surface-300" />
           </div>
-          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white font-display mb-4">Initialize Your First Asset</h2>
-          <p className="text-zinc-500 text-lg font-light max-w-md mx-auto mb-10 leading-relaxed">
-            Choose a synthesis protocol or ingest an existing node to begin mapping your career trajectory.
+          <h2 className="text-xl font-bold text-surface-400 font-display mb-2">Create Your First Asset</h2>
+          <p className="text-surface-300 text-sm max-w-sm mx-auto mb-8">
+            Choose a template layout or upload an existing resume to begin building your career assets.
           </p>
           <Link
             href="/dashboard/resume/new"
-            className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest hover:bg-black dark:hover:bg-zinc-200 transition-all shadow-2xl shadow-black/5 dark:shadow-white/5"
+            className="btn-primary inline-flex items-center gap-2"
           >
-            <BsPlus className="w-5 h-5" />
-            Begin Initialization
+            <Plus weight="bold" className="w-4 h-4" />
+            Create Asset
           </Link>
         </motion.div>
       )}
 
       {/* Template Grid */}
       {!tailorJob && (
-        <div className="space-y-8">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em]">
-              Synthesis Protocols (Templates)
+        <div className="space-y-6 pt-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold text-surface-400 uppercase tracking-widest">
+              Synthesis Protocols
             </h3>
-            <div className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/5 border border-border text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
-              {TEMPLATE_CONFIGS.length} Layouts Available
+            <div className="px-2 py-1 rounded bg-surface-50 border border-surface-200 text-[10px] font-bold text-surface-400">
+              {TEMPLATE_CONFIGS.length} Layouts
             </div>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {TEMPLATE_CONFIGS.map((tmpl, i) => (
               <motion.div
                 key={tmpl.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + (i * 0.05) }}
+                transition={{ delay: 0.1 + (i * 0.05) }}
               >
                 <Link
                   href={`/dashboard/resume/new?template=${tmpl.id}`}
-                  className="glass-card rounded-[28px] p-5 cursor-pointer group block relative overflow-hidden"
+                  className="bg-surface-0 border border-surface-200 rounded-lg p-4 block hover:border-surface-300 transition-colors group"
                 >
-                  {tmpl.pro && (
-                    <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500 text-black shadow-lg">
-                      <BsStarFill className="w-3 h-3" />
-                      <span className="text-[9px] font-black uppercase tracking-tighter">Elite</span>
-                    </div>
-                  )}
-
-                  <div className="mb-5 perspective-1000">
+                  <div className="mb-4 relative">
+                    {tmpl.pro && (
+                      <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-400 text-surface-0 border border-surface-400">
+                        <Star weight="fill" className="w-2.5 h-2.5" />
+                        <span className="text-[8px] font-bold uppercase tracking-widest">Pro</span>
+                      </div>
+                    )}
                     <TemplateThumbnail templateId={tmpl.id} />
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <h4 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-tight group-hover:text-brand-400 transition-colors">{tmpl.name}</h4>
-                    {tmpl.tag && !tmpl.pro && (
-                      <span className="text-[8px] px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/5 border border-border text-zinc-500 font-bold uppercase tracking-widest">
-                        {tmpl.tag}
-                      </span>
-                    )}
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-[11px] font-bold text-surface-400 uppercase tracking-widest">{tmpl.name}</h4>
+                      {tmpl.tag && !tmpl.pro && (
+                        <span className="text-[8px] px-1 py-0.5 rounded bg-surface-50 border border-surface-200 text-surface-300 font-bold uppercase tracking-widest">
+                          {tmpl.tag}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-surface-300 line-clamp-2">{tmpl.desc}</p>
                   </div>
-                  <p className="text-[11px] text-zinc-500 leading-snug font-light line-clamp-2">{tmpl.desc}</p>
                   
-                  <div className="mt-4 pt-4 border-t border-border flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="text-[10px] font-bold text-brand-400 uppercase tracking-widest">Deploy layout</span>
-                    <BsChevronRight className="w-4 h-4 text-brand-400" />
+                  <div className="mt-3 pt-3 border-t border-surface-200 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[9px] font-bold text-surface-400 uppercase tracking-widest">Use Layout</span>
+                    <CaretRight weight="bold" className="w-3 h-3 text-surface-400" />
                   </div>
                 </Link>
               </motion.div>
@@ -317,7 +328,7 @@ function ResumePageContent() {
 
 export default function ResumePage() {
   return (
-    <Suspense fallback={<div className="p-12 text-center text-zinc-500 uppercase tracking-widest text-xs font-bold animate-pulse">Syncing Asset Studio...</div>}>
+    <Suspense fallback={<div className="p-12 text-center text-surface-300 uppercase tracking-widest text-[10px] font-bold">Syncing Asset Studio...</div>}>
       <ResumePageContent />
     </Suspense>
   );
