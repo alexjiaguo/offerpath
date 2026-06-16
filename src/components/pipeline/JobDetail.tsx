@@ -428,6 +428,32 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                         </span>
                       </div>
                     ))}
+                    
+                    {/* Activity History */}
+                    {job.history && job.history.length > 0 && (
+                      <div className="mt-6 pt-4 border-t border-zinc-200 dark:border-white/[0.06]">
+                        <h3 className="text-xs font-semibold text-zinc-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Activity Log</h3>
+                        <div className="space-y-4">
+                          {job.history.map((item, idx) => (
+                            <div key={idx} className="flex gap-3 text-sm">
+                              <div className="flex flex-col items-center">
+                                <div className="w-2 h-2 rounded-full bg-surface-300 dark:bg-gray-500 mt-1.5" />
+                                {idx !== job.history!.length - 1 && (
+                                  <div className="w-px h-full bg-surface-200 dark:bg-white/[0.06] mt-1" />
+                                )}
+                              </div>
+                              <div className="pb-2">
+                                <div className="flex items-center gap-2 mb-0.5">
+                                  <span className="font-medium text-zinc-800 dark:text-gray-200">{item.action}</span>
+                                  <span className="text-[10px] text-zinc-500 dark:text-gray-500">{formatDate(item.date)}</span>
+                                </div>
+                                <p className="text-xs text-zinc-600 dark:text-gray-400">{item.details}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                 </div>
               </div>
 
@@ -552,7 +578,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                               {exp.bullets && exp.bullets.length > 0 && (
                                 <ul className="list-disc list-outside pl-4 space-y-0.5 mt-1 text-zinc-705">
                                   {exp.bullets.map((b: string, bIdx: number) => (
-                                    <li key={bIdx} className="leading-relaxed" dangerouslySetInnerHTML={{ __html: b }} />
+                                    <li key={bIdx} className="leading-relaxed">{b}</li>
                                   ))}
                                 </ul>
                               )}
@@ -808,9 +834,6 @@ export default function JobDetail({ jobId }: JobDetailProps) {
                 Run AI evaluation to get a fitness score, tier assignment, and detailed
                 analysis.
               </p>
-              <button onClick={() => toast.info("AI Evaluation feature coming soon!")} className="px-4 py-2 rounded-lg gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity">
-                Evaluate with AI
-              </button>
             </div>
           )}
 

@@ -93,7 +93,33 @@ export default function AddJobDialog() {
 
   const handleEvaluate = async () => {
     setIsEvaluating(true);
-    // Simulate AI evaluation delay
+    
+    // Call the new AI Parser API if we have text
+    if (mode === "text" && description.trim()) {
+      try {
+        const res = await fetch("/api/jobs/parse", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: description })
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          if (data.job) {
+            if (data.job.title) setTitle(data.job.title);
+            if (data.job.company) setCompany(data.job.company);
+            if (data.job.location) setLocation(data.job.location);
+            if (data.job.salary_range) setSalaryRange(data.job.salary_range);
+            toast.success("Job details extracted!");
+          }
+        }
+      } catch (e) {
+        console.error("Failed to parse job description", e);
+        toast.error("Failed to extract details automatically");
+      }
+    }
+    
+    // Simulate AI evaluation for the "score" and "tier"
     await new Promise((resolve) => setTimeout(resolve, 1500));
     const mockEval = generateMockEvaluation();
     setEvaluation(mockEval);

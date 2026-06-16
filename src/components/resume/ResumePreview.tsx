@@ -101,7 +101,7 @@ export default function ResumePreview({
   const mergedVisibility = sectionVisibility || DEFAULT_SECTION_VISIBILITY;
 
   return (
-    <div className={cn("print-preview", className, "flex justify-center")}>
+    <div id="resume-preview-content" className={cn("print-preview", className, "flex justify-center")}>
       {/* A4 paper simulation — uses transform for scaling in editor */}
       <div 
         className={cn(
@@ -161,15 +161,6 @@ export default function ResumePreview({
   );
 }
 
-// Export template names for the picker
-export const TEMPLATE_CONFIGS = [
-  { id: "classic-minimal", name: "Classic Minimal", desc: "Clean, centered header — universally ATS-friendly", tag: "Popular", pro: false },
-  { id: "ats-executive", name: "ATS Executive", desc: "Left-aligned, optimized for executive-level ATS", tag: "ATS", pro: false },
-  { id: "premium-headshot", name: "Premium Headshot", desc: "Dark sidebar with photo and contact block", tag: "Photo", pro: false },
-  { id: "bold-engineer", name: "Bold Engineer", desc: "Bold header, contact badges, colored section pills", tag: "Tech", pro: false },
-  { id: "clean-layout", name: "Clean Layout", desc: "Centered header, clear section separation", tag: "Clean", pro: false },
-  { id: "clean-professional", name: "Clean Professional", desc: "Generous spacing, refined for senior roles", tag: "Senior", pro: false },
-  { id: "elegant-two-column", name: "Elegant Two-Column", desc: "Playfair Display header, timeline experience", tag: "Elegant", pro: false },
-  { id: "photo-header", name: "Photo Header", desc: "Banner header with photo, sidebar + timeline", tag: "Creative", pro: false },
-  { id: "academic", name: "Academic", desc: "Serif font, traditional academic layout", tag: "Academic", pro: false },
-];
+// TEMPLATE_CONFIGS lives in templates/config.ts so it can be imported by
+// server components. Re-export here for backward compatibility.
+export { TEMPLATE_CONFIGS, type TemplateConfig } from "./templates/config";

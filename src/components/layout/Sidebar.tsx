@@ -25,22 +25,22 @@ export default function Sidebar() {
       initial={false}
       animate={{ width: collapsed ? 72 : 240 }}
       className={cn(
-        "fixed left-0 top-0 h-screen flex flex-col z-40",
-        "bg-surface-0 border-r border-surface-200",
-        "transition-all duration-300 ease-out"
+        "fixed left-4 top-4 bottom-4 flex flex-col z-40 rounded-[2rem]",
+        "bg-white/80 backdrop-blur-2xl border border-surface-200/50 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.05)]",
+        "transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] overflow-hidden"
       )}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center px-4 border-b border-surface-200 relative z-10">
-        <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden group">
-          <div className="w-8 h-8 rounded-md bg-brand-500 flex items-center justify-center flex-shrink-0">
-             <span className="text-white font-bold text-sm">O</span>
+      <div className="h-20 flex items-center px-6 relative z-10">
+        <Link href="/dashboard" className="flex items-center gap-4 overflow-hidden group">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden border border-surface-200 shadow-sm flex-shrink-0 bg-white">
+             <Image src="/logo-mark.svg" alt="Logo" width={32} height={32} className="w-full h-full object-cover scale-110" />
           </div>
           {!collapsed && (
             <motion.span 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="text-lg font-medium tracking-tight whitespace-nowrap font-display text-surface-400"
+              className="text-lg font-medium tracking-tight whitespace-nowrap font-display text-brand-900"
             >
               OfferPath
             </motion.span>
@@ -49,11 +49,11 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-6 relative z-10 scrollbar-hide">
+      <nav className="flex-1 overflow-y-auto py-2 px-3 space-y-8 relative z-10 scrollbar-hide">
         {NAV_ITEMS.map((section) => (
           <div key={section.section}>
             {!collapsed && (
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-surface-300 px-3 mb-3">
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-surface-300 px-4 mb-4">
                 {section.section}
               </p>
             )}
@@ -71,21 +71,21 @@ export default function Sidebar() {
                     <Link
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors group relative overflow-hidden",
+                        "flex items-center gap-4 px-4 py-3 rounded-full text-sm font-medium transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group relative overflow-hidden",
                         isActive
-                          ? "text-surface-400 bg-surface-100 border border-surface-200"
-                          : "text-surface-300 hover:text-surface-400 hover:bg-surface-50 border border-transparent"
+                          ? "text-brand-900 bg-black/5"
+                          : "text-surface-300 hover:text-brand-900 hover:bg-black/5 border border-transparent"
                       )}
                       title={collapsed ? item.label : undefined}
                     >
                       <item.icon
-                        weight={isActive ? "fill" : "bold"}
+                        weight="light"
                         className={cn(
-                          "w-4 h-4 flex-shrink-0 transition-colors relative z-10",
-                          isActive ? "text-brand-500" : "text-surface-300 group-hover:text-surface-400"
+                          "w-5 h-5 flex-shrink-0 transition-colors relative z-10",
+                          isActive ? "text-brand-900" : "text-surface-300 group-hover:text-brand-900"
                         )}
                       />
-                      {!collapsed && <span className="relative z-10 font-sans tracking-tight">{item.label}</span>}
+                      {!collapsed && <span className="relative z-10 font-sans tracking-tight text-[13px]">{item.label}</span>}
                     </Link>
 
                     {/* Sub-navigation */}
@@ -95,7 +95,7 @@ export default function Sidebar() {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="ml-8 mt-1 space-y-1 border-l border-surface-200 pl-3 overflow-hidden"
+                          className="ml-10 mt-2 space-y-1 overflow-hidden"
                         >
                           {item.subItems!.map((sub) => {
                             const subActive = pathname === sub.href;
@@ -104,13 +104,13 @@ export default function Sidebar() {
                                 <Link
                                   href={sub.href}
                                   className={cn(
-                                    "flex items-center gap-2 px-2 py-1.5 rounded text-xs font-medium transition-colors group",
+                                    "flex items-center gap-3 px-3 py-2 rounded-full text-[12px] font-medium transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group",
                                     subActive
-                                      ? "text-brand-500 bg-surface-100"
-                                      : "text-surface-300 hover:text-surface-400 hover:bg-surface-50"
+                                      ? "text-brand-900 bg-black/5"
+                                      : "text-surface-300 hover:text-brand-900 hover:bg-black/5"
                                   )}
                                 >
-                                  {sub.icon && <sub.icon weight={subActive ? "fill" : "bold"} className="w-3.5 h-3.5" />}
+                                  {sub.icon && <sub.icon weight="light" className="w-4 h-4" />}
                                   {sub.label}
                                 </Link>
                               </li>
@@ -128,32 +128,32 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t border-surface-200 relative z-10 bg-surface-0 space-y-2">
+      <div className="p-4 relative z-10 space-y-2">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center w-full py-2 rounded-md border border-transparent hover:border-surface-200 text-surface-300 hover:text-surface-400 hover:bg-surface-50 transition-colors group"
+          className="flex items-center justify-center w-full py-3 rounded-full border border-transparent hover:border-surface-200/50 text-surface-300 hover:text-brand-900 hover:bg-black/5 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group"
         >
           {collapsed ? (
-            <CaretRight weight="bold" className="w-4 h-4" />
+            <CaretRight weight="light" className="w-5 h-5" />
           ) : (
-            <div className="flex items-center justify-between w-full px-2">
-              <span className="text-xs font-bold uppercase tracking-widest opacity-80">Collapse</span>
-              <CaretLeft weight="bold" className="w-4 h-4" />
+            <div className="flex items-center justify-between w-full px-3">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80">Collapse</span>
+              <CaretLeft weight="light" className="w-4 h-4" />
             </div>
           )}
         </button>
 
         <button
           onClick={handleSignOut}
-          className="flex items-center justify-center w-full py-2 rounded-md border border-transparent hover:border-surface-200 text-surface-300 hover:text-surface-400 hover:bg-surface-50 transition-colors group"
+          className="flex items-center justify-center w-full py-3 rounded-full border border-transparent hover:border-surface-200/50 text-surface-300 hover:text-brand-900 hover:bg-black/5 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group"
           title={collapsed ? "Sign Out" : undefined}
         >
           {collapsed ? (
-            <SignOut weight="bold" className="w-4 h-4" />
+            <SignOut weight="light" className="w-5 h-5" />
           ) : (
-            <div className="flex items-center gap-2 px-2 w-full text-left">
-              <SignOut weight="bold" className="w-4 h-4" />
-              <span className="text-xs font-semibold tracking-tight">Sign Out</span>
+            <div className="flex items-center gap-3 px-3 w-full text-left">
+              <SignOut weight="light" className="w-5 h-5" />
+              <span className="text-[13px] font-medium tracking-tight">Sign Out</span>
             </div>
           )}
         </button>

@@ -198,7 +198,7 @@ export default function StoriesPage() {
                   : "bg-surface-200 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
               )}
             >
-              {c.replace("-", " ")}
+              {(c || "").replace(/-/g, " ")}
             </button>
           ))}
         </div>
@@ -251,15 +251,15 @@ export default function StoriesPage() {
                             getCompetencyStyle(story.competency)
                           )}
                         >
-                          {story.competency.replace("-", " ")}
+                          {(story.competency || "").replace(/-/g, " ")}
                         </span>
                       </div>
 
                       {/* Tags */}
-                      {story.tags.length > 0 && (
+                      {(story.tags || []).length > 0 && (
                         <div className="flex items-center gap-1.5 mb-2">
                           <Tag className="w-3 h-3 text-zinc-700 dark:text-zinc-400 dark:text-gray-600" />
-                          {story.tags.map((tag) => (
+                          {(story.tags || []).map((tag) => (
                             <span
                               key={tag}
                               className="text-[10px] px-1.5 py-0.5 rounded bg-surface-200 text-zinc-500 dark:text-gray-500"

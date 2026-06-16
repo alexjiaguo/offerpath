@@ -1,7 +1,13 @@
 "use client";
 
-import { toast } from "sonner";
-
+/**
+ * Social login (Google, LinkedIn).
+ *
+ * Currently disabled — OAuth providers must be configured in the Supabase
+ * project dashboard before this component can be wired up. Rendering it
+ * here would mislead users into clicking buttons that only show a
+ * "coming soon" toast. Hide until providers are provisioned.
+ */
 export function GoogleIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24">
@@ -21,38 +27,7 @@ export function LinkedInIcon({ className = "w-5 h-5" }: { className?: string }) 
   );
 }
 
-interface SocialLoginButtonsProps {
-  variant?: "full" | "compact";
-}
-
-export default function SocialLoginButtons({ variant = "full" }: SocialLoginButtonsProps) {
-  const handleClick = () => toast.info("Social login coming soon!");
-
-  if (variant === "compact") {
-    return (
-      <div className="flex gap-3 mb-6">
-        <button onClick={handleClick} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-200 border border-zinc-200 dark:border-white/[0.06] text-sm font-medium text-zinc-700 dark:text-gray-300 hover:text-zinc-900 dark:hover:text-white hover:bg-surface-300 transition-all">
-          <GoogleIcon className="w-4 h-4" />
-          Google
-        </button>
-        <button onClick={handleClick} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-200 border border-zinc-200 dark:border-white/[0.06] text-sm font-medium text-zinc-700 dark:text-gray-300 hover:text-zinc-900 dark:hover:text-white hover:bg-surface-300 transition-all">
-          <LinkedInIcon className="w-4 h-4" />
-          LinkedIn
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3 mb-6">
-      <button onClick={handleClick} className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-surface-200 border border-zinc-200 dark:border-white/[0.06] text-sm font-medium text-zinc-700 dark:text-gray-300 hover:text-zinc-900 dark:hover:text-white hover:bg-surface-300 transition-all">
-        <GoogleIcon />
-        Continue with Google
-      </button>
-      <button onClick={handleClick} className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-surface-200 border border-zinc-200 dark:border-white/[0.06] text-sm font-medium text-zinc-700 dark:text-gray-300 hover:text-zinc-900 dark:hover:text-white hover:bg-surface-300 transition-all">
-        <LinkedInIcon />
-        Continue with LinkedIn
-      </button>
-    </div>
-  );
+export default function SocialLoginButtons() {
+  // No-op until OAuth providers are configured in Supabase.
+  return null;
 }

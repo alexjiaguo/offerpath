@@ -269,13 +269,12 @@ export default function RichTextEditor({
 
         {/* Text color dropdown */}
         <div className="relative group">
-          <ToolbarButton
-            onClick={() => {}}
-            active={editor.isActive("textStyle")}
+          <span
+            className="inline-flex items-center justify-center w-8 h-8 rounded-md text-zinc-500 dark:text-gray-500"
             title="Text Color"
           >
             <Palette className="w-4 h-4" />
-          </ToolbarButton>
+          </span>
           <div className="absolute top-full left-0 mt-1 p-2 rounded-lg bg-surface-200 border border-border shadow-xl hidden group-hover:flex gap-1 z-10">
             {TEXT_COLORS.map((c) => (
               <button

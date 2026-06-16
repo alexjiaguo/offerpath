@@ -306,6 +306,7 @@ export const useDiscoveryStore = create<DiscoveryState>()(
     }),
   {
     name: "offerpath-discovery",
+    skipHydration: true,
     partialize: (state) => ({
       companies: state.companies,
       jobs: state.jobs,

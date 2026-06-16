@@ -4,17 +4,26 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { List, X } from '@phosphor-icons/react';
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "@/lib/navConfig";
 
 /* ═══════════════════════════════════════════════════
-   MobileNav — Hamburger drawer for small screens
+   MobileNav — Hamburger drawer for small screens.
+   The backdrop + drawer are portaled to document.body
+   to escape the Topbar's `backdrop-blur` containing block
+   (backdrop-filter creates a new containing block for
+   position:fixed descendants, which would otherwise trap
+   the drawer inside the small pill-shaped header).
    ═══════════════════════════════════════════════════ */
 
 export default function MobileNav() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   // Close drawer on route change
   useEffect(() => {
@@ -33,17 +42,8 @@ export default function MobileNav() {
     };
   }, [isOpen]);
 
-  return (
+  const drawer = (
     <>
-      {/* Hamburger Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="md:hidden p-2 rounded-lg text-zinc-600 hover:text-zinc-800 hover:bg-white/[0.04] transition-all"
-        aria-label="Open navigation menu"
-      >
-        <List className="w-5 h-5" />
-      </button>
-
       {/* Backdrop */}
       {isOpen && (
         <div
@@ -66,13 +66,15 @@ export default function MobileNav() {
             className="flex items-center gap-2.5"
             onClick={() => setIsOpen(false)}
           >
-            <Image 
-              src="/logo.png" 
-              alt="OfferPath Logo" 
-              width={32}
-              height={32}
-              className="w-8 h-8 rounded-lg flex-shrink-0" 
-            />
+            <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden border border-surface-200 shadow-sm flex-shrink-0 bg-white">
+              <Image
+                src="/logo-mark.svg"
+                alt="OfferPath Logo"
+                width={32}
+                height={32}
+                className="w-full h-full object-cover scale-110"
+              />
+            </div>
             <span className="text-base font-bold tracking-tight text-surface-400">
               Offer<span className="text-gradient-futuristic">Path</span>
             </span>
@@ -80,6 +82,7 @@ export default function MobileNav() {
           <button
             onClick={() => setIsOpen(false)}
             className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-700 hover:bg-white/[0.04] transition-all"
+            aria-label="Close navigation menu"
           >
             <X className="w-5 h-5" />
           </button>
@@ -103,6 +106,7 @@ export default function MobileNav() {
                     <li key={item.href}>
                       <Link
                         href={item.href}
+                        onClick={() => setIsOpen(false)}
                         className={cn(
                           "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all",
                           isActive
@@ -128,6 +132,7 @@ export default function MobileNav() {
                               <li key={sub.href}>
                                 <Link
                                   href={sub.href}
+                                  onClick={() => setIsOpen(false)}
                                   className={cn(
                                     "flex items-center gap-2 px-2 py-2 rounded-md text-xs font-medium transition-all",
                                     subActive
@@ -166,6 +171,22 @@ export default function MobileNav() {
           </div>
         </div>
       </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Hamburger Button — stays in place inside the Topbar */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="md:hidden p-2 rounded-lg text-zinc-600 hover:text-zinc-800 hover:bg-white/[0.04] transition-all"
+        aria-label="Open navigation menu"
+      >
+        <List className="w-5 h-5" />
+      </button>
+
+      {/* Backdrop + Drawer — portaled to escape the Topbar's backdrop-blur containing block */}
+      {mounted && createPortal(drawer, document.body)}
     </>
   );
 }

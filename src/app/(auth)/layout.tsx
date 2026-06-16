@@ -21,8 +21,8 @@ export default function AuthLayout({
           href="/"
           className="flex items-center justify-center gap-2 mb-10 group"
         >
-          <div className="w-8 h-8 rounded-md bg-brand-500 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">O</span>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden border border-surface-200 shadow-sm bg-white">
+             <Image src="/logo-mark.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-cover scale-110" />
           </div>
           <span className="text-xl font-medium tracking-tight font-display">
             OfferPath

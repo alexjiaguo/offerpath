@@ -119,10 +119,10 @@ function JobCard({ jobId }: { jobId: string }) {
         </div>
       </div>
 
-      <p className="text-xs text-zinc-500 dark:text-gray-500 mt-3 line-clamp-2 leading-relaxed">{job.description}</p>
+      <p className="text-xs text-zinc-500 dark:text-gray-500 mt-3 line-clamp-2 leading-relaxed">{(job.description || "No description")}</p>
 
       <div className="flex items-center gap-2 mt-3 flex-wrap">
-        {job.tags.slice(0, 4).map((tag) => (
+        {(job.tags || []).slice(0, 4).map((tag) => (
           <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-300 font-medium">{tag}</span>
         ))}
         {job.salary_range && (
@@ -564,7 +564,7 @@ export default function DiscoverPage() {
               </div>
               <div>
                 <span className="text-zinc-500 dark:text-gray-500">Keywords:</span>
-                <div className="text-zinc-700 dark:text-gray-300 mt-0.5">{store.profile.keywords.slice(0, 3).join(", ")}...</div>
+                <div className="text-zinc-700 dark:text-gray-300 mt-0.5">{(store.profile?.keywords || []).slice(0, 3).join(", ") || "No keywords yet"}</div>
               </div>
               <div>
                 <span className="text-zinc-500 dark:text-gray-500">Auto-Scan:</span>

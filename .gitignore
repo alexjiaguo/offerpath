@@ -48,3 +48,13 @@ next-env.d.ts
 # Sensitive Data / Credentials
 cookies.json
 
+
+# Local agent/codex directories
+.agents/
+.codex/
+
+# Local env backups
+.env.local.bak
+
+# Local scripts (not part of the app)
+scripts/

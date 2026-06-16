@@ -16,6 +16,7 @@ import ResumePreview, {
 import ThemePicker from "@/components/resume/ThemePicker";
 import ATSCheckerPanel from "@/components/resume/ATSCheckerPanel";
 import { tailorResume, type TailorResult } from "@/lib/aiService";
+import { saveResumeAction } from "@/app/actions/resume";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Dynamic import for TipTap to avoid SSR issues
@@ -164,8 +165,21 @@ export default function ResumeEditorPage({
 
   const data = resume.data;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     updateResume(id, { template: selectedTemplate });
+    
+    // Also save directly to the backend via Server Action
+    const currentResume = getResumeById(id);
+    if (currentResume) {
+      const result = await saveResumeAction(id, {
+        ...currentResume,
+        template: selectedTemplate
+      });
+      if (!result.success) {
+        toast.error("Saved locally, but failed to sync to backend");
+      }
+    }
+    
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };

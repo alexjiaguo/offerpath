@@ -97,13 +97,13 @@ export default function SettingsPage() {
 
           <div className="flex items-center gap-5 mb-6">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-2xl font-bold text-zinc-900 dark:text-white">
-              {profile.fullName.charAt(0)}
+              {(profile.fullName || profile.email || "?").charAt(0).toUpperCase()}
             </div>
             <div>
               <p className="text-sm font-medium text-zinc-700 dark:text-gray-300">
                 Profile Photo
               </p>
-              <button onClick={() => toast.info("Change password flow coming soon!")} className="text-xs text-brand-400 hover:text-brand-300 mt-1 transition-colors">
+              <button onClick={() => { const next = window.prompt("Enter your new password (min 8 chars):"); if (next && next.length >= 8) { (async () => { try { const { createClient } = await import("@/lib/supabase"); const sb = createClient(); if (!sb) { toast.error("Supabase not configured."); return; } const { error } = await sb.auth.updateUser({ password: next }); if (error) toast.error(error.message); else toast.success("Password updated."); } catch (e) { toast.error(e instanceof Error ? e.message : "Failed to update password."); } })(); } else if (next !== null) { toast.error("Password must be at least 8 characters."); } }} className="text-xs text-brand-400 hover:text-brand-300 mt-1 transition-colors">
                 Upload new photo
               </button>
             </div>
@@ -361,7 +361,7 @@ export default function SettingsPage() {
                 Key Skills
               </label>
               <div className="flex flex-wrap gap-1.5 mb-2">
-                {profile.keySkills.map((skill) => (
+                {(profile.keySkills || []).map((skill) => (
                   <span
                     key={skill}
                     className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg bg-brand-500/10 text-brand-300 font-medium group"

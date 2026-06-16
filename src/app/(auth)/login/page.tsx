@@ -4,7 +4,6 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SignIn, Envelope, Eye, EyeSlash, Lock } from '@phosphor-icons/react';
-import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 import { signInWithEmail } from "@/lib/auth";
 
 /* ═══════════════════════════════════════════════════
@@ -55,16 +54,6 @@ function LoginForm() {
         <p className="text-sm text-zinc-500 dark:text-gray-500">
           Sign in to continue your job search journey
         </p>
-      </div>
-
-      <SocialLoginButtons />
-
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex-1 h-px bg-white/[0.06]" />
-        <span className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600 uppercase tracking-wider">
-          or
-        </span>
-        <div className="flex-1 h-px bg-white/[0.06]" />
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -119,9 +108,17 @@ function LoginForm() {
 
         <a
           href="#reset"
-          onClick={(e) => {
+          onClick={async (e) => {
             e.preventDefault();
-            setError("Password reset is not implemented yet.");
+            if (!email) { setError("Enter your email above first."); return; }
+            try {
+              const { createClient } = await import("@/lib/supabase");
+              const sb = createClient();
+              if (!sb) { setError("Supabase is not configured."); return; }
+              const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/login" });
+              if (error) setError(error.message);
+              else setError("Password reset email sent. Check your inbox.");
+            } catch (err) { setError(err instanceof Error ? err.message : "Failed to send reset email."); }
           }}
           className="text-xs text-brand-400 hover:text-brand-300 transition-colors"
         >

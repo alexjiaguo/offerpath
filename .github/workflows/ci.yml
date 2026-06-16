@@ -19,3 +19,8 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm test
+
+# Deployment is handled automatically by Vercel on push to main.
+# See: https://vercel.com/docs/git/vercel-for-github
+# The Vercel project is linked via `.vercel/repo.json` and auto-deploys
+# on every push to the main branch.

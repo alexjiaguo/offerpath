@@ -1,20 +1,6 @@
 import type { Metadata } from "next";
-import { Newsreader, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
-
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  variable: "--font-newsreader",
-  weight: ["300", "400", "500", "600", "700"],
-  style: ["normal", "italic"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
-  weight: ["400", "500", "600"],
-});
 
 export const metadata: Metadata = {
   title: "OfferPath — From Search to Signed Offer",
@@ -46,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head />
-      <body className={`${newsreader.variable} ${jetbrainsMono.variable} font-sans antialiased bg-surface-50 text-surface-400`}>
+      <body className={`font-sans antialiased bg-surface-50 text-surface-400`}>
         {children}
         <Toaster
           position="top-right"

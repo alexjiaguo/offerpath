@@ -8,6 +8,7 @@ import { persist } from "zustand/middleware";
 import type { Resume, SectionKey, ResumeTheme, ResumeData } from "@/types";
 import { DEFAULT_SECTION_VISIBILITY } from "@/types";
 import { generateId } from "@/lib/utils";
+import { saveResumeAction, deleteResumeAction } from "@/app/actions/resume";
 
 // ── Store Types ─────────────────────────────────────
 
@@ -466,6 +467,10 @@ export const useResumeStore = create<ResumeState>()(
       updated_at: new Date().toISOString(),
     };
     set((state) => ({ resumes: [newResume, ...state.resumes] }));
+    
+    // Background sync
+    saveResumeAction(id, newResume).catch(err => console.error("Failed to sync resume creation", err));
+    
     return id;
   },
 
@@ -481,6 +486,9 @@ export const useResumeStore = create<ResumeState>()(
 
   deleteResume: (id) => {
     set((state) => ({ resumes: state.resumes.filter((r) => r.id !== id) }));
+    
+    // Background sync
+    deleteResumeAction(id).catch(err => console.error("Failed to sync resume deletion", err));
   },
 
   duplicateResume: (id, newTitle) => {
@@ -497,6 +505,10 @@ export const useResumeStore = create<ResumeState>()(
       updated_at: new Date().toISOString(),
     };
     set((state) => ({ resumes: [duplicate, ...state.resumes] }));
+    
+    // Background sync
+    saveResumeAction(newId, duplicate).catch(err => console.error("Failed to sync duplicated resume", err));
+    
     return newId;
   },
 
@@ -547,6 +559,7 @@ export const useResumeStore = create<ResumeState>()(
     }),
     {
       name: "offerpath-resume",
+      skipHydration: true,
       partialize: (state) => ({
         resumes: state.resumes,
       }),

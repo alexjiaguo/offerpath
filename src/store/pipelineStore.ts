@@ -7,6 +7,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Job, JobStatus, Company } from "@/types";
 import { generateId } from "@/lib/utils";
+import { createJobAction, updateJobStatusAction } from "@/app/actions/pipeline";
 
 // ── Filter & Sort Types ─────────────────────────────
 
@@ -478,8 +479,16 @@ export const usePipelineStore = create<PipelineState>()(
       kanban_order: get().jobs.filter((j) => j.status === (jobData.status || "new")).length,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      history: [{
+        action: "Created job",
+        date: new Date().toISOString(),
+        details: `Added ${jobData.title} at ${jobData.company?.name || 'Company'}`
+      }]
     };
     set((state) => ({ jobs: [newJob, ...state.jobs] }));
+    
+    // Background sync
+    createJobAction(newJob).catch(err => console.error("Failed to sync job creation to server", err));
   },
 
   updateJob: (id, updates) => {
@@ -519,9 +528,21 @@ export const usePipelineStore = create<PipelineState>()(
         if (newStatus === "applied" && !j.applied_at) updates.applied_at = new Date().toISOString();
         if (newStatus === "interviewing" && !j.interviewed_at) updates.interviewed_at = new Date().toISOString();
         if (newStatus === "offered" && !j.offered_at) updates.offered_at = new Date().toISOString();
+        
+        // Append history
+        const newHistory = [...(j.history || []), {
+          action: "Status Update",
+          date: new Date().toISOString(),
+          details: `Moved to ${newStatus}`
+        }];
+        updates.history = newHistory;
+        
         return { ...j, ...updates };
       }),
     }));
+    
+    // Background sync
+    updateJobStatusAction(id, newStatus).catch(err => console.error("Failed to sync status update to server", err));
   },
 
   reorderJobs: (activeId, overId, newStatus) => {
@@ -726,6 +747,7 @@ export const usePipelineStore = create<PipelineState>()(
     }),
     {
       name: "offerpath-pipeline",
+      skipHydration: true,
       partialize: (state) => ({
         jobs: state.jobs,
         companies: state.companies,

@@ -224,6 +224,7 @@ export interface Job {
   comp_details?: CompDetails;
   kanban_order: number;
   notes?: string;
+  history?: { action: string; date: string; details: string; }[];
   created_at: string;
   updated_at: string;
 }

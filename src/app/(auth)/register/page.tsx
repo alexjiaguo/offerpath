@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signUpWithEmail } from "@/lib/auth";
 import { CheckCircle, Envelope, Eye, EyeSlash, Lock, User, Rocket } from '@phosphor-icons/react';
-import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 
 /* ═══════════════════════════════════════════════════
    Register Page — Account creation form
@@ -90,7 +89,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Social Signup */}
-      <SocialLoginButtons variant="compact" />
+      {/* Social login (Google, LinkedIn) — disabled until OAuth providers are configured in Supabase */}
 
       {/* Divider */}
       <div className="flex items-center gap-4 mb-6">
