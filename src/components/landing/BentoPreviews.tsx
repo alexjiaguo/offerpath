@@ -92,7 +92,7 @@ export function JobDiscoveryPreview() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ delay: 0.1 + i * 0.08, duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-            className="group flex items-center gap-3 p-3 rounded-xl bg-surface-0 border border-surface-200/50 hover:border-surface-300 transition-all"
+            className="group flex items-center gap-3 p-3 rounded-xl bg-white border border-surface-200/50 hover:border-surface-300 transition-all"
           >
             <div className={`w-9 h-9 shrink-0 rounded-lg bg-gradient-to-br ${job.hue} flex items-center justify-center text-white text-[11px] font-bold tracking-wider shadow-sm`}>
               {job.initials}
@@ -172,7 +172,7 @@ export function JobTrackerPreview() {
               <span className="text-[9px] font-bold uppercase tracking-wider text-surface-300">
                 {col.name}
               </span>
-              <span className="text-[9px] font-semibold text-surface-400 bg-surface-0 px-1.5 py-0.5 rounded-full border border-surface-200/50">
+              <span className="text-[9px] font-semibold text-surface-400 bg-white px-1.5 py-0.5 rounded-full border border-surface-200/50">
                 {col.count}
               </span>
             </div>
@@ -184,7 +184,7 @@ export function JobTrackerPreview() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 + i * 0.05, duration: 0.4 }}
-                  className="bg-surface-0 rounded-md p-1.5 border border-surface-200/50 shadow-sm"
+                  className="bg-white rounded-md p-1.5 border border-surface-200/50 shadow-sm"
                 >
                   <div className="flex items-center gap-1.5">
                     <div className={`w-4 h-4 rounded bg-gradient-to-br ${card.hue}`} />
@@ -221,7 +221,7 @@ export function ResumeBuilderPreview() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
-        className="relative w-36 h-44 bg-surface-0 rounded-lg shadow-xl border border-surface-200 p-3 flex flex-col gap-1.5"
+        className="relative w-36 h-44 bg-white rounded-lg shadow-xl border border-surface-200 p-3 flex flex-col gap-1.5"
       >
         {/* Header with name placeholder */}
         <div className="flex items-center gap-2 pb-1.5 border-b border-surface-200/50">
@@ -413,7 +413,7 @@ export function HeroVisual() {
         transition={{ duration: 14, ease: "linear", repeat: Infinity }}
       />
 
-      <div className="doppel-core w-full h-full flex flex-col p-6 relative overflow-hidden bg-gradient-to-b from-surface-100 to-surface-50/50 backdrop-blur-3xl">
+      <div className="doppel-core w-full h-full flex flex-col p-6 relative overflow-hidden bg-gradient-to-b from-white to-surface-50/50 backdrop-blur-3xl">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-surface-200/60 relative z-10">
           <div className="flex items-center gap-2.5">
@@ -476,7 +476,7 @@ export function HeroVisual() {
                 initial={{ opacity: 0, x: 8 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + i * 0.12, duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-                className="flex items-center gap-2.5 p-2 rounded-lg bg-surface-0 border border-surface-200/60"
+                className="flex items-center gap-2.5 p-2 rounded-lg bg-white border border-surface-200/60"
               >
                 <div className={`w-7 h-7 shrink-0 rounded-md bg-gradient-to-br ${job.hue} flex items-center justify-center text-white text-[9px] font-bold tracking-wider`}>
                   {job.company.slice(0, 2).toUpperCase()}
