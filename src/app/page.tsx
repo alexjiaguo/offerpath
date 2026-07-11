@@ -144,7 +144,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-surface-50 text-surface-400 font-sans selection:bg-black/10">
+    <div className="checkvibe-theme min-h-[100dvh] bg-surface-50 text-surface-400 font-sans selection:bg-white/20">
       
       {/* ── Fluid Island Navigation ── */}
       <div className="fixed top-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
@@ -152,7 +152,7 @@ export default function LandingPage() {
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
-          className="pointer-events-auto bg-white/80 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.05)] rounded-full px-4 py-3 flex items-center justify-between w-full max-w-6xl"
+          className="pointer-events-auto bg-white/5 backdrop-blur-2xl border border-white/10 shadow-none rounded-full px-4 py-3 flex items-center justify-between w-full max-w-6xl"
         >
           <Link href="/" className="flex items-center gap-3 group px-2">
             <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
@@ -261,7 +261,7 @@ export default function LandingPage() {
             </div>
             <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-light tracking-tighter text-balance mb-8 leading-[0.95]">
               Land your <br />
-              <span className="font-display italic font-medium">dream offer.</span>
+              <span className="text-brand-500">dream offer.</span>
             </h1>
             <p className="text-xl md:text-2xl text-surface-300 max-w-xl mb-12 leading-relaxed font-light">
               Track pipelines, build tailored resumes, and ace interviews with precision AI. A unified space for serious job seekers.
@@ -288,7 +288,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Stats Layout ── */}
-      <section className="py-24 border-y border-surface-200/50 bg-white/50">
+      <section className="py-24 border-y border-white/5 bg-white/[0.02]">
         <div className="max-w-[90rem] mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8 divide-x-0 md:divide-x divide-surface-200/50">
           {STATS.map((stat, i) => (
             <motion.div 
@@ -368,7 +368,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Editorial Testimonials ── */}
-      <section id="testimonials" className="py-32 md:py-40 px-4 bg-white border-y border-surface-200/50">
+      <section id="testimonials" className="py-32 md:py-40 px-4 bg-transparent border-y border-white/5">
         <div className="max-w-[90rem] mx-auto">
           <motion.div 
             className="mb-24"
@@ -414,7 +414,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Footer / CTA ── */}
-      <section className="py-32 md:py-48 px-4 border-t border-surface-200/50 bg-white text-center">
+      <section className="py-32 md:py-48 px-4 border-t border-white/5 bg-transparent text-center">
         <motion.div 
           className="max-w-4xl mx-auto flex flex-col items-center"
           initial="hidden"
@@ -422,7 +422,7 @@ export default function LandingPage() {
           viewport={{ once: true }}
           variants={revealVariants}
         >
-          <div className="w-16 h-16 rounded-full bg-white border border-surface-200/50 flex items-center justify-center mb-12 shadow-inner overflow-hidden">
+          <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-12">
             <Image src="/logo-infinity.svg" alt="OfferPath Logo" width={64} height={64} className="w-full h-full object-contain" />
           </div>
           <h2 className="text-6xl md:text-8xl font-light tracking-tighter mb-12 leading-[0.9]">
@@ -438,7 +438,7 @@ export default function LandingPage() {
         </motion.div>
       </section>
       
-      <footer className="py-12 text-center text-[10px] text-surface-300 uppercase tracking-[0.2em] bg-white font-medium">
+      <footer className="py-12 text-center text-[10px] text-surface-300 uppercase tracking-[0.2em] bg-transparent font-medium">
          &copy; {new Date().getFullYear()} OfferPath. All rights reserved.
       </footer>
     </div>
