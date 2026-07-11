@@ -29,7 +29,7 @@ interface ModuleDef {
 const MODULES: ModuleDef[] = [
   {
     icon: Compass,
-    title: "Job Discovery",
+    title: "Discovery",
     desc: "Discover matching opportunities across the web.",
     features: ["Smart Feed", "Company Watch"],
     colSpan: "md:col-span-6",
@@ -38,7 +38,7 @@ const MODULES: ModuleDef[] = [
   },
   {
     icon: MagnifyingGlass,
-    title: "Job Tracker",
+    title: "Tracker",
     desc: "A powerful Kanban-style pipeline to manage every application. AI analyzes job descriptions to score your fit and prioritize your next move.",
     features: ["JD Analysis", "Kanban Pipeline", "Match Scoring", "History"],
     colSpan: "md:col-span-6",
@@ -47,7 +47,7 @@ const MODULES: ModuleDef[] = [
   },
   {
     icon: FileText,
-    title: "Resume Builder",
+    title: "Resume",
     desc: "Build stunning, ATS-optimized resumes in minutes.",
     features: ["9 Templates", "AI Tailoring"],
     colSpan: "md:col-span-6",
@@ -56,7 +56,7 @@ const MODULES: ModuleDef[] = [
   },
   {
     icon: ChatCircleText,
-    title: "Interview Pack",
+    title: "Interview",
     desc: "Master your interviews with AI-generated prep guides. Practice with simulated mock sessions and build a reusable STAR story bank.",
     features: ["Mock Sessions", "STAR Bank", "Company Research", "Custom Qs"],
     colSpan: "md:col-span-12",
@@ -155,8 +155,8 @@ export default function LandingPage() {
           className="pointer-events-auto bg-white/80 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.05)] rounded-full px-4 py-3 flex items-center justify-between w-full max-w-6xl"
         >
           <Link href="/" className="flex items-center gap-3 group px-2">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden border border-surface-200 shadow-sm">
-               <Image src="/logo-mark.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-cover scale-110" />
+            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+               <Image src="/logo-infinity.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-contain" />
             </div>
             <span className="text-lg font-medium tracking-tight text-brand-900 font-display">
               OfferPath
@@ -164,7 +164,7 @@ export default function LandingPage() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-            {["Job Discovery", "Job Tracker", "Resume Builder", "Interview Pack", "Testimonials"].map((label) => {
+            {["Discovery", "Tracker", "Resume", "Interview", "Testimonials"].map((label) => {
               const href = `#${label.toLowerCase().replace(/\s+/g, "-")}`;
               return (
                 <a
@@ -217,7 +217,7 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
             className="fixed inset-0 z-40 bg-surface-50/95 backdrop-blur-3xl flex flex-col items-center justify-center gap-8"
           >
-            {["Job Discovery", "Job Tracker", "Resume Builder", "Interview Pack", "Testimonials"].map((label, i) => {
+            {["Discovery", "Tracker", "Resume", "Interview", "Testimonials"].map((label, i) => {
               const href = `#${label.toLowerCase().replace(/\s+/g, "-")}`;
               return (
                 <motion.a
@@ -423,7 +423,7 @@ export default function LandingPage() {
           variants={revealVariants}
         >
           <div className="w-16 h-16 rounded-full bg-white border border-surface-200/50 flex items-center justify-center mb-12 shadow-inner overflow-hidden">
-            <Image src="/logo-mark.svg" alt="OfferPath Logo" width={64} height={64} className="w-full h-full object-cover scale-110" />
+            <Image src="/logo-infinity.svg" alt="OfferPath Logo" width={64} height={64} className="w-full h-full object-contain" />
           </div>
           <h2 className="text-6xl md:text-8xl font-light tracking-tighter mb-12 leading-[0.9]">
             Ready to land <br />
