@@ -559,7 +559,6 @@ export const useResumeStore = create<ResumeState>()(
     }),
     {
       name: "offerpath-resume",
-      skipHydration: true,
       partialize: (state) => ({
         resumes: state.resumes,
       }),

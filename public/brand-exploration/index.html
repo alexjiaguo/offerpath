@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OfferPath — Logo Exploration v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0F172A;
+    --ink-soft: #1C1B1A;
+    --cream: #FDFBF7;
+    --cream-2: #F5F3ED;
+    --line: #E6E4DD;
+    --line-soft: #94938E;
+    --coral: #FF6A4E;
+    --coral-deep: #E85A4F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); color: var(--ink); font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { padding: 64px 56px 120px; max-width: 1480px; margin: 0 auto; }
+
+  /* Header */
+  .header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 64px; }
+  .header-left { max-width: 60%; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--line-soft); font-weight: 600; }
+  h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 56px; line-height: 1.05; letter-spacing: -0.03em; font-weight: 800; color: var(--ink); margin-top: 14px; max-width: 14ch; }
+  h1 em { font-style: normal; color: var(--coral); }
+  .lede { margin-top: 18px; font-size: 17px; line-height: 1.6; color: var(--ink-soft); max-width: 56ch; }
+  .lede code { background: var(--cream-2); padding: 2px 7px; border-radius: 4px; font-size: 14px; font-family: 'Inter', monospace; }
+
+  .palette-strip { display: flex; gap: 6px; }
+  .palette-strip .swatch { width: 56px; height: 56px; border-radius: 8px; display: flex; align-items: flex-end; justify-content: flex-start; padding: 8px; font-size: 9px; font-weight: 700; letter-spacing: 0.05em; color: #fff; }
+  .palette-strip .swatch.ink { background: var(--ink); color: var(--cream); }
+  .palette-strip .swatch.cream { background: var(--cream); color: var(--ink); border: 1px solid var(--line); }
+  .palette-strip .swatch.coral { background: var(--coral); }
+  .palette-strip .swatch.cream-2 { background: var(--cream-2); color: var(--ink); }
+
+  .divider { height: 1px; background: var(--line); margin: 64px 0; }
+
+  /* Reference */
+  .reference-section { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 32px; }
+  .ref-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 32px; }
+  .ref-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--line-soft); font-weight: 600; margin-bottom: 16px; }
+  .ref-mark-display { background: var(--cream-2); border-radius: 14px; height: 200px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+  .ref-mark-display img { max-height: 140px; max-width: 200px; }
+  .ref-mark-display svg { max-height: 140px; max-width: 140px; }
+  .ref-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .ref-meta { font-size: 13px; color: var(--line-soft); }
+  .ref-notes { font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin-top: 12px; }
+  .ref-notes strong { color: var(--ink); }
+
+  /* Concept grid */
+  .concepts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .concept { display: flex; flex-direction: column; }
+  .concept-head { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .concept-num { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 800; color: var(--coral); background: rgba(255, 106, 78, 0.1); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .concept-titles { flex: 1; }
+  .concept-name { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; }
+  .concept-tag { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--line-soft); margin-top: 4px; font-weight: 600; }
+
+  /* Hero stage */
+  .stage-hero { background: var(--cream-2); border: 1px solid var(--line); border-radius: 20px; padding: 56px 32px 32px; display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1; }
+  .stage-hero .hero-mark { width: 60%; height: 60%; display: flex; align-items: center; justify-content: center; }
+  .stage-hero .hero-mark svg { width: 100%; height: 100%; }
+  .stage-label { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--line-soft); font-weight: 600; text-align: center; margin-top: 12px; }
+
+  /* App icon previews */
+  .icon-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
+  .icon-tile { aspect-ratio: 1 / 1; border-radius: 14px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .icon-tile.light { background: var(--cream-2); border: 1px solid var(--line); }
+  .icon-tile.dark { background: var(--ink); }
+  .icon-tile.brand { background: var(--coral); }
+  .icon-tile.gradient { background: linear-gradient(135deg, var(--ink) 0%, #1E293B 100%); }
+  .icon-tile svg { width: 60%; height: 60%; }
+  .icon-tile .icon-size { position: absolute; bottom: 6px; right: 8px; font-size: 8px; font-weight: 700; letter-spacing: 0.05em; opacity: 0.5; }
+  .icon-tile.dark .icon-size { color: var(--cream); }
+  .icon-tile.brand .icon-size { color: #fff; }
+
+  /* Lockup */
+  .lockup-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+  .lockup-card.dark { background: var(--ink); border-color: var(--ink); }
+  .lockup-card svg { width: 40px; height: 40px; flex-shrink: 0; }
+  .lockup-card .wordmark { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.01em; }
+  .lockup-card:not(.dark) .wordmark { color: var(--ink); }
+  .lockup-card.dark .wordmark { color: var(--cream); }
+
+  /* Favicon row */
+  .favicon-row { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; align-items: center; justify-content: space-around; margin-top: 16px; }
+  .favicon-row .item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .favicon-row .fav-label { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--line-soft); font-weight: 700; }
+
+  /* Rationale */
+  .rationale { margin-top: 16px; padding: 18px 20px; background: var(--cream-2); border-radius: 14px; }
+  .rationale h4 { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--coral); font-weight: 700; margin-bottom: 8px; }
+  .rationale p { font-size: 14px; line-height: 1.6; color: var(--ink-soft); }
+  .rationale p + p { margin-top: 8px; }
+
+  /* Recommendation block */
+  .rec { background: var(--ink); color: var(--cream); border-radius: 24px; padding: 48px 56px; margin-top: 64px; }
+  .rec .eyebrow { color: var(--coral); }
+  .rec h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin-top: 12px; max-width: 18ch; }
+  .rec p { font-size: 16px; line-height: 1.7; color: rgba(253, 251, 247, 0.75); margin-top: 20px; max-width: 70ch; }
+  .rec p strong { color: var(--cream); font-weight: 700; }
+
+  @media (max-width: 1100px) {
+    .concepts { grid-template-columns: 1fr; }
+    .reference-section { grid-template-columns: 1fr; }
+    .header { flex-direction: column; align-items: flex-start; gap: 24px; }
+    h1 { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <div class="eyebrow">Brand Exploration · Round 2 · 2026-07-10</div>
+      <h1>Logos that <em>actually</em> ship.</h1>
+      <p class="lede">v1 was linework — fine for a wireframe, weak as a brand mark. v2 takes cues from the designmantic SaaS inspiration set: solid filled letterforms, a single warm accent, signal motifs that read at every size. All three use the existing palette (<code>#0F172A</code> ink, <code>#FDFBF7</code> cream, <code>#FF6A4E</code> accent).</p>
+    </div>
+    <div class="palette-strip">
+      <div class="swatch ink">#0F172A</div>
+      <div class="swatch cream">#FDFBF7</div>
+      <div class="swatch cream-2">#F5F3ED</div>
+      <div class="swatch coral">#FF6A4E</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="eyebrow" style="margin-bottom:16px">Current mark · for reference</div>
+  <div class="reference-section">
+    <div class="ref-card">
+      <div class="ref-label">Existing J + P monogram</div>
+      <div class="ref-mark-display">
+        <img src="../logo-square.png" alt="Current OfferPath logo" />
+      </div>
+      <div class="ref-title">Interlocked J + P</div>
+      <div class="ref-meta">Potrace-vectorized · public/logo-mark.svg</div>
+      <div class="ref-notes">Potrace-traced mark with a soft hand-drawn quality. Solid fill, deep navy, reads as "Job Path" historically. <strong>Strength:</strong> it has presence. <strong>Weakness:</strong> the J is hard to read at favicon size, and the metaphor ties to "Job" — the product has since pivoted to "Offer."</div>
+    </div>
+    <div class="ref-card">
+      <div class="ref-label">What the v1 exploration got wrong</div>
+      <div class="ref-mark-display" style="background:#fff;border:1px solid var(--line)">
+        <svg viewBox="0 0 100 100" width="100" height="100" style="opacity:0.18">
+          <circle cx="34" cy="52" r="20" fill="none" stroke="#0F172A" stroke-width="9"/>
+          <path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#0F172A"/>
+        </svg>
+      </div>
+      <div class="ref-title">v1 concepts: too thin, too quiet</div>
+      <div class="ref-meta">Archive: brand-exploration/mark-*-trajectory/aperture/op-monogram.svg</div>
+      <div class="ref-notes">All three v1 marks were <strong>monoline linework</strong> — no fills, no accent, no signal. Compared to Notion, Airtable, Asana, Twilio, Plogal, they read like sketches. SaaS marks in 2026 are <strong>solid, accented, and modular</strong>: one strong shape, one bold color, no ambiguity at 16px.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="eyebrow" style="margin-bottom:24px">v2 concepts</div>
+  <div class="concepts">
+
+    <!-- ── Concept A: OP Signal ── -->
+    <div class="concept">
+      <div class="concept-head">
+        <div class="concept-num">A</div>
+        <div class="concept-titles">
+          <div class="concept-name">OP Signal</div>
+          <div class="concept-tag">Monogram · Momentum</div>
+        </div>
+      </div>
+
+      <div class="stage-hero">
+        <div class="hero-mark">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="34" cy="52" r="20" fill="none" stroke="#0F172A" stroke-width="9"/>
+            <path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#0F172A"/>
+            <circle cx="82" cy="24" r="3" fill="#FF6A4E"/>
+            <circle cx="89" cy="18" r="2.2" fill="#FF6A4E"/>
+            <circle cx="94" cy="13" r="1.5" fill="#FF6A4E"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="icon-row">
+        <div class="icon-tile light"><svg viewBox="0 0 100 100"><circle cx="34" cy="52" r="20" fill="none" stroke="#0F172A" stroke-width="11"/><path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#0F172A"/><circle cx="82" cy="24" r="3" fill="#FF6A4E"/><circle cx="89" cy="18" r="2.2" fill="#FF6A4E"/><circle cx="94" cy="13" r="1.5" fill="#FF6A4E"/></svg><div class="icon-size">S</div></div>
+        <div class="icon-tile dark"><svg viewBox="0 0 100 100"><circle cx="34" cy="52" r="20" fill="none" stroke="#FDFBF7" stroke-width="11"/><path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#FDFBF7"/><circle cx="82" cy="24" r="3" fill="#FF6A4E"/><circle cx="89" cy="18" r="2.2" fill="#FF6A4E"/><circle cx="94" cy="13" r="1.5" fill="#FF6A4E"/></svg><div class="icon-size">M</div></div>
+        <div class="icon-tile brand"><svg viewBox="0 0 100 100"><circle cx="34" cy="52" r="20" fill="none" stroke="#0F172A" stroke-width="11"/><path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#0F172A"/></svg><div class="icon-size">L</div></div>
+        <div class="icon-tile gradient"><svg viewBox="0 0 100 100"><circle cx="34" cy="52" r="20" fill="none" stroke="#FDFBF7" stroke-width="11"/><path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#FDFBF7"/></svg><div class="icon-size">XL</div></div>
+      </div>
+
+      <div class="favicon-row">
+        <div class="item">
+          <svg width="48" height="48" viewBox="0 0 100 100">
+            <circle cx="34" cy="52" r="20" fill="none" stroke="#0F172A" stroke-width="11"/>
+            <path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#0F172A"/>
+            <circle cx="82" cy="24" r="4" fill="#FF6A4E"/>
+            <circle cx="90" cy="16" r="2.5" fill="#FF6A4E"/>
+          </svg>
+          <div class="fav-label">48px</div>
+        </div>
+        <div class="item">
+          <svg width="32" height="32" viewBox="0 0 100 100">
+            <circle cx="34" cy="52" r="20" fill="none" stroke="#0F172A" stroke-width="14"/>
+            <path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#0F172A"/>
+            <circle cx="82" cy="24" r="5" fill="#FF6A4E"/>
+          </svg>
+          <div class="fav-label">32px</div>
+        </div>
+        <div class="item">
+          <svg width="16" height="16" viewBox="0 0 100 100">
+            <circle cx="34" cy="52" r="18" fill="none" stroke="#0F172A" stroke-width="20"/>
+            <path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#0F172A"/>
+            <circle cx="82" cy="24" r="8" fill="#FF6A4E"/>
+          </svg>
+          <div class="fav-label">16px</div>
+        </div>
+      </div>
+
+      <div class="lockup-card">
+        <svg viewBox="0 0 100 100"><circle cx="34" cy="52" r="20" fill="none" stroke="#0F172A" stroke-width="11"/><path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#0F172A"/><circle cx="82" cy="24" r="4" fill="#FF6A4E"/><circle cx="90" cy="16" r="2.5" fill="#FF6A4E"/></svg>
+        <div class="wordmark">OfferPath</div>
+      </div>
+
+      <div class="lockup-card dark">
+        <svg viewBox="0 0 100 100"><circle cx="34" cy="52" r="20" fill="none" stroke="#FDFBF7" stroke-width="11"/><path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#FDFBF7"/><circle cx="82" cy="24" r="4" fill="#FF6A4E"/><circle cx="90" cy="16" r="2.5" fill="#FF6A4E"/></svg>
+        <div class="wordmark">OfferPath</div>
+      </div>
+
+      <div class="rationale">
+        <h4>Why it works</h4>
+        <p><strong>Solid filled OP monogram</strong> in deep navy, with a <strong>three-dot signal</strong> in coral emanating from the top of the P — directly inspired by the Plogal mark in the designmantic article.</p>
+        <p>The "OP" reads as the brand name; the signal dots add momentum and personality without clutter. At 16px the dots merge into a single coral dot, but the OP still reads cleanly. The construction is a true SaaS mark: <strong>one bold shape, one accent color, zero ambiguity.</strong></p>
+      </div>
+    </div>
+
+    <!-- ── Concept B: Stacks ── -->
+    <div class="concept">
+      <div class="concept-head">
+        <div class="concept-num">B</div>
+        <div class="concept-titles">
+          <div class="concept-name">Stacks</div>
+          <div class="concept-tag">Badge · Progression</div>
+        </div>
+      </div>
+
+      <div class="stage-hero">
+        <div class="hero-mark">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="92" height="92" rx="22" fill="#0F172A"/>
+            <rect x="22" y="26" width="56" height="9" rx="4.5" fill="#FDFBF7" opacity="0.95"/>
+            <rect x="22" y="45" width="44" height="9" rx="4.5" fill="#FDFBF7" opacity="0.65"/>
+            <rect x="22" y="64" width="32" height="9" rx="4.5" fill="#FDFBF7" opacity="0.4"/>
+            <circle cx="84" cy="30.5" r="7" fill="#FF6A4E"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="icon-row">
+        <div class="icon-tile light"><svg viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" rx="22" fill="#0F172A"/><rect x="22" y="26" width="56" height="9" rx="4.5" fill="#FDFBF7" opacity="0.95"/><rect x="22" y="45" width="44" height="9" rx="4.5" fill="#FDFBF7" opacity="0.65"/><rect x="22" y="64" width="32" height="9" rx="4.5" fill="#FDFBF7" opacity="0.4"/><circle cx="84" cy="30.5" r="7" fill="#FF6A4E"/></svg><div class="icon-size">S</div></div>
+        <div class="icon-tile dark"><svg viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" rx="22" fill="#FDFBF7"/><rect x="22" y="26" width="56" height="9" rx="4.5" fill="#0F172A"/><rect x="22" y="45" width="44" height="9" rx="4.5" fill="#0F172A" opacity="0.65"/><rect x="22" y="64" width="32" height="9" rx="4.5" fill="#0F172A" opacity="0.4"/><circle cx="84" cy="30.5" r="7" fill="#FF6A4E"/></svg><div class="icon-size">M</div></div>
+        <div class="icon-tile brand"><svg viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" rx="22" fill="#0F172A"/><rect x="22" y="26" width="56" height="9" rx="4.5" fill="#FDFBF7"/><rect x="22" y="45" width="44" height="9" rx="4.5" fill="#FDFBF7" opacity="0.7"/><rect x="22" y="64" width="32" height="9" rx="4.5" fill="#FDFBF7" opacity="0.45"/><circle cx="84" cy="30.5" r="8" fill="#0F172A"/></svg><div class="icon-size">L</div></div>
+        <div class="icon-tile gradient"><svg viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" rx="22" fill="#FF6A4E"/><rect x="22" y="26" width="56" height="9" rx="4.5" fill="#0F172A"/><rect x="22" y="45" width="44" height="9" rx="4.5" fill="#0F172A" opacity="0.7"/><rect x="22" y="64" width="32" height="9" rx="4.5" fill="#0F172A" opacity="0.5"/><circle cx="84" cy="30.5" r="8" fill="#0F172A"/></svg><div class="icon-size">XL</div></div>
+      </div>
+
+      <div class="favicon-row">
+        <div class="item">
+          <svg width="48" height="48" viewBox="0 0 100 100">
+            <rect x="4" y="4" width="92" height="92" rx="22" fill="#0F172A"/>
+            <rect x="22" y="26" width="56" height="9" rx="4.5" fill="#FDFBF7" opacity="0.95"/>
+            <rect x="22" y="45" width="44" height="9" rx="4.5" fill="#FDFBF7" opacity="0.65"/>
+            <rect x="22" y="64" width="32" height="9" rx="4.5" fill="#FDFBF7" opacity="0.4"/>
+            <circle cx="84" cy="30.5" r="8" fill="#FF6A4E"/>
+          </svg>
+          <div class="fav-label">48px</div>
+        </div>
+        <div class="item">
+          <svg width="32" height="32" viewBox="0 0 100 100">
+            <rect x="2" y="2" width="96" height="96" rx="24" fill="#0F172A"/>
+            <rect x="20" y="26" width="60" height="11" rx="5.5" fill="#FDFBF7"/>
+            <rect x="20" y="44" width="44" height="11" rx="5.5" fill="#FDFBF7" opacity="0.6"/>
+            <rect x="20" y="62" width="28" height="11" rx="5.5" fill="#FDFBF7" opacity="0.35"/>
+            <circle cx="86" cy="31" r="10" fill="#FF6A4E"/>
+          </svg>
+          <div class="fav-label">32px</div>
+        </div>
+        <div class="item">
+          <svg width="16" height="16" viewBox="0 0 100 100">
+            <rect x="0" y="0" width="100" height="100" rx="26" fill="#0F172A"/>
+            <rect x="18" y="28" width="64" height="12" rx="6" fill="#FDFBF7"/>
+            <rect x="18" y="46" width="42" height="12" rx="6" fill="#FDFBF7" opacity="0.55"/>
+            <rect x="18" y="64" width="22" height="12" rx="6" fill="#FDFBF7" opacity="0.3"/>
+            <circle cx="88" cy="34" r="14" fill="#FF6A4E"/>
+          </svg>
+          <div class="fav-label">16px</div>
+        </div>
+      </div>
+
+      <div class="lockup-card">
+        <svg width="40" height="40" viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" rx="22" fill="#0F172A"/><rect x="22" y="26" width="56" height="9" rx="4.5" fill="#FDFBF7" opacity="0.95"/><rect x="22" y="45" width="44" height="9" rx="4.5" fill="#FDFBF7" opacity="0.65"/><rect x="22" y="64" width="32" height="9" rx="4.5" fill="#FDFBF7" opacity="0.4"/><circle cx="84" cy="30.5" r="7" fill="#FF6A4E"/></svg>
+        <div class="wordmark">OfferPath</div>
+      </div>
+
+      <div class="lockup-card dark">
+        <svg width="40" height="40" viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" rx="22" fill="#FDFBF7"/><rect x="22" y="26" width="56" height="9" rx="4.5" fill="#0F172A"/><rect x="22" y="45" width="44" height="9" rx="4.5" fill="#0F172A" opacity="0.65"/><rect x="22" y="64" width="32" height="9" rx="4.5" fill="#0F172A" opacity="0.4"/><circle cx="84" cy="30.5" r="7" fill="#FF6A4E"/></svg>
+        <div class="wordmark">OfferPath</div>
+      </div>
+
+      <div class="rationale">
+        <h4>Why it works</h4>
+        <p>A <strong>solid navy badge</strong> with three cream bars (decreasing length) and a single coral dot at the end of the top bar. The bars read as <strong>progressive milestones</strong>; the coral dot is the offer that lands at the top.</p>
+        <p>This is the most "app icon" of the three — works as a PWA icon, an App Store badge, a Chrome extension tile. The construction is a Notion/Airtable-grade <strong>badge mark</strong> and survives any background, any size, any context. The opacity-fading bars give the mark a built-in narrative without extra elements.</p>
+      </div>
+    </div>
+
+    <!-- ── Concept C: Beacon ── -->
+    <div class="concept">
+      <div class="concept-head">
+        <div class="concept-num">C</div>
+        <div class="concept-titles">
+          <div class="concept-name">Beacon</div>
+          <div class="concept-tag">Abstract · Trajectory</div>
+        </div>
+      </div>
+
+      <div class="stage-hero">
+        <div class="hero-mark">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="44" fill="#0F172A"/>
+            <circle cx="32" cy="68" r="3.5" fill="#FDFBF7"/>
+            <circle cx="46" cy="54" r="3.5" fill="#FDFBF7"/>
+            <circle cx="60" cy="40" r="3.5" fill="#FDFBF7"/>
+            <circle cx="74" cy="26" r="7" fill="#FF6A4E"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="icon-row">
+        <div class="icon-tile light"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#0F172A"/><circle cx="32" cy="68" r="3.5" fill="#FDFBF7"/><circle cx="46" cy="54" r="3.5" fill="#FDFBF7"/><circle cx="60" cy="40" r="3.5" fill="#FDFBF7"/><circle cx="74" cy="26" r="7" fill="#FF6A4E"/></svg><div class="icon-size">S</div></div>
+        <div class="icon-tile dark"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FDFBF7" stroke-width="3"/><circle cx="32" cy="68" r="3.5" fill="#FDFBF7"/><circle cx="46" cy="54" r="3.5" fill="#FDFBF7"/><circle cx="60" cy="40" r="3.5" fill="#FDFBF7"/><circle cx="74" cy="26" r="7" fill="#FF6A4E"/></svg><div class="icon-size">M</div></div>
+        <div class="icon-tile brand"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#0F172A"/><circle cx="32" cy="68" r="3.5" fill="#FF6A4E"/><circle cx="46" cy="54" r="3.5" fill="#FF6A4E"/><circle cx="60" cy="40" r="3.5" fill="#FF6A4E"/><circle cx="74" cy="26" r="8" fill="#FDFBF7"/></svg><div class="icon-size">L</div></div>
+        <div class="icon-tile gradient"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FDFBF7" stroke-width="3"/><circle cx="32" cy="68" r="3.5" fill="#FDFBF7"/><circle cx="46" cy="54" r="3.5" fill="#FDFBF7"/><circle cx="60" cy="40" r="3.5" fill="#FDFBF7"/><circle cx="74" cy="26" r="7" fill="#FF6A4E"/></svg><div class="icon-size">XL</div></div>
+      </div>
+
+      <div class="favicon-row">
+        <div class="item">
+          <svg width="48" height="48" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="44" fill="#0F172A"/>
+            <circle cx="32" cy="68" r="4" fill="#FDFBF7"/>
+            <circle cx="46" cy="54" r="4" fill="#FDFBF7"/>
+            <circle cx="60" cy="40" r="4" fill="#FDFBF7"/>
+            <circle cx="74" cy="26" r="8" fill="#FF6A4E"/>
+          </svg>
+          <div class="fav-label">48px</div>
+        </div>
+        <div class="item">
+          <svg width="32" height="32" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="44" fill="#0F172A"/>
+            <circle cx="32" cy="68" r="5" fill="#FDFBF7"/>
+            <circle cx="46" cy="54" r="5" fill="#FDFBF7"/>
+            <circle cx="60" cy="40" r="5" fill="#FDFBF7"/>
+            <circle cx="74" cy="26" r="10" fill="#FF6A4E"/>
+          </svg>
+          <div class="fav-label">32px</div>
+        </div>
+        <div class="item">
+          <svg width="16" height="16" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="44" fill="#0F172A"/>
+            <circle cx="74" cy="26" r="14" fill="#FF6A4E"/>
+          </svg>
+          <div class="fav-label">16px</div>
+        </div>
+      </div>
+
+      <div class="lockup-card">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#0F172A"/><circle cx="32" cy="68" r="3.5" fill="#FDFBF7"/><circle cx="46" cy="54" r="3.5" fill="#FDFBF7"/><circle cx="60" cy="40" r="3.5" fill="#FDFBF7"/><circle cx="74" cy="26" r="7" fill="#FF6A4E"/></svg>
+        <div class="wordmark">OfferPath</div>
+      </div>
+
+      <div class="lockup-card dark">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FDFBF7" stroke-width="3"/><circle cx="32" cy="68" r="3.5" fill="#FDFBF7"/><circle cx="46" cy="54" r="3.5" fill="#FDFBF7"/><circle cx="60" cy="40" r="3.5" fill="#FDFBF7"/><circle cx="74" cy="26" r="7" fill="#FF6A4E"/></svg>
+        <div class="wordmark">OfferPath</div>
+      </div>
+
+      <div class="rationale">
+        <h4>Why it works</h4>
+        <p>A <strong>navy filled disc</strong> with three small cream dots tracing a rising diagonal — and a single coral dot at the top-right as the destination. This is the v1 Trajectory concept rebuilt with solid fills, scale variation (small → small → small → LARGE), and the brand accent.</p>
+        <p>The disc reads as a <strong>scope</strong>, a <strong>search lens</strong>, or a <strong>scope view</strong> — fitting for a "career operating system." The four dots tell the story: three steps, one offer. At 16px the inner dots disappear, but the coral endpoint and the disc still read as a clear mark.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="rec">
+    <div class="eyebrow">Recommendation</div>
+    <h2>Ship <em style="font-style:normal;color:var(--coral)">B · Stacks</em>.</h2>
+    <p><strong>If you want one mark to own the brand across every surface — favicon, app icon, OG image, conference banner, business card — go with Stacks.</strong> It's the most "Notion/Airtable" of the three: a true badge mark, a built-in narrative, a single accent that pops on any background. The opacity-fading bars give it dimension without clutter.</p>
+    <p>Use <strong>A · OP Signal</strong> if the brand wants to lean into the "OP" monogram and a sense of momentum — best for a website hero, social avatar, and animated splash.</p>
+    <p>Use <strong>C · Beacon</strong> if the brand wants to feel closer to the existing aesthetic and a more abstract trajectory metaphor — best as a secondary mark for product surfaces (loading states, empty states, the in-app app icon).</p>
+  </div>
+
+</body>
+</html>

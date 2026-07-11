@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <title>OfferPath — Beacon</title>
+  <!-- Navy filled circle (the operating system / scope) -->
+  <circle cx="50" cy="50" r="44" fill="#0F172A"/>
+  <!-- Three cream milestone dots along a rising diagonal path (lower-left to upper-right) -->
+  <circle cx="32" cy="68" r="3.5" fill="#FDFBF7"/>
+  <circle cx="46" cy="54" r="3.5" fill="#FDFBF7"/>
+  <circle cx="60" cy="40" r="3.5" fill="#FDFBF7"/>
+  <!-- Coral "offer" endpoint — larger filled circle, the destination -->
+  <circle cx="74" cy="26" r="7" fill="#FF6A4E"/>
+</svg>

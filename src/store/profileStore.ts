@@ -258,9 +258,6 @@ export const useProfileStore = create<ProfileState>()(
         }));
       },
     }),
-    {
-        name: "offerpath-profile",
-        skipHydration: true,
-      }
+    { name: "offerpath-profile" }
   )
 );

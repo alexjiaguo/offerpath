@@ -33,8 +33,8 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="h-20 flex items-center px-6 relative z-10">
         <Link href="/dashboard" className="flex items-center gap-4 overflow-hidden group">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden border border-surface-200 shadow-sm flex-shrink-0 bg-white">
-             <Image src="/logo-mark.svg" alt="Logo" width={32} height={32} className="w-full h-full object-cover scale-110" />
+          <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+             <Image src="/logo-infinity.svg" alt="Logo" width={32} height={32} className="w-full h-full object-contain" />
           </div>
           {!collapsed && (
             <motion.span 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OfferPath — From Search to Signed Offer</title>
+  <style>
+    @font-face {
+      font-family: 'Plus Jakarta Sans';
+      font-weight: 400 800;
+      font-style: normal;
+      font-display: swap;
+      src: url('capture/assets/fonts/jakarta-400.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Playfair Display';
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+      src: url('capture/assets/fonts/playfair-normal.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Playfair Display';
+      font-weight: 400 700;
+      font-style: italic;
+      font-display: swap;
+      src: url('capture/assets/fonts/playfair-italic.woff2') format('woff2');
+    }
+    html, body { margin: 0; padding: 0; background: #FDFBF7; }
+    body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #1C1B1A; }
+  </style>
+</head>
+<body>
+  <div data-hf-id="hf-63xa" data-composition-id="offerpath-promo" data-width="1920" data-height="1080" data-start="0" data-duration="20">
+
+    <!-- Beat 1: Hook -->
+    <div data-hf-id="hf-q9qa" id="beat-1-clip" data-composition-id="beat-1-hook" data-composition-src="compositions/beat-1-hook.html" data-start="0" data-duration="2.5" data-track-index="1"></div>
+
+    <!-- Beat 2: Promise / Dashboard -->
+    <div data-hf-id="hf-ulcl" id="beat-2-clip" data-composition-id="beat-2-promise" data-composition-src="compositions/beat-2-promise.html" data-start="2.5" data-duration="2.8" data-track-index="1"></div>
+
+    <!-- Beat 3: Discovery -->
+    <div data-hf-id="hf-wgyk" id="beat-3-clip" data-composition-id="beat-3-discovery" data-composition-src="compositions/beat-3-discovery.html" data-start="5.3" data-duration="3.0" data-track-index="1"></div>
+
+    <!-- Beat 4: Resume -->
+    <div data-hf-id="hf-4gix" id="beat-4-clip" data-composition-id="beat-4-resume" data-composition-src="compositions/beat-4-resume.html" data-start="8.3" data-duration="1.85" data-track-index="1"></div>
+
+    <!-- Beat 5: Interview -->
+    <div data-hf-id="hf-2vt5" id="beat-5-clip" data-composition-id="beat-5-interview" data-composition-src="compositions/beat-5-interview.html" data-start="10.199" data-duration="2.301" data-track-index="1"></div>
+
+    <!-- Beat 6: CTA / Closer -->
+    <div data-hf-id="hf-i7rq" id="beat-6-clip" data-composition-id="beat-6-cta" data-composition-src="compositions/beat-6-cta.html" data-start="12.5" data-duration="7.5" data-track-index="1"></div>
+
+    <!-- Narration audio -->
+    <audio data-hf-id="hf-9276" id="narration" data-start="0" data-duration="20" data-track-index="2" src="narration.wav" preload="auto"></audio>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const subs = [
+      'compositions/beat-1-hook.html',
+      'compositions/beat-2-promise.html',
+      'compositions/beat-3-discovery.html',
+      'compositions/beat-4-resume.html',
+      'compositions/beat-5-interview.html',
+      'compositions/beat-6-cta.html',
+    ];
+    Promise.all(subs.map(p => fetch(p).then(r => r.text()).then(html => {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = html;
+      const tpl = wrap.querySelector('template');
+      if (tpl) document.body.appendChild(tpl);
+    }))).then(() => {
+      window.__hfReady = true;
+    });
+  </script>
+</body>
+</html>

@@ -66,13 +66,13 @@ export default function MobileNav() {
             className="flex items-center gap-2.5"
             onClick={() => setIsOpen(false)}
           >
-            <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden border border-surface-200 shadow-sm flex-shrink-0 bg-white">
+            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
               <Image
-                src="/logo-mark.svg"
+                src="/logo-infinity.svg"
                 alt="OfferPath Logo"
                 width={32}
                 height={32}
-                className="w-full h-full object-cover scale-110"
+                className="w-full h-full object-contain"
               />
             </div>
             <span className="text-base font-bold tracking-tight text-surface-400">

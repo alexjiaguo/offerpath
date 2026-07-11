@@ -186,3 +186,9 @@ npx @claude-flow/cli@latest doctor --fix
 
 - Documentation: https://github.com/ruvnet/claude-flow
 - Issues: https://github.com/ruvnet/claude-flow/issues
+
+## UI Preview & Asset Generation Rules
+
+- **Logo Constraints (OfferPath):** Logos must be highly abstract, simple, futuristic, and technical. Do not over-design or try to literally depict system features. The only allowed text is "offerpath" (no slogans like "B2B growth SaaS").
+- **UI Preview Rendering:** When creating HTML or UI previews for the user, DO NOT output large blocks of raw code in the chat. Write the code to a file and open it in the browser for the user to review.
+- **Comprehensive Previews:** When mocking up UI components (like logos), display them in all relevant contexts across the system (e.g., navigation bar, login screen, footer) to provide a complete picture.

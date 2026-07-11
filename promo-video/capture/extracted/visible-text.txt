@@ -1,0 +1,3 @@
+[h2] Enter API Key to Launch
+[p] Your Anthropic API key. Never stored — lives only in this browser session.
+[button] Launch OfferPath →

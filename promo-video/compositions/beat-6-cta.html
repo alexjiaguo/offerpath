@@ -1,0 +1,179 @@
+<template id="beat-6-template">
+  <div data-composition-id="beat-6-cta" data-width="1920" data-height="1080">
+    <style>
+      
+      @font-face {
+        font-family: 'Plus Jakarta Sans';
+        font-weight: 400 800;
+        font-style: normal;
+        font-display: swap;
+        src: url('capture/assets/fonts/jakarta-400.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Playfair Display';
+        font-weight: 400 700;
+        font-style: normal;
+        font-display: swap;
+        src: url('capture/assets/fonts/playfair-normal.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Playfair Display';
+        font-weight: 400 700;
+        font-style: italic;
+        font-display: swap;
+        src: url('capture/assets/fonts/playfair-italic.woff2') format('woff2');
+      }
+
+      [data-composition-id="beat-6-cta"] {
+        width: 1920px;
+        height: 1080px;
+        position: relative;
+        overflow: hidden;
+        background: #FDFBF7;
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        color: #1C1B1A;
+      }
+      [data-composition-id="beat-6-cta"] .bg-glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255, 222, 168, 0.22) 0%, rgba(253, 251, 247, 0) 70%);
+        pointer-events: none;
+      }
+      [data-composition-id="beat-6-cta"] .content {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+        padding: 96px 120px 80px;
+        box-sizing: border-box;
+        gap: 24px;
+      }
+      [data-composition-id="beat-6-cta"] .headline {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-weight: 500;
+        font-size: 64px;
+        line-height: 1.05;
+        color: #1C1B1A;
+        letter-spacing: -0.015em;
+        text-align: center;
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+      [data-composition-id="beat-6-cta"] .headline em {
+        font-style: italic;
+        color: #1C1B1A;
+      }
+      [data-composition-id="beat-6-cta"] .screenshot-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      [data-composition-id="beat-6-cta"] .screenshot {
+        width: 72%;
+        max-width: 1320px;
+        height: auto;
+        border-radius: 16px;
+        border: 1px solid #E6E4DD;
+        box-shadow: 0 30px 70px -20px rgba(15, 23, 42, 0.16);
+        background: #FFFFFF;
+        object-fit: cover;
+        aspect-ratio: 16 / 8.5;
+        transform-origin: 50% 60%;
+      }
+      [data-composition-id="beat-6-cta"] .closer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+      }
+      [data-composition-id="beat-6-cta"] .closer-logo {
+        width: 110px;
+        height: 110px;
+        border-radius: 8px;
+        background: #FFFFFF;
+        box-shadow: 0 16px 40px -16px rgba(15, 23, 42, 0.16);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      [data-composition-id="beat-6-cta"] .closer-logo img {
+        width: 74px;
+        height: 74px;
+        object-fit: contain;
+      }
+      [data-composition-id="beat-6-cta"] .closer-wordmark {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-weight: 500;
+        font-size: 38px;
+        letter-spacing: -0.01em;
+        color: #1C1B1A;
+      }
+      [data-composition-id="beat-6-cta"] .closer-tag {
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: #64748B;
+        margin-top: 2px;
+      }
+      [data-composition-id="beat-6-cta"] .wordmark {
+        position: absolute;
+        left: 56px;
+        bottom: 40px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+      [data-composition-id="beat-6-cta"] .wordmark .mark {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+      }
+      [data-composition-id="beat-6-cta"] .wordmark .text {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: #1C1B1A;
+      }
+    </style>
+
+    <div class="bg-glow"></div>
+
+    <div class="content">
+      <div class="headline">From first scan to <em>signed offer</em>.</div>
+
+      <div class="screenshot-wrap">
+        <img class="screenshot" src="capture/assets/tracker.png" alt="Pipeline Tracker" />
+      </div>
+
+      <div class="closer">
+        <div class="closer-logo">
+          <img src="capture/assets/logo.png" alt="OfferPath" />
+        </div>
+        <div class="closer-wordmark">OfferPath</div>
+        <div class="closer-tag">The career operating system</div>
+      </div>
+    </div>
+
+    <div class="wordmark">
+      <img class="mark" src="capture/assets/mark.svg" alt="" />
+      <span class="text">OfferPath</span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.from(".screenshot-wrap", { opacity: 0, y: 60, scale: 0.96, duration: 0.9, ease: "expo.out" }, 0.0);
+      tl.from(".screenshot", { scale: 1, duration: 7.0, ease: "none" }, 0.05);
+      tl.from(".headline", { opacity: 0, y: 24, duration: 0.8, ease: "power2.out" }, 0.7);
+      tl.from(".closer", { opacity: 0, y: 30, duration: 0.8, ease: "power3.out" }, 1.1);
+      tl.from(".closer-logo", { scale: 0.7, duration: 0.6, ease: "back.out(1.6)" }, 1.3);
+      tl.to(".closer-logo", { scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 1.3);
+      tl.from(".wordmark", { opacity: 0, y: 8, duration: 0.5, ease: "power2.out" }, 0.0);
+      window.__timelines["beat-6-cta"] = tl;
+    </script>
+  </div>
+</template>

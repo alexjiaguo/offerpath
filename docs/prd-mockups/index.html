@@ -1,0 +1,2129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>OfferPath — Feature Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand-100:#E2E8F0;--brand-300:#64748B;--brand-400:#475569;--brand-500:#0F172A;--brand-600:#020617;--brand-700:#000;
+  --surface-0:#FFFFFF;--surface-50:#FDFBF7;--surface-100:#F5F3ED;--surface-200:#E6E4DD;--surface-300:#94938E;--surface-400:#1C1B1A;
+  --green:#1F7A4D;--green-soft:#E5F1EB;--amber:#B5793B;--amber-soft:#F5EBDC;--red:#B33A3A;--red-soft:#F7E3E3;--blue:#3B6CB7;--blue-soft:#E3ECF7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Plus Jakarta Sans',sans-serif;background:#ECE9E1;color:#0F172A;-webkit-font-smoothing:antialiased;line-height:1.5}
+.mockup{width:1440px;margin:0 auto 80px;background:#FDFBF7;position:relative;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.15);border-radius:24px}
+.mockup-label{position:absolute;top:18px;left:24px;z-index:60;background:rgba(15,23,42,.85);color:#FDFBF7;font-size:11px;font-weight:600;padding:6px 12px;border-radius:999px;letter-spacing:.05em;text-transform:uppercase;backdrop-filter:blur(8px)}
+
+/* Shared components */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .2s}
+.btn-primary{background:#0F172A;color:#FDFBF7}
+.btn-primary:hover{background:#020617}
+.btn-secondary{background:transparent;color:#0F172A;border:1px solid #E6E4DD}
+.btn-ghost{background:transparent;color:#475569}
+.btn-ghost:hover{color:#0F172A}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500;background:#F5F3ED;color:#475569}
+.chip-green{background:#E5F1EB;color:#1F7A4D}
+.chip-amber{background:#F5EBDC;color:#B5793B}
+.chip-red{background:#F7E3E3;color:#B33A3A}
+.chip-blue{background:#E3ECF7;color:#3B6CB7}
+.card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:24px}
+
+/* Landing Page */
+.landing{display:flex;align-items:center;justify-content:center;min-height:900px;background:radial-gradient(ellipse at top right, #F2EEE5 0%, #FDFBF7 50%);position:relative;padding:60px}
+.landing::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle, rgba(15,23,42,.05) 1px, transparent 1px);background-size:32px 32px;opacity:.5;mask-image:radial-gradient(ellipse at center, black 30%, transparent 70%)}
+.landing-inner{position:relative;z-index:2;text-align:center;max-width:900px}
+.landing h1{font-size:120px;font-weight:700;letter-spacing:-.04em;line-height:1;margin-bottom:24px;color:#0F172A}
+.landing .sub{font-size:32px;font-weight:400;color:#475569;line-height:1.3;margin-bottom:48px;font-family:'Playfair Display',serif;font-style:italic}
+.landing-ctas{display:flex;gap:16px;justify-content:center;margin-bottom:80px}
+.landing-ctas .btn{padding:14px 28px;font-size:14px}
+.landing-floats{position:absolute;inset:0;pointer-events:none}
+.float-card{position:absolute;background:#FFFFFF;border-radius:16px;box-shadow:0 20px 40px -10px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.04);padding:16px}
+.float-1{top:200px;left:80px;width:280px;transform:rotate(-3deg)}
+.float-2{bottom:120px;right:60px;width:240px;transform:rotate(4deg)}
+.float-3{top:300px;right:120px;width:260px;transform:rotate(2deg)}
+.kanban-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:9px}
+.kanban-mini .col{background:#F5F3ED;border-radius:6px;padding:8px;min-height:80px}
+.kanban-mini .col h6{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#475569;margin-bottom:6px}
+.kanban-mini .card-mini{background:#fff;border-radius:4px;padding:4px;margin-bottom:4px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.resume-mini h6{font-size:10px;font-weight:700;color:#0F172A;margin-bottom:8px}
+.resume-mini .line{height:4px;background:#E6E4DD;border-radius:2px;margin-bottom:4px}
+.interview-mini .msg{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start}
+.interview-mini .avatar{width:20px;height:20px;border-radius:50%;flex-shrink:0}
+.interview-mini .bubble{flex:1;font-size:9px;color:#475569;height:6px;background:#E6E4DD;border-radius:3px}
+
+/* Auth pages */
+.auth-shell{display:grid;grid-template-columns:1fr 1fr;min-height:900px;background:#FDFBF7}
+.auth-side{background:#0F172A;color:#FDFBF7;display:flex;flex-direction:column;justify-content:space-between;padding:60px;position:relative;overflow:hidden}
+.auth-side::before{content:"";position:absolute;top:0;right:0;width:400px;height:400px;background:radial-gradient(circle, rgba(181,121,59,.15) 0%, transparent 70%)}
+.auth-side .logo{font-family:'Playfair Display',serif;font-size:28px;letter-spacing:-.02em}
+.auth-side .pitch{font-size:42px;font-weight:600;line-height:1.1;letter-spacing:-.02em;font-family:'Playfair Display',serif;position:relative;z-index:2}
+.auth-side .pitch em{font-style:italic;color:#B5793B}
+.auth-side .features{position:relative;z-index:2}
+.auth-side .feature{display:flex;gap:14px;margin-bottom:20px;align-items:center}
+.auth-side .feature .dot{width:8px;height:8px;border-radius:50%;background:#B5793B;flex-shrink:0}
+.auth-side .feature span{font-size:14px;color:rgba(253,251,247,.7)}
+.auth-form-side{display:flex;align-items:center;justify-content:center;padding:60px;background:#FDFBF7}
+.auth-form{width:100%;max-width:420px}
+.auth-form h2{font-size:36px;font-weight:600;letter-spacing:-.02em;margin-bottom:8px;font-family:'Playfair Display',serif}
+.auth-form .lead{color:#64748B;margin-bottom:32px;font-size:15px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:6px;letter-spacing:.02em}
+.field input{width:100%;padding:14px 16px;border:1px solid #E6E4DD;border-radius:12px;background:#FFFFFF;font-size:14px;font-family:inherit;outline:none;transition:border .2s}
+.field input:focus{border-color:#0F172A}
+.field .hint{font-size:11px;color:#64748B;margin-top:6px}
+.auth-form .btn-primary{width:100%;justify-content:center;padding:16px;font-size:14px;margin-top:8px}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:#94938E;font-size:12px}
+.auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:#E6E4DD}
+.auth-foot{text-align:center;margin-top:24px;font-size:13px;color:#64748B}
+.auth-foot a{color:#0F172A;font-weight:600;text-decoration:none}
+
+/* Dashboard */
+.app-shell{display:grid;grid-template-columns:240px 1fr;min-height:900px;background:#FDFBF7}
+.sidebar{background:rgba(255,255,255,.8);backdrop-filter:blur(20px);border-right:1px solid #E6E4DD;padding:24px 12px;display:flex;flex-direction:column;gap:32px}
+.sidebar .logo-area{display:flex;align-items:center;gap:12px;padding:0 12px 12px}
+.sidebar .logo-mark{width:32px;height:32px;border-radius:50%;background:#0F172A;color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:600}
+.sidebar .logo-text{font-family:'Playfair Display',serif;font-size:18px;font-weight:500}
+.sidebar .nav-section h6{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#94938E;padding:0 16px;margin-bottom:12px}
+.sidebar .nav-item{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:999px;font-size:13px;font-weight:500;color:#64748B;cursor:pointer;margin-bottom:4px}
+.sidebar .nav-item.active{background:rgba(0,0,0,.05);color:#0F172A}
+.sidebar .nav-item .icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center}
+.main{flex:1;padding:32px 48px;overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+.topbar h1{font-size:28px;font-weight:600;letter-spacing:-.02em;font-family:'Playfair Display',serif}
+.topbar .greet{color:#64748B;font-size:14px;margin-top:4px}
+.topbar .actions{display:flex;gap:10px;align-items:center}
+.avatar-circle{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:20px}
+.stat-card .label{font-size:11px;font-weight:600;color:#64748B;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+.stat-card .value{font-size:32px;font-weight:600;letter-spacing:-.02em;font-family:'Playfair Display',serif}
+.stat-card .delta{font-size:11px;color:#1F7A4D;margin-top:6px;display:flex;align-items:center;gap:4px}
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:32px}
+.module-card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:24px;padding:28px;display:flex;flex-direction:column;min-height:220px;position:relative;overflow:hidden}
+.module-card .icon-wrap{width:48px;height:48px;border-radius:14px;background:#F5F3ED;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.module-card h3{font-size:20px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
+.module-card p{font-size:13px;color:#64748B;margin-bottom:auto}
+.module-card .mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.module-card .mini-stats .ms .lbl{font-size:10px;color:#94938E;letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+.module-card .mini-stats .ms .val{font-size:18px;font-weight:600;margin-top:2px}
+.module-card .cta{display:flex;align-items:center;gap:6px;color:#0F172A;font-size:13px;font-weight:600;margin-top:8px}
+
+/* Kanban Board */
+.kanban-page{padding:32px 48px;background:#FDFBF7;min-height:900px}
+.kanban-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px}
+.kanban-header h1{font-size:32px;font-weight:600;letter-spacing:-.02em;font-family:'Playfair Display',serif}
+.kanban-header .sub{color:#64748B;font-size:13px;margin-top:4px}
+.kanban-toolbar{display:flex;gap:8px;align-items:center;padding:12px 16px;background:#FFFFFF;border:1px solid #E6E4DD;border-radius:14px;margin-bottom:20px;flex-wrap:wrap}
+.search-input{flex:1;display:flex;align-items:center;gap:8px;background:#F5F3ED;padding:8px 12px;border-radius:10px;min-width:280px}
+.search-input input{background:transparent;border:none;outline:none;font-size:13px;font-family:inherit;flex:1;color:#0F172A}
+.kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kanban-col{background:rgba(245,243,237,.5);border:1px solid #E6E4DD;border-radius:18px;padding:16px;min-height:600px}
+.kanban-col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #E6E4DD}
+.kanban-col-header h3{font-size:13px;font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.kanban-col-header h3 .count{color:#94938E;font-weight:400}
+.kanban-col-header .add{width:24px;height:24px;border-radius:50%;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#64748B}
+.kanban-col-header .add:hover{background:#E6E4DD}
+.job-card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:14px;padding:16px;margin-bottom:12px;cursor:grab;transition:all .2s}
+.job-card:hover{box-shadow:0 8px 16px -4px rgba(0,0,0,.06);transform:translateY(-1px)}
+.job-card .title{font-size:14px;font-weight:600;color:#0F172A;margin-bottom:2px}
+.job-card .company{font-size:12px;color:#64748B;margin-bottom:10px}
+.job-card .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.job-card .footer{display:flex;align-items:center;justify-content:space-between}
+.job-card .footer .time{font-size:11px;color:#94938E}
+.job-card .footer .avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#B5793B,#0F172A);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600}
+.job-card .score{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#E5F1EB;color:#1F7A4D}
+.job-card .score.amber{background:#F5EBDC;color:#B5793B}
+.job-card .score.red{background:#F7E3E3;color:#B33A3A}
+
+/* Modal / Dialog */
+.modal-overlay{position:absolute;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal{background:#FFFFFF;border-radius:24px;padding:32px;width:560px;box-shadow:0 30px 60px -10px rgba(0,0,0,.3)}
+.modal h2{font-size:24px;font-weight:600;letter-spacing:-.02em;font-family:'Playfair Display',serif;margin-bottom:6px}
+.modal .sub{font-size:13px;color:#64748B;margin-bottom:24px}
+.modal .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal textarea{width:100%;padding:14px 16px;border:1px solid #E6E4DD;border-radius:12px;background:#F5F3ED;font-size:13px;font-family:inherit;outline:none;min-height:120px;resize:none}
+.modal textarea:focus{border-color:#0F172A;background:#fff}
+.modal .actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+
+/* Job Detail */
+.detail-shell{display:grid;grid-template-columns:240px 1fr;min-height:900px;background:#FDFBF7}
+.detail-main{padding:32px 48px}
+.detail-header{display:flex;align-items:center;gap:20px;margin-bottom:24px}
+.detail-logo{width:72px;height:72px;border-radius:16px;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:30px;font-weight:600}
+.detail-title{flex:1}
+.detail-title h1{font-size:32px;font-weight:600;letter-spacing:-.02em;font-family:'Playfair Display',serif}
+.detail-title .company{font-size:14px;color:#64748B;margin-top:4px;display:flex;align-items:center;gap:12px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid #E6E4DD;margin-bottom:32px}
+.tab{padding:14px 20px;font-size:13px;font-weight:500;color:#64748B;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.active{color:#0F172A;border-bottom-color:#0F172A}
+.detail-grid{display:grid;grid-template-columns:1fr 320px;gap:24px}
+.detail-content{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:32px}
+.detail-content h3{font-size:18px;font-weight:600;margin-bottom:16px}
+.detail-content p{color:#475569;font-size:14px;line-height:1.7;margin-bottom:12px}
+.detail-content ul{padding-left:20px;color:#475569;font-size:14px;line-height:1.8}
+.detail-side{display:flex;flex-direction:column;gap:16px}
+.side-card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:20px}
+.side-card h4{font-size:11px;font-weight:600;color:#64748B;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+.meta-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px solid #F5F3ED}
+.meta-row:last-child{border-bottom:none}
+.meta-row .lbl{color:#64748B}
+.meta-row .val{font-weight:500;color:#0F172A}
+.score-ring{width:120px;height:120px;margin:0 auto 12px;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-ring .num strong{font-size:36px;font-weight:600;font-family:'Playfair Display',serif}
+.score-ring .num span{font-size:10px;color:#64748B;letter-spacing:.1em;text-transform:uppercase}
+
+/* Analytics */
+.analytics-page{padding:32px 48px;background:#FDFBF7;min-height:900px}
+.analytics-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px}
+.analytics-header h1{font-size:32px;font-weight:600;letter-spacing:-.02em;font-family:'Playfair Display',serif}
+.analytics-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.chart-card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:24px}
+.chart-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.chart-card .sub{font-size:12px;color:#64748B;margin-bottom:16px}
+.chart-area{height:200px;position:relative;width:100%}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:180px;padding-top:20px}
+.bar{flex:1;background:linear-gradient(180deg,#0F172A,#475569);border-radius:6px 6px 0 0;position:relative}
+.bar .lbl{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:10px;color:#64748B}
+.bar .val{position:absolute;top:-22px;left:0;right:0;text-align:center;font-size:11px;font-weight:600;color:#0F172A}
+.funnel{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.funnel-step{height:42px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;color:#FDFBF7;font-size:13px;font-weight:500}
+.funnel-step.s1{background:#1F7A4D;width:100%}
+.funnel-step.s2{background:#3B6CB7;width:78%}
+.funnel-step.s3{background:#B5793B;width:52%}
+.funnel-step.s4{background:#475569;width:28%}
+.funnel-step.s5{background:#0F172A;width:14%}
+
+/* Compare */
+.compare-page{padding:32px 48px;background:#FDFBF7;min-height:900px}
+.compare-header h1{font-size:32px;font-weight:600;font-family:'Playfair Display',serif;margin-bottom:6px}
+.compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.compare-col{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:20px;display:flex;flex-direction:column}
+.compare-col h3{font-size:18px;font-weight:600;margin-bottom:4px;font-family:'Playfair Display',serif}
+.compare-col .company{font-size:13px;color:#64748B;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #F5F3ED}
+.compare-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px}
+.compare-row .lbl{color:#64748B}
+.compare-row .val{font-weight:500;color:#0F172A}
+.compare-col .verdict{margin-top:auto;padding:14px;border-radius:12px;font-size:12px;font-weight:500;text-align:center}
+.compare-col .verdict.win{background:#E5F1EB;color:#1F7A4D}
+.compare-col .verdict.mid{background:#F5EBDC;color:#B5793B}
+.compare-col .verdict.low{background:#F7E3E3;color:#B33A3A}
+.compare-best{outline:2px solid #0F172A;outline-offset:2px}
+
+/* Resume Studio List */
+.resume-list-page{padding:32px 48px;background:#FDFBF7;min-height:900px}
+.resume-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px}
+.resume-header h1{font-size:32px;font-weight:600;font-family:'Playfair Display',serif;letter-spacing:-.02em}
+.tailor-banner{background:linear-gradient(135deg,#0F172A,#020617);color:#FDFBF7;border-radius:18px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:16px}
+.tailor-banner .icon{width:40px;height:40px;border-radius:12px;background:rgba(253,251,247,.1);display:flex;align-items:center;justify-content:center}
+.tailor-banner .text h4{font-size:15px;font-weight:600;margin-bottom:2px}
+.tailor-banner .text p{font-size:13px;opacity:.7}
+.resume-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.resume-card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s}
+.resume-card:hover{box-shadow:0 12px 24px -8px rgba(0,0,0,.08);transform:translateY(-2px)}
+.resume-thumb{aspect-ratio:8.5/11;background:linear-gradient(180deg,#FFFFFF,#FDFBF7);padding:16px;position:relative;border-bottom:1px solid #E6E4DD}
+.resume-thumb .line{height:6px;background:#E6E4DD;border-radius:3px;margin-bottom:6px}
+.resume-thumb .line.short{width:60%}
+.resume-thumb .line.name{width:70%;height:14px;background:#0F172A;margin-bottom:14px}
+.resume-thumb .section-title{width:40%;height:8px;background:#475569;margin:14px 0 10px}
+.resume-thumb .badge{position:absolute;top:12px;right:12px;background:rgba(15,23,42,.85);color:#FDFBF7;padding:4px 10px;border-radius:999px;font-size:9px;font-weight:600;letter-spacing:.05em}
+.resume-card .meta{padding:16px}
+.resume-card .meta h4{font-size:15px;font-weight:600;margin-bottom:4px}
+.resume-card .meta .sub{font-size:12px;color:#64748B;display:flex;gap:8px;align-items:center}
+
+/* Resume Editor */
+.editor-shell{display:grid;grid-template-columns:240px 1fr 480px;min-height:900px;background:#FDFBF7}
+.editor-toolbar{background:#FFFFFF;border-bottom:1px solid #E6E4DD;padding:12px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;grid-column:2/4}
+.editor-toolbar .divider{width:1px;height:20px;background:#E6E4DD;margin:0 4px}
+.editor-btn{width:32px;height:32px;border-radius:8px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#475569;font-size:13px;font-weight:600}
+.editor-btn.active{background:#0F172A;color:#FDFBF7}
+.editor-btn:hover{background:#F5F3ED}
+.editor-main{padding:32px 48px;background:#FDFBF7;overflow-y:auto;grid-column:2/3}
+.editor-doc{background:#FFFFFF;min-height:1000px;box-shadow:0 4px 20px rgba(0,0,0,.06);border-radius:8px;padding:60px 80px}
+.editor-doc h1{font-size:28px;letter-spacing:-.01em;margin-bottom:4px;font-family:'Playfair Display',serif}
+.editor-doc .contact{color:#64748B;font-size:12px;margin-bottom:24px;display:flex;gap:12px}
+.editor-doc h2{font-size:14px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid #0F172A;padding-bottom:4px;margin:24px 0 12px;font-weight:700}
+.editor-doc p{font-size:13px;line-height:1.6;color:#1C1B1A;margin-bottom:8px}
+.editor-doc .exp{margin-bottom:14px}
+.editor-doc .exp-head{display:flex;justify-content:space-between;font-weight:600;font-size:13px;margin-bottom:4px}
+.editor-doc .exp-sub{font-size:12px;color:#64748B;margin-bottom:6px}
+.editor-preview{padding:24px;background:#F5F3ED;overflow-y:auto;grid-column:3/4;border-left:1px solid #E6E4DD}
+.preview-tabs{display:flex;gap:4px;margin-bottom:16px;background:#FFFFFF;padding:4px;border-radius:10px;width:fit-content}
+.preview-tabs .pt{padding:8px 16px;font-size:12px;font-weight:500;border-radius:8px;cursor:pointer;color:#64748B}
+.preview-tabs .pt.active{background:#0F172A;color:#FDFBF7}
+.preview-frame{background:#FFFFFF;border-radius:8px;padding:40px;box-shadow:0 4px 20px rgba(0,0,0,.06);font-size:12px;line-height:1.5}
+.preview-frame h1{font-size:22px;font-family:'Playfair Display',serif;margin-bottom:4px}
+.preview-frame h2{font-size:11px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid #0F172A;padding-bottom:2px;margin:16px 0 8px}
+.preview-frame .ats-panel{background:#F5F3ED;border-radius:10px;padding:14px;margin-bottom:16px}
+.ats-panel .ats-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;align-items:center}
+.ats-panel .bar{height:6px;background:#E6E4DD;border-radius:3px;flex:1;margin:0 12px;overflow:hidden}
+.ats-panel .bar > div{height:100%;background:#1F7A4D;border-radius:3px}
+.ats-panel .bar > div.amber{background:#B5793B}
+.ats-panel .bar > div.red{background:#B33A3A}
+
+/* Templates Gallery */
+.templates-page{padding:48px;background:#FDFBF7;min-height:900px}
+.templates-header{text-align:center;margin-bottom:48px}
+.templates-header h1{font-size:48px;font-weight:600;letter-spacing:-.03em;font-family:'Playfair Display',serif;margin-bottom:8px}
+.templates-header p{color:#64748B;font-size:15px}
+.templates-filters{display:flex;gap:8px;justify-content:center;margin-bottom:32px}
+.templates-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.template-card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s}
+.template-card:hover{box-shadow:0 20px 40px -10px rgba(0,0,0,.1)}
+.template-thumb{aspect-ratio:8.5/11;padding:24px;background:linear-gradient(180deg,#FFFFFF,#FDFBF7);position:relative}
+.template-thumb.t-bold{background:#0F172A;color:#FDFBF7}
+.template-thumb.t-bold .line{background:rgba(253,251,247,.2)}
+.template-thumb.t-bold .sec-title{background:rgba(253,251,247,.4)}
+.template-thumb .name{height:12px;background:#0F172A;width:60%;margin-bottom:6px}
+.template-thumb .sub{height:4px;background:#64748B;width:40%;margin-bottom:20px}
+.template-thumb .sec-title{height:6px;background:#0F172A;width:30%;margin:14px 0 8px}
+.template-thumb .line{height:3px;background:#E6E4DD;margin-bottom:3px}
+.template-card .meta{padding:14px 16px;border-top:1px solid #E6E4DD;display:flex;justify-content:space-between;align-items:center}
+.template-card .meta h4{font-size:14px;font-weight:600}
+.template-card .meta .badge{font-size:10px;padding:3px 8px;border-radius:999px;background:#F5F3ED;color:#475569}
+
+/* Discovery */
+.discover-page{padding:32px 48px;background:#FDFBF7;min-height:900px}
+.discover-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.discover-header h1{font-size:32px;font-weight:600;font-family:'Playfair Display',serif;letter-spacing:-.02em}
+.discover-header .sub{color:#64748B;font-size:13px;margin-top:4px}
+.discover-toolbar{display:flex;gap:8px;margin-bottom:24px}
+.filter-chip{padding:8px 14px;border-radius:999px;border:1px solid #E6E4DD;background:#FFFFFF;font-size:12px;font-weight:500;color:#475569;cursor:pointer;display:flex;align-items:center;gap:6px}
+.filter-chip.active{background:#0F172A;color:#FDFBF7;border-color:#0F172A}
+.discover-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.discover-card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.discover-card .top{display:flex;align-items:flex-start;gap:14px}
+.discover-card .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#475569,#0F172A);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:600;flex-shrink:0}
+.discover-card .title-block{flex:1;min-width:0}
+.discover-card h3{font-size:16px;font-weight:600;margin-bottom:2px;letter-spacing:-.01em}
+.discover-card .company{font-size:13px;color:#64748B}
+.discover-card .match{display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px solid #F5F3ED}
+.discover-card .match-bar{flex:1;height:8px;background:#F5F3ED;border-radius:4px;overflow:hidden}
+.discover-card .match-bar > div{height:100%;background:linear-gradient(90deg,#1F7A4D,#3B6CB7);border-radius:4px}
+.discover-card .match-text{font-size:12px;font-weight:600;color:#1F7A4D}
+.discover-card .match-text.amber{color:#B5793B}
+.discover-card .skills{display:flex;flex-wrap:wrap;gap:6px}
+.skill-mini{font-size:10px;padding:2px 8px;border-radius:6px;background:#F5F3ED;color:#475569}
+.skill-mini.match{background:#E5F1EB;color:#1F7A4D}
+.skill-mini.miss{background:#F7E3E3;color:#B33A3A}
+.discover-card .actions{display:flex;gap:8px;margin-top:auto}
+.discover-card .actions .btn{flex:1;justify-content:center}
+
+/* Interview hub */
+.interview-page{padding:32px 48px;background:#FDFBF7;min-height:900px}
+.interview-header{margin-bottom:24px}
+.interview-header h1{font-size:32px;font-weight:600;font-family:'Playfair Display',serif;letter-spacing:-.02em;display:flex;align-items:center;gap:14px}
+.interview-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.int-stat{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:20px}
+.int-stat .lbl{font-size:11px;font-weight:600;color:#64748B;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.int-stat .val{font-size:30px;font-weight:600;font-family:'Playfair Display',serif}
+.int-stat .sub{font-size:12px;color:#64748B;margin-top:4px}
+.section-h{font-size:18px;font-weight:600;margin:32px 0 16px;display:flex;align-items:center;gap:8px}
+.section-h .count{color:#94938E;font-weight:400;font-size:14px;margin-left:4px}
+.prep-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.prep-item{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px}
+.prep-item .logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:15px;font-weight:600}
+.prep-item .info{flex:1}
+.prep-item .info h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.prep-item .info .sub{font-size:12px;color:#64748B}
+.prep-item .ready{font-size:11px;padding:4px 10px;border-radius:999px;background:#E5F1EB;color:#1F7A4D;font-weight:600}
+.prep-item .pending{font-size:11px;padding:4px 10px;border-radius:999px;background:#F5EBDC;color:#B5793B;font-weight:600}
+
+/* Mock interview */
+.mock-shell{display:flex;flex-direction:column;min-height:900px;background:#FDFBF7}
+.mock-header{background:#FFFFFF;border-bottom:1px solid #E6E4DD;padding:16px 48px;display:flex;align-items:center;justify-content:space-between}
+.mock-header .left{display:flex;align-items:center;gap:14px}
+.mock-header .logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:600}
+.mock-header h2{font-size:18px;font-weight:600;font-family:'Playfair Display',serif}
+.mock-header .sub{font-size:12px;color:#64748B}
+.mock-header .timer{font-size:13px;color:#475569;font-weight:500;display:flex;align-items:center;gap:6px}
+.mock-progress{height:4px;background:#F5F3ED;position:relative}
+.mock-progress > div{height:100%;width:35%;background:#0F172A;transition:width .3s}
+.mock-body{flex:1;display:grid;grid-template-columns:1fr 320px;gap:0}
+.mock-chat{padding:32px 48px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+.message{display:flex;gap:14px;max-width:720px}
+.message.ai{margin-right:auto}
+.message.user{margin-left:auto;flex-direction:row-reverse}
+.message .avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px}
+.message.ai .avatar{background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7}
+.message.user .avatar{background:linear-gradient(135deg,#B5793B,#0F172A);color:#FDFBF7}
+.message .bubble{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:14px 18px;font-size:14px;line-height:1.6;max-width:100%}
+.message.user .bubble{background:#0F172A;color:#FDFBF7;border-color:#0F172A}
+.mock-input{padding:20px 48px;background:#FFFFFF;border-top:1px solid #E6E4DD}
+.mock-input .input-wrap{background:#F5F3ED;border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.mock-input .input-wrap input{flex:1;background:transparent;border:none;outline:none;font-size:14px;font-family:inherit}
+.mock-input .send{width:36px;height:36px;border-radius:50%;background:#0F172A;color:#FDFBF7;display:flex;align-items:center;justify-content:center}
+.mock-side{background:#FDFBF7;border-left:1px solid #E6E4DD;padding:24px;overflow-y:auto}
+.mock-side h4{font-size:11px;font-weight:600;color:#64748B;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+.question-list{display:flex;flex-direction:column;gap:8px}
+.q-item{padding:12px;background:#FFFFFF;border:1px solid #E6E4DD;border-radius:10px;font-size:12px;display:flex;gap:10px;align-items:flex-start}
+.q-item .num{width:20px;height:20px;border-radius:50%;background:#F5F3ED;color:#64748B;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.q-item.active{background:#0F172A;color:#FDFBF7;border-color:#0F172A}
+.q-item.active .num{background:rgba(253,251,247,.2);color:#FDFBF7}
+.q-item.done .num{background:#1F7A4D;color:#FDFBF7}
+
+/* Stories */
+.stories-page{padding:32px 48px;background:#FDFBF7;min-height:900px}
+.stories-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px}
+.stories-header h1{font-size:32px;font-weight:600;font-family:'Playfair Display',serif;letter-spacing:-.02em}
+.story-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.story-card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:24px;cursor:pointer;transition:all .2s}
+.story-card:hover{box-shadow:0 8px 16px -4px rgba(0,0,0,.06)}
+.story-card .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.story-card h3{font-size:16px;font-weight:600;font-family:'Playfair Display',serif;letter-spacing:-.01em}
+.story-card .tags{display:flex;gap:6px;margin-bottom:12px}
+.story-card .preview{font-size:13px;color:#475569;line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.story-card .meta{font-size:11px;color:#94938E;display:flex;gap:12px;border-top:1px solid #F5F3ED;padding-top:12px}
+.star-bar{display:flex;gap:6px;margin-bottom:12px}
+.star{color:#B5793B;font-size:14px}
+
+/* Settings */
+.settings-page{padding:32px 48px;background:#FDFBF7;min-height:900px}
+.settings-layout{display:grid;grid-template-columns:220px 1fr;gap:32px}
+.settings-side{display:flex;flex-direction:column;gap:4px}
+.settings-side .item{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:500;color:#475569;cursor:pointer;display:flex;align-items:center;gap:12px}
+.settings-side .item.active{background:#0F172A;color:#FDFBF7}
+.settings-content{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:32px}
+.settings-content h2{font-size:24px;font-weight:600;font-family:'Playfair Display',serif;margin-bottom:6px;letter-spacing:-.02em}
+.settings-content .sub{color:#64748B;font-size:13px;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid #F5F3ED}
+.setting-row{display:grid;grid-template-columns:1fr 2fr;gap:24px;padding:20px 0;border-bottom:1px solid #F5F3ED;align-items:center}
+.setting-row:last-child{border-bottom:none}
+.setting-row h4{font-size:14px;font-weight:600;margin-bottom:4px}
+.setting-row p{font-size:12px;color:#64748B}
+.input-row{display:flex;gap:8px}
+.input-row input{flex:1;padding:10px 14px;border:1px solid #E6E4DD;border-radius:10px;font-size:13px;font-family:inherit;outline:none}
+.toggle{position:relative;width:42px;height:24px;background:#E6E4DD;border-radius:999px;cursor:pointer}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.toggle.on{background:#0F172A}
+.toggle.on::after{left:21px}
+.api-key-row{display:flex;align-items:center;gap:14px;padding:14px;background:#F5F3ED;border-radius:12px;margin-bottom:8px}
+.api-key-row .name{font-weight:600;font-size:13px;flex:1}
+.api-key-row .key{font-family:monospace;font-size:11px;color:#64748B;background:#fff;padding:4px 8px;border-radius:6px;border:1px solid #E6E4DD}
+
+/* Billing */
+.billing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+.plan{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:28px;display:flex;flex-direction:column;position:relative}
+.plan.featured{background:#0F172A;color:#FDFBF7;border-color:#0F172A}
+.plan.featured .ribbon{position:absolute;top:-12px;right:20px;background:#B5793B;color:#FDFBF7;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.05em}
+.plan .name{font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.plan .price{font-size:40px;font-weight:600;letter-spacing:-.02em;font-family:'Playfair Display',serif}
+.plan .price .per{font-size:14px;color:#64748B;font-weight:400}
+.plan.featured .price .per{color:rgba(253,251,247,.6)}
+.plan .desc{font-size:13px;color:#64748B;margin:12px 0 24px}
+.plan.featured .desc{color:rgba(253,251,247,.7)}
+.plan ul{list-style:none;margin-bottom:24px;flex:1}
+.plan ul li{padding:6px 0;font-size:13px;display:flex;align-items:center;gap:8px}
+.plan ul li::before{content:"✓";color:#1F7A4D;font-weight:700}
+.plan.featured ul li::before{color:#B5793B}
+.plan .btn-primary,.plan .btn-secondary{justify-content:center;width:100%}
+.plan.featured .btn-secondary{background:#FDFBF7;color:#0F172A;border:none}
+.usage-card{background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:20px;margin-top:24px}
+.usage-card h4{font-size:14px;font-weight:600;margin-bottom:16px}
+.usage-row{margin-bottom:14px}
+.usage-row .lbl{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+.usage-bar{height:6px;background:#F5F3ED;border-radius:3px;overflow:hidden}
+.usage-bar > div{height:100%;background:#0F172A;border-radius:3px}
+
+/* Page header (shared) */
+.page-h{padding:32px 48px 0;background:#FDFBF7}
+.breadcrumb{font-size:12px;color:#64748B;margin-bottom:8px}
+.breadcrumb a{color:#0F172A;text-decoration:none;font-weight:500}
+</style>
+</head>
+<body>
+
+<!-- ============================== -->
+<!-- 1. LANDING PAGE - HERO -->
+<!-- ============================== -->
+<div class="mockup" id="m-landing-hero">
+  <div class="mockup-label">1 · Landing Page · Hero</div>
+  <div class="landing">
+    <div class="landing-floats">
+      <div class="float-card float-1">
+        <div class="kanban-mini">
+          <div class="col"><h6>Goals</h6><div class="card-mini"></div><div class="card-mini"></div></div>
+          <div class="col"><h6>Apps</h6><div class="card-mini"></div><div class="card-mini"></div><div class="card-mini"></div></div>
+          <div class="col"><h6>Intvs</h6><div class="card-mini"></div></div>
+          <div class="col"><h6>Offers</h6><div class="card-mini"></div></div>
+        </div>
+      </div>
+      <div class="float-card float-2">
+        <div class="resume-mini">
+          <h6>Resume</h6>
+          <div class="line" style="width:80%"></div>
+          <div class="line" style="width:60%;margin:6px 0 10px"></div>
+          <div class="line" style="width:90%"></div>
+          <div class="line" style="width:75%"></div>
+          <div class="line" style="width:85%;margin-top:10px"></div>
+          <div class="line" style="width:50%"></div>
+        </div>
+      </div>
+      <div class="float-card float-3">
+        <div class="interview-mini">
+          <h6 style="font-size:10px;font-weight:700;margin-bottom:8px">Interview</h6>
+          <div class="msg"><div class="avatar" style="background:#0F172A"></div><div style="flex:1"><div class="bubble" style="width:100%"></div><div class="bubble" style="width:80%"></div></div></div>
+          <div class="msg"><div class="avatar" style="background:#1F7A4D"></div><div style="flex:1"><div class="bubble" style="width:90%"></div><div class="bubble" style="width:60%"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="landing-inner">
+      <h1>OfferPath</h1>
+      <div class="sub">The Career Operating System</div>
+      <div class="landing-ctas">
+        <button class="btn btn-primary">Get Started Free</button>
+        <button class="btn btn-secondary">Learn More</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 2. LANDING PAGE - FEATURES BENTO -->
+<!-- ============================== -->
+<div class="mockup" id="m-landing-features" style="min-height:700px;padding:80px 60px;background:#FDFBF7">
+  <div class="mockup-label">2 · Landing Page · Features Bento</div>
+  <div style="max-width:1100px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:56px">
+      <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#B5793B;font-weight:600;margin-bottom:12px">The Career OS</div>
+      <h2 style="font-size:56px;font-weight:600;letter-spacing:-.03em;font-family:'Playfair Display',serif;line-height:1.05;margin-bottom:16px">Everything to land the offer.</h2>
+      <p style="color:#64748B;font-size:16px;max-width:560px;margin:0 auto">A unified workspace for your entire search. No more spreadsheets, no more lost context.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+      <div style="background:#0F172A;color:#FDFBF7;border-radius:24px;padding:40px;min-height:320px;position:relative;overflow:hidden">
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(253,251,247,.5);margin-bottom:8px">01 · Tracker</div>
+        <h3 style="font-size:32px;font-weight:600;letter-spacing:-.02em;line-height:1.1;font-family:'Playfair Display',serif;margin-bottom:12px">Your entire search,<br/>on one board.</h3>
+        <p style="color:rgba(253,251,247,.7);font-size:14px;max-width:340px;line-height:1.6">Drag jobs from "Saved" to "Offer". AI scores fit, surfaces next steps, and tracks your funnel conversion automatically.</p>
+        <div style="position:absolute;right:30px;bottom:30px;display:flex;gap:8px">
+          <div style="width:140px;background:rgba(253,251,247,.06);border:1px solid rgba(253,251,247,.1);border-radius:10px;padding:10px">
+            <div style="font-size:9px;color:rgba(253,251,247,.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Applied</div>
+            <div style="height:6px;background:rgba(253,251,247,.2);border-radius:3px;margin-bottom:4px"></div>
+            <div style="height:6px;background:rgba(253,251,247,.2);border-radius:3px;width:80%"></div>
+          </div>
+          <div style="width:140px;background:rgba(253,251,247,.06);border:1px solid rgba(253,251,247,.1);border-radius:10px;padding:10px">
+            <div style="font-size:9px;color:rgba(253,251,247,.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Interviewing</div>
+            <div style="height:6px;background:rgba(253,251,247,.2);border-radius:3px;margin-bottom:4px;width:60%"></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#F5F3ED;border-radius:24px;padding:32px;min-height:320px;position:relative">
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#B5793B;font-weight:600;margin-bottom:8px">02 · Resume Studio</div>
+        <h3 style="font-size:24px;font-weight:600;letter-spacing:-.01em;font-family:'Playfair Display',serif;line-height:1.2;margin-bottom:12px">Tailored in 60 seconds.</h3>
+        <p style="color:#475569;font-size:13px;line-height:1.6;margin-bottom:20px">Pick a base resume, pick a job, get an ATS-optimized tailored version.</p>
+        <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,.04)">
+          <div style="height:8px;background:#0F172A;width:60%;border-radius:4px;margin-bottom:8px"></div>
+          <div style="height:4px;background:#E6E4DD;width:90%;border-radius:2px;margin-bottom:4px"></div>
+          <div style="height:4px;background:#E6E4DD;width:80%;border-radius:2px;margin-bottom:10px"></div>
+          <div style="height:5px;background:#475569;width:30%;border-radius:3px;margin-bottom:8px"></div>
+          <div style="height:4px;background:#E6E4DD;width:95%;border-radius:2px;margin-bottom:4px"></div>
+          <div style="height:4px;background:#E6E4DD;width:75%;border-radius:2px"></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+      <div style="background:#FFFFFF;border:1px solid #E6E4DD;border-radius:24px;padding:28px">
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#B5793B;font-weight:600;margin-bottom:8px">03 · Discover</div>
+        <h3 style="font-size:20px;font-weight:600;font-family:'Playfair Display',serif;margin-bottom:8px">Smart job feed</h3>
+        <p style="color:#64748B;font-size:13px;line-height:1.5">Matches your profile with the open web. Highlights skills you have and skills to learn.</p>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #E6E4DD;border-radius:24px;padding:28px">
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#B5793B;font-weight:600;margin-bottom:8px">04 · Interview</div>
+        <h3 style="font-size:20px;font-weight:600;font-family:'Playfair Display',serif;margin-bottom:8px">Mock & STAR bank</h3>
+        <p style="color:#64748B;font-size:13px;line-height:1.5">Practice real questions. Build a reusable vault of stories scored against any JD.</p>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #E6E4DD;border-radius:24px;padding:28px">
+        <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#B5793B;font-weight:600;margin-bottom:8px">05 · Analytics</div>
+        <h3 style="font-size:20px;font-weight:600;font-family:'Playfair Display',serif;margin-bottom:8px">Funnel insights</h3>
+        <p style="color:#64748B;font-size:13px;line-height:1.5">See conversion rates from application to offer. Know what's working.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 3. LOGIN -->
+<!-- ============================== -->
+<div class="mockup" id="m-login">
+  <div class="mockup-label">3 · Auth · Sign In</div>
+  <div class="auth-shell">
+    <div class="auth-side">
+      <div class="logo">OfferPath</div>
+      <div>
+        <div class="pitch">Land the offer<br/>you actually <em>want.</em></div>
+      </div>
+      <div class="features">
+        <div class="feature"><div class="dot"></div><span>Drag-and-drop application pipeline</span></div>
+        <div class="feature"><div class="dot"></div><span>AI-tailored resumes in one click</span></div>
+        <div class="feature"><div class="dot"></div><span>Mock interviews with real-time scoring</span></div>
+        <div class="feature"><div class="dot"></div><span>Smart job discovery across the web</span></div>
+      </div>
+    </div>
+    <div class="auth-form-side">
+      <div class="auth-form">
+        <h2>Welcome back.</h2>
+        <p class="lead">Sign in to continue your job search.</p>
+        <div class="field"><label>Email</label><input type="email" value="alex@example.com" /></div>
+        <div class="field"><label>Password</label><input type="password" value="••••••••••" /><div class="hint" style="text-align:right"><a href="#" style="color:#475569;text-decoration:none">Forgot password?</a></div></div>
+        <button class="btn btn-primary">Sign in →</button>
+        <div class="auth-divider">or continue with</div>
+        <button class="btn btn-secondary" style="width:100%;justify-content:center;padding:14px">Continue with Google</button>
+        <div class="auth-foot">Don't have an account? <a href="#">Sign up</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 4. REGISTER -->
+<!-- ============================== -->
+<div class="mockup" id="m-register">
+  <div class="mockup-label">4 · Auth · Create Account</div>
+  <div class="auth-shell">
+    <div class="auth-side">
+      <div class="logo">OfferPath</div>
+      <div>
+        <div class="pitch">Your career,<br/>finally <em>organized.</em></div>
+      </div>
+      <div class="features">
+        <div class="feature"><div class="dot"></div><span>14-day free trial, no credit card</span></div>
+        <div class="feature"><div class="dot"></div><span>Cancel anytime</span></div>
+        <div class="feature"><div class="dot"></div><span>Your data stays private</span></div>
+      </div>
+    </div>
+    <div class="auth-form-side">
+      <div class="auth-form">
+        <h2>Create your account.</h2>
+        <p class="lead">Start landing offers in minutes.</p>
+        <div class="field"><label>Full name</label><input type="text" value="Alex Chen" /></div>
+        <div class="field"><label>Work email</label><input type="email" value="alex@example.com" /></div>
+        <div class="field"><label>Password</label><input type="password" value="••••••••••" /><div class="hint">8+ characters with a number</div></div>
+        <div class="field"><label>I am a…</label>
+          <div style="display:flex;gap:8px">
+            <div style="flex:1;padding:12px;border:1px solid #0F172A;border-radius:12px;background:#F5F3ED;text-align:center;font-size:13px;font-weight:500">Job seeker</div>
+            <div style="flex:1;padding:12px;border:1px solid #E6E4DD;border-radius:12px;text-align:center;font-size:13px;color:#64748B">Recruiter</div>
+          </div>
+        </div>
+        <button class="btn btn-primary">Create account →</button>
+        <div class="auth-foot">Already have an account? <a href="#">Sign in</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 5. DASHBOARD HUB -->
+<!-- ============================== -->
+<div class="mockup" id="m-dashboard">
+  <div class="mockup-label">5 · Dashboard · Hub</div>
+  <div class="app-shell">
+    <div class="sidebar">
+      <div class="logo-area"><div class="logo-mark">O</div><div class="logo-text">OfferPath</div></div>
+      <div class="nav-section">
+        <h6>Overview</h6>
+        <div class="nav-item active"><div class="icon">▦</div>Dashboard</div>
+      </div>
+      <div class="nav-section">
+        <h6>Modules</h6>
+        <div class="nav-item"><div class="icon">▤</div>Job Tracker</div>
+        <div class="nav-item"><div class="icon">▣</div>Resume Studio</div>
+        <div class="nav-item"><div class="icon">◇</div>Job Search</div>
+        <div class="nav-item"><div class="icon">◉</div>Interview</div>
+      </div>
+      <div class="nav-section">
+        <h6>Account</h6>
+        <div class="nav-item"><div class="icon">⚙</div>Settings</div>
+        <div class="nav-item"><div class="icon">$</div>Billing</div>
+        <div class="nav-item"><div class="icon">⚿</div>API Keys</div>
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <div class="greet">Good morning, Alex — Tuesday, June 17</div>
+          <h1>Career HQ</h1>
+        </div>
+        <div class="actions">
+          <div class="chip">Weekly goal · 10 apps</div>
+          <div class="avatar-circle">AC</div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">Total Jobs</div><div class="value">42</div><div class="delta">▲ 4 this week</div></div>
+        <div class="stat-card"><div class="label">Interview Rate</div><div class="value">28.6%</div><div class="delta">▲ 6.2% vs last month</div></div>
+        <div class="stat-card"><div class="label">Avg Fit Score</div><div class="value">74.2</div><div class="delta">▲ 3.1</div></div>
+        <div class="stat-card"><div class="label">This Week</div><div class="value">+9</div><div class="delta">90% of weekly goal</div></div>
+      </div>
+
+      <div class="module-grid">
+        <div class="module-card">
+          <div class="icon-wrap">▤</div>
+          <h3>Application Tracker</h3>
+          <p>Manage and track your active job applications</p>
+          <div class="mini-stats">
+            <div class="ms"><div class="lbl">Active</div><div class="val">38</div></div>
+            <div class="ms"><div class="lbl">Interviews</div><div class="val">6</div></div>
+          </div>
+          <div class="cta">Open Tracker →</div>
+        </div>
+        <div class="module-card">
+          <div class="icon-wrap">▣</div>
+          <h3>Resume Studio</h3>
+          <p>Create and tailor high-impact resumes</p>
+          <div class="mini-stats">
+            <div class="ms"><div class="lbl">Total</div><div class="val">7</div></div>
+            <div class="ms"><div class="lbl">Tailored</div><div class="val">5</div></div>
+          </div>
+          <div class="cta">Open Builder →</div>
+        </div>
+        <div class="module-card">
+          <div class="icon-wrap">◇</div>
+          <h3>Find Jobs</h3>
+          <p>Scan for new opportunities across platforms</p>
+          <div class="mini-stats">
+            <div class="ms"><div class="lbl">Leads</div><div class="val">23</div></div>
+            <div class="ms"><div class="lbl">Companies</div><div class="val">18</div></div>
+          </div>
+          <div class="cta">Search Jobs →</div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF;border:1px solid #E6E4DD;border-radius:24px;padding:28px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px">
+          <div>
+            <h3 style="font-size:18px;font-weight:600;margin-bottom:4px">Tailoring queue</h3>
+            <p style="font-size:13px;color:#64748B">3 jobs need a tailored resume before applying</p>
+          </div>
+          <button class="btn btn-secondary">View all</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div style="background:#F5F3ED;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:600">S</div>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">Stripe</div><div style="font-size:11px;color:#64748B">Senior Product Designer</div></div>
+            <span class="chip chip-amber">Score 78</span>
+          </div>
+          <div style="background:#F5F3ED;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:600">N</div>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">Notion</div><div style="font-size:11px;color:#64748B">Engineering Manager</div></div>
+            <span class="chip chip-green">Score 86</span>
+          </div>
+          <div style="background:#F5F3ED;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:600">F</div>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">Figma</div><div style="font-size:11px;color:#64748B">Interaction Designer</div></div>
+            <span class="chip chip-amber">Score 72</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================== -->
+<!-- 6. KANBAN PIPELINE -->
+<!-- ============================== -->
+<div class="mockup" id="m-kanban">
+  <div class="mockup-label">6 · Pipeline · Kanban Board</div>
+  <div class="kanban-page">
+    <div class="kanban-header">
+      <div>
+        <h1>Job Pipeline</h1>
+        <div class="sub">42 jobs · 6 interviewing · 2 offers · drag cards to update</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary">Import CSV</button>
+        <button class="btn btn-secondary">Export</button>
+        <button class="btn btn-primary">+ Add job</button>
+      </div>
+    </div>
+    <div class="kanban-toolbar">
+      <div class="search-input"><span style="color:#94938E">⌕</span><input placeholder="Search roles, companies, skills…"/></div>
+      <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">Filters (2)</button>
+      <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">Sort: Score</button>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        <button class="btn btn-ghost" style="padding:8px 12px;background:#0F172A;color:#FDFBF7">Board</button>
+        <button class="btn btn-ghost" style="padding:8px 12px">Analytics</button>
+        <button class="btn btn-ghost" style="padding:8px 12px">Compare</button>
+      </div>
+    </div>
+    <div class="kanban-board">
+      <div class="kanban-col">
+        <div class="kanban-col-header"><h3>Saved <span class="count">(8)</span></h3><div class="add">+</div></div>
+        <div class="job-card"><div class="title">Senior Product Designer</div><div class="company">Stripe</div><div class="tags"><span class="chip">UI/UX</span><span class="chip">Remote</span></div><div class="footer"><span class="time">3d ago</span><span class="avatar">JS</span></div></div>
+        <div class="job-card"><div class="title">Software Engineer II</div><div class="company">Google</div><div class="tags"><span class="chip">Tech</span><span class="chip">Remote</span></div><div class="footer"><span class="time">2d ago</span><span class="avatar">JS</span></div></div>
+        <div class="job-card"><div class="title">Interaction Designer</div><div class="company">Figma</div><div class="tags"><span class="chip">Design</span></div><div class="footer"><span class="time">1d ago</span><span class="avatar">JS</span></div></div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-col-header"><h3>Applied <span class="count">(14)</span></h3><div class="add">+</div></div>
+        <div class="job-card"><div class="title">Frontend Engineer</div><div class="company">Vercel</div><div class="tags"><span class="chip">Web</span><span class="chip">Remote</span></div><div class="footer"><span class="time">1d ago</span><span class="score">Fit 87</span></div></div>
+        <div class="job-card"><div class="title">Data Scientist</div><div class="company">Airbnb</div><div class="tags"><span class="chip">Data</span><span class="chip">Remote</span></div><div class="footer"><span class="time">5h ago</span><span class="score amber">Fit 73</span></div></div>
+        <div class="job-card"><div class="title">iOS Engineer</div><div class="company">Spotify</div><div class="tags"><span class="chip">Mobile</span></div><div class="footer"><span class="time">3d ago</span><span class="score red">Fit 62</span></div></div>
+        <div class="job-card"><div class="title">Product Designer</div><div class="company">Linear</div><div class="tags"><span class="chip">UI/UX</span><span class="chip">Hybrid</span></div><div class="footer"><span class="time">6d ago</span><span class="score">Fit 81</span></div></div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-col-header"><h3>Interviewing <span class="count">(6)</span></h3><div class="add">+</div></div>
+        <div class="job-card"><div class="title">Lead Product Designer</div><div class="company">Meta</div><div class="tags"><span class="chip">Design</span><span class="chip chip-blue">Round 2</span></div><div class="footer"><span class="time">14 Nov</span><span class="score">Fit 91</span></div></div>
+        <div class="job-card"><div class="title">Engineering Manager</div><div class="company">Notion</div><div class="tags"><span class="chip">Tech</span><span class="chip chip-amber">Final</span></div><div class="footer"><span class="time">16 Nov</span><span class="score">Fit 86</span></div></div>
+        <div class="job-card"><div class="title">Sr. Frontend Engineer</div><div class="company">Spotify</div><div class="tags"><span class="chip">Web</span><span class="chip">Tech</span></div><div class="footer"><span class="time">17 Nov</span><span class="score">Fit 88</span></div></div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-col-header"><h3>Offer <span class="count">(2)</span></h3><div class="add">+</div></div>
+        <div class="job-card"><div class="title">Product Designer</div><div class="company">Netflix</div><div class="tags"><span class="chip chip-green">Accepted</span><span class="chip">$195k</span></div><div class="footer"><span class="time">18 Nov</span><span class="score">Fit 94</span></div></div>
+        <div class="job-card"><div class="title">UI/UX Designer</div><div class="company">Webflow</div><div class="tags"><span class="chip chip-amber">Received</span><span class="chip">$170k</span></div><div class="footer"><span class="time">19 Nov</span><span class="score">Fit 89</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 7. ADD JOB DIALOG (overlay) -->
+<!-- ============================== -->
+<div class="mockup" id="m-addjob" style="min-height:760px;background:#FDFBF7;position:relative">
+  <div class="mockup-label">7 · Pipeline · Add Job Modal</div>
+  <div style="padding:80px 60px;opacity:.15;filter:blur(2px)">
+    <div class="kanban-board" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kanban-col" style="min-height:400px"></div>
+      <div class="kanban-col" style="min-height:400px"></div>
+      <div class="kanban-col" style="min-height:400px"></div>
+      <div class="kanban-col" style="min-height:400px"></div>
+    </div>
+  </div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <h2>Add a new job</h2>
+      <p class="sub">Paste a job description or fill in the basics. AI will extract details, score fit, and propose a tailored resume.</p>
+      <div class="field"><label>Job URL <span style="color:#94938E;font-weight:400">(optional)</span></label><input placeholder="https://stripe.com/jobs/…" /></div>
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="field"><label>Company</label><input placeholder="Stripe" /></div>
+        <div class="field"><label>Role title</label><input placeholder="Senior Product Designer" /></div>
+      </div>
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="field"><label>Location</label><input placeholder="Remote / SF" /></div>
+        <div class="field"><label>Salary range</label><input placeholder="$150k – $190k" /></div>
+      </div>
+      <div class="field"><label>Job description</label><textarea placeholder="Paste the full job description here…"></textarea></div>
+      <div style="background:#F5F3ED;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:#475569">
+        ✨ <span>AI will analyze the JD, extract required skills, score fit against your base resume, and create an interview prep pack.</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost">Cancel</button>
+        <button class="btn btn-secondary">Save as saved</button>
+        <button class="btn btn-primary">Add & analyze →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 8. JOB DETAIL -->
+<!-- ============================== -->
+<div class="mockup" id="m-jobdetail">
+  <div class="mockup-label">8 · Pipeline · Job Detail</div>
+  <div class="detail-shell">
+    <div class="sidebar">
+      <div class="logo-area"><div class="logo-mark">O</div><div class="logo-text">OfferPath</div></div>
+      <div class="nav-section">
+        <h6>Modules</h6>
+        <div class="nav-item active"><div class="icon">▤</div>Job Tracker</div>
+        <div class="nav-item"><div class="icon">▣</div>Resume Studio</div>
+        <div class="nav-item"><div class="icon">◇</div>Job Search</div>
+        <div class="nav-item"><div class="icon">◉</div>Interview</div>
+      </div>
+    </div>
+    <div class="detail-main">
+      <div class="breadcrumb"><a href="#">Pipeline</a> / Meta / Lead Product Designer</div>
+      <div class="detail-header">
+        <div class="detail-logo">M</div>
+        <div class="detail-title">
+          <h1>Lead Product Designer</h1>
+          <div class="company">Meta · <span class="chip chip-blue">Interviewing · Round 2</span> <span class="chip">$185k – $230k</span> <span class="chip">Menlo Park · Hybrid</span></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">♡ Favorite</button>
+          <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">Archive</button>
+          <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff;color:#B33A3A">Delete</button>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab">Status</div>
+        <div class="tab active">Overview</div>
+        <div class="tab">Documents</div>
+        <div class="tab">Resume Match</div>
+        <div class="tab">AI Email</div>
+        <div class="tab">Questions</div>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-content">
+          <h3>Job description</h3>
+          <p>As a Lead Product Designer at Meta, you will shape the future of how billions of people connect. You will partner with engineering, research, and product to define strategy, ship 0→1 products, and lead a small team of designers.</p>
+          <h3>Responsibilities</h3>
+          <ul>
+            <li>Lead end-to-end design for high-impact surfaces across the family of apps</li>
+            <li>Partner with PM and Eng to define strategy and roadmap</li>
+            <li>Raise the bar for craft, systems thinking, and execution</li>
+            <li>Mentor a team of 3–5 product designers</li>
+          </ul>
+          <h3>Requirements</h3>
+          <ul>
+            <li>8+ years designing complex digital products</li>
+            <li>Strong portfolio demonstrating systems thinking and 0→1 work</li>
+            <li>Experience leading designers and running critiques</li>
+            <li>Excellent written and verbal communication</li>
+          </ul>
+        </div>
+        <div class="detail-side">
+          <div class="side-card" style="text-align:center">
+            <h4>AI Fit Score</h4>
+            <div class="score-ring">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#F5F3ED" stroke-width="10"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#1F7A4D" stroke-width="10" stroke-dasharray="293 327" stroke-linecap="round"/>
+              </svg>
+              <div class="num"><strong>91</strong><span>Excellent fit</span></div>
+            </div>
+            <p style="font-size:12px;color:#64748B;line-height:1.5">Your product strategy & leadership experience strongly match this role.</p>
+          </div>
+          <div class="side-card">
+            <h4>Details</h4>
+            <div class="meta-row"><span class="lbl">Applied</span><span class="val">Nov 2</span></div>
+            <div class="meta-row"><span class="lbl">Source</span><span class="val">Referral</span></div>
+            <div class="meta-row"><span class="lbl">Recruiter</span><span class="val">Sam Lee</span></div>
+            <div class="meta-row"><span class="lbl">Stage</span><span class="val">Onsite</span></div>
+            <div class="meta-row"><span class="lbl">Next step</span><span class="val" style="color:#1F7A4D">Nov 21 · Final</span></div>
+          </div>
+          <div class="side-card">
+            <h4>Skills match</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <span class="chip chip-green">✓ Figma</span>
+              <span class="chip chip-green">✓ Systems</span>
+              <span class="chip chip-green">✓ Leadership</span>
+              <span class="chip chip-green">✓ Strategy</span>
+              <span class="chip chip-amber">△ 0→1</span>
+              <span class="chip chip-red">+ React</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 9. PIPELINE ANALYTICS -->
+<!-- ============================== -->
+<div class="mockup" id="m-analytics">
+  <div class="mockup-label">9 · Pipeline · Analytics</div>
+  <div class="analytics-page">
+    <div class="analytics-header">
+      <div>
+        <div class="breadcrumb"><a href="#">Pipeline</a> / Analytics</div>
+        <h1>Search analytics</h1>
+        <p style="color:#64748B;font-size:13px;margin-top:4px">Funnel, velocity, and source performance · last 90 days</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">Last 30 days</button>
+        <button class="btn btn-primary">Export PDF</button>
+      </div>
+    </div>
+    <div class="analytics-cards">
+      <div class="stat-card"><div class="label">Applications</div><div class="value">87</div><div class="delta">▲ 14% MoM</div></div>
+      <div class="stat-card"><div class="label">Response rate</div><div class="value">38%</div><div class="delta">▲ 6 pts</div></div>
+      <div class="stat-card"><div class="label">Avg time to offer</div><div class="value">23d</div><div class="delta">▼ 4d</div></div>
+      <div class="stat-card"><div class="label">Avg fit score</div><div class="value">76.4</div><div class="delta">▲ 2.1</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="chart-card">
+        <h3>Applications over time</h3>
+        <p class="sub">By week · last 12 weeks</p>
+        <div class="bar-chart">
+          <div class="bar" style="height:35%"><div class="val">12</div><div class="lbl">W1</div></div>
+          <div class="bar" style="height:48%"><div class="val">17</div><div class="lbl">W2</div></div>
+          <div class="bar" style="height:42%"><div class="val">15</div><div class="lbl">W3</div></div>
+          <div class="bar" style="height:58%"><div class="val">21</div><div class="lbl">W4</div></div>
+          <div class="bar" style="height:72%"><div class="val">26</div><div class="lbl">W5</div></div>
+          <div class="bar" style="height:65%"><div class="val">23</div><div class="lbl">W6</div></div>
+          <div class="bar" style="height:80%"><div class="val">29</div><div class="lbl">W7</div></div>
+          <div class="bar" style="height:88%"><div class="val">32</div><div class="lbl">W8</div></div>
+          <div class="bar" style="height:75%"><div class="val">27</div><div class="lbl">W9</div></div>
+          <div class="bar" style="height:62%"><div class="val">22</div><div class="lbl">W10</div></div>
+          <div class="bar" style="height:70%"><div class="val">25</div><div class="lbl">W11</div></div>
+          <div class="bar" style="height:82%"><div class="val">30</div><div class="lbl">W12</div></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>Conversion funnel</h3>
+        <p class="sub">Saved → Offer</p>
+        <div class="funnel">
+          <div class="funnel-step s1"><span>Saved</span><span>87</span></div>
+          <div class="funnel-step s2"><span>Applied</span><span>68</span></div>
+          <div class="funnel-step s3"><span>Interviewing</span><span>19</span></div>
+          <div class="funnel-step s4"><span>Final round</span><span>8</span></div>
+          <div class="funnel-step s5"><span>Offer</span><span>3</span></div>
+        </div>
+        <p style="font-size:11px;color:#64748B;margin-top:12px">Overall conversion · 3.4%</p>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="chart-card">
+        <h3>Best sources</h3>
+        <p class="sub">By interview conversion</p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Referral</span><span style="font-weight:600">62%</span></div><div style="height:8px;background:#F5F3ED;border-radius:4px;overflow:hidden"><div style="height:100%;width:62%;background:#1F7A4D;border-radius:4px"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Direct</span><span style="font-weight:600">44%</span></div><div style="height:8px;background:#F5F3ED;border-radius:4px;overflow:hidden"><div style="height:100%;width:44%;background:#3B6CB7;border-radius:4px"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>LinkedIn</span><span style="font-weight:600">31%</span></div><div style="height:8px;background:#F5F3ED;border-radius:4px;overflow:hidden"><div style="height:100%;width:31%;background:#B5793B;border-radius:4px"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Job boards</span><span style="font-weight:600">18%</span></div><div style="height:8px;background:#F5F3ED;border-radius:4px;overflow:hidden"><div style="height:100%;width:18%;background:#475569;border-radius:4px"></div></div></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>Top companies by stage</h3>
+        <p class="sub">Last 30 days</p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#F5F3ED;border-radius:8px"><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:11px;font-weight:600">M</div><span style="font-size:13px;font-weight:500">Meta</span></div><span class="chip chip-blue">Final</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#F5F3ED;border-radius:8px"><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:11px;font-weight:600">N</div><span style="font-size:13px;font-weight:500">Notion</span></div><span class="chip chip-amber">Onsite</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#F5F3ED;border-radius:8px"><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:11px;font-weight:600">F</div><span style="font-size:13px;font-weight:500">Figma</span></div><span class="chip">Phone</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#F5F3ED;border-radius:8px"><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:11px;font-weight:600">S</div><span style="font-size:13px;font-weight:500">Stripe</span></div><span class="chip">Phone</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================== -->
+<!-- 10. COMPARE JOBS -->
+<!-- ============================== -->
+<div class="mockup" id="m-compare">
+  <div class="mockup-label">10 · Pipeline · Compare Jobs</div>
+  <div class="compare-page">
+    <div class="compare-header">
+      <div class="breadcrumb"><a href="#">Pipeline</a> / Compare</div>
+      <h1>Compare offers side by side</h1>
+      <p style="color:#64748B;font-size:13px;margin-top:4px">3 jobs selected · Updated 5 minutes ago</p>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-col compare-best">
+        <h3>Lead Product Designer</h3>
+        <div class="company">Meta · Menlo Park, CA</div>
+        <div class="compare-row"><span class="lbl">Base salary</span><span class="val">$185k – $230k</span></div>
+        <div class="compare-row"><span class="lbl">Equity (4y)</span><span class="val">$320k</span></div>
+        <div class="compare-row"><span class="lbl">Bonus</span><span class="val">15% target</span></div>
+        <div class="compare-row"><span class="lbl">Total comp</span><span class="val" style="font-weight:600">~$410k/yr</span></div>
+        <div class="compare-row"><span class="lbl">Fit score</span><span class="val" style="color:#1F7A4D">91 · Excellent</span></div>
+        <div class="compare-row"><span class="lbl">Stage</span><span class="val">Final round</span></div>
+        <div class="compare-row"><span class="lbl">Team size</span><span class="val">5 reports</span></div>
+        <div class="compare-row"><span class="lbl">Tech stack</span><span class="val">Figma, React</span></div>
+        <div class="compare-row"><span class="lbl">Remote policy</span><span class="val">Hybrid 2d</span></div>
+        <div class="compare-row"><span class="lbl">PTO</span><span class="val">Unlimited</span></div>
+        <div class="verdict win">Best overall · 92/100</div>
+      </div>
+      <div class="compare-col">
+        <h3>Sr. Frontend Engineer</h3>
+        <div class="company">Spotify · Stockholm (Remote)</div>
+        <div class="compare-row"><span class="lbl">Base salary</span><span class="val">$165k – $200k</span></div>
+        <div class="compare-row"><span class="lbl">Equity (4y)</span><span class="val">$140k</span></div>
+        <div class="compare-row"><span class="lbl">Bonus</span><span class="val">—</span></div>
+        <div class="compare-row"><span class="lbl">Total comp</span><span class="val" style="font-weight:600">~$235k/yr</span></div>
+        <div class="compare-row"><span class="lbl">Fit score</span><span class="val" style="color:#1F7A4D">88 · Strong</span></div>
+        <div class="compare-row"><span class="lbl">Stage</span><span class="val">Tech screen</span></div>
+        <div class="compare-row"><span class="lbl">Team size</span><span class="val">IC role</span></div>
+        <div class="compare-row"><span class="lbl">Tech stack</span><span class="val">React, TypeScript</span></div>
+        <div class="compare-row"><span class="lbl">Remote policy</span><span class="val">Fully remote</span></div>
+        <div class="compare-row"><span class="lbl">PTO</span><span class="val">28 days</span></div>
+        <div class="verdict mid">Good · 78/100</div>
+      </div>
+      <div class="compare-col">
+        <h3>Product Designer</h3>
+        <div class="company">Linear · New York, NY</div>
+        <div class="compare-row"><span class="lbl">Base salary</span><span class="val">$160k – $195k</span></div>
+        <div class="compare-row"><span class="lbl">Equity (4y)</span><span class="val">$220k</span></div>
+        <div class="compare-row"><span class="lbl">Bonus</span><span class="val">—</span></div>
+        <div class="compare-row"><span class="lbl">Total comp</span><span class="val" style="font-weight:600">~$265k/yr</span></div>
+        <div class="compare-row"><span class="lbl">Fit score</span><span class="val" style="color:#B5793B">81 · Good</span></div>
+        <div class="compare-row"><span class="lbl">Stage</span><span class="val">Phone screen</span></div>
+        <div class="compare-row"><span class="lbl">Team size</span><span class="val">3 reports</span></div>
+        <div class="compare-row"><span class="lbl">Tech stack</span><span class="val">Figma, Linear</span></div>
+        <div class="compare-row"><span class="lbl">Remote policy</span><span class="val">Hybrid 3d</span></div>
+        <div class="compare-row"><span class="lbl">PTO</span><span class="val">25 days</span></div>
+        <div class="verdict low">Decent · 71/100</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 11. RESUME STUDIO LIST -->
+<!-- ============================== -->
+<div class="mockup" id="m-resume-list">
+  <div class="mockup-label">11 · Resume Studio · Library</div>
+  <div class="resume-list-page">
+    <div class="resume-header">
+      <div>
+        <h1>Resume Studio</h1>
+        <p style="color:#64748B;font-size:13px;margin-top:4px">7 resumes · 5 tailored · 2 base · last edited 2h ago</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary">Import PDF</button>
+        <button class="btn btn-primary">+ New resume</button>
+      </div>
+    </div>
+    <div class="tailor-banner">
+      <div class="icon">✦</div>
+      <div class="text" style="flex:1">
+        <h4>3 jobs need tailoring</h4>
+        <p>Pick a base resume and we'll auto-tailor it against the JD with ATS-optimized bullets.</p>
+      </div>
+      <button class="btn btn-secondary" style="background:rgba(253,251,247,.1);color:#FDFBF7;border-color:rgba(253,251,247,.2)">View queue →</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <div class="search-input" style="background:#fff;border:1px solid #E6E4DD"><span>⌕</span><input placeholder="Search resumes by title or name…"/></div>
+      <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">All</button>
+      <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">Base (2)</button>
+      <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#0F172A;color:#FDFBF7">Tailored (5)</button>
+    </div>
+    <div class="resume-grid">
+      <div class="resume-card">
+        <div class="resume-thumb">
+          <span class="badge">BASE</span>
+          <div class="line name"></div>
+          <div class="line short" style="margin-bottom:16px"></div>
+          <div class="line" style="width:30%;height:8px;background:#475569;margin-bottom:8px"></div>
+          <div class="line"></div><div class="line"></div><div class="line short"></div>
+          <div class="line" style="width:30%;height:8px;background:#475569;margin:14px 0 8px"></div>
+          <div class="line"></div><div class="line"></div>
+        </div>
+        <div class="meta"><h4>Alex Chen · PM Base</h4><div class="sub"><span>Updated 4d ago</span> · <span class="chip chip-green">ATS 92</span></div></div>
+      </div>
+      <div class="resume-card">
+        <div class="resume-thumb">
+          <span class="badge" style="background:#B5793B">TAILORED</span>
+          <div class="line name"></div>
+          <div class="line short" style="margin-bottom:16px"></div>
+          <div class="line" style="width:30%;height:8px;background:#475569;margin-bottom:8px"></div>
+          <div class="line"></div><div class="line"></div><div class="line short"></div>
+          <div class="line" style="width:30%;height:8px;background:#475569;margin:14px 0 8px"></div>
+          <div class="line"></div><div class="line"></div>
+        </div>
+        <div class="meta"><h4>Tailored — Meta Lead PD</h4><div class="sub"><span>Updated 2h ago</span> · <span class="chip chip-green">ATS 95</span></div></div>
+      </div>
+      <div class="resume-card">
+        <div class="resume-thumb">
+          <span class="badge" style="background:#B5793B">TAILORED</span>
+          <div class="line name"></div>
+          <div class="line short" style="margin-bottom:16px"></div>
+          <div class="line" style="width:30%;height:8px;background:#475569;margin-bottom:8px"></div>
+          <div class="line"></div><div class="line"></div><div class="line short"></div>
+          <div class="line" style="width:30%;height:8px;background:#475569;margin:14px 0 8px"></div>
+          <div class="line"></div><div class="line"></div>
+        </div>
+        <div class="meta"><h4>Tailored — Notion EM</h4><div class="sub"><span>Updated 1d ago</span> · <span class="chip chip-green">ATS 89</span></div></div>
+      </div>
+      <div class="resume-card">
+        <div class="resume-thumb">
+          <span class="badge" style="background:#B5793B">TAILORED</span>
+          <div class="line name"></div>
+          <div class="line short" style="margin-bottom:16px"></div>
+          <div class="line" style="width:30%;height:8px;background:#475569;margin-bottom:8px"></div>
+          <div class="line"></div><div class="line"></div>
+          <div class="line" style="width:30%;height:8px;background:#475569;margin:14px 0 8px"></div>
+          <div class="line"></div>
+        </div>
+        <div class="meta"><h4>Tailored — Stripe Sr. PD</h4><div class="sub"><span>Updated 3d ago</span> · <span class="chip chip-amber">ATS 84</span></div></div>
+      </div>
+      <div class="resume-card">
+        <div class="resume-thumb">
+          <span class="badge" style="background:#B5793B">TAILORED</span>
+          <div class="line name"></div>
+          <div class="line short" style="margin-bottom:16px"></div>
+          <div class="line" style="width:30%;height:8px;background:#475569;margin-bottom:8px"></div>
+          <div class="line"></div><div class="line"></div>
+        </div>
+        <div class="meta"><h4>Tailored — Vercel FE</h4><div class="sub"><span>Updated 5d ago</span> · <span class="chip chip-green">ATS 91</span></div></div>
+      </div>
+      <div class="resume-card" style="display:flex;align-items:center;justify-content:center;background:#F5F3ED;border-style:dashed;cursor:pointer;min-height:380px">
+        <div style="text-align:center;color:#64748B">
+          <div style="font-size:36px;margin-bottom:8px;opacity:.5">+</div>
+          <div style="font-size:14px;font-weight:600;color:#0F172A">New tailored resume</div>
+          <div style="font-size:12px;margin-top:4px">Start from a base or template</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 12. RESUME EDITOR -->
+<!-- ============================== -->
+<div class="mockup" id="m-resume-editor">
+  <div class="mockup-label">12 · Resume Studio · Editor</div>
+  <div class="app-shell" style="grid-template-columns:240px 1fr">
+    <div class="sidebar">
+      <div class="logo-area"><div class="logo-mark">O</div><div class="logo-text">OfferPath</div></div>
+      <div class="nav-section">
+        <h6>Modules</h6>
+        <div class="nav-item"><div class="icon">▤</div>Job Tracker</div>
+        <div class="nav-item active"><div class="icon">▣</div>Resume Studio</div>
+        <div class="nav-item"><div class="icon">◇</div>Job Search</div>
+        <div class="nav-item"><div class="icon">◉</div>Interview</div>
+      </div>
+    </div>
+    <div>
+      <div style="background:#FFFFFF;border-bottom:1px solid #E6E4DD;padding:12px 32px;display:flex;align-items:center;gap:8px">
+        <div class="breadcrumb" style="margin-bottom:0"><a href="#">Resume Studio</a> / Tailored — Meta Lead PD</div>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <span style="font-size:12px;color:#64748B">Saved 2m ago</span>
+          <button class="btn btn-ghost" style="padding:6px 12px;border:1px solid #E6E4DD;background:#fff">Share</button>
+          <button class="btn btn-secondary" style="padding:6px 12px">Export PDF</button>
+          <button class="btn btn-primary" style="padding:6px 12px">Export DOCX</button>
+        </div>
+      </div>
+      <div style="background:#FFFFFF;border-bottom:1px solid #E6E4DD;padding:8px 32px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <button class="editor-btn active">B</button>
+        <button class="editor-btn"><i>I</i></button>
+        <button class="editor-btn"><u>U</u></button>
+        <div class="divider" style="width:1px;height:20px;background:#E6E4DD;margin:0 4px"></div>
+        <button class="editor-btn">H1</button>
+        <button class="editor-btn active">H2</button>
+        <button class="editor-btn">H3</button>
+        <div class="divider" style="width:1px;height:20px;background:#E6E4DD;margin:0 4px"></div>
+        <button class="editor-btn">•</button>
+        <button class="editor-btn">1.</button>
+        <button class="editor-btn">—</button>
+        <div class="divider" style="width:1px;height:20px;background:#E6E4DD;margin:0 4px"></div>
+        <button class="editor-btn" style="width:auto;padding:0 10px">+ Link</button>
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+          <button class="btn btn-ghost" style="padding:6px 12px;border:1px solid #E6E4DD;background:#F5EBDC;color:#B5793B">✨ AI suggest</button>
+          <button class="btn btn-ghost" style="padding:6px 12px;border:1px solid #E6E4DD;background:#fff">Target job: Meta</button>
+        </div>
+      </div>
+      <div class="editor-main" style="padding:0;height:700px;display:grid;grid-template-columns:1fr 480px">
+        <div style="padding:24px 48px;overflow-y:auto;background:#F5F3ED">
+          <div class="editor-doc">
+            <h1>Alex Chen</h1>
+            <div class="contact">alex@example.com · San Francisco · linkedin.com/in/alex · alexchen.com</div>
+            <h2>Summary</h2>
+            <p>Lead product designer with 8 years shipping 0→1 consumer and B2B products. At Stripe, led a team of 4 designers to rebuild the dashboard that drives $2.4B in ARR. Specialize in turning complex data into delightful, accessible interfaces that move business metrics.</p>
+            <h2>Experience</h2>
+            <div class="exp">
+              <div class="exp-head"><span>Lead Product Designer · Stripe</span><span>2021 – Present</span></div>
+              <div class="exp-sub">San Francisco · 4 reports</div>
+              <p>· Led redesign of merchant dashboard, lifting weekly active merchants by 24% and reducing support tickets 18%.</p>
+              <p>· Built the <strong>Atlas</strong> design system across web and mobile, now used by 180+ engineers.</p>
+              <p>· Hired and mentored 4 designers; ran weekly critique and craft review.</p>
+            </div>
+            <div class="exp">
+              <div class="exp-head"><span>Senior Designer · Airbnb</span><span>2018 – 2021</span></div>
+              <div class="exp-sub">San Francisco</div>
+              <p>· Designed the host onboarding flow that lifted activation 31% across 14 markets.</p>
+            </div>
+            <h2>Skills</h2>
+            <p>Figma · Design Systems · 0→1 Strategy · User Research · Prototyping · Front-end (React basics) · Accessibility (WCAG 2.1)</p>
+          </div>
+        </div>
+        <div class="editor-preview">
+          <div class="preview-tabs">
+            <div class="pt active">Preview</div>
+            <div class="pt">ATS</div>
+            <div class="pt">Tailoring</div>
+          </div>
+          <div class="preview-frame">
+            <div class="ats-panel">
+              <h4 style="font-size:12px;font-weight:600;margin-bottom:10px">ATS Score · 95/100</h4>
+              <div class="ats-row"><span>Keywords matched</span><div class="bar"><div style="width:92%"></div></div><span style="color:#1F7A4D;font-weight:600">23/25</span></div>
+              <div class="ats-row"><span>Skills coverage</span><div class="bar"><div style="width:88%"></div></div><span style="color:#1F7A4D;font-weight:600">14/16</span></div>
+              <div class="ats-row"><span>Action verb strength</span><div class="bar"><div class="amber" style="width:74%"></div></div><span style="color:#B5793B;font-weight:600">74%</span></div>
+              <div class="ats-row"><span>Quantified impact</span><div class="bar"><div style="width:96%"></div></div><span style="color:#1F7A4D;font-weight:600">96%</span></div>
+            </div>
+            <h1>Alex Chen</h1>
+            <p style="color:#64748B;font-size:10px;margin-bottom:14px">alex@example.com · San Francisco</p>
+            <h2>Summary</h2>
+            <p style="font-size:11px;color:#475569;line-height:1.5;margin-bottom:12px">Lead product designer with 8 years shipping 0→1 consumer and B2B products. At Stripe, led a team of 4 designers to rebuild the dashboard that drives $2.4B in ARR…</p>
+            <h2>Experience</h2>
+            <p style="font-size:11px;font-weight:600;margin-bottom:2px">Lead Product Designer · Stripe</p>
+            <p style="font-size:10px;color:#64748B;margin-bottom:6px">2021 – Present</p>
+            <p style="font-size:10px;color:#475569;line-height:1.4;margin-bottom:10px">· Led redesign of merchant dashboard, lifting weekly active merchants by 24% and reducing support tickets 18%.</p>
+            <p style="font-size:10px;color:#475569;line-height:1.4;margin-bottom:10px">· Built the Atlas design system across web and mobile.</p>
+            <h2>Skills</h2>
+            <p style="font-size:10px;color:#475569;line-height:1.5">Figma · Design Systems · 0→1 Strategy · User Research</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 13. TEMPLATES GALLERY -->
+<!-- ============================== -->
+<div class="mockup" id="m-templates">
+  <div class="mockup-label">13 · Resume Studio · Templates Gallery</div>
+  <div class="templates-page">
+    <div class="templates-header">
+      <h1>Pick your template</h1>
+      <p>9 ATS-friendly designs · crafted for senior ICs and leaders</p>
+    </div>
+    <div class="templates-filters">
+      <div class="filter-chip active">All (9)</div>
+      <div class="filter-chip">Executive</div>
+      <div class="filter-chip">Engineering</div>
+      <div class="filter-chip">Design</div>
+      <div class="filter-chip">Academic</div>
+      <div class="filter-chip">Two-column</div>
+    </div>
+    <div class="templates-grid">
+      <div class="template-card">
+        <div class="template-thumb">
+          <div class="name"></div><div class="sub"></div>
+          <div class="sec-title"></div>
+          <div class="line" style="width:90%"></div><div class="line" style="width:75%"></div><div class="line" style="width:85%"></div>
+          <div class="sec-title"></div>
+          <div class="line" style="width:90%"></div><div class="line" style="width:60%"></div>
+          <div class="sec-title"></div>
+          <div class="line" style="width:80%"></div><div class="line" style="width:70%"></div>
+        </div>
+        <div class="meta"><h4>Clean Professional</h4><span class="badge">Most popular</span></div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <div class="name"></div><div class="sub"></div>
+          <div class="sec-title"></div>
+          <div class="line" style="width:90%"></div><div class="line" style="width:80%"></div>
+        </div>
+        <div class="meta"><h4>Classic Minimal</h4><span class="badge">ATS 98</span></div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb t-bold">
+          <div class="name" style="background:#FDFBF7;width:60%"></div>
+          <div class="sub" style="background:rgba(253,251,247,.5);width:40%"></div>
+          <div class="sec-title" style="background:rgba(253,251,247,.4);width:30%;margin-top:18px"></div>
+          <div class="line" style="background:rgba(253,251,247,.2);width:90%"></div>
+          <div class="line" style="background:rgba(253,251,247,.2);width:75%"></div>
+          <div class="line" style="background:rgba(253,251,247,.2);width:85%"></div>
+          <div class="sec-title" style="background:rgba(253,251,247,.4);width:25%"></div>
+          <div class="line" style="background:rgba(253,251,247,.2);width:80%"></div>
+        </div>
+        <div class="meta"><h4>Bold Engineer</h4><span class="badge">Engineering</span></div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <div class="name" style="width:50%"></div><div class="sub" style="width:35%"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+            <div>
+              <div class="sec-title" style="width:60%"></div>
+              <div class="line" style="width:90%"></div><div class="line" style="width:70%"></div>
+            </div>
+            <div>
+              <div class="sec-title" style="width:60%"></div>
+              <div class="line" style="width:90%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="meta"><h4>Elegant Two-Column</h4><span class="badge">Two-column</span></div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <div class="name" style="width:50%"></div><div class="sub" style="width:40%"></div>
+          <div class="sec-title"></div>
+          <div class="line" style="width:90%"></div><div class="line" style="width:75%"></div>
+        </div>
+        <div class="meta"><h4>ATS Executive</h4><span class="badge">Executive</span></div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <div style="text-align:center;margin-bottom:18px"><div style="width:60px;height:60px;border-radius:50%;background:#E6E4DD;margin:0 auto 10px"></div><div class="name" style="width:50%;margin:0 auto 4px"></div><div class="sub" style="width:35%;margin:0 auto"></div></div>
+          <div class="sec-title" style="margin:0 auto 8px;width:30%"></div>
+          <div class="line" style="width:90%"></div><div class="line" style="width:80%"></div>
+        </div>
+        <div class="meta"><h4>Premium Headshot</h4><span class="badge">Designer</span></div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <div class="name"></div><div class="sub"></div>
+          <div class="sec-title"></div>
+          <div class="line" style="width:90%"></div><div class="line" style="width:80%"></div>
+        </div>
+        <div class="meta"><h4>Clean Layout</h4><span class="badge">Engineering</span></div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <div class="name" style="width:50%"></div><div class="sub" style="width:35%"></div>
+          <div class="sec-title"></div>
+          <div class="line" style="width:90%"></div><div class="line" style="width:75%"></div>
+        </div>
+        <div class="meta"><h4>Photo Header</h4><span class="badge">Designer</span></div>
+      </div>
+      <div class="template-card">
+        <div class="template-thumb">
+          <div class="name"></div><div class="sub"></div>
+          <div class="sec-title"></div>
+          <div class="line" style="width:90%"></div><div class="line" style="width:60%"></div>
+        </div>
+        <div class="meta"><h4>Academic</h4><span class="badge">Academic</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================== -->
+<!-- 14. DISCOVER FEED -->
+<!-- ============================== -->
+<div class="mockup" id="m-discover">
+  <div class="mockup-label">14 · Job Search · Smart Feed</div>
+  <div class="discover-page">
+    <div class="discover-header">
+      <div>
+        <h1>Find your next role</h1>
+        <div class="sub">23 new leads · matched against your base resume and search preferences</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary">Saved (5)</button>
+        <button class="btn btn-primary">+ New search</button>
+      </div>
+    </div>
+    <div class="discover-toolbar">
+      <div class="search-input" style="background:#fff;border:1px solid #E6E4DD;flex:1"><span>⌕</span><input placeholder="Search jobs, companies, or skills…"/></div>
+      <div class="filter-chip active">All (23)</div>
+      <div class="filter-chip">Remote (14)</div>
+      <div class="filter-chip">$150k+ (19)</div>
+      <div class="filter-chip">Senior (16)</div>
+      <div class="filter-chip">Engineering (8)</div>
+      <div class="filter-chip">Design (7)</div>
+    </div>
+    <div class="discover-grid">
+      <div class="discover-card">
+        <div class="top">
+          <div class="logo">A</div>
+          <div class="title-block">
+            <h3>Engineering Manager, Platform</h3>
+            <div class="company">Anthropic · San Francisco · Remote</div>
+            <div style="display:flex;gap:6px;margin-top:8px"><span class="chip">$240k – $310k</span><span class="chip">Full-time</span><span class="chip">Series C</span></div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#475569;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Lead a team of 8 engineers building the inference platform that powers Claude. Drive architecture decisions across distributed systems, model serving, and developer infrastructure…</p>
+        <div class="skills">
+          <span class="skill-mini match">Distributed systems</span>
+          <span class="skill-mini match">Python</span>
+          <span class="skill-mini match">Leadership</span>
+          <span class="skill-mini miss">+ Rust</span>
+          <span class="skill-mini miss">+ ML serving</span>
+        </div>
+        <div class="match">
+          <span style="font-size:11px;color:#64748B;font-weight:600">Match</span>
+          <div class="match-bar"><div style="width:88%"></div></div>
+          <span class="match-text">88%</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary">Save</button>
+          <button class="btn btn-secondary">Dismiss</button>
+          <button class="btn btn-primary">Tailor & apply →</button>
+        </div>
+      </div>
+      <div class="discover-card">
+        <div class="top">
+          <div class="logo" style="background:linear-gradient(135deg,#B5793B,#0F172A)">V</div>
+          <div class="title-block">
+            <h3>Staff Product Designer</h3>
+            <div class="company">Vercel · Remote (US)</div>
+            <div style="display:flex;gap:6px;margin-top:8px"><span class="chip">$190k – $250k</span><span class="chip">Full-time</span><span class="chip">Series D</span></div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#475569;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Shape the design system and front-of-funnel experience for the Vercel platform. Partner directly with the founders on a small, high-leverage team…</p>
+        <div class="skills">
+          <span class="skill-mini match">Design systems</span>
+          <span class="skill-mini match">Figma</span>
+          <span class="skill-mini match">0→1</span>
+          <span class="skill-mini match">Strategy</span>
+        </div>
+        <div class="match">
+          <span style="font-size:11px;color:#64748B;font-weight:600">Match</span>
+          <div class="match-bar"><div style="width:91%"></div></div>
+          <span class="match-text">91%</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary">Save</button>
+          <button class="btn btn-secondary">Dismiss</button>
+          <button class="btn btn-primary">Tailor & apply →</button>
+        </div>
+      </div>
+      <div class="discover-card">
+        <div class="top">
+          <div class="logo" style="background:linear-gradient(135deg,#1F7A4D,#0F172A)">R</div>
+          <div class="title-block">
+            <h3>Senior Frontend Engineer</h3>
+            <div class="company">Ramp · New York, NY · Hybrid</div>
+            <div style="display:flex;gap:6px;margin-top:8px"><span class="chip">$175k – $220k</span><span class="chip">Full-time</span></div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#475569;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Build the next generation of corporate card and expense products. Strong TypeScript and React chops required. You'll work on surfaces handling $30B+ in annualized spend…</p>
+        <div class="skills">
+          <span class="skill-mini match">React</span>
+          <span class="skill-mini match">TypeScript</span>
+          <span class="skill-mini match">Frontend</span>
+          <span class="skill-mini match">Performance</span>
+        </div>
+        <div class="match">
+          <span style="font-size:11px;color:#64748B;font-weight:600">Match</span>
+          <div class="match-bar"><div style="width:78%"></div></div>
+          <span class="match-text amber">78%</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary">Save</button>
+          <button class="btn btn-secondary">Dismiss</button>
+          <button class="btn btn-primary">Tailor & apply →</button>
+        </div>
+      </div>
+      <div class="discover-card">
+        <div class="top">
+          <div class="logo" style="background:linear-gradient(135deg,#3B6CB7,#0F172A)">O</div>
+          <div class="title-block">
+            <h3>Design Engineering Lead</h3>
+            <div class="company">OpenAI · San Francisco · Hybrid</div>
+            <div style="display:flex;gap:6px;margin-top:8px"><span class="chip">$220k – $295k</span><span class="chip">Full-time</span></div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#475569;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Lead a small team bridging design and engineering for ChatGPT surfaces. Ship high-craft, performant interfaces used by 200M+ people weekly…</p>
+        <div class="skills">
+          <span class="skill-mini match">React</span>
+          <span class="skill-mini match">Design</span>
+          <span class="skill-mini match">Leadership</span>
+          <span class="skill-mini miss">+ AI/LLM UI</span>
+        </div>
+        <div class="match">
+          <span style="font-size:11px;color:#64748B;font-weight:600">Match</span>
+          <div class="match-bar"><div style="width:84%"></div></div>
+          <span class="match-text">84%</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary">Save</button>
+          <button class="btn btn-secondary">Dismiss</button>
+          <button class="btn btn-primary">Tailor & apply →</button>
+        </div>
+      </div>
+      <div class="discover-card">
+        <div class="top">
+          <div class="logo">F</div>
+          <div class="title-block">
+            <h3>Group Product Manager, Growth</h3>
+            <div class="company">Figma · San Francisco · Hybrid</div>
+            <div style="display:flex;gap:6px;margin-top:8px"><span class="chip">$200k – $260k</span><span class="chip">Full-time</span></div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#475569;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Own the growth surface for Figma's design platform. Partner with design, data, and engineering to ship experiments that move activation and retention…</p>
+        <div class="skills">
+          <span class="skill-mini match">Product strategy</span>
+          <span class="skill-mini match">Growth</span>
+          <span class="skill-mini match">Experimentation</span>
+          <span class="skill-mini miss">+ SQL</span>
+        </div>
+        <div class="match">
+          <span style="font-size:11px;color:#64748B;font-weight:600">Match</span>
+          <div class="match-bar"><div style="width:72%"></div></div>
+          <span class="match-text amber">72%</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary">Save</button>
+          <button class="btn btn-secondary">Dismiss</button>
+          <button class="btn btn-primary">Tailor & apply →</button>
+        </div>
+      </div>
+      <div class="discover-card">
+        <div class="top">
+          <div class="logo" style="background:linear-gradient(135deg,#B5793B,#3B6CB7)">L</div>
+          <div class="title-block">
+            <h3>Senior Software Engineer, ML Platform</h3>
+            <div class="company">Linear · New York, NY · Hybrid</div>
+            <div style="display:flex;gap:6px;margin-top:8px"><span class="chip">$185k – $235k</span><span class="chip">Full-time</span></div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#475569;line-height:1.5;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2">Build the ML-powered features that make Linear the fastest project tracker. Strong opinions on simplicity and performance welcome…</p>
+        <div class="skills">
+          <span class="skill-mini match">TypeScript</span>
+          <span class="skill-mini match">Backend</span>
+          <span class="skill-mini match">Performance</span>
+          <span class="skill-mini miss">+ ML systems</span>
+        </div>
+        <div class="match">
+          <span style="font-size:11px;color:#64748B;font-weight:600">Match</span>
+          <div class="match-bar"><div style="width:68%"></div></div>
+          <span class="match-text amber">68%</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary">Save</button>
+          <button class="btn btn-secondary">Dismiss</button>
+          <button class="btn btn-primary">Tailor & apply →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 15. INTERVIEW HUB -->
+<!-- ============================== -->
+<div class="mockup" id="m-interview-hub">
+  <div class="mockup-label">15 · Interview Simulator · Hub</div>
+  <div class="interview-page">
+    <div class="interview-header">
+      <div class="breadcrumb"><a href="#">Interview Prep</a></div>
+      <h1>◉ Interview Prep</h1>
+      <p style="color:#64748B;font-size:14px;margin-top:4px">Mock interviews, STAR stories, and company briefings across all your active applications.</p>
+    </div>
+    <div class="interview-stats">
+      <div class="int-stat"><div class="lbl">Active preps</div><div class="val">5</div><div class="sub">3 ready, 2 need stories</div></div>
+      <div class="int-stat"><div class="lbl">Mock sessions</div><div class="val">14</div><div class="sub">4 this week</div></div>
+      <div class="int-stat"><div class="lbl">Avg mock score</div><div class="val">82</div><div class="sub">▲ 6 since first mock</div></div>
+      <div class="int-stat"><div class="lbl">STAR stories</div><div class="val">11</div><div class="sub">3 starred</div></div>
+    </div>
+    <div class="section-h">Ready to practice <span class="count">· 3 jobs</span></div>
+    <div class="prep-list">
+      <div class="prep-item">
+        <div class="logo">M</div>
+        <div class="info"><h4>Meta · Lead Product Designer</h4><div class="sub">Onsite Nov 21 · 8 questions ready</div></div>
+        <span class="ready">Ready</span>
+      </div>
+      <div class="prep-item">
+        <div class="logo">N</div>
+        <div class="info"><h4>Notion · Engineering Manager</h4><div class="sub">Final Nov 24 · 12 questions ready</div></div>
+        <span class="ready">Ready</span>
+      </div>
+      <div class="prep-item">
+        <div class="logo">S</div>
+        <div class="info"><h4>Stripe · Senior Product Designer</h4><div class="sub">Phone Nov 19 · 5 questions ready</div></div>
+        <span class="ready">Ready</span>
+      </div>
+    </div>
+    <div class="section-h">Need more prep <span class="count">· 2 jobs</span></div>
+    <div class="prep-list">
+      <div class="prep-item">
+        <div class="logo">V</div>
+        <div class="info"><h4>Vercel · Frontend Engineer</h4><div class="sub">Recruiter call · no questions yet</div></div>
+        <span class="pending">Generate pack</span>
+      </div>
+      <div class="prep-item">
+        <div class="logo">A</div>
+        <div class="info"><h4>Airbnb · Data Scientist</h4><div class="sub">Recruiter call · no questions yet</div></div>
+        <span class="pending">Generate pack</span>
+      </div>
+    </div>
+    <div class="section-h">Recent mock sessions</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px">
+      <div class="card" style="padding:18px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="font-size:11px;color:#64748B">2h ago</div><span class="chip chip-green">Score 91</span></div><div style="font-size:14px;font-weight:600;margin-bottom:4px">Meta · Round 2 Mock</div><div style="font-size:12px;color:#64748B">8 questions · 22 min</div></div>
+      <div class="card" style="padding:18px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="font-size:11px;color:#64748B">Yesterday</div><span class="chip chip-amber">Score 78</span></div><div style="font-size:14px;font-weight:600;margin-bottom:4px">Notion · Hiring Mgr</div><div style="font-size:12px;color:#64748B">6 questions · 18 min</div></div>
+      <div class="card" style="padding:18px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="font-size:11px;color:#64748B">3d ago</div><span class="chip chip-green">Score 86</span></div><div style="font-size:14px;font-weight:600;margin-bottom:4px">Stripe · Recruiter</div><div style="font-size:12px;color:#64748B">5 questions · 12 min</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 16. MOCK INTERVIEW SESSION -->
+<!-- ============================== -->
+<div class="mockup" id="m-mock-interview">
+  <div class="mockup-label">16 · Interview Simulator · Mock Session</div>
+  <div class="mock-shell">
+    <div class="mock-header">
+      <div class="left">
+        <div class="logo">M</div>
+        <div>
+          <h2>Meta · Lead Product Designer</h2>
+          <div class="sub">Mock interview · Round 2 · Onsite simulation</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div class="timer">⏱ 22:14 elapsed</div>
+        <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">End session</button>
+        <button class="btn btn-primary">Submit & score</button>
+      </div>
+    </div>
+    <div class="mock-progress"><div></div></div>
+    <div class="mock-body">
+      <div class="mock-chat">
+        <div style="text-align:center;margin:20px 0"><span class="chip">Question 3 of 8 · Product strategy</span></div>
+        <div class="message ai">
+          <div class="avatar">AI</div>
+          <div class="bubble"><strong>How would you design onboarding for a new product surface that targets three very different user personas — say, a hobbyist, a small business, and an enterprise admin — without fragmenting the codebase?</strong><div style="margin-top:8px;font-size:11px;color:#94938E">Asked 14s ago · Expect ~2 min answer</div></div>
+        </div>
+        <div class="message user">
+          <div class="avatar">AC</div>
+          <div class="bubble">I'd start by mapping the three personas to a single underlying <strong>progressive disclosure model</strong>. The first 30 seconds of the experience is identical for everyone — pick a goal, not a role. Then the system adapts the next layer based on signals…</div>
+        </div>
+        <div class="message ai">
+          <div class="avatar">AI</div>
+          <div class="bubble">Strong start. The progressive disclosure framing is exactly what I'd look for. One follow-up: how do you decide when a persona's divergence is deep enough to warrant a <em>separate</em> flow rather than a configurable one? Where's the line for you?</div>
+        </div>
+      </div>
+      <div class="mock-side">
+        <h4>This session</h4>
+        <div class="question-list" style="margin-bottom:20px">
+          <div class="q-item done"><div class="num">✓</div><div>Walk me through a recent product you led 0→1.</div></div>
+          <div class="q-item done"><div class="num">✓</div><div>How do you balance craft with shipping speed?</div></div>
+          <div class="q-item active"><div class="num">3</div><div>Multi-persona onboarding strategy</div></div>
+          <div class="q-item"><div class="num">4</div><div>Tell me about a time you disagreed with your PM.</div></div>
+          <div class="q-item"><div class="num">5</div><div>How do you mentor a struggling designer?</div></div>
+          <div class="q-item"><div class="num">6</div><div>Design a metric for shipping quality at Meta.</div></div>
+          <div class="q-item"><div class="num">7</div><div>Why Meta, why now?</div></div>
+          <div class="q-item"><div class="num">8</div><div>Questions for us?</div></div>
+        </div>
+        <h4>Live feedback</h4>
+        <div style="background:#FFFFFF;border:1px solid #E6E4DD;border-radius:12px;padding:12px;font-size:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Clarity</span><span style="font-weight:600;color:#1F7A4D">Strong</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>STAR structure</span><span style="font-weight:600;color:#B5793B">Developing</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Specificity</span><span style="font-weight:600;color:#1F7A4D">Strong</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mock-input">
+      <div class="input-wrap">
+        <span style="color:#94938E">🎤</span>
+        <input placeholder="Type your answer, or press the mic to speak…"/>
+        <span style="color:#94938E">⌘K for shortcuts</span>
+        <div class="send">→</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================== -->
+<!-- 17. STORY BANK -->
+<!-- ============================== -->
+<div class="mockup" id="m-stories">
+  <div class="mockup-label">17 · Interview Simulator · Story Bank</div>
+  <div class="stories-page">
+    <div class="stories-header">
+      <div>
+        <div class="breadcrumb"><a href="#">Interview Prep</a> / Stories</div>
+        <h1>★ STAR Story Bank</h1>
+        <p style="color:#64748B;font-size:13px;margin-top:4px">11 reusable stories · auto-formatted to Situation → Task → Action → Result</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary">Import from resume</button>
+        <button class="btn btn-primary">+ New story</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <div class="search-input" style="background:#fff;border:1px solid #E6E4DD;flex:1"><span>⌕</span><input placeholder="Search stories by skill, role, or outcome…"/></div>
+      <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">All (11)</button>
+      <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">Leadership (5)</button>
+      <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">Conflict (3)</button>
+      <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">Failure (2)</button>
+      <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">★ Starred (3)</button>
+    </div>
+    <div class="story-grid">
+      <div class="story-card">
+        <div class="header">
+          <h3>Rebuilt merchant dashboard at Stripe</h3>
+          <div class="star-bar"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span style="color:#94938E">★</span><span style="color:#94938E">★</span></div>
+        </div>
+        <div class="tags">
+          <span class="chip">Leadership</span>
+          <span class="chip">0→1</span>
+          <span class="chip">Product strategy</span>
+          <span class="chip chip-green">Used 4×</span>
+        </div>
+        <p class="preview"><strong>Situation:</strong> Stripe's merchant dashboard was 6 years old, 14 separate React apps stitched together, and weekly active merchants were flat for 18 months. <strong>Task:</strong> Lead a team of 4 to consolidate and rebuild, with no drop in NPS. <strong>Action:</strong> Ran a 6-week discovery with 28 merchant interviews, built a new design system ("Atlas"), shipped behind a feature flag at 1% → 100% over 9 weeks…</p>
+        <div class="meta"><span>Outcome: +24% WAU · −18% support tickets</span><span>Used in: Meta, Notion, Stripe</span></div>
+      </div>
+      <div class="story-card">
+        <div class="header">
+          <h3>Disagreement with PM on roadmap priority</h3>
+          <div class="star-bar"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star" style="color:#B5793B">★</span><span style="color:#94938E">★</span></div>
+        </div>
+        <div class="tags">
+          <span class="chip">Conflict</span>
+          <span class="chip">Influence</span>
+          <span class="chip">Data-driven</span>
+        </div>
+        <p class="preview"><strong>Situation:</strong> Our PM wanted to ship a "Polishing" feature that I believed was a vanity metric and would cannibalize a larger growth surface. <strong>Task:</strong> Either ship the polish, or convince the team otherwise without damaging the relationship. <strong>Action:</strong> I spent 3 days building a quick prototype that ran both flows side-by-side on a fake-door test, presented the data, and proposed a compromise…</p>
+        <div class="meta"><span>Outcome: PM agreed, growth shipped, +11% conversion</span></div>
+      </div>
+      <div class="story-card">
+        <div class="header">
+          <h3>My biggest design miss at Airbnb</h3>
+          <div class="star-bar"><span class="star">★</span><span class="star" style="color:#94938E">★</span><span style="color:#94938E">★</span><span style="color:#94938E">★</span><span style="color:#94938E">★</span></div>
+        </div>
+        <div class="tags">
+          <span class="chip">Failure</span>
+          <span class="chip">Self-awareness</span>
+          <span class="chip">Learning</span>
+        </div>
+        <p class="preview"><strong>Situation:</strong> I led the redesign of host onboarding in 2019 and ignored a clear signal from our research team that hosts in non-US markets behaved completely differently. <strong>Task:</strong> Recover the launch without a rollback. <strong>Action:</strong> Stood up a 3-market localization panel, killed the rollout in 8 markets, and rebuilt the bottom 30% of the flow…</p>
+        <div class="meta"><span>Outcome: Activation up 31%, but cost us 3 months</span></div>
+      </div>
+      <div class="story-card">
+        <div class="header">
+          <h3>Mentoring a struggling junior designer</h3>
+          <div class="star-bar"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span style="color:#94938E">★</span><span style="color:#94938E">★</span></div>
+        </div>
+        <div class="tags">
+          <span class="chip">Leadership</span>
+          <span class="chip">Coaching</span>
+          <span class="chip">Empathy</span>
+        </div>
+        <p class="preview"><strong>Situation:</strong> A designer on my team was 6 months in and clearly struggling — output was thin, critiques were silent, and I worried about performance. <strong>Task:</strong> Get them back on track without making it a performance issue. <strong>Action:</strong> Had a 1:1 with no agenda, listened, discovered they were dealing with a parent's illness. I restructured their work, paired with them daily for 3 weeks, and adjusted their review timeline…</p>
+        <div class="meta"><span>Outcome: Promoted to Mid at next cycle</span></div>
+      </div>
+      <div class="story-card">
+        <div class="header">
+          <h3>Cross-functional launch: payments v2</h3>
+          <div class="star-bar"><span class="star">★</span><span class="star">★</span><span style="color:#94938E">★</span><span style="color:#94938E">★</span><span style="color:#94938E">★</span></div>
+        </div>
+        <div class="tags">
+          <span class="chip">Collaboration</span>
+          <span class="chip">Launch</span>
+          <span class="chip">Scale</span>
+        </div>
+        <p class="preview"><strong>Situation:</strong> We were launching a complete rewrite of our payments stack and 14 teams had work that depended on it. <strong>Task:</strong> Coordinate the visual + interaction layer across all surfaces. <strong>Action:</strong> Built a "design liaison" rotation, created a shared Figma library, ran weekly office hours, and personally reviewed every team's mocks before implementation…</p>
+        <div class="meta"><span>Outcome: 14/14 teams shipped on time, 0.3% regression</span></div>
+      </div>
+      <div class="story-card">
+        <div class="header">
+          <h3>When I had to fire a friend</h3>
+          <div class="star-bar"><span class="star">★</span><span style="color:#94938E">★</span><span style="color:#94938E">★</span><span style="color:#94938E">★</span><span style="color:#94938E">★</span></div>
+        </div>
+        <div class="tags">
+          <span class="chip">Leadership</span>
+          <span class="chip">Difficult decisions</span>
+          <span class="chip">Empathy</span>
+        </div>
+        <p class="preview"><strong>Situation:</strong> A close colleague and I were peers; the company was restructuring and one of us had to go. <strong>Task:</strong> Be the manager they deserved in a hard moment. <strong>Action:</strong> Was honest about the criteria 3 months before the decision, gave them a 6-week runway to find a new role, and wrote the handoff for the next person…</p>
+        <div class="meta"><span>Outcome: They landed at a startup, we're still friends</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 18. SETTINGS - PROFILE -->
+<!-- ============================== -->
+<div class="mockup" id="m-settings">
+  <div class="mockup-label">18 · Settings · Profile & Preferences</div>
+  <div class="settings-page">
+    <div class="settings-layout">
+      <div class="settings-side">
+        <div style="padding:0 16px 12px"><h1 style="font-size:28px;font-weight:600;font-family:'Playfair Display',serif">Settings</h1></div>
+        <div class="item active"><span>◉</span>Profile</div>
+        <div class="item"><span>⚙</span>Preferences</div>
+        <div class="item"><span>$</span>Billing</div>
+        <div class="item"><span>⚿</span>API Keys</div>
+        <div class="item"><span>🔒</span>Privacy</div>
+        <div class="item"><span>⤴</span>Sign out</div>
+      </div>
+      <div class="settings-content">
+        <h2>Profile</h2>
+        <p class="sub">Your base information powers AI tailoring, match scoring, and mock interviews.</p>
+        <div style="display:flex;align-items:center;gap:20px;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid #F5F3ED">
+          <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#0F172A,#475569);color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:24px;font-weight:600">AC</div>
+          <div style="flex:1">
+            <h4 style="font-size:16px;font-weight:600">Alex Chen</h4>
+            <p style="font-size:13px;color:#64748B">Senior Product Designer · San Francisco</p>
+          </div>
+          <button class="btn btn-secondary">Change photo</button>
+        </div>
+        <div class="setting-row">
+          <div><h4>Full name</h4><p>Used in resume headers and AI cover letters.</p></div>
+          <input class="" value="Alex Chen" style="padding:10px 14px;border:1px solid #E6E4DD;border-radius:10px;font-size:13px;font-family:inherit;outline:none;width:100%"/>
+        </div>
+        <div class="setting-row">
+          <div><h4>Headline</h4><p>One line used as your default resume summary seed.</p></div>
+          <input value="Senior Product Designer · 8 yrs · ex-Stripe, ex-Airbnb" style="padding:10px 14px;border:1px solid #E6E4DD;border-radius:10px;font-size:13px;font-family:inherit;outline:none;width:100%"/>
+        </div>
+        <div class="setting-row">
+          <div><h4>Target role</h4><p>Used for AI suggestions on the Discover feed.</p></div>
+          <input value="Lead Product Designer, Staff Designer, Design Manager" style="padding:10px 14px;border:1px solid #E6E4DD;border-radius:10px;font-size:13px;font-family:inherit;outline:none;width:100%"/>
+        </div>
+        <div class="setting-row">
+          <div><h4>Compensation target</h4><p>Helps filter low-ball roles in Discover.</p></div>
+          <div class="input-row"><input value="$180,000" style="width:140px"/><span style="align-self:center;color:#64748B">to</span><input value="$260,000" style="width:140px"/><select style="padding:10px 14px;border:1px solid #E6E4DD;border-radius:10px;font-size:13px;background:#fff"><option>USD</option><option>EUR</option></select></div>
+        </div>
+        <div class="setting-row">
+          <div><h4>Weekly application goal</h4><p>Drives the dashboard tracker.</p></div>
+          <div style="display:flex;align-items:center;gap:12px"><input type="range" value="10" min="1" max="30" style="flex:1"/><div style="font-size:14px;font-weight:600;min-width:60px">10 / week</div></div>
+        </div>
+        <div class="setting-row">
+          <div><h4>Email me a weekly summary</h4><p>Sunday 8pm · conversion stats + suggested next steps.</p></div>
+          <div class="toggle on"></div>
+        </div>
+        <div class="setting-row">
+          <div><h4>Dark mode</h4><p>Coming soon · currently light only.</p></div>
+          <div class="toggle"></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:24px;padding-top:24px;border-top:1px solid #F5F3ED">
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 19. BILLING & PLANS -->
+<!-- ============================== -->
+<div class="mockup" id="m-billing">
+  <div class="mockup-label">19 · Settings · Billing & Plans</div>
+  <div class="settings-page">
+    <div class="settings-layout" style="grid-template-columns:1fr">
+      <div class="settings-content">
+        <h2>Plans & billing</h2>
+        <p class="sub">You're on the <strong style="color:#0F172A">Pro plan</strong> · billed monthly · renews Dec 17, 2026.</p>
+        <div class="billing-grid">
+          <div class="plan">
+            <div class="name">Free</div>
+            <div class="price">$0<span class="per"> /mo</span></div>
+            <div class="desc">For the casual job seeker.</div>
+            <ul><li>5 active jobs</li><li>1 resume</li><li>3 mock interviews / mo</li><li>Basic ATS score</li></ul>
+            <button class="btn btn-secondary">Current plan</button>
+          </div>
+          <div class="plan featured">
+            <div class="ribbon">RECOMMENDED</div>
+            <div class="name">Pro</div>
+            <div class="price">$19<span class="per"> /mo</span></div>
+            <div class="desc">For serious job hunters.</div>
+            <ul><li>Unlimited jobs</li><li>Unlimited tailored resumes</li><li>Unlimited mock interviews</li><li>9 premium templates</li><li>Discover feed</li><li>STAR story bank</li></ul>
+            <button class="btn btn-secondary">Current plan</button>
+          </div>
+          <div class="plan">
+            <div class="name">Career OS</div>
+            <div class="price">$39<span class="per"> /mo</span></div>
+            <div class="desc">For coaches & power users.</div>
+            <ul><li>Everything in Pro</li><li>Multi-seat (up to 5)</li><li>Custom AI prompts</li><li>Priority support</li><li>API access</li><li>White-glove onboarding</li></ul>
+            <button class="btn btn-primary">Upgrade</button>
+          </div>
+        </div>
+        <div class="usage-card">
+          <h4>Your usage this month</h4>
+          <div class="usage-row"><div class="lbl"><span>Tailored resumes</span><span>5 / ∞</span></div><div class="usage-bar"><div style="width:30%;background:#1F7A4D"></div></div></div>
+          <div class="usage-row"><div class="lbl"><span>Mock interviews</span><span>14 / ∞</span></div><div class="usage-bar"><div style="width:50%;background:#1F7A4D"></div></div></div>
+          <div class="usage-row"><div class="lbl"><span>AI job analyses</span><span>42 / 100</span></div><div class="usage-bar"><div style="width:42%;background:#B5793B"></div></div></div>
+          <div class="usage-row"><div class="lbl"><span>Discover searches</span><span>8 / 30</span></div><div class="usage-bar"><div style="width:27%;background:#3B6CB7"></div></div></div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:24px;margin-top:16px">
+          <h4 style="font-size:14px;font-weight:600;margin-bottom:16px">Payment method</h4>
+          <div style="display:flex;align-items:center;gap:14px;padding:14px;background:#F5F3ED;border-radius:12px">
+            <div style="width:48px;height:32px;background:#0F172A;color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;border-radius:6px">VISA</div>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">Visa ending in 4242</div><div style="font-size:11px;color:#64748B">Expires 04/2028 · billing@alex.com</div></div>
+            <button class="btn btn-ghost" style="border:1px solid #E6E4DD;background:#fff">Update</button>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:24px;margin-top:16px">
+          <h4 style="font-size:14px;font-weight:600;margin-bottom:16px">Recent invoices</h4>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #F5F3ED"><div><div style="font-size:13px;font-weight:600">Nov 17, 2026</div><div style="font-size:11px;color:#64748B">Pro plan · monthly</div></div><div style="display:flex;gap:12px;align-items:center"><div style="font-size:13px;font-weight:600">$19.00</div><button class="btn btn-ghost" style="padding:6px 10px;font-size:12px">PDF</button></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #F5F3ED"><div><div style="font-size:13px;font-weight:600">Oct 17, 2026</div><div style="font-size:11px;color:#64748B">Pro plan · monthly</div></div><div style="display:flex;gap:12px;align-items:center"><div style="font-size:13px;font-weight:600">$19.00</div><button class="btn btn-ghost" style="padding:6px 10px;font-size:12px">PDF</button></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0"><div><div style="font-size:13px;font-weight:600">Sep 17, 2026</div><div style="font-size:11px;color:#64748B">Pro plan · monthly</div></div><div style="display:flex;gap:12px;align-items:center"><div style="font-size:13px;font-weight:600">$19.00</div><button class="btn btn-ghost" style="padding:6px 10px;font-size:12px">PDF</button></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 20. API KEYS -->
+<!-- ============================== -->
+<div class="mockup" id="m-api-keys">
+  <div class="mockup-label">20 · Settings · API Configuration</div>
+  <div class="settings-page">
+    <div class="settings-layout">
+      <div class="settings-side">
+        <div class="item"><span>◉</span>Profile</div>
+        <div class="item"><span>⚙</span>Preferences</div>
+        <div class="item"><span>$</span>Billing</div>
+        <div class="item active"><span>⚿</span>API Keys</div>
+        <div class="item"><span>🔒</span>Privacy</div>
+      </div>
+      <div class="settings-content">
+        <h2>AI provider configuration</h2>
+        <p class="sub">Bring your own key for any provider. We never store or train on your data.</p>
+        <div class="setting-row">
+          <div>
+            <h4 style="display:flex;align-items:center;gap:8px">OpenAI <span class="chip chip-green">Connected</span></h4>
+            <p>Powers job analysis, resume tailoring, and mock interviews.</p>
+          </div>
+          <div class="api-key-row">
+            <div class="name">sk-proj-…gK2m</div>
+            <div class="key">••••••••••••••••••</div>
+            <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px;border:1px solid #E6E4DD;background:#fff">Replace</button>
+            <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px;color:#B33A3A">Remove</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <h4 style="display:flex;align-items:center;gap:8px">Anthropic <span class="chip chip-green">Connected</span></h4>
+            <p>Used as fallback for long-context resume tailoring.</p>
+          </div>
+          <div class="api-key-row">
+            <div class="name">sk-ant-…vQ3k</div>
+            <div class="key">••••••••••••••••••</div>
+            <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px;border:1px solid #E6E4DD;background:#fff">Replace</button>
+            <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px;color:#B33A3A">Remove</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <h4 style="display:flex;align-items:center;gap:8px">Google Gemini <span class="chip">Not connected</span></h4>
+            <p>Used for image understanding of job posts and company pages.</p>
+          </div>
+          <div class="input-row">
+            <input placeholder="Paste your Gemini API key…"/>
+            <button class="btn btn-primary">Connect</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <h4 style="display:flex;align-items:center;gap:8px">Perplexity <span class="chip">Not connected</span></h4>
+            <p>Used for live company research and market signals.</p>
+          </div>
+          <div class="input-row">
+            <input placeholder="Paste your Perplexity API key…"/>
+            <button class="btn btn-primary">Connect</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <h4>Primary model</h4>
+            <p>Default model for all AI features.</p>
+          </div>
+          <select style="padding:10px 14px;border:1px solid #E6E4DD;border-radius:10px;font-size:13px;background:#fff;font-family:inherit;min-width:280px">
+            <option>Claude Sonnet 4.5 (via Anthropic)</option>
+            <option>GPT-4o (via OpenAI)</option>
+            <option>Gemini 2.0 Pro (via Google)</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div>
+            <h4>Fallback chain</h4>
+            <p>If primary fails, we automatically try the next.</p>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="chip">1 · Sonnet 4.5</span>
+            <span class="chip">2 · GPT-4o</span>
+            <span class="chip">3 · Gemini Pro</span>
+            <button class="btn btn-ghost" style="padding:4px 10px;font-size:12px;border:1px solid #E6E4DD;background:#fff">+ Add</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <h4>Allow OfferPath to use its managed key</h4>
+            <p>Use our hosted key if yours fail. We log usage for billing only.</p>
+          </div>
+          <div class="toggle on"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================== -->
+<!-- 21. ONBOARDING (FIRST-RUN DASHBOARD) -->
+<!-- ============================== -->
+<div class="mockup" id="m-onboarding" style="background:#FDFBF7;position:relative;min-height:1100px">
+  <div class="mockup-label">21 · Onboarding · First-Run Dashboard</div>
+  <div class="app-shell">
+    <div class="sidebar">
+      <div class="logo-area"><div class="logo-mark">O</div><div class="logo-text">OfferPath</div></div>
+      <div class="nav-section">
+        <h6>Overview</h6>
+        <div class="nav-item active"><div class="icon">▦</div>Dashboard</div>
+      </div>
+      <div class="nav-section">
+        <h6>Modules</h6>
+        <div class="nav-item"><div class="icon">▤</div>Job Tracker</div>
+        <div class="nav-item"><div class="icon">▣</div>Resume Studio</div>
+        <div class="nav-item"><div class="icon">◇</div>Job Search</div>
+        <div class="nav-item"><div class="icon">◉</div>Interview</div>
+      </div>
+      <div class="nav-section">
+        <h6>Account</h6>
+        <div class="nav-item"><div class="icon">⚙</div>Settings</div>
+        <div class="nav-item"><div class="icon">$</div>Billing</div>
+        <div class="nav-item"><div class="icon">⚿</div>API Keys</div>
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <div class="greet">Welcome, Alex — let's get you set up in 5 minutes</div>
+          <h1>Career HQ</h1>
+        </div>
+        <div class="actions">
+          <div class="avatar-circle">AC</div>
+        </div>
+      </div>
+
+      <div style="background:#0F172A;color:#FDFBF7;border-radius:24px;padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;right:0;width:300px;height:100%;background:radial-gradient(circle at right, rgba(181,121,59,.15) 0%, transparent 70%);pointer-events:none"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative">
+          <div>
+            <div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:rgba(253,251,247,.5);margin-bottom:6px">Get started · 4 steps · ~5 min</div>
+            <h2 style="font-family:'Playfair Display',serif;font-size:24px;font-weight:600;letter-spacing:-.01em">Land your next offer in 4 steps</h2>
+          </div>
+          <button class="btn btn-ghost" style="color:rgba(253,251,247,.6);font-size:12px">Skip setup</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;position:relative">
+          <div style="background:rgba(253,251,247,.08);border:1px solid rgba(253,251,247,.15);border-radius:14px;padding:16px;position:relative">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="width:24px;height:24px;border-radius:50%;background:#1F7A4D;color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">&#10003;</div>
+              <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(253,251,247,.5)">Step 1 · Done</span>
+            </div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px">Profile</div>
+            <div style="font-size:11px;color:rgba(253,251,247,.5)">Completed 2m ago</div>
+          </div>
+          <div style="background:rgba(253,251,247,.08);border:1px solid rgba(181,121,59,.5);border-radius:14px;padding:16px;position:relative">
+            <div style="position:absolute;top:8px;right:8px;background:#B5793B;color:#FDFBF7;font-size:9px;padding:2px 6px;border-radius:999px;letter-spacing:.05em;font-weight:600">NEXT</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="width:24px;height:24px;border-radius:50%;background:#B5793B;color:#FDFBF7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">2</div>
+              <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(253,251,247,.5)">Step 2 · Active</span>
+            </div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px">Base resume</div>
+            <div style="font-size:11px;color:rgba(253,251,247,.5)">Unlocks AI tailoring</div>
+          </div>
+          <div style="background:rgba(253,251,247,.04);border:1px dashed rgba(253,251,247,.2);border-radius:14px;padding:16px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(253,251,247,.1);color:rgba(253,251,247,.5);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">3</div>
+              <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(253,251,247,.4)">Step 3</span>
+            </div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px;opacity:.7">First job</div>
+            <div style="font-size:11px;color:rgba(253,251,247,.4)">Add to start tracking</div>
+          </div>
+          <div style="background:rgba(253,251,247,.04);border:1px dashed rgba(253,251,247,.2);border-radius:14px;padding:16px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(253,251,247,.1);color:rgba(253,251,247,.5);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">4</div>
+              <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(253,251,247,.4)">Step 4</span>
+            </div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px;opacity:.7">First tailor</div>
+            <div style="font-size:11px;color:rgba(253,251,247,.4)">See AI magic</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-grid" style="opacity:.5">
+        <div class="stat-card"><div class="label">Total Jobs</div><div class="value">&mdash;</div><div class="delta" style="color:#94938E">Add your first job</div></div>
+        <div class="stat-card"><div class="label">Interview Rate</div><div class="value">&mdash;</div><div class="delta" style="color:#94938E">No data yet</div></div>
+        <div class="stat-card"><div class="label">Avg Fit Score</div><div class="value">&mdash;</div><div class="delta" style="color:#94938E">No data yet</div></div>
+        <div class="stat-card"><div class="label">This Week</div><div class="value">0/3</div><div class="delta" style="color:#94938E">Light start</div></div>
+      </div>
+
+      <div style="background:#FFFFFF;border:1px solid #E6E4DD;border-radius:24px;padding:48px;text-align:center;margin-bottom:16px">
+        <div style="font-size:48px;margin-bottom:16px;opacity:.4">&#9636;</div>
+        <h3 style="font-size:20px;font-weight:600;margin-bottom:6px;font-family:'Playfair Display',serif;letter-spacing:-.01em">Your pipeline is empty</h3>
+        <p style="font-size:13px;color:#64748B;margin-bottom:20px;max-width:480px;margin-left:auto;margin-right:auto">Add a job to see AI fit scoring, tailoring suggestions, and your funnel at a glance.</p>
+        <button class="btn btn-primary">+ Add your first job</button>
+      </div>
+
+      <div style="background:#FFFFFF;border:1px solid #E6E4DD;border-radius:18px;padding:20px 24px;display:flex;align-items:center;gap:16px">
+        <div style="width:36px;height:36px;border-radius:10px;background:#F5EBDC;display:flex;align-items:center;justify-content:center;font-size:18px">&#10024;</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;margin-bottom:2px">Finish your setup to unlock tailoring</div>
+          <div style="font-size:11px;color:#64748B">2 of 4 steps done &middot; 2 remaining</div>
+        </div>
+        <button class="btn btn-secondary" style="padding:6px 14px;font-size:12px">Resume setup &rarr;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

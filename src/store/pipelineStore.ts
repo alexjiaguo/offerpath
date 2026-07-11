@@ -747,7 +747,6 @@ export const usePipelineStore = create<PipelineState>()(
     }),
     {
       name: "offerpath-pipeline",
-      skipHydration: true,
       partialize: (state) => ({
         jobs: state.jobs,
         companies: state.companies,

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <title>OfferPath — OP Signal</title>
+  <!-- O: thick filled ring (donut) in deep navy -->
+  <circle cx="34" cy="52" r="20" fill="none" stroke="#0F172A" stroke-width="9"/>
+  <!-- P: solid filled shape — vertical bar + half-bowl, no outline -->
+  <path d="M 60 32 L 60 72 L 68 72 L 68 52 L 76 52 Q 84 52 84 42 Q 84 32 76 32 Z" fill="#0F172A"/>
+  <!-- Signal accent: three coral dots emanating up-right from the P, decreasing in size -->
+  <circle cx="82" cy="24" r="3" fill="#FF6A4E"/>
+  <circle cx="89" cy="18" r="2.2" fill="#FF6A4E"/>
+  <circle cx="94" cy="13" r="1.5" fill="#FF6A4E"/>
+</svg>

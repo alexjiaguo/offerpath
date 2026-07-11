@@ -639,7 +639,6 @@ export const useInterviewStore = create<InterviewState>()(
     }),
     {
       name: "offerpath-interview",
-      skipHydration: true,
       partialize: (state) => ({
         stories: state.stories,
         preps: state.preps,
