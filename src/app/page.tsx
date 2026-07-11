@@ -182,7 +182,7 @@ export default function LandingPage() {
             <Link href="/login" className="text-sm font-medium hover:opacity-70 transition-opacity px-4">
               Log In
             </Link>
-            <Link href="/register" className="btn-primary py-2.5 px-5 text-sm">
+            <Link href="/register" className="bg-emerald-900 text-surface-0 py-2.5 px-5 text-sm rounded-full font-medium hover:bg-emerald-800 transition-colors">
               Get Started
             </Link>
           </div>
