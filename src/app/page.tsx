@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { ArrowRight, ChatCircleText, CheckCircle, CaretRight, Compass, FileText, MagnifyingGlass, Sparkle, List, X } from "@phosphor-icons/react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, ChatCircleText, Compass, FileText, MagnifyingGlass, Sparkle } from "@phosphor-icons/react";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase";
 import { IconProps } from "@phosphor-icons/react";
 import { HeroVisual } from "@/components/landing/BentoPreviews";
+import { JobDiscoveryPreview, JobTrackerPreview, ResumeBuilderPreview, InterviewPackPreview } from "@/components/landing/BentoPreviews";
 
 /* ═══════════════════════════════════════════════════════
    OfferPath — Landing Page v6 (Vanguard UI Architect)
@@ -22,40 +23,45 @@ interface ModuleDef {
   features: string[];
   colSpan?: string;
   rowSpan?: string;
+  preview?: React.ReactNode;
 }
 
 const MODULES: ModuleDef[] = [
   {
+    icon: Compass,
+    title: "Discovery",
+    desc: "Discover matching opportunities across the web.",
+    features: ["Smart Feed", "Company Watch"],
+    colSpan: "md:col-span-6",
+    rowSpan: "md:row-span-2",
+    preview: <JobDiscoveryPreview />,
+  },
+  {
     icon: MagnifyingGlass,
-    title: "Job Tracker",
+    title: "Tracker",
     desc: "A powerful Kanban-style pipeline to manage every application. AI analyzes job descriptions to score your fit and prioritize your next move.",
     features: ["JD Analysis", "Kanban Pipeline", "Match Scoring", "History"],
-    colSpan: "md:col-span-8",
-    rowSpan: "md:row-span-2",
+    colSpan: "md:col-span-6",
+    rowSpan: "md:row-span-1",
+    preview: <JobTrackerPreview />,
   },
   {
     icon: FileText,
-    title: "Resume Builder",
+    title: "Resume",
     desc: "Build stunning, ATS-optimized resumes in minutes.",
     features: ["9 Templates", "AI Tailoring"],
-    colSpan: "md:col-span-4",
+    colSpan: "md:col-span-6",
     rowSpan: "md:row-span-1",
-  },
-  {
-    icon: Compass,
-    title: "Job Discovery",
-    desc: "Discover matching opportunities across the web.",
-    features: ["Smart Feed", "Company Watch"],
-    colSpan: "md:col-span-4",
-    rowSpan: "md:row-span-1",
+    preview: <ResumeBuilderPreview />,
   },
   {
     icon: ChatCircleText,
-    title: "Interview Prep",
+    title: "Interview",
     desc: "Master your interviews with AI-generated prep guides. Practice with simulated mock sessions and build a reusable STAR story bank.",
     features: ["Mock Sessions", "STAR Bank", "Company Research", "Custom Qs"],
     colSpan: "md:col-span-12",
     rowSpan: "md:row-span-1",
+    preview: <InterviewPackPreview />,
   },
 ];
 
@@ -90,43 +96,13 @@ const TESTIMONIALS = [
   },
 ];
 
-const PRICING = [
-  {
-    name: "Free",
-    price: "$0",
-    period: "forever",
-    desc: "Everything you need to get started.",
-    features: ["2 Resumes", "3 Templates", "12 Active Jobs", "3 AI Tailorings/wk"],
-    cta: "Start Free",
-    highlight: false,
-  },
-  {
-    name: "Pro",
-    price: "$15",
-    period: "/mo",
-    desc: "Unlimited power for serious job seekers.",
-    features: ["Unlimited Resumes", "9 Pro Templates", "Unlimited Tracking", "Real-time ATS"],
-    cta: "Go Pro",
-    highlight: true,
-  },
-  {
-    name: "Team",
-    price: "$29",
-    period: "/seat/mo",
-    desc: "For coaches and recruiting teams.",
-    features: ["Multi-user", "Client Management", "Custom Templates", "Analytics"],
-    cta: "Contact",
-    highlight: false,
-  },
-];
-
 const revealVariants = {
   hidden: { opacity: 0, y: 64, filter: "blur(8px)" },
   visible: { 
     opacity: 1, 
     y: 0, 
     filter: "blur(0px)",
-    transition: { duration: 0.8, ease: [0.32, 0.72, 0, 1] }
+    transition: { duration: 0.8, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }
   }
 };
 
@@ -175,8 +151,8 @@ export default function LandingPage() {
         <motion.nav
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
-          className="pointer-events-auto bg-white/80 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.05)] rounded-full px-4 py-3 flex items-center justify-between w-full max-w-4xl"
+          transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
+          className="pointer-events-auto bg-white/80 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.05)] rounded-full px-4 py-3 flex items-center justify-between w-full max-w-6xl"
         >
           <Link href="/" className="flex items-center gap-3 group px-2">
             <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
@@ -188,15 +164,18 @@ export default function LandingPage() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-            {["Features", "Testimonials", "Pricing"].map((label) => (
-              <a
-                key={label}
-                href={`#${label.toLowerCase()}`}
-                className="text-[11px] font-semibold uppercase tracking-widest text-surface-300 hover:text-brand-900 transition-colors"
-              >
-                {label}
-              </a>
-            ))}
+            {["Discovery", "Tracker", "Resume", "Interview", "Testimonials"].map((label) => {
+              const href = `#${label.toLowerCase().replace(/\s+/g, "-")}`;
+              return (
+                <a
+                  key={label}
+                  href={href}
+                  className="text-[11px] font-semibold uppercase tracking-widest text-surface-300 hover:text-brand-900 transition-colors"
+                >
+                  {label}
+                </a>
+              );
+            })}
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -238,23 +217,26 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
             className="fixed inset-0 z-40 bg-surface-50/95 backdrop-blur-3xl flex flex-col items-center justify-center gap-8"
           >
-            {["Features", "Testimonials", "Pricing"].map((label, i) => (
-              <motion.a
-                key={label}
-                href={`#${label.toLowerCase()}`}
-                onClick={() => setMobileMenuOpen(false)}
-                initial={{ y: 40, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1 * i, duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-                className="text-3xl font-display tracking-tight text-brand-900"
-              >
-                {label}
-              </motion.a>
-            ))}
+            {["Discovery", "Tracker", "Resume", "Interview", "Testimonials"].map((label, i) => {
+              const href = `#${label.toLowerCase().replace(/\s+/g, "-")}`;
+              return (
+                <motion.a
+                  key={label}
+                  href={href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  initial={{ y: 40, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 * i, duration: 0.5, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
+                  className="text-3xl font-display tracking-tight text-brand-900"
+                >
+                  {label}
+                </motion.a>
+              );
+            })}
             <motion.div 
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+              transition={{ delay: 0.4, duration: 0.5, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
               className="flex flex-col gap-4 mt-8 w-64"
             >
               <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="btn-secondary w-full text-center">Log In</Link>
@@ -298,7 +280,7 @@ export default function LandingPage() {
             className="md:col-span-6 w-full flex justify-end"
             initial={{ opacity: 0, x: 40, filter: "blur(12px)" }}
             animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1, delay: 0.3, ease: [0.32, 0.72, 0, 1] }}
+            transition={{ duration: 1, delay: 0.3, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
           >
             <HeroVisual />
           </motion.div>
@@ -347,26 +329,34 @@ export default function LandingPage() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 auto-rows-[minmax(300px,auto)] gap-6">
-          {MODULES.map((mod, i) => (
+          {MODULES.map((mod) => (
             <motion.div
               key={mod.title}
+              id={mod.title.toLowerCase().replace(/\s+/g, "-")}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
               variants={revealVariants}
-              className={`doppel-shell flex flex-col ${mod.colSpan} ${mod.rowSpan} w-full`}
+              className={`doppel-shell flex flex-col ${mod.colSpan} ${mod.rowSpan} w-full scroll-mt-32`}
             >
-              <div className="doppel-core flex-1 flex flex-col p-8 md:p-12 relative group">
-                <div className="w-16 h-16 rounded-full bg-surface-50 border border-surface-200/50 flex items-center justify-center mb-8 shadow-inner">
-                  <mod.icon weight="light" className="w-8 h-8 text-brand-900" />
+              <div className="doppel-core flex-1 flex flex-col p-8 md:p-10 relative group">
+                <div className="flex items-start gap-5 mb-6">
+                  <div className="w-14 h-14 shrink-0 rounded-full bg-surface-50 border border-surface-200/50 flex items-center justify-center shadow-inner">
+                    <mod.icon weight="light" className="w-7 h-7 text-brand-900" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-2xl md:text-3xl font-display tracking-tight mb-2">{mod.title}</h3>
+                    <p className="text-surface-300 text-sm md:text-base leading-relaxed font-light">
+                      {mod.desc}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-3xl font-display tracking-tight mb-4">{mod.title}</h3>
-                <p className="text-surface-300 text-lg leading-relaxed mb-12 max-w-md font-light">
-                  {mod.desc}
-                </p>
-                <div className="flex flex-wrap gap-3 mt-auto">
+                {mod.preview && (
+                  <div className="flex-1 min-h-0 mb-4">{mod.preview}</div>
+                )}
+                <div className="flex flex-wrap gap-2">
                   {mod.features.map(f => (
-                    <span key={f} className="px-4 py-1.5 rounded-full bg-surface-50 border border-surface-200/50 text-[11px] font-medium tracking-widest uppercase text-surface-400">
+                    <span key={f} className="px-3 py-1 rounded-full bg-surface-50 border border-surface-200/50 text-[10px] font-medium tracking-widest uppercase text-surface-400">
                       {f}
                     </span>
                   ))}
@@ -394,7 +384,7 @@ export default function LandingPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
-            {TESTIMONIALS.map((t, i) => (
+            {TESTIMONIALS.map((t) => (
               <motion.div 
                 key={t.name} 
                 className="doppel-shell"
@@ -423,63 +413,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Pricing ── */}
-      <section id="pricing" className="py-32 md:py-40 px-4 max-w-[90rem] mx-auto">
-        <motion.div 
-          className="text-center mb-24 max-w-2xl mx-auto flex flex-col items-center"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={revealVariants}
-        >
-          <div className="eyebrow-tag mb-6">Pricing</div>
-          <h2 className="text-5xl md:text-7xl font-light tracking-tighter mb-6">
-            Simple, transparent <span className="font-display italic font-medium">pricing.</span>
-          </h2>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {PRICING.map((plan, i) => (
-            <motion.div 
-              key={plan.name} 
-              className={`doppel-shell ${plan.highlight ? 'ring-2 ring-brand-900 shadow-2xl' : ''}`}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={revealVariants}
-            >
-              <div className="doppel-core h-full flex flex-col p-10">
-                <div className="mb-12">
-                  <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-surface-300 mb-4">{plan.name}</h3>
-                  <div className="text-5xl font-display font-medium mb-4 tracking-tight">
-                    {plan.price}<span className="text-lg text-surface-300 font-sans tracking-normal">{plan.period}</span>
-                  </div>
-                  <p className="text-sm text-surface-300 font-light leading-relaxed">{plan.desc}</p>
-                </div>
-                
-                <ul className="space-y-5 mb-12 flex-1">
-                  {plan.features.map(f => (
-                    <li key={f} className="flex items-center gap-4 text-sm font-medium">
-                      <div className="w-5 h-5 rounded-full bg-surface-100 flex items-center justify-center">
-                        <CheckCircle weight="light" className="text-brand-900 w-3 h-3" />
-                      </div>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <button className={`w-full group flex justify-center items-center gap-4 ${plan.highlight ? 'btn-primary' : 'btn-secondary'}`}>
-                  <span>{plan.cta}</span>
-                  <div className={`btn-icon-wrapper ${plan.highlight ? '' : 'bg-black/5'} group-hover:translate-x-1 group-hover:-translate-y-[1px] group-hover:scale-105`}>
-                    <ArrowRight weight="light" className={`w-3 h-3 ${plan.highlight ? 'text-white' : 'text-surface-400'}`} />
-                  </div>
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
       {/* ── Footer / CTA ── */}
       <section className="py-32 md:py-48 px-4 border-t border-surface-200/50 bg-white text-center">
         <motion.div 
@@ -489,7 +422,7 @@ export default function LandingPage() {
           viewport={{ once: true }}
           variants={revealVariants}
         >
-          <div className="w-16 h-16 flex items-center justify-center mb-12 flex-shrink-0">
+          <div className="w-16 h-16 rounded-full bg-white border border-surface-200/50 flex items-center justify-center mb-12 shadow-inner overflow-hidden">
             <Image src="/logo-infinity.svg" alt="OfferPath Logo" width={64} height={64} className="w-full h-full object-contain" />
           </div>
           <h2 className="text-6xl md:text-8xl font-light tracking-tighter mb-12 leading-[0.9]">
