@@ -295,12 +295,21 @@ export default function ResumeEditorPage({
       {/* Header */}
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4 px-2">
         <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard/resume"
-            className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/dashboard/resume"
+              className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
+              title="Back to layout gallery"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/dashboard/resume#template-gallery"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-surface-500 bg-white border border-surface-200/50 hover:border-brand-200/50 hover:text-brand-900 transition-all"
+            >
+              Try another layout
+            </Link>
+          </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
               <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
