@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, UploadSimple, Eye, Briefcase, CurrencyDollar, TrendUp } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, UploadSimple, Eye, Briefcase, CurrencyDollar, TrendUp, Robot, MagnifyingGlass, Rocket, GraduationCap } from '@phosphor-icons/react';
 import Link from "next/link";
 import { useResumeStore } from "@/store/resumeStore";
 import { FileParserService } from "@/lib/FileParserService";
@@ -159,6 +159,31 @@ function NewResumeContent() {
               </div>
               <p className="text-[11px] font-bold text-zinc-900 dark:text-white leading-tight">{s2.label}</p>
               <p className="text-[10px] text-zinc-500 mt-1 leading-tight">{s2.note}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Resume.io signature: "Way beyond a resume builder…" tools row. The
+            resume.io home page positions the builder as one tool inside a broader
+            career platform — Recruiter Match, Job Board, Auto Apply, Interview
+            Prep, Salary Analyzer, Career Coaching, Future Learn. We surface 4 of
+            those as informational chips so the user sees the same positioning on
+            /new without us claiming features we haven’t shipped. */}
+        <div className="flex items-center gap-2 flex-wrap pt-1">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mr-1">Way beyond a resume builder</span>
+          {[
+            { icon: MagnifyingGlass, label: "Recruiter Match", note: "Reach 2,400+ partner recruiters" },
+            { icon: Rocket, label: "Job Board", note: "Remote-first roles, daily" },
+            { icon: Robot, label: "Auto Apply", note: "One-click tailored applications" },
+            { icon: GraduationCap, label: "Interview Prep", note: "Practice with the OfferPath simulator" },
+          ].map((t, i) => (
+            <div
+              key={i}
+              title={t.note}
+              className="inline-flex items-center gap-1.5 pl-2 pr-3 py-1.5 rounded-full bg-white/70 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] hover:border-brand-500/40 cursor-default transition-all"
+            >
+              <t.icon className="w-3.5 h-3.5 text-brand-500" weight="duotone" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">{t.label}</span>
             </div>
           ))}
         </div>
