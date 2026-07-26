@@ -279,6 +279,42 @@ export default function ResumeEditorPage({
   // AI coach popover state + canned suggestions. Same heuristics as the Quick Wins panel,
   // but rendered in a 'coach voice' that previews what the real model will say.
   const [coachOpen, setCoachOpen] = useState(false);
+
+  // Skills auto-suggest — resume.io's signature affordance: scan experience bullets
+  // + job titles for known tool/skill keywords and offer them as 1-click adds to the
+  // skills list. No model call — just a curated keyword bank + case-insensitive match.
+  // A real model-backed version can replace this later without changing the UI shape.
+  const SKILL_BANK = [
+    "JavaScript", "TypeScript", "Python", "Go", "Rust", "Java", "Kotlin", "Swift",
+    "React", "Next.js", "Vue", "Svelte", "Node.js", "Django", "Flask", "FastAPI",
+    "PostgreSQL", "MySQL", "MongoDB", "Redis", "Snowflake", "BigQuery",
+    "AWS", "GCP", "Azure", "Docker", "Kubernetes", "Terraform",
+    "Figma", "Sketch", "Adobe XD", "Photoshop", "Illustrator",
+    "Salesforce", "HubSpot", "Looker", "Tableau", "Mixpanel", "Amplitude",
+    "Jira", "Asana", "Notion", "Linear", "Confluence",
+    "SQL", "ETL", "A/B Testing", "SEO", "SEM", "CRO",
+  ];
+  const suggestedSkills = useMemo(() => {
+    if (activeSection !== "skills") return [] as string[];
+    const corpus = [
+      data.summary || "",
+      ...((data.experience || []).flatMap((e) => [e.title || "", e.company || "", ...(e.bullets || [])])),
+    ].join(" ").toLowerCase();
+    const existing = new Set((data.skills || []).map((s) => (typeof s === "string" ? s : s.name).toLowerCase()));
+    return SKILL_BANK
+      .filter((skill) => !existing.has(skill.toLowerCase()) && corpus.includes(skill.toLowerCase()))
+      .slice(0, 5);
+  }, [activeSection, data.summary, data.experience, data.skills]);
+  const addSuggestedSkill = (skill: string) => {
+    saveToHistory(id);
+    updateResume(id, {
+      data: {
+        ...data,
+        skills: [...(data.skills || []), { id: `s-${Date.now()}`, name: skill, isHighlighted: false }],
+      },
+    });
+    toast.success(`Added "${skill}" to skills`);
+  };
   const coachTips: { emoji: string; line: string; detail: string }[] = useMemo(() => {
     const tips: { emoji: string; line: string; detail: string }[] = [];
     if (!data.personal?.name) tips.push({ emoji: "✍️", line: "Add your name first", detail: "Recruiters filter by name. Without it, your resume is invisible." });
@@ -937,8 +973,33 @@ export default function ResumeEditorPage({
                   {/* Skills */}
                   {activeSection === "skills" && (
                     <div className="space-y-6">
-                      <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Skills</h2>
-                      
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Skills</h2>
+                      </div>
+                      {/* Auto-suggest strip — resume.io's "extract skills from your experience" affordance.
+                          Scans the user's bullets and offers 1-click adds for any matches. */}
+                      {suggestedSkills.length > 0 && (
+                        <div className="p-3 rounded-2xl border border-amber-500/20 bg-amber-500/5 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Sparkle weight="fill" className="w-3.5 h-3.5 text-amber-500" />
+                            <p className="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-widest">
+                              {suggestedSkills.length} suggested from your experience
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {suggestedSkills.map((s) => (
+                              <button
+                                key={s}
+                                onClick={() => addSuggestedSkill(s)}
+                                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold bg-white dark:bg-white/[0.04] border border-amber-500/30 text-zinc-700 dark:text-zinc-300 hover:border-amber-500 hover:text-amber-700 dark:hover:text-amber-300 transition-all"
+                              >
+                                <Plus className="w-2.5 h-2.5" />
+                                {s}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       <div className="flex flex-wrap gap-2">
                         {(data.skills || []).map((skill, index) => (
                           <div
