@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState, Suspense } from "react";
 import {
-  CheckCircle, CaretRight, Clock, Copy, FileText, Plus, Stack, Star,
+  CheckCircle, CaretRight, Clock, Copy, EnvelopeSimple, FileText, Plus, Stack, Star,
   Sparkle, Target, UploadSimple, Briefcase,
 } from '@phosphor-icons/react';
 import { usePipelineStore } from "@/store/pipelineStore";
@@ -101,6 +101,7 @@ function ResumePageContent() {
             <span className="inline-flex items-center gap-1.5"><Target weight="fill" className="w-4 h-4 text-amber-500" /> AI writer</span>
             <span className="inline-flex items-center gap-1.5"><Briefcase weight="fill" className="w-4 h-4 text-brand-900" /> Build-in jobs</span>
             <span className="inline-flex items-center gap-1.5"><CheckCircle weight="fill" className="w-4 h-4 text-emerald-500" /> Easy to match</span>
+            <span className="inline-flex items-center gap-1.5"><Sparkle weight="fill" className="w-4 h-4 text-purple-500" /> Free resume audits</span>
           </div>
         </div>
       </section>
@@ -230,6 +231,33 @@ function ResumePageContent() {
           )}
         </section>
       )}
+
+      {/* ═════════════ COVER LETTERS — resume.com's "Cover letters" sidebar companion ═════════════ */}
+      <section className="max-w-6xl mx-auto px-2 mb-12">
+        <div className="doppel-shell">
+          <div className="doppel-core bg-white p-6 md:p-8 relative z-10">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[9px] font-bold uppercase tracking-widest text-purple-600 mb-2">
+                  Coming soon
+                </div>
+                <h2 className="text-sm font-bold font-display text-brand-900 uppercase tracking-widest">Cover Letters</h2>
+                <p className="text-[12px] text-surface-400 mt-1 max-w-md">
+                  Generate a matching cover letter from any resume in one click. Tailored to the JD, in your voice, ready to send.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-[10px] font-bold text-surface-400 uppercase tracking-widest">
+                <EnvelopeSimple weight="bold" className="w-4 h-4 text-purple-500" />
+                <span>One-click draft</span>
+                <span className="text-surface-300">|</span>
+                <span>JD-aware tone</span>
+                <span className="text-surface-300">|</span>
+                <span>Email-ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ═════════════ TEMPLATE GALLERY with Manage Sections link ═════════════ */}
       <section id="template-gallery" className="max-w-6xl mx-auto px-2 scroll-mt-6">

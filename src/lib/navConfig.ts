@@ -1,4 +1,4 @@
-import { ChartBar, ChatCircleText, Folders, Compass, Cpu, CreditCard, FileText, Gear, SquaresFour, Kanban, Key, IconProps } from "@phosphor-icons/react";
+import { ChartBar, ChatCircleText, EnvelopeSimple, Folders, Compass, Cpu, CreditCard, FileText, Gear, SquaresFour, Kanban, Key, IconProps } from "@phosphor-icons/react";
 
 export interface NavSubItem {
   label: string;
@@ -37,7 +37,10 @@ export const NAV_ITEMS: NavSection[] = [
           { label: "Analytics", href: "/dashboard/pipeline/analytics", icon: ChartBar },
         ],
       },
-      { label: "Resume Studio", href: "/dashboard/resume", icon: FileText },
+      { label: "Resume Studio", href: "/dashboard/resume", icon: FileText, subItems: [
+        { label: "My Resumes", href: "/dashboard/resume", icon: FileText },
+        { label: "Cover Letters", href: "/dashboard/resume/cover-letters", icon: EnvelopeSimple },
+      ] },
       { label: "Job Search", href: "/dashboard/discover", icon: Compass },
       {
         label: "Interview Simulator",
