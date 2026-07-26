@@ -116,6 +116,10 @@ function NewResumeContent() {
   // bullet-heavy, and aimed at industry roles.
   const [format, setFormat] = useState<"resume" | "cv">("resume");
   const [levelFilter, setLevelFilter] = useState<"All" | "Senior" | "Mid" | "Lead">("All");
+  // R14: industry filter mirrors flowcv.com’s resume-templates category chips
+  // (Popular / Simple / Modern / Creative / Photo / Compact / First Job) so users
+  // can scan the 9 personas by vertical as well as by seniority. Default "All".
+  const [industryFilter, setIndustryFilter] = useState<string>("All");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -455,9 +459,38 @@ function NewResumeContent() {
                   );
                 })}
               </div>
+              {/* Industry filter — second-axis filter so users can find a persona
+                  by vertical (Product, Finance, Engineering, etc.) as well as by
+                  seniority. Drives the same TEMPLATE_PERSONAS table. */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Filter by industry</span>
+                {Array.from(new Set(["All", ...Object.values(TEMPLATE_PERSONAS).map((m) => m.industry)])).map((ind) => {
+                  const count = ind === "All"
+                    ? Object.keys(TEMPLATE_PERSONAS).length
+                    : Object.values(TEMPLATE_PERSONAS).filter((m) => m.industry === ind).length;
+                  return (
+                    <button
+                      key={ind}
+                      onClick={() => setIndustryFilter(ind)}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all border",
+                        industryFilter === ind
+                          ? "bg-emerald-600 border-emerald-600 text-white"
+                          : "bg-white dark:bg-white/[0.04] border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:border-emerald-300"
+                      )}
+                    >
+                      {ind}
+                      <span className={cn(
+                        "text-[9px] px-1 py-0.5 rounded",
+                        industryFilter === ind ? "bg-white/20" : "bg-zinc-100 dark:bg-white/10"
+                      )}>{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Object.entries(TEMPLATE_PERSONAS)
-                  .filter(([_, meta]) => levelFilter === "All" || meta.level === levelFilter)
+                  .filter(([_, meta]) => (levelFilter === "All" || meta.level === levelFilter) && (industryFilter === "All" || meta.industry === industryFilter))
                   .map(([tid, meta]) => {
                   const hasData = Boolean(PERSONA_SAMPLE[tid]);
                   return (
