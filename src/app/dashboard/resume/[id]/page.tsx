@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, Clock, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, Clock, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Target} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -429,6 +429,17 @@ export default function ResumeEditorPage({
       {/* Always-visible "Ask AI coach" pill — resume.io's signature, surfaced outside fullscreen. */}
       {!isFullscreenPreview && (
         <div className="fixed bottom-8 right-8 z-40 flex flex-col items-end gap-3">
+          {/* R15: ATS Perfect badge — surfaces the resume.io home-page "ATS Perfect"
+              callout inline in the editor. Shows when completeness is at or above
+              90%, which is the bar resume.io uses for its ATS-perfect claim. The
+              pill mirrors the same emerald-500/10 styling as the AI coach's amber
+              pill so the two read as a paired pair. */}
+          {completeness >= 90 && (
+            <div className="flex items-center gap-2 pl-3 pr-3.5 py-2 rounded-full bg-emerald-500/10 backdrop-blur border border-emerald-500/30 shadow-lg" title="Your resume passes the standard ATS readability bar.">
+              <Target weight="fill" className="w-3.5 h-3.5 text-emerald-500" />
+              <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-300">ATS Perfect</span>
+            </div>
+          )}
           <button
             onClick={() => setCoachOpen(!coachOpen)}
             className="group flex items-center gap-2 pl-3 pr-4 py-3 rounded-full bg-zinc-900/95 backdrop-blur text-white shadow-2xl hover:scale-[1.03] active:scale-95 transition-all text-[12px] font-semibold border border-white/10 hover:border-amber-300/40"
