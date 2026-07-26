@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, IdentificationCard, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, IdentificationCard, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -257,6 +257,81 @@ export default function ResumeEditorPage({
     ? { name: personaMatch[1], template: resume.template, role: PERSONA_BY_TEMPLATE[resume.template]?.role || "" }
     : null;
   const [personaDismissed, setPersonaDismissed] = useState(false);
+  const [personaSwapOpen, setPersonaSwapOpen] = useState(false);
+
+  // Persona data for the "Try a different persona" popover. Mirrors /new/page.tsx.
+  // Only the 3 personas with full data are listed; the other templates have no sample to swap to.
+  const PERSONA_SAMPLE_DATA: Record<string, typeof PERSONA_BY_TEMPLATE[string] & {
+    email: string; phone: string; location: string;
+    summary: string;
+    experience: Array<{ company: string; title: string; location: string; start_date: string; end_date: string; current: boolean; bullets: string[] }>;
+    education: Array<{ institution: string; degree: string; field: string; start_date: string; end_date: string; gpa?: string }>;
+    skills: string[];
+  }> = {
+    "classic-minimal": {
+      name: "Brian T. Wayne", role: "Business Development Consultant", email: "brian.wayne@example.com", phone: "+1 415 555 0142", location: "San Francisco, CA",
+      summary: "Business Development Consultant with 7+ years driving revenue growth for early-stage SaaS companies. Specialized in cross-functional team leadership, partner enablement, and quantified pipeline generation.",
+      experience: [
+        { company: "Northwind Dynamics", title: "Senior Business Development Consultant", location: "San Francisco, CA", start_date: "2021-03", end_date: "", current: true, bullets: [
+          "Built and managed a 12-person cross-functional pod that closed $4.2M in new ARR across 38 enterprise accounts in 12 months.",
+          "Designed partner enablement curriculum that lifted channel-sourced revenue 38% YoY.",
+          "Coached 6 junior BDRs to promotion; team NPS rose from 32 to 71 in 9 months.",
+        ] },
+        { company: "Aperture Labs", title: "Business Development Manager", location: "San Francisco, CA", start_date: "2018-06", end_date: "2021-02", current: false, bullets: [
+          "Owned outbound motion for the West Coast; sourced 240+ SQLs per quarter, 18% close rate.",
+          "Built reporting dashboards in Looker that exposed $1.1M of pipeline risk to leadership.",
+        ] },
+      ],
+      education: [{ institution: "UC Berkeley, Haas School of Business", degree: "MBA", field: "Marketing & Entrepreneurship", start_date: "2014", end_date: "2016", gpa: "3.8" }],
+      skills: ["Enterprise sales", "Pipeline forecasting", "Salesforce + HubSpot", "Looker", "Cross-functional leadership", "Channel partner enablement"],
+    },
+    "premium-headshot": {
+      name: "Camila Rivera", role: "Senior Sales Manager", email: "camila.rivera@example.com", phone: "+1 305 555 0193", location: "Miami, FL",
+      summary: "Senior Sales Manager with 9 years of enterprise SaaS experience. Track record of building high-performing LATAM-aligned sales teams and growing accounts from $50K to $2M+ ARR.",
+      experience: [
+        { company: "Cobalt Industries", title: "Senior Sales Manager — LATAM", location: "Miami, FL", start_date: "2020-08", end_date: "", current: true, bullets: [
+          "Lead 8-person LATAM sales pod; overdelivered on quota by 142% in FY23 ($8.4M vs $5.9M target).",
+          "Closed largest single deal in company history: $1.6M 3-year enterprise agreement with MercadoLibre.",
+          "Built Spanish-language enablement library; ramp time for new AEs fell from 12 weeks to 6.",
+        ] },
+      ],
+      education: [{ institution: "Universidad de los Andes", degree: "BBA", field: "International Business", start_date: "2012", end_date: "2016" }],
+      skills: ["Enterprise SaaS sales", "LATAM market expansion", "Salesforce", "Outreach + Salesloft", "Negotiation", "Bilingual EN/ES"],
+    },
+    "bold-engineer": {
+      name: "Rohan K. Patel", role: "Project Engineer", email: "rohan.patel@example.com", phone: "+1 408 555 0210", location: "San Jose, CA",
+      summary: "Project Engineer with 6+ years in hardware and embedded systems. Strong in cross-functional collaboration with manufacturing, firmware, and design teams.",
+      experience: [
+        { company: "Quantum Devices", title: "Project Engineer", location: "San Jose, CA", start_date: "2020-01", end_date: "", current: true, bullets: [
+          "Led PCB bring-up on 3 product lines, reducing time-to-prototype by 38%.",
+          "Owned DFM handoff to contract manufacturer; first-pass yield rose from 78% to 94%.",
+          "Wrote internal tooling in Python that cut weekly QA reporting from 4 hours to 18 minutes.",
+        ] },
+      ],
+      education: [{ institution: "University of Michigan", degree: "B.S.", field: "Electrical & Computer Engineering", start_date: "2014", end_date: "2018" }],
+      skills: ["Altium Designer", "Embedded C", "Python", "JTAG debugging", "Signal integrity", "I2C / SPI / UART"],
+    },
+  };
+
+  const handleSwapPersona = (templateId: string) => {
+    const swap = PERSONA_SAMPLE_DATA[templateId];
+    if (!swap) return;
+    saveToHistory(id);
+    updateResume(id, {
+      title: `${swap.name} — Sample`,
+      template: templateId,
+      data: {
+        personal: { name: swap.name, email: swap.email, phone: swap.phone, location: swap.location },
+        summary: swap.summary,
+        experience: swap.experience as any,
+        education: swap.education as any,
+        skills: swap.skills.map((name, i) => ({ id: `s${i}`, name, isHighlighted: i < 2 })),
+      },
+    });
+    setSelectedTemplate(templateId);
+    setPersonaSwapOpen(false);
+    toast.success(`Swapped to ${swap.name} — ${swap.role}`);
+  };
 
   // Per-section completion check — flowcv shows a tick in the section nav when a section has content.
   const sectionHasContent: Record<string, boolean> = {
@@ -351,13 +426,48 @@ export default function ResumeEditorPage({
                 <p className="text-[11px] text-zinc-500 mt-0.5">Edit each section to replace the sample with your own info.</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 relative">
+              <button
+                onClick={() => setPersonaSwapOpen(!personaSwapOpen)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-[10px] font-bold uppercase tracking-widest text-indigo-600 hover:bg-indigo-500/20 transition-all"
+              >
+                <ArrowsLeftRight className="w-3.5 h-3.5" />
+                Try a different persona
+              </button>
               <button
                 onClick={handleClearPersonaSample}
                 className="px-3 py-1.5 rounded-xl bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.08] text-[10px] font-bold uppercase tracking-widest text-zinc-600 hover:text-indigo-600 hover:border-indigo-500/30 transition-all"
               >
                 Start fresh
               </button>
+              {personaSwapOpen && (
+                <div className="absolute top-full right-0 mt-2 w-80 z-50 liquid-glass rounded-2xl border border-indigo-500/20 shadow-2xl p-2 animate-fade-in">
+                  <div className="px-3 py-2 border-b border-zinc-200/30 dark:border-white/[0.05]">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Swap to a different sample persona</p>
+                  </div>
+                  <div className="space-y-1 py-1">
+                    {Object.entries(PERSONA_SAMPLE_DATA).map(([tid, p]) => (
+                      <button
+                        key={tid}
+                        onClick={() => handleSwapPersona(tid)}
+                        className={cn(
+                          "w-full flex items-center gap-3 p-2.5 rounded-xl text-left hover:bg-indigo-500/10 transition-all group",
+                          personaSample?.template === tid && "bg-indigo-500/10"
+                        )}
+                      >
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500/30 to-blue-500/30 flex items-center justify-center text-[10px] font-bold text-indigo-300 flex-shrink-0">
+                          {p.name.split(" ").map((s) => s[0]).slice(0, 2).join("")}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-zinc-900 dark:text-white truncate">{p.name}</p>
+                          <p className="text-[10px] text-zinc-500 truncate">{p.role}</p>
+                        </div>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 group-hover:text-indigo-500">{tid}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               <button
                 onClick={() => setPersonaDismissed(true)}
                 className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 transition-all"
