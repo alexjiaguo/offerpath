@@ -117,7 +117,13 @@ function NewResumeContent() {
 
       <div className="space-y-8">
         <div>
-          <h1 className="text-4xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">Create New Resume</h1>
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <h1 className="text-4xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">Create New Resume</h1>
+            <span className="inline-flex items-center gap-2 pl-3 pr-3 py-1 rounded-full bg-zinc-900/95 backdrop-blur text-white shadow-md text-[10px] font-semibold border border-white/10">
+              <span className="w-4 h-4 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 flex items-center justify-center text-[8px] font-bold text-zinc-900">AI</span>
+              Ask AI coach available
+            </span>
+          </div>
           <p className="text-zinc-600 dark:text-zinc-400 mt-2">Choose how you would like to start building your resume.</p>
         </div>
 
