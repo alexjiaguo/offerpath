@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -230,13 +230,22 @@ export default function ResumeEditorPage({
     });
   };
 
-  const SECTIONS = [
-    { key: "personal", label: "Identity", icon: User },
-    { key: "summary", label: "Summary", icon: FileText },
-    { key: "experience", label: "Experience", icon: Briefcase },
-    { key: "education", label: "Education", icon: GraduationCap },
-    { key: "skills", label: "Skills", icon: Wrench },
+  const [showTips, setShowTips] = useState(true);
+  const SECTIONS: { key: string; label: string; icon: typeof User; tip: string }[] = [
+    { key: "personal",  label: "Identity",  icon: User,         tip: "List 3-4 work-related talents or skills that set you apart." },
+    { key: "summary",   label: "Summary",   icon: FileText,    tip: "Open with the role you want next. Quantify scope: team size, budget, ARR." },
+    { key: "experience",label: "Experience",icon: Briefcase,   tip: "Lead each bullet with a strong verb. Show the result, not the activity." },
+    { key: "education", label: "Education", icon: GraduationCap, tip: "Newest first. Honors/GPA only if recent (under 5 years) and impressive." },
+    { key: "skills",    label: "Skills",    icon: Wrench,      tip: "Group by category. Mirror the keywords in your target job description." },
   ];
+  // Resume.com-style "N / 5 sections started" progress
+  const startedCount = [
+    Boolean(data.personal?.name),
+    Boolean(data.summary && data.summary.length > 30),
+    Boolean(data.experience && data.experience.length > 0),
+    Boolean(data.education && data.education.length > 0),
+    Boolean(data.skills && data.skills.length > 0),
+  ].filter(Boolean).length;
 
   const sectionOrder = resume.section_order || [
     "summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects"
@@ -459,6 +468,29 @@ export default function ResumeEditorPage({
               </div>
             </motion.div>
 
+            {/* Section progress + tips — resume.com signature */}
+            <div className="flex items-center gap-3 pb-2 flex-wrap">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05]">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{startedCount} / 5 sections started</span>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }, (_, k) => (
+                    <span key={k} className={cn("w-1.5 h-1.5 rounded-full", k < startedCount ? "bg-brand-500" : "bg-zinc-200 dark:bg-white/10")} />
+                  ))}
+                </div>
+              </div>
+              <button
+                onClick={() => setShowTips(!showTips)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all",
+                  showTips ? "bg-brand-50 text-brand-700 border-brand-200" : "bg-white text-zinc-500 border-zinc-200 hover:text-brand-900"
+                )}
+                title="Toggle section tips"
+              >
+                <Info weight="fill" className="w-3.5 h-3.5" />
+                {showTips ? "Hide Tips" : "View Tips"}
+              </button>
+            </div>
+
             {/* Template Picker */}
             <div className="flex items-center gap-3 pb-4">
               <Browser className="w-5 h-5 text-zinc-600 flex-shrink-0" />
@@ -536,6 +568,12 @@ export default function ResumeEditorPage({
                   {activeSection === "personal" && (
                     <div className="space-y-6">
                       <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Personal Details</h2>
+                      {showTips && (
+                        <div className="mt-2 flex items-start gap-2 px-3 py-2 rounded-xl bg-brand-500/5 border border-brand-500/15 text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          <Info weight="fill" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0 mt-0.5" />
+                          <span>List 3-4 work-related talents or skills that set you apart.</span>
+                        </div>
+                      )}
                       <div className="space-y-4">
                         {[
                           { label: "Full Name", field: "name", value: data.personal?.name || "" },
@@ -564,6 +602,12 @@ export default function ResumeEditorPage({
                   {activeSection === "summary" && (
                     <div className="space-y-6">
                       <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Professional Summary</h2>
+                      {showTips && (
+                        <div className="mt-2 flex items-start gap-2 px-3 py-2 rounded-xl bg-brand-500/5 border border-brand-500/15 text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          <Info weight="fill" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0 mt-0.5" />
+                          <span>Open with the role you want next. Quantify scope: team size, budget, ARR.</span>
+                        </div>
+                      )}
                       <textarea
                         value={data.summary || ""}
                         onBlur={() => saveToHistory(id)}
@@ -580,6 +624,12 @@ export default function ResumeEditorPage({
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Work Experience</h2>
+                      {showTips && (
+                        <div className="mt-2 flex items-start gap-2 px-3 py-2 rounded-xl bg-brand-500/5 border border-brand-500/15 text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          <Info weight="fill" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0 mt-0.5" />
+                          <span>Lead each bullet with a strong verb. Show the result, not the activity.</span>
+                        </div>
+                      )}
                         <button
                           onClick={() => {
                             saveToHistory(id);
@@ -696,6 +746,12 @@ export default function ResumeEditorPage({
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Education</h2>
+                      {showTips && (
+                        <div className="mt-2 flex items-start gap-2 px-3 py-2 rounded-xl bg-brand-500/5 border border-brand-500/15 text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          <Info weight="fill" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0 mt-0.5" />
+                          <span>Newest first. Honors/GPA only if recent and impressive.</span>
+                        </div>
+                      )}
                         <button
                           onClick={() => {
                             saveToHistory(id);
@@ -764,6 +820,12 @@ export default function ResumeEditorPage({
                   {activeSection === "skills" && (
                     <div className="space-y-6">
                       <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Skills</h2>
+                      {showTips && (
+                        <div className="mt-2 flex items-start gap-2 px-3 py-2 rounded-xl bg-brand-500/5 border border-brand-500/15 text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          <Info weight="fill" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0 mt-0.5" />
+                          <span>Group by category. Mirror the keywords in your target job description.</span>
+                        </div>
+                      )}
                       
                       <div className="flex flex-wrap gap-2">
                         {(data.skills || []).map((skill, index) => (
