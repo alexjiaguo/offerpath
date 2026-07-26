@@ -406,7 +406,7 @@ export default function ResumeEditorPage({
 
       {/* Persona sample banner — flowcv "Brian T. Wayne" signature. Only shown for sample resumes. */}
       {personaSample && !personaDismissed && (
-        <div className="mb-4 liquid-glass rounded-2xl p-4 border border-indigo-500/20 bg-gradient-to-r from-indigo-500/5 via-blue-500/5 to-transparent relative overflow-hidden">
+        <div className="mb-4 liquid-glass rounded-2xl p-4 border border-indigo-500/20 bg-gradient-to-r from-indigo-500/5 via-blue-500/5 to-transparent relative z-30">
           <div className="absolute -top-12 -right-12 w-40 h-40 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
           <div className="flex items-center justify-between gap-4 flex-wrap relative z-10">
             <div className="flex items-center gap-3">
