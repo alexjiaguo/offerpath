@@ -42,6 +42,7 @@ const TRUST_PILLS = [
   { icon: Check,        text: "100% free forever" },
   { icon: FilePdf,      text: "Unlimited PDF downloads" },
   { icon: ShieldCheck,  text: "ATS-friendly layouts" },
+  { icon: Sparkle,      text: "No watermarks · No paywalls · Yes, really 🚀" },
 ];
 
 function ResumePageContent() {
@@ -91,13 +92,17 @@ function ResumePageContent() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200/50 text-[10px] font-bold uppercase tracking-widest text-brand-900">
                 <Sparkle weight="fill" className="w-3 h-3" />
-                Free online resume builder
+                100+ Free Resume Templates
               </div>
               <h1 className="mt-5 text-4xl md:text-5xl font-light text-brand-900 font-display tracking-tight leading-[1.05]">
                 Build a job-winning<br />resume for free
               </h1>
               <p className="mt-5 text-surface-500 text-[15px] md:text-base font-medium max-w-md leading-relaxed">
-                Your first resume is 100% free forever. Unlimited downloads, no hidden fees, no watermark. Yes, really.
+                Choose a professional resume template in your preferred style and format. Use our{" "}
+                <span className="text-brand-900 font-semibold">free online resume builder</span> to add content and customize easily.
+              </p>
+              <p className="mt-3 text-[12px] font-semibold text-surface-500">
+                Unlimited PDF downloads · No watermarks · No paywalls · No hidden fees · <span className="text-brand-900">Yes, really 🚀</span>
               </p>
 
               {/* Trust pills */}
