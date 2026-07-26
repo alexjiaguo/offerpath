@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, Clock, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -262,6 +262,20 @@ export default function ResumeEditorPage({
   const completenessLabel = completeness >= 80 ? "ATS-friendly" : completeness >= 50 ? "Getting there" : "Needs content";
   const completenessColor = completeness >= 80 ? "text-emerald-400" : completeness >= 50 ? "text-amber-400" : "text-zinc-500";
 
+  // Time-to-draft timer — resume.io's "A draft in 10 mins" promise, made visible.
+  // Captures mount time in a ref so it doesn't reset on re-render; ticks every second
+  // while the page is open so the editor pill stays fresh.
+  const startedAtRef = useRef<number>(Date.now());
+  const [elapsedSec, setElapsedSec] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setElapsedSec(Math.floor((Date.now() - startedAtRef.current) / 1000)), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const formatElapsed = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  // Draft-ready milestone — true once the user has been editing for 10+ minutes AND
+  // the resume is at least 80% complete. The pill swaps to "Draft ready" in green.
+  const draftReady = elapsedSec >= 600 && completeness >= 80;
+
   // AI coach popover state + canned suggestions. Same heuristics as the Quick Wins panel,
   // but rendered in a 'coach voice' that previews what the real model will say.
   const [coachOpen, setCoachOpen] = useState(false);
@@ -434,9 +448,37 @@ export default function ResumeEditorPage({
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
+              </div>
+              {/* Time-to-draft pill — resume.io's "draft in 10 mins" claim, made honest. */}
+              <span className={cn(
+                "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest border",
+                draftReady
+                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-300"
+                  : elapsedSec >= 600
+                    ? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-300"
+                    : "bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-zinc-500"
+              )}>
+                {draftReady ? (
+                  <>
+                    <CheckCircle weight="fill" className="w-2.5 h-2.5" />
+                    Draft ready · {formatElapsed(elapsedSec)}
+                  </>
+                ) : elapsedSec >= 600 ? (
+                  <>
+                    <WarningCircle weight="fill" className="w-2.5 h-2.5" />
+                    Still polishing · {formatElapsed(elapsedSec)}
+                  </>
+                ) : (
+                  <>
+                    <Clock weight="regular" className="w-2.5 h-2.5" />
+                    Editing · {formatElapsed(elapsedSec)}
+                  </>
+                )}
+              </span>
             </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
           </div>
