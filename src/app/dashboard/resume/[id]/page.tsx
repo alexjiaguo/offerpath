@@ -258,6 +258,24 @@ export default function ResumeEditorPage({
   const completenessLabel = completeness >= 80 ? "ATS-friendly" : completeness >= 50 ? "Getting there" : "Needs content";
   const completenessColor = completeness >= 80 ? "text-emerald-400" : completeness >= 50 ? "text-amber-400" : "text-zinc-500";
 
+  // AI coach popover state + canned suggestions. Same heuristics as the Quick Wins panel,
+  // but rendered in a 'coach voice' that previews what the real model will say.
+  const [coachOpen, setCoachOpen] = useState(false);
+  const coachTips: { emoji: string; line: string; detail: string }[] = useMemo(() => {
+    const tips: { emoji: string; line: string; detail: string }[] = [];
+    if (!data.personal?.name) tips.push({ emoji: "✍️", line: "Add your name first", detail: "Recruiters filter by name. Without it, your resume is invisible." });
+    else if (!data.personal?.email) tips.push({ emoji: "✉️", line: "Add an email", detail: "ATS systems need a way to contact you." });
+    else if (!data.personal?.linkedin) tips.push({ emoji: "🔗", line: "Add your LinkedIn", detail: "Profiles with LinkedIn get 12% more recruiter views." });
+    if (!data.summary || data.summary.length < 60) tips.push({ emoji: "📝", line: "Write a 60+ char summary", detail: "Open with the role you want next. Quantify scope." });
+    if (!data.experience || data.experience.length === 0) tips.push({ emoji: "💼", line: "Add an experience entry", detail: "The experience block is the heart of every resume." });
+    else {
+      const noNumbers = data.experience.every((e) => !e.bullets || !e.bullets.some((b) => /\d|%|$|k\b|m\b/i.test(b)));
+      if (noNumbers) tips.push({ emoji: "📊", line: "Add a number to one bullet", detail: "Quantified bullets (%, $, count) lift interview rates by 40%." });
+    }
+    if (!data.skills || data.skills.length < 5) tips.push({ emoji: "🎯", line: `Add ${5 - (data.skills?.length || 0)} more skills`, detail: "Resumes with 5+ skills get 27% more callbacks." });
+    return tips.slice(0, 4);
+  }, [data.personal, data.summary, data.experience, data.skills]);
+
   // Resume.io's "Quick Wins" — content-based, actionable suggestions with a section jump.
   // We cap at 3 items so the panel stays scannable. Each item has the section key the
   // "Fix" button jumps to.
@@ -356,9 +374,9 @@ export default function ResumeEditorPage({
 
       {/* Always-visible "Ask AI coach" pill — resume.io's signature, surfaced outside fullscreen. */}
       {!isFullscreenPreview && (
-        <div className="fixed bottom-8 right-8 z-40">
+        <div className="fixed bottom-8 right-8 z-40 flex flex-col items-end gap-3">
           <button
-            onClick={() => toast.info("AI coach is in private beta — coming soon.")}
+            onClick={() => setCoachOpen(!coachOpen)}
             className="group flex items-center gap-2 pl-3 pr-4 py-3 rounded-full bg-zinc-900/95 backdrop-blur text-white shadow-2xl hover:scale-[1.03] active:scale-95 transition-all text-[12px] font-semibold border border-white/10 hover:border-amber-300/40"
           >
             <span className="relative w-7 h-7 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 flex items-center justify-center text-zinc-900">
@@ -368,6 +386,37 @@ export default function ResumeEditorPage({
             Ask AI coach anything...
             <span className="hidden md:inline text-[9px] font-bold uppercase tracking-widest text-amber-300/80 ml-1 px-1.5 py-0.5 rounded bg-amber-300/10 border border-amber-300/20">Beta</span>
           </button>
+          {coachOpen && (
+            <div className="w-80 liquid-glass rounded-2xl border border-amber-500/20 shadow-2xl p-4 animate-fade-in bg-zinc-900/95 backdrop-blur">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400">AI coach — live preview</p>
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Canned suggestions. Real model coming soon.</p>
+                </div>
+                <button onClick={() => setCoachOpen(false)} className="p-1 rounded text-zinc-500 hover:text-zinc-300" title="Close">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              {coachTips.length === 0 ? (
+                <div className="px-1 py-2 flex items-center gap-2 text-[11px] text-emerald-400">
+                  <CheckCircle weight="fill" className="w-4 h-4" />
+                  <span>Your resume looks great — nothing to coach on right now.</span>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {coachTips.map((tip, i) => (
+                    <div key={i} className="flex items-start gap-2.5 p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-amber-500/30 transition-all">
+                      <span className="text-base leading-none mt-0.5">{tip.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] font-semibold text-white">{tip.line}</p>
+                        <p className="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">{tip.detail}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
