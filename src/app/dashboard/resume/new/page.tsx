@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, SquaresFour, UploadSimple } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, SquaresFour, UploadSimple, ListChecks, EnvelopeSimple } from '@phosphor-icons/react';
 import Link from "next/link";
 import { toast } from "sonner";
 import { useResumeStore } from "@/store/resumeStore";
@@ -283,6 +283,29 @@ function NewResumeContent() {
               ? "1–2 pages. Bullet-heavy. Industry roles. The default for most job applications in the US."
               : "Multi-page. Includes publications, research, coursework, and a longer academic history. Common in academia, research, and some international markets."}
           </p>
+        </div>
+
+        <div className="flex items-center gap-4 flex-wrap pt-1">
+          <div className="flex -space-x-2">
+            {[ { i: "BT", bg: "from-amber-200 to-amber-400" }, { i: "CR", bg: "from-rose-200 to-rose-400" }, { i: "RP", bg: "from-sky-200 to-sky-400" }, { i: "MA", bg: "from-emerald-200 to-emerald-400" }, { i: "DW", bg: "from-violet-200 to-violet-400" } ].map((a, i) => (
+              <div key={i} className={cn("w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-gradient-to-br flex items-center justify-center text-[10px] font-bold text-white", a.bg)}>{a.i}</div>
+            ))}
+          </div>
+          <p className="text-xs text-zinc-500">Real resumes, real people — used by PMs, engineers, operators, and founders worldwide.</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[ { icon: FileText, label: "Tested resume templates", note: "Reviewed by recruiters" }, { icon: ListChecks, label: "Step-by-step guidance", note: "Inline tips per section" }, { icon: Sparkle, label: "AI writes for you", note: "Bullet & summary drafts" }, { icon: EnvelopeSimple, label: "Instant cover letters", note: "Pair with any resume" } ].map((f, i) => (
+            <div key={i} className="flex items-start gap-3 p-3 rounded-2xl border border-zinc-200 dark:border-white/[0.05] bg-white/40 dark:bg-white/[0.02]">
+              <div className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center flex-shrink-0">
+                <f.icon className="w-4 h-4 text-brand-500" weight="duotone" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold text-zinc-900 dark:text-white leading-tight">{f.label}</p>
+                <p className="text-[10px] text-zinc-500 mt-0.5 leading-tight">{f.note}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
         <AnimatePresence mode="wait">
