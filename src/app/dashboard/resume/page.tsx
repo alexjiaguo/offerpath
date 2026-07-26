@@ -23,6 +23,16 @@ function ResumePageContent() {
   const { getJobById: getPipelineJob } = usePipelineStore();
   const { getJobById: getDiscoveryJob } = useDiscoveryStore();
   const { resumes, getATSScore, duplicateResume, addResume } = useResumeStore();
+
+  /* Industry chips — resume.com's "Browse by industry" pattern */
+  const INDUSTRY_EXAMPLES = [
+    { label: "Technology",        icon: "Cpu",            count: 12 },
+    { label: "Healthcare",        icon: "Heartbeat",      count: 8 },
+    { label: "Finance",           icon: "ChartLineUp",    count: 9 },
+    { label: "Education",         icon: "GraduationCap",  count: 6 },
+    { label: "Marketing",         icon: "Megaphone",      count: 7 },
+    { label: "Engineering",       icon: "Wrench",         count: 11 },
+  ];
   const searchQuery = usePipelineStore((s) => s.filters.search);
 
   const [activeCategory, setActiveCategory] = useState<string>("All");
@@ -256,6 +266,33 @@ function ResumePageContent() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ═════════════ INDUSTRY EXAMPLES — resume.com's "Browse by industry" ═════════════ */}
+      <section className="max-w-6xl mx-auto px-2 mb-10">
+        <div className="flex items-end justify-between flex-wrap gap-3 mb-4 border-b border-surface-200/50 pb-3">
+          <div>
+            <h2 className="text-[10px] font-bold text-surface-400 uppercase tracking-widest">Browse by Industry</h2>
+            <p className="text-[12px] text-surface-400/80 mt-1">Example resumes curated per role, ready to tailor.</p>
+          </div>
+          <Link href="#template-gallery" className="text-[10px] font-bold text-brand-900 uppercase tracking-widest hover:underline">
+            See all templates →
+          </Link>
+        </div>
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+          {INDUSTRY_EXAMPLES.map((ind) => (
+            <Link
+              key={ind.label}
+              href={`#template-gallery`}
+              className="doppel-shell group hover:-translate-y-0.5 transition-all"
+            >
+              <div className="doppel-core bg-white p-3 relative z-10 text-center">
+                <div className="text-[12px] font-bold text-brand-900 uppercase tracking-widest">{ind.label}</div>
+                <div className="text-[9px] text-surface-400 font-semibold mt-0.5">{ind.count} examples</div>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
