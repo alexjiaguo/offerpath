@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -320,6 +320,24 @@ export default function ResumeEditorPage({
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
+          {/* Resume.com signature: one-click "Build cover letter from this resume" pill. */}
+          <Link
+            href="/dashboard/resume/cover-letters"
+            className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300 bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.08] hover:border-brand-500/40 hover:text-brand-600 transition-all"
+            title="Open the cover letter builder for this resume"
+          >
+            <EnvelopeSimple className="w-3.5 h-3.5" />
+            Cover Letter
+          </Link>
+          {/* Resume.com signature: shortcut to the 6 sample archetypes. */}
+          <Link
+            href="/dashboard/resume#resume-samples"
+            className="hidden lg:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300 bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.08] hover:border-brand-500/40 hover:text-brand-600 transition-all"
+            title="Browse 6 resume examples (PM, SWE, Designer, ...)"
+          >
+            <Bookmarks className="w-3.5 h-3.5" />
+            Examples
+          </Link>
           {/* Collapse Editor Toggle */}
           <button
             onClick={() => setIsEditorCollapsed(!isEditorCollapsed)}
@@ -562,6 +580,26 @@ export default function ResumeEditorPage({
                     );
                   })}
                 </div>
+
+                {/* Resume.com signature: contextual "next step" nudge — when experience is filled,
+                    surface a Build cover letter CTA. Stays out of the way otherwise. */}
+                {Boolean(data.experience && data.experience.length > 0 && data.experience[0]?.company) && startedCount >= 3 && (
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 flex-wrap">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                      <Sparkle weight="fill" className="w-4 h-4 text-emerald-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">Your resume is taking shape. Pair it with a cover letter.</p>
+                      <p className="text-[10px] text-zinc-500 mt-0.5">Resume.com users who attach a cover letter are 2x more likely to hear back.</p>
+                    </div>
+                    <Link
+                      href="/dashboard/resume/cover-letters"
+                      className="px-3 py-1.5 rounded-xl bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-600 transition-all flex-shrink-0"
+                    >
+                      Build cover letter
+                    </Link>
+                  </div>
+                )}
 
                 <div className="liquid-glass rounded-[32px] p-6 animate-fade-in min-h-[500px]">
                   {/* Personal Info */}
