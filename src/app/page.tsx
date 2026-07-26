@@ -8,13 +8,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ChatCircleText, Compass, FileText, MagnifyingGlass, Sparkle } from "@phosphor-icons/react";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase";
 import { IconProps } from "@phosphor-icons/react";
-import { HeroVisual } from "@/components/landing/BentoPreviews";
 import { JobDiscoveryPreview, JobTrackerPreview, ResumeBuilderPreview, InterviewPackPreview } from "@/components/landing/BentoPreviews";
+import { AnnouncementBar } from "@/components/landing/AnnouncementBar";
+import { PasteDemo } from "@/components/landing/PasteDemo";
+import { HowItWorks } from "@/components/landing/HowItWorks";
 
-/* ═══════════════════════════════════════════════════════
-   OfferPath — Landing Page v6 (Vanguard UI Architect)
-   Aesthetic: Soft Structuralism / Editorial Luxury
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   OfferPath - Landing Page v7
+   Inspired by checkvibe.dev structural patterns,
+   anchored to a warm cream base with a saturated
+   ember accent. Editorial Luxury + Functional Tool.
+   ═══════════════════════════════════════════════════ */
 
 interface ModuleDef {
   icon: React.ComponentType<IconProps>;
@@ -29,8 +33,8 @@ interface ModuleDef {
 const MODULES: ModuleDef[] = [
   {
     icon: Compass,
-    title: "Discovery",
-    desc: "Discover matching opportunities across the web.",
+    title: "Job Discovery",
+    desc: "A scheduled Smart Feed across target companies, match-scored against your profile.",
     features: ["Smart Feed", "Company Watch"],
     colSpan: "md:col-span-6",
     rowSpan: "md:row-span-2",
@@ -38,8 +42,8 @@ const MODULES: ModuleDef[] = [
   },
   {
     icon: MagnifyingGlass,
-    title: "Tracker",
-    desc: "A powerful Kanban-style pipeline to manage every application. AI analyzes job descriptions to score your fit and prioritize your next move.",
+    title: "Job Tracker",
+    desc: "A Kanban pipeline built for the messiness of a real search. AI scores every JD against your resume as it lands.",
     features: ["JD Analysis", "Kanban Pipeline", "Match Scoring", "History"],
     colSpan: "md:col-span-6",
     rowSpan: "md:row-span-1",
@@ -47,8 +51,8 @@ const MODULES: ModuleDef[] = [
   },
   {
     icon: FileText,
-    title: "Resume",
-    desc: "Build stunning, ATS-optimized resumes in minutes.",
+    title: "Resume Builder",
+    desc: "Nine templates, an editor that reads the JD, and AI tailoring that rewrites your bullets for the role you want.",
     features: ["9 Templates", "AI Tailoring"],
     colSpan: "md:col-span-6",
     rowSpan: "md:row-span-1",
@@ -56,8 +60,8 @@ const MODULES: ModuleDef[] = [
   },
   {
     icon: ChatCircleText,
-    title: "Interview",
-    desc: "Master your interviews with AI-generated prep guides. Practice with simulated mock sessions and build a reusable STAR story bank.",
+    title: "Interview Pack",
+    desc: "AI-generated prep guides, simulated mock sessions, and a reusable STAR story bank.",
     features: ["Mock Sessions", "STAR Bank", "Company Research", "Custom Qs"],
     colSpan: "md:col-span-12",
     rowSpan: "md:row-span-1",
@@ -65,46 +69,80 @@ const MODULES: ModuleDef[] = [
   },
 ];
 
-const STATS = [
-  { value: "12k", label: "Jobs Tracked", suffix: "+" },
-  { value: "92", label: "Interview Rate", suffix: "%" },
-  { value: "4.9", label: "User Rating", suffix: "/5" },
-  { value: "18", label: "Days to Offer", suffix: "d" },
-];
-
 const TESTIMONIALS = [
   {
     name: "Sarah Chen",
     role: "PM → Meta",
-    text: "The Job Tracker isn't just a pipeline; it's a strategist. I finally felt in control of a high-stakes search.",
     initials: "SC",
-    avatar: "/images/avatars/avatar1.png"
+    text: "The Job Tracker isn't just a pipeline. It's a strategist. I finally felt in control of a high-stakes search.",
   },
   {
     name: "Michael Park",
     role: "Eng → Stripe",
-    text: "The level of detail in the Resume Builder is unmatched. It understood the engineering nuances Stripe was looking for.",
     initials: "MP",
-    avatar: "/images/avatars/avatar2.png"
+    text: "The Resume Builder understood the engineering nuances Stripe was looking for. The tailoring caught signals I missed.",
   },
   {
     name: "Aisha Patel",
     role: "Designer → Apple",
-    text: "Elegant, intuitive, and powerful. OfferPath matches the design standards I expect from world-class software.",
     initials: "AP",
-    avatar: "/images/avatars/avatar3.png"
+    text: "Elegant, intuitive, and powerful. OfferPath matches the design standards I expect from world-class software.",
+  },
+];
+
+const FOOTER_LINKS = [
+  {
+    title: "Product",
+    links: [
+      { label: "Job Discovery", href: "#features" },
+      { label: "Job Tracker", href: "#features" },
+      { label: "Resume Builder", href: "#features" },
+      { label: "Interview Pack", href: "#features" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Smart Feed", href: "#features" },
+      { label: "Templates", href: "#features" },
+      { label: "Mock Sessions", href: "#features" },
+      { label: "Pricing", href: "/register" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "/register" },
+      { label: "Contact", href: "/register" },
+      { label: "Changelog", href: "/register" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy", href: "/register" },
+      { label: "Terms", href: "/register" },
+      { label: "Cookies", href: "/register" },
+    ],
   },
 ];
 
 const revealVariants = {
   hidden: { opacity: 0, y: 64, filter: "blur(8px)" },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
+  visible: {
+    opacity: 1,
+    y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.8, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }
-  }
+    transition: { duration: 0.8, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] },
+  },
 };
+
+const NAV_ITEMS = [
+  { label: "Product", href: "#features" },
+  { label: "How it works", href: "#how-it-works" },
+  { label: "Templates", href: "#features" },
+  { label: "Stories", href: "#testimonials" },
+];
 
 export default function LandingPage() {
   const router = useRouter();
@@ -144,62 +182,65 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-surface-50 text-surface-400 font-sans selection:bg-black/10">
-      
-      {/* ── Fluid Island Navigation ── */}
-      <div className="fixed top-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
+    <div className="min-h-[100dvh] bg-surface-50 text-surface-400 font-sans">
+      <AnnouncementBar />
+
+      {/* ── Floating Pill Navigation (3-col grid, checkvibe structure) ── */}
+      <div className="sticky top-0 z-50 pt-4 md:pt-6 px-4">
         <motion.nav
-          initial={{ y: -100, opacity: 0 }}
+          initial={{ y: -40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
-          className="pointer-events-auto bg-white/80 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.05)] rounded-full px-4 py-3 flex items-center justify-between w-full max-w-6xl"
+          transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
+          className="mx-auto max-w-[90rem] grid grid-cols-[1fr_auto_1fr] items-center bg-white/85 backdrop-blur-2xl border border-white/40 shadow-[0_10px_40px_-12px_rgba(15,23,42,0.12)] rounded-full px-3 py-2.5"
         >
-          <Link href="/" className="flex items-center gap-3 group px-2">
-            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-               <Image src="/logo-infinity.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-contain" />
+          <Link href="/" className="flex items-center gap-3 pl-3 group">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden border border-surface-200 shadow-sm">
+              <Image src="/logo-mark.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-cover scale-110" />
             </div>
-            <span className="text-lg font-medium tracking-tight text-brand-900 font-display">
+            <span className="text-lg font-medium tracking-tight text-brand-900 font-display hidden sm:inline">
               OfferPath
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-            {["Discovery", "Tracker", "Resume", "Interview", "Testimonials"].map((label) => {
-              const href = `#${label.toLowerCase().replace(/\s+/g, "-")}`;
-              return (
-                <a
-                  key={label}
-                  href={href}
-                  className="text-[11px] font-semibold uppercase tracking-widest text-surface-300 hover:text-brand-900 transition-colors"
-                >
-                  {label}
-                </a>
-              );
-            })}
+          <div className="hidden md:flex items-center gap-7 text-sm">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-surface-400 hover:text-ember-600 transition-colors font-medium"
+              >
+                {item.label}
+              </a>
+            ))}
           </div>
 
-          <div className="hidden md:flex items-center gap-3">
-            <Link href="/login" className="text-sm font-medium hover:opacity-70 transition-opacity px-4">
+          <div className="hidden md:flex items-center gap-2 justify-self-end pr-2">
+            <Link href="/login" className="text-sm font-medium text-surface-400 hover:text-brand-900 transition-colors px-3 py-2">
               Log In
             </Link>
-            <Link href="/register" className="bg-emerald-900 text-surface-0 py-2.5 px-5 text-sm rounded-full font-medium hover:bg-emerald-800 transition-colors">
-              Get Started
+            <Link href="/register" className="btn-ember flex items-center gap-2 py-2.5 pl-5 pr-2 text-sm">
+              <span>Sign Up</span>
+              <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+                <ArrowRight weight="bold" className="w-3.5 h-3.5 text-white" />
+              </span>
             </Link>
           </div>
 
-          <button 
-            className="md:hidden w-10 h-10 flex flex-col justify-center items-center gap-1.5 relative z-[60]"
+          <button
+            className="md:hidden col-start-3 -mr-1 w-11 h-11 flex flex-col justify-center items-center gap-1.5 relative z-[60]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Open menu"
+            aria-expanded={mobileMenuOpen}
           >
-            <motion.span 
+            <motion.span
               animate={mobileMenuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
               className="w-5 h-[1.5px] bg-brand-900 block transition-all"
             />
-            <motion.span 
+            <motion.span
               animate={mobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
               className="w-5 h-[1.5px] bg-brand-900 block transition-all"
             />
-            <motion.span 
+            <motion.span
               animate={mobileMenuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
               className="w-5 h-[1.5px] bg-brand-900 block transition-all"
             />
@@ -207,204 +248,155 @@ export default function LandingPage() {
         </motion.nav>
       </div>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.4 }}
             className="fixed inset-0 z-40 bg-surface-50/95 backdrop-blur-3xl flex flex-col items-center justify-center gap-8"
           >
-            {["Discovery", "Tracker", "Resume", "Interview", "Testimonials"].map((label, i) => {
-              const href = `#${label.toLowerCase().replace(/\s+/g, "-")}`;
-              return (
-                <motion.a
-                  key={label}
-                  href={href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  initial={{ y: 40, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.1 * i, duration: 0.5, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
-                  className="text-3xl font-display tracking-tight text-brand-900"
-                >
-                  {label}
-                </motion.a>
-              );
-            })}
-            <motion.div 
+            {NAV_ITEMS.map((item, i) => (
+              <motion.a
+                key={item.label}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 * i, duration: 0.5, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
+                className="text-3xl font-display tracking-tight text-brand-900"
+              >
+                {item.label}
+              </motion.a>
+            ))}
+            <motion.div
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.5, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
               className="flex flex-col gap-4 mt-8 w-64"
             >
               <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="btn-secondary w-full text-center">Log In</Link>
-              <Link href="/register" onClick={() => setMobileMenuOpen(false)} className="btn-primary w-full text-center">Get Started</Link>
+              <Link href="/register" onClick={() => setMobileMenuOpen(false)} className="btn-ember w-full text-center">Sign Up</Link>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── Hero Section (Editorial Split) ── */}
-      <section className="pt-48 pb-24 md:py-40 px-4 max-w-[90rem] mx-auto min-h-[100dvh] flex flex-col justify-center">
-        <div className="grid md:grid-cols-12 gap-16 md:gap-8 items-center w-full">
-          <motion.div 
-            className="md:col-span-6 w-full"
+      {/* ── Hero: editorial copy + interactive paste demo ── */}
+      <section className="pt-16 md:pt-24 pb-24 md:pb-32 px-4">
+        <div className="max-w-[90rem] mx-auto">
+          <motion.div
+            className="max-w-4xl mx-auto text-center"
             initial="hidden"
             animate="visible"
             variants={revealVariants}
           >
-            <div className="eyebrow-tag mb-8">
-              <Sparkle weight="light" className="text-brand-500 w-3 h-3" />
+            <div className="eyebrow-tag mb-8 mx-auto">
+              <Sparkle weight="light" className="text-ember-600 w-3 h-3" />
               The Career Operating System
             </div>
-            <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-light tracking-tighter text-balance mb-8 leading-[0.95]">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-light tracking-tighter text-balance mb-8 leading-[0.95]">
               Land your <br />
               <span className="font-display italic font-medium">dream offer.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-surface-300 max-w-xl mb-12 leading-relaxed font-light">
-              Track pipelines, build tailored resumes, and ace interviews with precision AI. A unified space for serious job seekers.
+            <p className="text-lg md:text-xl text-surface-300 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+              Paste a job URL or your resume. Get an AI match score, tailored bullets, and a tracked pipeline in 90 seconds.
             </p>
-            <div className="flex flex-col sm:flex-row gap-6">
-              <Link href="/register" className="btn-primary group flex items-center justify-between gap-6 pl-8 pr-2 w-max">
-                <span className="text-base">Start Your Search</span>
-                <div className="btn-icon-wrapper group-hover:translate-x-1 group-hover:-translate-y-[1px] group-hover:scale-105">
-                  <ArrowRight weight="light" className="text-white w-4 h-4" />
-                </div>
-              </Link>
-            </div>
           </motion.div>
-          
-          <motion.div 
-            className="md:col-span-6 w-full flex justify-end"
-            initial={{ opacity: 0, x: 40, filter: "blur(12px)" }}
-            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1, delay: 0.3, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
+
+          <motion.div
+            initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.9, delay: 0.25, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] }}
           >
-            <HeroVisual />
+            <PasteDemo />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] text-surface-300"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-ember-500" />
+              BYOK, your model
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-ember-500" />
+              No data retention
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-ember-500" />
+              9 ATS-tested templates
+            </span>
           </motion.div>
         </div>
       </section>
 
-      {/* ── Stats Layout ── */}
-      <section className="py-24 border-y border-surface-200/50 bg-white/50">
-        <div className="max-w-[90rem] mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8 divide-x-0 md:divide-x divide-surface-200/50">
-          {STATS.map((stat, i) => (
-            <motion.div 
-              key={stat.label} 
-              className={`md:pl-12 ${i === 0 ? 'md:pl-0' : ''}`}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={revealVariants}
-            >
-              <div className="text-4xl md:text-5xl font-display tracking-tight text-brand-900 mb-3">
-                {stat.value}<span className="text-surface-300 text-3xl font-sans">{stat.suffix}</span>
-              </div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-surface-300">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
+      {/* ── Trust strip - single focused message, no fake stats ── */}
+      <section className="py-10 gridlines bg-white/50">
+        <div className="max-w-[90rem] mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-sm">
+          <span className="font-display italic text-2xl text-brand-900">4 modules.</span>
+          <span className="text-surface-300">·</span>
+          <span className="text-surface-400 font-medium">One workspace.</span>
+          <span className="text-surface-300">·</span>
+          <span className="text-surface-400 font-medium">AI anchored to your data, not the internet.</span>
         </div>
       </section>
 
       {/* ── Features (Asymmetrical Bento) ── */}
-      <section id="features" className="py-32 md:py-40 px-4 max-w-[90rem] mx-auto">
-        <motion.div 
-          className="max-w-2xl mb-24"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={revealVariants}
-        >
-          <div className="eyebrow-tag mb-6">Capabilities</div>
-          <h2 className="text-5xl md:text-7xl font-light tracking-tighter mb-6 leading-none">
-            Everything you <span className="font-display italic font-medium">need to win.</span>
-          </h2>
-          <p className="text-surface-300 text-xl font-light">
-            Four specialized modules designed to automate the friction of your career search.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-12 auto-rows-[minmax(300px,auto)] gap-6">
-          {MODULES.map((mod) => (
-            <motion.div
-              key={mod.title}
-              id={mod.title.toLowerCase().replace(/\s+/g, "-")}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-              variants={revealVariants}
-              className={`doppel-shell flex flex-col ${mod.colSpan} ${mod.rowSpan} w-full scroll-mt-32`}
-            >
-              <div className="doppel-core flex-1 flex flex-col p-8 md:p-10 relative group">
-                <div className="flex items-start gap-5 mb-6">
-                  <div className="w-14 h-14 shrink-0 rounded-full bg-surface-50 border border-surface-200/50 flex items-center justify-center shadow-inner">
-                    <mod.icon weight="light" className="w-7 h-7 text-brand-900" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-2xl md:text-3xl font-display tracking-tight mb-2">{mod.title}</h3>
-                    <p className="text-surface-300 text-sm md:text-base leading-relaxed font-light">
-                      {mod.desc}
-                    </p>
-                  </div>
-                </div>
-                {mod.preview && (
-                  <div className="flex-1 min-h-0 mb-4">{mod.preview}</div>
-                )}
-                <div className="flex flex-wrap gap-2">
-                  {mod.features.map(f => (
-                    <span key={f} className="px-3 py-1 rounded-full bg-surface-50 border border-surface-200/50 text-[10px] font-medium tracking-widest uppercase text-surface-400">
-                      {f}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Editorial Testimonials ── */}
-      <section id="testimonials" className="py-32 md:py-40 px-4 bg-white border-y border-surface-200/50">
+      <section id="features" className="py-32 md:py-40 px-4">
         <div className="max-w-[90rem] mx-auto">
-          <motion.div 
-            className="mb-24"
+          <motion.div
+            className="max-w-2xl mb-20"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-100px" }}
             variants={revealVariants}
           >
-             <div className="eyebrow-tag mb-6">Success Stories</div>
-             <h2 className="text-5xl md:text-7xl font-light tracking-tighter">
-              Loved by <span className="font-display italic font-medium">job seekers.</span>
+            <div className="eyebrow-tag mb-6">Capabilities</div>
+            <h2 className="text-5xl md:text-7xl font-light tracking-tighter mb-6 leading-none">
+              Everything you <span className="font-display italic font-medium">need to win.</span>
             </h2>
+            <p className="text-surface-300 text-xl font-light">
+              Four specialized modules designed to remove the friction from your career search.
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
-            {TESTIMONIALS.map((t) => (
-              <motion.div 
-                key={t.name} 
-                className="doppel-shell"
+          <div className="grid grid-cols-1 md:grid-cols-12 auto-rows-[minmax(300px,auto)] gap-6">
+            {MODULES.map((mod) => (
+              <motion.div
+                key={mod.title}
+                id={mod.title.toLowerCase().replace(/\s+/g, "-")}
                 initial="hidden"
                 whileInView="visible"
-                viewport={{ once: true }}
+                viewport={{ once: true, margin: "-50px" }}
                 variants={revealVariants}
+                className={`doppel-shell flex flex-col ${mod.colSpan} ${mod.rowSpan} w-full scroll-mt-32`}
               >
-                <div className="doppel-core h-full flex flex-col p-8 md:p-10">
-                  <p className="font-display text-2xl italic text-surface-400 mb-12 flex-1 leading-relaxed">
-                    &ldquo;{t.text}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-4 mt-auto pt-8 border-t border-surface-200/50">
-                    <div className="w-12 h-12 bg-brand-50 rounded-full flex items-center justify-center font-bold text-xs tracking-widest text-brand-900 border border-brand-100 shadow-inner overflow-hidden relative">
-                      <Image src={t.avatar} alt={t.name} fill className="object-cover" />
+                <div className="doppel-core flex-1 flex flex-col p-8 md:p-10 relative group">
+                  <div className="flex items-start gap-5 mb-6">
+                    <div className="w-14 h-14 shrink-0 rounded-full bg-ember-50 border border-ember-100 flex items-center justify-center">
+                      <mod.icon weight="light" className="w-7 h-7 text-ember-600" />
                     </div>
-                    <div>
-                      <div className="text-sm font-semibold tracking-wide">{t.name}</div>
-                      <div className="text-[10px] text-surface-300 uppercase tracking-[0.2em] mt-1">{t.role}</div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-2xl md:text-3xl font-display tracking-tight mb-2">{mod.title}</h3>
+                      <p className="text-surface-300 text-sm md:text-base leading-relaxed font-light">
+                        {mod.desc}
+                      </p>
                     </div>
+                  </div>
+                  {mod.preview && (
+                    <div className="flex-1 min-h-0 mb-4">{mod.preview}</div>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {mod.features.map(f => (
+                      <span key={f} className="px-3 py-1 rounded-full bg-surface-50 border border-surface-200/50 text-[10px] font-medium tracking-widest uppercase text-surface-400">
+                        {f}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </motion.div>
@@ -413,33 +405,151 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Footer / CTA ── */}
-      <section className="py-32 md:py-48 px-4 border-t border-surface-200/50 bg-white text-center">
-        <motion.div 
-          className="max-w-4xl mx-auto flex flex-col items-center"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={revealVariants}
-        >
-          <div className="w-16 h-16 rounded-full bg-white border border-surface-200/50 flex items-center justify-center mb-12 shadow-inner overflow-hidden">
-            <Image src="/logo-infinity.svg" alt="OfferPath Logo" width={64} height={64} className="w-full h-full object-contain" />
+      <HowItWorks />
+
+      {/* ── Editorial Testimonials (clay-tinted variant) ── */}
+      <section id="testimonials" className="py-32 md:py-40 px-4">
+        <div className="max-w-[90rem] mx-auto">
+          <motion.div
+            className="mb-20"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={revealVariants}
+          >
+            <h2 className="text-5xl md:text-7xl font-light tracking-tighter max-w-3xl">
+              Loved by <span className="font-display italic font-medium">job seekers.</span>
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {TESTIMONIALS.map((t) => (
+              <motion.div
+                key={t.name}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={revealVariants}
+                className="card-clay flex flex-col"
+              >
+                <p className="font-display text-xl md:text-2xl italic text-brand-900 mb-12 flex-1 leading-relaxed">
+                  &ldquo;{t.text}&rdquo;
+                </p>
+                <div className="flex items-center gap-4 mt-auto pt-6 border-t border-ember-200/60">
+                  <div className="w-12 h-12 rounded-full bg-ember-500 text-white flex items-center justify-center text-xs font-bold tracking-widest">
+                    {t.initials}
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold tracking-wide text-brand-900">{t.name}</div>
+                    <div className="text-[10px] text-ember-700 uppercase tracking-[0.2em] mt-1 font-medium">{t.role}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
-          <h2 className="text-6xl md:text-8xl font-light tracking-tighter mb-12 leading-[0.9]">
-            Ready to land <br />
-            <span className="font-display italic font-medium">your next role?</span>
-          </h2>
-          <Link href="/register" className="btn-primary group flex items-center justify-between gap-6 pl-8 pr-2 w-max text-lg">
-            <span>Get Started</span>
-            <div className="btn-icon-wrapper group-hover:translate-x-1 group-hover:-translate-y-[1px] group-hover:scale-105">
-              <ArrowRight weight="light" className="text-white w-4 h-4" />
-            </div>
-          </Link>
-        </motion.div>
+        </div>
       </section>
-      
-      <footer className="py-12 text-center text-[10px] text-surface-300 uppercase tracking-[0.2em] bg-white font-medium">
-         &copy; {new Date().getFullYear()} OfferPath. All rights reserved.
+
+      {/* ── Final CTA - split layout (headline + product card) ── */}
+      <section className="py-32 md:py-40 px-4 bg-white border-t border-surface-200/60">
+        <div className="max-w-[90rem] mx-auto">
+          <div className="grid md:grid-cols-12 gap-12 md:gap-16 items-center">
+            <motion.div
+              className="md:col-span-7"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={revealVariants}
+            >
+              <h2 className="text-5xl md:text-7xl lg:text-8xl font-light tracking-tighter mb-10 leading-[0.9]">
+                Ready to land <br />
+                <span className="font-display italic font-medium">your next role?</span>
+              </h2>
+              <Link href="/register" className="btn-ember inline-flex items-center gap-3 pl-7 pr-2 py-2 text-base">
+                <span>Get Started</span>
+                <span className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
+                  <ArrowRight weight="bold" className="w-4 h-4 text-white" />
+                </span>
+              </Link>
+            </motion.div>
+
+            <motion.div
+              className="md:col-span-5"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={revealVariants}
+            >
+              <div className="card-clay">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ember-700 mb-4">
+                  Three things ship today
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    { name: "Discovery", desc: "Smart Feed, weekly" },
+                    { name: "Tracker", desc: "Kanban + JD scoring" },
+                    { name: "Interview Pack", desc: "Mocks + STAR bank" },
+                  ].map((item) => (
+                    <li key={item.name} className="flex items-center gap-3">
+                      <span className="w-8 h-8 rounded-full bg-white border border-ember-200 flex items-center justify-center text-ember-700 font-semibold text-sm">
+                        {item.name[0]}
+                      </span>
+                      <div>
+                        <div className="text-sm font-semibold text-brand-900">{item.name}</div>
+                        <div className="text-xs text-ember-700">{item.desc}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="bg-white border-t border-surface-200/60">
+        <div className="max-w-[90rem] mx-auto px-4 py-16">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-12">
+            <div className="col-span-2 md:col-span-1">
+              <Link href="/" className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-surface-200">
+                  <Image src="/logo-mark.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-cover scale-110" />
+                </div>
+                <span className="text-base font-medium tracking-tight text-brand-900 font-display">OfferPath</span>
+              </Link>
+              <p className="text-xs text-surface-300 mt-4 leading-relaxed max-w-xs">
+                The career operating system for serious job seekers. End-to-end, from paste to offer.
+              </p>
+            </div>
+
+            {FOOTER_LINKS.map((group) => (
+              <div key={group.title}>
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-900 mb-4">
+                  {group.title}
+                </div>
+                <ul className="space-y-2.5">
+                  {group.links.map((link) => (
+                    <li key={link.label}>
+                      <Link href={link.href} className="text-sm text-surface-300 hover:text-ember-600 transition-colors">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-8 border-t border-surface-200/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-[10px] text-surface-300 uppercase tracking-[0.2em] font-medium">
+              © {new Date().getFullYear()} OfferPath. All rights reserved.
+            </p>
+            <p className="text-[10px] text-surface-300 uppercase tracking-[0.2em] font-medium">
+              The career operating system
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );

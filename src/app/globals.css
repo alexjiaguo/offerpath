@@ -1,11 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ═══════════════════════════════════════════════════
-   OfferPath — Soft-Skill Vanguard UI Architecture
+   OfferPath - Vanguard UI Architecture
    Aesthetic: Soft Structuralism / Editorial Luxury
+   Accent: Ember (saturated terracotta) on warm cream
    ═══════════════════════════════════════════════════ */
 
 @theme {
@@ -25,8 +26,16 @@
   --color-surface-300: #94938E;
   --color-surface-400: #1C1B1A; /* Primary Text */
 
-  --font-sans: 'Outfit', sans-serif;
-  --font-display: 'Outfit', sans-serif;
+  /* Ember accent - saturated terracotta, locked across the page */
+  --color-ember-50:  #FEF3EC;
+  --color-ember-100: #FBE3D2;
+  --color-ember-200: #F4C5A4;
+  --color-ember-500: #C2410C; /* Primary accent */
+  --color-ember-600: #9A330A;
+  --color-ember-700: #7C2D08;
+
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
 
   /* Fluid Dynamics */
   --animate-reveal-up: reveal-up 0.8s cubic-bezier(0.32, 0.72, 0, 1) forwards;
@@ -55,8 +64,8 @@
     -moz-osx-font-smoothing: grayscale;
   }
   ::selection {
-    background-color: var(--color-surface-200) !important;
-    color: var(--color-surface-400) !important;
+    background-color: var(--color-ember-100) !important;
+    color: var(--color-ember-700) !important;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply text-surface-400 tracking-tight leading-tight;
@@ -73,14 +82,22 @@
   }
   .doppel-core {
     @apply bg-surface-0 rounded-[calc(2rem-0.5rem)] shadow-[inset_0_1px_1px_rgba(255,255,255,1)] p-8;
-    box-shadow: 
-      inset 0 1px 1px rgba(255,255,255,1), 
-      0 20px 40px -15px rgba(0,0,0,0.03); /* Unbelievably soft ambient shadow */
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,1),
+      0 20px 40px -15px rgba(0,0,0,0.03);
   }
 
   /* ── Fluid Buttons & Micro-Aesthetics ── */
   .btn-primary {
     @apply bg-surface-400 text-surface-0 border-none rounded-full px-6 py-3 font-medium transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)];
+    &:active { @apply scale-[0.98]; }
+  }
+
+  /* Ember-accented primary CTA - used for hero paste demo and final CTA */
+  .btn-ember {
+    @apply bg-ember-500 text-white border-none rounded-full px-6 py-3 font-medium transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)];
+    box-shadow: 0 8px 24px -10px rgba(194, 65, 12, 0.55);
+    &:hover { @apply bg-ember-600; box-shadow: 0 12px 28px -8px rgba(194, 65, 12, 0.6); }
     &:active { @apply scale-[0.98]; }
   }
 
@@ -94,20 +111,33 @@
     @apply w-8 h-8 rounded-full bg-white/10 flex items-center justify-center transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)];
   }
 
-  /* ── Eyebrow Tag ── */
+  /* ── Eyebrow Tag - ember-tinted, single accent across the page ── */
   .eyebrow-tag {
-    @apply rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium bg-black/5 text-surface-400 border border-black/5 inline-flex items-center gap-2;
+    @apply rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium bg-ember-50 text-ember-700 border border-ember-100 inline-flex items-center gap-2;
   }
 
-  /* ── Spot Pastel Tags (Preserved) ── */
+  /* ── Card Variants ── */
+  .card-clay {
+    @apply bg-ember-50 border border-ember-100 rounded-[2rem] p-8 md:p-10;
+  }
+  .card-cream {
+    @apply bg-white border border-surface-200 rounded-[2rem] p-8 md:p-10;
+  }
+
+  /* ── Hairline divider - single section separator ── */
+  .gridlines {
+    @apply border-t border-b border-surface-200/60;
+  }
+
+  /* ── Spot Pastel Tags (preserved) ── */
   .tag-blue { @apply bg-brand-100 text-brand-500 px-2 py-0.5 rounded-full text-xs uppercase tracking-widest font-bold; }
   .tag-red { background-color: #FDEBEC; color: #9F2F2D; @apply px-2 py-0.5 rounded-full text-xs uppercase tracking-widest font-bold; }
   .tag-green { background-color: #EDF3EC; color: #346538; @apply px-2 py-0.5 rounded-full text-xs uppercase tracking-widest font-bold; }
   .tag-yellow { background-color: #FBF3DB; color: #956400; @apply px-2 py-0.5 rounded-full text-xs uppercase tracking-widest font-bold; }
+  .tag-ember { @apply bg-ember-50 text-ember-700 px-2 py-0.5 rounded-full text-xs uppercase tracking-widest font-bold; }
 
   /* ── Legacy Fallbacks (do not use in new UI) ── */
   .glass-card { @apply bg-surface-0 border border-surface-200 rounded-[2rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]; }
   .glass-card:hover { transform: translateY(-2px); }
   .liquid-glass { @apply bg-surface-0 border border-surface-200 rounded-xl shadow-none; }
 }
-

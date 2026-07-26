@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Sparkle, Star, TrendUp } from "@phosphor-icons/react";
 
 /* ═══════════════════════════════════════════════════
-   Bento Card Previews — Real, populated feature mockups
+   Bento Card Previews - Real, populated feature mockups
    that fill the empty vertical space in the landing
-   page bento grid.
+   page bento grid. Accent unified to ember for color
+   consistency across the page.
    ═══════════════════════════════════════════════════ */
 
 interface Job {
@@ -27,7 +28,7 @@ const DISCOVERY_JOBS: Job[] = [
     title: "Senior Frontend Engineer",
     company: "Vercel",
     location: "Remote · US",
-    salary: "$180k – $240k",
+    salary: "$180k-$240k",
     match: 94,
     tags: ["React", "Next.js", "TypeScript"],
   },
@@ -37,7 +38,7 @@ const DISCOVERY_JOBS: Job[] = [
     title: "Product Designer",
     company: "Linear",
     location: "New York · Hybrid",
-    salary: "$160k – $210k",
+    salary: "$160k-$210k",
     match: 88,
     tags: ["Figma", "Systems"],
   },
@@ -47,7 +48,7 @@ const DISCOVERY_JOBS: Job[] = [
     title: "Staff Software Engineer",
     company: "Stripe",
     location: "San Francisco",
-    salary: "$220k – $310k",
+    salary: "$220k-$310k",
     match: 81,
     tags: ["Ruby", "Distributed"],
   },
@@ -57,7 +58,7 @@ const DISCOVERY_JOBS: Job[] = [
     title: "Engineering Manager",
     company: "Notion",
     location: "Remote · Global",
-    salary: "$200k – $280k",
+    salary: "$200k-$280k",
     match: 76,
     tags: ["Leadership"],
   },
@@ -66,7 +67,6 @@ const DISCOVERY_JOBS: Job[] = [
 export function JobDiscoveryPreview() {
   return (
     <div className="flex-1 flex flex-col justify-center min-h-0">
-      {/* Compact filter chip row */}
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         <span className="px-3 py-1 rounded-full bg-brand-900 text-white text-[10px] font-semibold uppercase tracking-widest">
           All Matches
@@ -78,12 +78,11 @@ export function JobDiscoveryPreview() {
           $150k+
         </span>
         <span className="ml-auto text-[10px] font-medium text-surface-300">
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 align-middle" />
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-ember-500 mr-1.5 align-middle" />
           142 new today
         </span>
       </div>
 
-      {/* Job cards */}
       <div className="space-y-2.5">
         {DISCOVERY_JOBS.map((job, i) => (
           <motion.div
@@ -100,7 +99,7 @@ export function JobDiscoveryPreview() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-sm text-surface-400 truncate">{job.title}</span>
-                <span className="hidden md:inline px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-bold uppercase tracking-wider">
+                <span className="hidden md:inline px-1.5 py-0.5 rounded bg-ember-50 text-ember-700 text-[9px] font-bold uppercase tracking-wider">
                   {job.match}% match
                 </span>
               </div>
@@ -145,7 +144,7 @@ const KANBAN_COLUMNS = [
     name: "Offer",
     count: 1,
     cards: [
-      { company: "Anthropic", role: "AI Eng", hue: "from-amber-500 to-amber-700" },
+      { company: "Anthropic", role: "AI Eng", hue: "from-ember-500 to-ember-700" },
     ],
   },
 ];
@@ -157,7 +156,7 @@ export function JobTrackerPreview() {
         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-surface-300">
           Your Pipeline
         </span>
-        <span className="text-[10px] font-medium text-emerald-600 flex items-center gap-1">
+        <span className="text-[10px] font-medium text-ember-700 flex items-center gap-1">
           <TrendUp weight="bold" className="w-3 h-3" />
           +23% this week
         </span>
@@ -199,7 +198,7 @@ export function JobTrackerPreview() {
               ))}
               {col.cards.length === 0 && (
                 <div className="text-[8px] text-surface-300/60 italic text-center py-2">
-                  —
+                  -
                 </div>
               )}
             </div>
@@ -213,9 +212,7 @@ export function JobTrackerPreview() {
 export function ResumeBuilderPreview() {
   return (
     <div className="flex-1 flex items-center justify-center min-h-0 relative">
-      {/* Back card (offset, faded) */}
       <div className="absolute -right-1 top-2 w-28 h-36 bg-surface-100 rounded-lg border border-surface-200/50 shadow-sm rotate-6 opacity-60" />
-      {/* Main card */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -223,7 +220,6 @@ export function ResumeBuilderPreview() {
         transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
         className="relative w-36 h-44 bg-white rounded-lg shadow-xl border border-surface-200 p-3 flex flex-col gap-1.5"
       >
-        {/* Header with name placeholder */}
         <div className="flex items-center gap-2 pb-1.5 border-b border-surface-200/50">
           <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-500 to-brand-700" />
           <div className="flex-1 space-y-1">
@@ -231,13 +227,11 @@ export function ResumeBuilderPreview() {
             <div className="h-1 w-1/2 bg-surface-200 rounded-full" />
           </div>
         </div>
-        {/* Summary bars */}
         <div className="space-y-1 pt-1">
           <div className="h-1 w-full bg-surface-100 rounded-full" />
           <div className="h-1 w-11/12 bg-surface-100 rounded-full" />
           <div className="h-1 w-9/12 bg-surface-100 rounded-full" />
         </div>
-        {/* Section */}
         <div className="pt-1">
           <div className="h-1.5 w-1/3 bg-surface-400 rounded-full mb-1.5" />
           <div className="space-y-1">
@@ -246,7 +240,6 @@ export function ResumeBuilderPreview() {
             <div className="h-1 w-8/12 bg-surface-100 rounded-full" />
           </div>
         </div>
-        {/* Section */}
         <div className="pt-1">
           <div className="h-1.5 w-1/4 bg-surface-400 rounded-full mb-1.5" />
           <div className="space-y-1">
@@ -254,22 +247,20 @@ export function ResumeBuilderPreview() {
             <div className="h-1 w-9/12 bg-surface-100 rounded-full" />
           </div>
         </div>
-        {/* ATS badge */}
         <div className="mt-auto pt-1.5 border-t border-surface-200/50 flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <CheckCircle weight="fill" className="w-3 h-3 text-emerald-500" />
-            <span className="text-[8px] font-bold text-emerald-700 uppercase tracking-wider">
+            <CheckCircle weight="fill" className="w-3 h-3 text-ember-500" />
+            <span className="text-[8px] font-bold text-ember-700 uppercase tracking-wider">
               ATS Ready
             </span>
           </div>
           <span className="text-[8px] font-bold text-surface-300">96</span>
         </div>
       </motion.div>
-      {/* Sparkle accent */}
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 16, ease: "linear", repeat: Infinity }}
-        className="absolute -top-1 -left-1 w-7 h-7 rounded-full bg-brand-900 text-white flex items-center justify-center shadow-lg"
+        className="absolute -top-1 -left-1 w-7 h-7 rounded-full bg-ember-500 text-white flex items-center justify-center shadow-lg"
       >
         <Sparkle weight="fill" className="w-3.5 h-3.5" />
       </motion.div>
@@ -280,7 +271,6 @@ export function ResumeBuilderPreview() {
 export function InterviewPackPreview() {
   return (
     <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 min-h-0">
-      {/* Conversation thread */}
       <div className="md:col-span-2 flex flex-col gap-3 justify-center">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -289,8 +279,8 @@ export function InterviewPackPreview() {
           transition={{ duration: 0.5 }}
           className="bg-surface-50 rounded-2xl rounded-tl-sm p-4 border border-surface-200/50 max-w-md"
         >
-          <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-brand-500 mb-1.5 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-ember-700 mb-1.5 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-ember-500" />
             AI Interviewer
           </div>
           <p className="text-xs text-surface-400 leading-relaxed">
@@ -318,21 +308,20 @@ export function InterviewPackPreview() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="bg-surface-50 rounded-2xl rounded-tl-sm p-4 border border-surface-200/50 max-w-md flex items-start gap-3"
         >
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-ember-400 to-ember-600 flex items-center justify-center shrink-0 mt-0.5">
             <Star weight="fill" className="w-3 h-3 text-white" />
           </div>
           <div>
-            <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-emerald-600 mb-1.5">
+            <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-ember-700 mb-1.5">
               Coach Feedback
             </div>
             <p className="text-xs text-surface-400 leading-relaxed">
-              Strong STAR structure. Try quantifying the impact — how did activation move?
+              Strong STAR structure. Try quantifying the impact: how did activation move?
             </p>
           </div>
         </motion.div>
       </div>
 
-      {/* Sidebar with feature highlights */}
       <div className="flex flex-col justify-center gap-3 md:border-l md:border-surface-200/50 md:pl-4">
         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-surface-300 mb-1">
           What you get
@@ -368,16 +357,16 @@ export function InterviewPackPreview() {
 }
 
 /* ═══════════════════════════════════════════════════
-   HeroVisual — Real data mini-dashboard that replaces
-   the prior animated placeholder bars. Shows a "Today's
-   Pipeline" view with live stats, recent matches, and an
-   ATS score gauge. Sized for a 4/5 aspect-ratio column.
+   HeroVisual - Real data mini-dashboard. Sized for a
+   4/5 aspect-ratio column. Kept for the floating
+   "tailored for" composition if used elsewhere; the
+   primary hero now uses the interactive PasteDemo.
    ═══════════════════════════════════════════════════ */
 
 const HERO_KPIS = [
   { label: "Active", value: "12", trend: "+3", tone: "brand" as const },
   { label: "Interviews", value: "4", trend: "+2", tone: "indigo" as const },
-  { label: "Offers", value: "1", trend: "this wk", tone: "emerald" as const },
+  { label: "Offers", value: "1", trend: "this wk", tone: "ember" as const },
 ];
 
 const HERO_RECENT = [
@@ -386,18 +375,17 @@ const HERO_RECENT = [
   { company: "Linear", role: "Product Designer", match: 88, hue: "from-indigo-500 to-indigo-700" },
 ];
 
-function toneClasses(tone: "brand" | "indigo" | "emerald") {
+function toneClasses(tone: "brand" | "indigo" | "ember") {
   switch (tone) {
-    case "brand":   return "text-brand-900 bg-brand-50 border-brand-100";
-    case "indigo":  return "text-indigo-700 bg-indigo-50 border-indigo-100";
-    case "emerald": return "text-emerald-700 bg-emerald-50 border-emerald-100";
+    case "brand":  return "text-brand-900 bg-brand-50 border-brand-100";
+    case "indigo": return "text-indigo-700 bg-indigo-50 border-indigo-100";
+    case "ember":  return "text-ember-700 bg-ember-50 border-ember-100";
   }
 }
 
 export function HeroVisual() {
   return (
     <div className="w-full max-w-lg aspect-[4/5] doppel-shell relative overflow-hidden hidden md:block group">
-      {/* Subtle background motion — decorative, not data */}
       <motion.div
         aria-hidden
         className="absolute inset-0 opacity-50"
@@ -414,10 +402,9 @@ export function HeroVisual() {
       />
 
       <div className="doppel-core w-full h-full flex flex-col p-6 relative overflow-hidden bg-gradient-to-b from-white to-surface-50/50 backdrop-blur-3xl">
-        {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-surface-200/60 relative z-10">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-brand-900 flex items-center justify-center text-white shadow-sm">
+            <div className="w-7 h-7 rounded-full bg-ember-500 flex items-center justify-center text-white shadow-sm">
               <Sparkle weight="fill" className="w-3.5 h-3.5" />
             </div>
             <div className="min-w-0">
@@ -430,14 +417,13 @@ export function HeroVisual() {
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-ember-500 animate-pulse" />
             <span className="text-[9px] font-medium uppercase tracking-wider text-surface-300">
               Synced
             </span>
           </div>
         </div>
 
-        {/* KPI strip */}
         <div className="grid grid-cols-3 gap-2 my-4 relative z-10">
           {HERO_KPIS.map((kpi) => (
             <div
@@ -459,7 +445,6 @@ export function HeroVisual() {
           ))}
         </div>
 
-        {/* Recent matches */}
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-surface-300">
@@ -490,7 +475,7 @@ export function HeroVisual() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[11px] font-bold text-emerald-600 leading-none">
+                  <div className="text-[11px] font-bold text-ember-700 leading-none">
                     {job.match}%
                   </div>
                   <div className="text-[8px] font-semibold uppercase tracking-wider text-surface-300">
@@ -502,7 +487,6 @@ export function HeroVisual() {
           </div>
         </div>
 
-        {/* ATS gauge */}
         <div className="mt-auto pt-4 relative z-10">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-surface-50 border border-surface-200/60">
             <div className="relative w-10 h-10 shrink-0">
@@ -510,7 +494,7 @@ export function HeroVisual() {
                 <circle cx="18" cy="18" r="15" fill="none" stroke="rgb(228 228 231)" strokeWidth="3" />
                 <motion.circle
                   cx="18" cy="18" r="15" fill="none"
-                  stroke="rgb(15 23 42)" strokeWidth="3"
+                  stroke="rgb(194 65 12)" strokeWidth="3"
                   strokeDasharray="94 100"
                   strokeLinecap="round"
                   initial={{ strokeDasharray: "0 100" }}
@@ -518,7 +502,7 @@ export function HeroVisual() {
                   transition={{ delay: 0.6, duration: 1.2, ease: [0.32, 0.72, 0, 1] }}
                 />
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-brand-900">
+              <div className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-ember-700">
                 96
               </div>
             </div>
@@ -530,7 +514,7 @@ export function HeroVisual() {
                 ATS Ready
               </div>
             </div>
-            <CheckCircle weight="fill" className="w-4 h-4 text-emerald-500" />
+            <CheckCircle weight="fill" className="w-4 h-4 text-ember-500" />
           </div>
         </div>
       </div>

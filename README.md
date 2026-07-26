@@ -5,7 +5,12 @@
   <p><strong>The career operating system for serious job seekers.</strong></p>
 
   <p>
-    <a href="https://vercel.com/alexjiaguos-projects/offerpath"><strong>Live Demo</strong></a>
+    <a href="https://github.com/alexjiaguo/offerpath/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/alexjiaguo/offerpath?style=social"></a>
+    <img alt="Next.js 15" src="https://img.shields.io/badge/Next.js-15-black">
+    <img alt="Supabase" src="https://img.shields.io/badge/Supabase-Postgres-3ECF8E">
+  </p>
+  <p>
+    <a href="https://offerpath.cc.cd/"><strong>Live Demo</strong></a>
     &nbsp;·&nbsp;
     <a href="#key-capabilities"><strong>Capabilities</strong></a>
     &nbsp;·&nbsp;
@@ -206,4 +211,4 @@ public/               # Static assets + docs screenshots
 
 ## See it live
 
-[offerpath on Vercel](https://vercel.com/alexjiaguos-projects/offerpath) — full workspace with the four modules wired end-to-end.
+[offerpath.cc.cd](https://offerpath.cc.cd/) — full workspace with the four modules wired end-to-end.
