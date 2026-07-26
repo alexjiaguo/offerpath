@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -238,6 +238,26 @@ export default function ResumeEditorPage({
     { key: "skills", label: "Skills", icon: Wrench },
   ];
 
+  // Content-only completeness score (resume.io's "ATS-friendly" promise, made visible).
+  // We never call a model — this is just a fast count of filled fields, so the badge is honest.
+  const completeness = useMemo(() => {
+    let score = 0;
+    if (data.personal?.name) score += 10;
+    if (data.personal?.email) score += 5;
+    if (data.personal?.phone) score += 5;
+    if (data.summary && data.summary.length > 60) score += 15;
+    if (data.experience && data.experience.length > 0) {
+      const filled = data.experience.filter((e) => e.company && e.title && e.bullets && e.bullets.some((b) => b.trim().length > 10));
+      score += Math.min(30, filled.length * 10);
+    }
+    if (data.education && data.education.length > 0 && data.education[0]?.institution) score += 15;
+    if (data.skills && data.skills.length >= 5) score += 20;
+    else if (data.skills && data.skills.length > 0) score += 10;
+    return Math.min(100, score);
+  }, [data.personal, data.summary, data.experience, data.education, data.skills]);
+  const completenessLabel = completeness >= 80 ? "ATS-friendly" : completeness >= 50 ? "Getting there" : "Needs content";
+  const completenessColor = completeness >= 80 ? "text-emerald-400" : completeness >= 50 ? "text-amber-400" : "text-zinc-500";
+
   const sectionOrder = resume.section_order || [
     "summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects"
   ];
@@ -298,6 +318,23 @@ export default function ResumeEditorPage({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Always-visible "Ask AI coach" pill — resume.io's signature, surfaced outside fullscreen. */}
+      {!isFullscreenPreview && (
+        <div className="fixed bottom-8 right-8 z-40">
+          <button
+            onClick={() => toast.info("AI coach is in private beta — coming soon.")}
+            className="group flex items-center gap-2 pl-3 pr-4 py-3 rounded-full bg-zinc-900/95 backdrop-blur text-white shadow-2xl hover:scale-[1.03] active:scale-95 transition-all text-[12px] font-semibold border border-white/10 hover:border-amber-300/40"
+          >
+            <span className="relative w-7 h-7 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 flex items-center justify-center text-zinc-900">
+              <MagicWand weight="fill" className="w-3.5 h-3.5" />
+              <span className="absolute inset-0 rounded-full bg-amber-300/40 animate-ping" />
+            </span>
+            Ask AI coach anything...
+            <span className="hidden md:inline text-[9px] font-bold uppercase tracking-widest text-amber-300/80 ml-1 px-1.5 py-0.5 rounded bg-amber-300/10 border border-amber-300/20">Beta</span>
+          </button>
+        </div>
+      )}
 
       {/* Header */}
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4 px-2">
@@ -836,6 +873,25 @@ export default function ResumeEditorPage({
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
                 <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Real-time Visualization</h3>
+                {/* Resume.io-style score ring — visualizes the "ATS-friendly" promise. */}
+                <div className="flex items-center gap-2 ml-2 pl-3 border-l border-zinc-200 dark:border-white/10">
+                  <div className="relative w-9 h-9 flex items-center justify-center">
+                    <svg viewBox="0 0 36 36" className="w-9 h-9 -rotate-90">
+                      <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" className="text-zinc-200 dark:text-white/10" />
+                      <circle
+                        cx="18" cy="18" r="15" fill="none"
+                        stroke="currentColor" strokeWidth="3" strokeLinecap="round"
+                        strokeDasharray={`${(completeness / 100) * 94.25} 94.25`}
+                        className={cn(completenessColor, "transition-all duration-500")}
+                      />
+                    </svg>
+                    <span className={cn("absolute text-[9px] font-bold", completenessColor)}>{completeness}</span>
+                  </div>
+                  <div className="hidden sm:flex flex-col">
+                    <span className={cn("text-[9px] font-bold uppercase tracking-widest", completenessColor)}>{completenessLabel}</span>
+                    <span className="text-[9px] text-zinc-500">content completeness</span>
+                  </div>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button 
