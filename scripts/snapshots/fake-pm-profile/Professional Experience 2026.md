@@ -34,3 +34,4 @@ Beacon is a B2B SaaS analytics platform for mid-market retailers.
 
 - **Reporting Suite (Analytics & B2B):** Shipped 3 flagship dashboards (sales, inventory, cohort). Drove 41% of new logo wins in the year after launch.
 - **Customer Advisory Board (User Research):** Stood up a 14-customer advisory board and ran quarterly roadmaps. Cut feature churn (built-and-removed) by 35%.
+- **Analytics Self-Serve Surface (Analytics & B2B & SQL):** Owned the self-serve analytics surface used by 12 internal product teams. Built SQL funnels and dbt marts in Looker; cut weekly reporting time 6 hours to 45 minutes per team.

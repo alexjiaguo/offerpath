@@ -255,10 +255,10 @@ function ResumePageContent() {
         <div className="space-y-8 pt-8 max-w-6xl mx-auto border-t border-surface-200/50 mt-12">
           <div className="flex items-center justify-between">
             <h3 className="text-[10px] font-bold text-surface-400 uppercase tracking-widest">
-              Synthesis Protocols
+              Resume Templates
             </h3>
             <div className="px-3 py-1 rounded-full bg-white border border-surface-200/50 text-[10px] font-bold text-brand-900 shadow-sm">
-              {TEMPLATE_CONFIGS.length} Layouts
+              {TEMPLATE_CONFIGS.length} templates
             </div>
           </div>
           

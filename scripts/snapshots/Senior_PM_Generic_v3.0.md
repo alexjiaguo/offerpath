@@ -21,32 +21,32 @@ Senior Product Manager with 8+ years owning **AI platform**, ad-tech, and ML inf
 #### Senior Product Manager | Aperture AI
 *2023/04 – Present | San Francisco, CA*
 
-- **Generative Ads Platform (LLM Harness & Generative AI & RAG & AI Integration & B2B SaaS):** Owned the brief-to-ad pipeline that turns a brand brief into 30 on-brand ad variants. AI Integration stitched LLM + RAG + safety filter end-to-end. Cut turnaround 5 days → 4 hours; lifted brand-safe variant acceptance by 38%. Powered B2B SaaS analytics with Looker and dbt marts; SQL funnels + Amplitude cohort views drove experimentation. Prototyped iterations daily in Cursor, Claude Code, and Codex.
-- **Creator Marketplace (Two-Sided Marketplaces & Monetization & Pricing & Monetization & Customer Advisory Boards):** Launched an opt-in Two-Sided Marketplaces creator marketplace that brought 1,400 vetted creators in 6 months; drove 11% of incremental ARR. Stood up a 14-customer Customer Advisory Boards program to refine Pricing & Monetization for marketplace fees.
+- **Generative Ads Platform (LLM Harness & Generative AI & RAG & AI Integration & B2B SaaS):** Owned the brief-to-ad pipeline that turns a brand brief into 30 on-brand ad variants. AI Integration stitched LLM + RAG + safety filter end-to-end. Cut turnaround 5 days → 4 hours; lifted brand-safe variant acceptance by 38%. Prototyped iterations daily in Cursor, Claude Code, and Codex.
+- **Creator Marketplace (Two-Sided Marketplaces & Monetization & Customer Advisory Boards):** Launched an opt-in Two-Sided Marketplaces creator marketplace that brought 1,400 vetted creators in 6 months; drove 11% of incremental ARR. Stood up a 14-customer Customer Advisory Boards program to refine Pricing & Monetization for marketplace fees.
 
 #### Senior Product Manager | Northwind Ad Systems
 *2020/08 – 2023/03 | New York, NY*
 
-- **Audience Targeting (AdTech & Programmatic & ML Platform & A/B Testing):** Owned the first-party audience graph and feature store used by 8 product lines across the AdTech & Programmatic stack. Cut audience build time 14 days → 36 hours; raised campaign ROAS by 22% across pilot advertisers. Ran A/B Testing for new audience segments.
+- **Audience Targeting (AdTech & Programmatic & ML Platform & A/B Testing):** Owned the first-party audience graph and feature store used by 8 product lines. Cut audience build time 14 days → 36 hours; raised campaign ROAS by 22% across pilot advertisers.
 
 #### Associate Product Manager | Beacon Analytics
 *2016/06 – 2018/06 | Boston, MA*
 
-
+- **Analytics Platform (A/B Testing & SQL & Looker & dbt & Amplitude):** Owned the self-serve analytics surface used by 12 product teams. Built SQL funnels and dbt marts in Looker; cut weekly reporting time 6 hours → 45 minutes per team.
 
 ### Education
 
 - M.S. Computer Science, **Stanford University** (2014/09 – 2016/06)
 - B.S. Computer Science, **University of California, Berkeley** (2010/09 – 2014/05)
-- Exchange Student in Computer Science, **ETH Zürich** (2013/02 – 2013/07)
+- Exchange Student, **ETH Zürich** (2013/02 – 2013/07)
 
 ### Skills
 
-- **AI:** AI Agents, LLM Harness, RAG, MCP, AI Integration
-- **AdTech & ML:** AdTech & Programmatic, ML Platform, Two-Sided Marketplaces
-- **Product:** A/B Testing, SQL, Looker, dbt, Amplitude
-- **B2B & Monetization:** B2B SaaS, Pricing & Monetization, Customer Advisory Boards
-- **Coding Tools:** Cursor, Claude Code, Codex
+- AI: AI Agents, LLM Harness, RAG, MCP, AI Integration
+- AdTech & ML: AdTech & Programmatic, ML Platform, Two-Sided Marketplaces
+- Product: A/B Testing, SQL, Looker, dbt, Amplitude
+- B2B & Monetization: B2B SaaS, Pricing & Monetization, Customer Advisory Boards
+- Coding Tools: Cursor, Claude Code, Codex
 
 ### Personal AI Projects
 
