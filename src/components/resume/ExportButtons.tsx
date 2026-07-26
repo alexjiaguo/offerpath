@@ -21,6 +21,8 @@ export default function ExportButtons({
   const [exportedDocx, setExportedDocx] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
   const [exportedPdf, setExportedPdf] = useState(false);
+  const [exportingTxt, setExportingTxt] = useState(false);
+  const [exportedTxt, setExportedTxt] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
 
   const handlePdfExport = async () => {
@@ -98,6 +100,55 @@ export default function ExportButtons({
     }
   };
 
+  const handleTxtExport = async () => {
+    setExportingTxt(true);
+    setExportError(null);
+    try {
+      // Plain-text export. R15 mirrors resume.com’s "Download Resume Free / PDF / TXT"
+      // affordance — the TXT format is what most ATS systems expect when a recruiter
+      // pastes your resume into a form. Keep it human-readable, no markdown.
+      const d: any = resumeData || {};
+      const lines: string[] = [];
+      const p: any = d.personal || {};
+      lines.push((p.name || "Your Name").toUpperCase());
+      const contactBits = [p.email, p.phone, p.location].filter(Boolean);
+      if (contactBits.length) lines.push(contactBits.join(" | "));
+      if (d.summary) { lines.push(""); lines.push("SUMMARY"); lines.push(d.summary); }
+      if (Array.isArray(d.experience) && d.experience.length) {
+        lines.push(""); lines.push("EXPERIENCE");
+        for (const e of d.experience) {
+          const dates = [e.start_date, e.end_date || "Present"].filter(Boolean).join(" – ");
+          lines.push(`${e.title || ""} — ${e.company || ""}${dates ? ` (${dates})` : ""}`);
+          for (const b of (e.bullets || [])) lines.push(`  • ${b}`);
+        }
+      }
+      if (Array.isArray(d.education) && d.education.length) {
+        lines.push(""); lines.push("EDUCATION");
+        for (const ed of d.education) lines.push(`${ed.degree || ""} — ${ed.institution || ""}`);
+      }
+      if (Array.isArray(d.skills) && d.skills.length) {
+        lines.push(""); lines.push("SKILLS");
+        lines.push(d.skills.map((s: any) => s.name || s).join(", "));
+      }
+      const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${resumeTitle || "resume"}.txt`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      setExportedTxt(true);
+      setTimeout(() => setExportedTxt(false), 2000);
+    } catch (err) {
+      setExportError("TXT export failed");
+    } finally {
+      setExportingTxt(false);
+    }
+  };
+
+
   return (
     <div className="flex items-center gap-2">
       {/* PDF Export */}
@@ -135,6 +186,25 @@ export default function ExportButtons({
         )}
         <span className="hidden sm:inline">
           {exportedDocx ? "Downloaded!" : "Download Word"}
+        </span>
+      </button>
+
+      {/* R15: Plain-text export — resume.com signature affordance for ATS-paste. */}
+      <button
+        onClick={handleTxtExport}
+        disabled={exportingTxt}
+        className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface-200 text-surface-400 font-semibold text-sm hover:text-brand-600 hover:bg-surface-100 transition-all disabled:opacity-50"
+        title="Export as plain text — best for pasting into ATS forms"
+      >
+        {exportingTxt ? (
+          <ArrowsClockwise className="w-4 h-4 animate-spin text-surface-400" />
+        ) : exportedTxt ? (
+          <Check className="w-4 h-4 text-emerald-500" />
+        ) : (
+          <FileText className="w-4 h-4 text-surface-400" />
+        )}
+        <span className="hidden md:inline">
+          {exportedTxt ? "Downloaded!" : "Download TXT"}
         </span>
       </button>
       {exportError && (
