@@ -89,6 +89,10 @@ function NewResumeContent() {
   const { addResume } = useResumeStore();
 
   const [mode, setMode] = useState<"choice" | "upload" | "browse" | "parsing">("choice");
+  // Resume vs CV — flowcv's signature distinction. CVs are longer, more academic,
+  // and include a publications / research / coursework section. Resumes are 1-2 pages,
+  // bullet-heavy, and aimed at industry roles.
+  const [format, setFormat] = useState<"resume" | "cv">("resume");
   const [levelFilter, setLevelFilter] = useState<"All" | "Senior" | "Mid" | "Lead">("All");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -247,8 +251,38 @@ function NewResumeContent() {
 
       <div className="space-y-8">
         <div>
-          <h1 className="text-4xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">Create New Resume</h1>
-          <p className="text-zinc-600 dark:text-zinc-400 mt-2">Choose how you would like to start building your resume.</p>
+          <h1 className="text-4xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">Create New {format === "cv" ? "CV" : "Resume"}</h1>
+          <p className="text-zinc-600 dark:text-zinc-400 mt-2">
+            Choose how you would like to start building your {format === "cv" ? "curriculum vitae" : "resume"}.
+          </p>
+          {/* flowcv signature affordance: explicit Resume / CV toggle with a one-line
+              explanation of the difference. Most other builders conflate the two;
+              flowcv positions itself as supporting both formats natively. */}
+          <div className="mt-4 inline-flex items-center gap-1 p-1 rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10">
+            <button
+              onClick={() => setFormat("resume")}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
+                format === "resume" ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+              )}
+            >
+              Resume
+            </button>
+            <button
+              onClick={() => setFormat("cv")}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
+                format === "cv" ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+              )}
+            >
+              CV
+            </button>
+          </div>
+          <p className="text-[10px] text-zinc-500 mt-2 max-w-xl">
+            {format === "resume"
+              ? "1–2 pages. Bullet-heavy. Industry roles. The default for most job applications in the US."
+              : "Multi-page. Includes publications, research, coursework, and a longer academic history. Common in academia, research, and some international markets."}
+          </p>
         </div>
 
         <AnimatePresence mode="wait">
