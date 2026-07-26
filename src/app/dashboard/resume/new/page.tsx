@@ -188,6 +188,26 @@ function NewResumeContent() {
           ))}
         </div>
 
+        {/* Resume.io signature: outcome proof row. Mirrors the "A draft in 10 mins"
+            + "92% of customers recommend us" trust block on the resume.io home
+            page. Two inline stats with the same icon-button + label pattern. */}
+        <div className="flex items-center gap-3 flex-wrap pt-1">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/5 border border-amber-500/20">
+            <span className="text-base leading-none">⚡</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">A draft in 10 minutes</span>
+          </div>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/5 border border-emerald-500/20">
+            <span className="text-base leading-none">💚</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-300">92% of customers recommend us</span>
+          </div>
+          <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-500">
+            <span className="text-amber-500">★</span>
+            <span className="font-bold text-zinc-700 dark:text-zinc-300">4.2 out of 5</span>
+            <span>·</span>
+            <span>Trustpilot</span>
+          </div>
+        </div>
+
         <AnimatePresence mode="wait">
           {mode === "choice" && (
             <motion.div
