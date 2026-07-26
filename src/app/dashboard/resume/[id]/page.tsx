@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -257,6 +257,41 @@ export default function ResumeEditorPage({
   }, [data.personal, data.summary, data.experience, data.education, data.skills]);
   const completenessLabel = completeness >= 80 ? "ATS-friendly" : completeness >= 50 ? "Getting there" : "Needs content";
   const completenessColor = completeness >= 80 ? "text-emerald-400" : completeness >= 50 ? "text-amber-400" : "text-zinc-500";
+
+  // Resume.io's "Quick Wins" — content-based, actionable suggestions with a section jump.
+  // We cap at 3 items so the panel stays scannable. Each item has the section key the
+  // "Fix" button jumps to.
+  type QuickWin = { key: string; section: string; title: string; detail: string; points: number };
+  const quickWins: QuickWin[] = useMemo(() => {
+    const wins: QuickWin[] = [];
+    if (!data.personal?.name) {
+      wins.push({ key: "name", section: "personal", title: "Add your name", detail: "Recruiters filter by name first — keep it front and center.", points: 10 });
+    } else if (!data.personal?.email) {
+      wins.push({ key: "email", section: "personal", title: "Add an email", detail: "ATS systems and recruiters need a way to contact you.", points: 5 });
+    } else if (!data.personal?.linkedin) {
+      wins.push({ key: "linkedin", section: "personal", title: "Add your LinkedIn URL", detail: "Profiles with LinkedIn get 12% more recruiter views.", points: 4 });
+    }
+    if (!data.summary || data.summary.length < 60) {
+      wins.push({ key: "summary", section: "summary", title: "Write a 60+ char summary", detail: "Open with the role you want next. Quantify scope: team size, budget, ARR.", points: 8 });
+    }
+    if (!data.experience || data.experience.length === 0) {
+      wins.push({ key: "experience", section: "experience", title: "Add at least 1 experience entry", detail: "Even a short internship counts — the experience block is the heart of every resume.", points: 15 });
+    } else {
+      const weakBullets = data.experience.some((e) => !e.bullets || e.bullets.every((b) => !b.trim() || b.trim().length < 25));
+      const noNumbers = data.experience.every((e) => !e.bullets || !e.bullets.some((b) => /\d|%|$|k\b|m\b/i.test(b)));
+      if (weakBullets) {
+        wins.push({ key: "bullets", section: "experience", title: "Strengthen your bullets", detail: "Lead with a strong verb. Show the result, not the activity.", points: 6 });
+      } else if (noNumbers) {
+        wins.push({ key: "numbers", section: "experience", title: "Add a number to one bullet", detail: "Quantified bullets (%, $, count) lift interview rates by 40%.", points: 5 });
+      }
+    }
+    if (!data.skills || data.skills.length < 5) {
+      const have = data.skills?.length || 0;
+      wins.push({ key: "skills", section: "skills", title: `Add ${5 - have} more skills`, detail: "Resumes with 5+ skills get 27% more callbacks.", points: 5 });
+    }
+    return wins.slice(0, 3);
+  }, [data.personal, data.summary, data.experience, data.skills]);
+  const quickWinsScore = quickWins.reduce((sum, w) => sum + w.points, 0);
 
   const sectionOrder = resume.section_order || [
     "summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects"
@@ -927,6 +962,46 @@ export default function ResumeEditorPage({
               {/* Intelligence Panels Sidebar */}
               {!isSidebarCollapsed && (
                 <div className="space-y-6 animate-slide-up">
+                  {/* Resume.io signature: Quick Wins — 3 specific, actionable improvements. */}
+                  <div className="liquid-glass rounded-3xl border border-zinc-200 dark:border-white/[0.05] overflow-hidden">
+                    <div className="w-full flex items-center justify-between p-5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                          <Lightbulb weight="fill" className="w-4 h-4 text-amber-400" />
+                        </div>
+                        <div>
+                          <span className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white block">Quick Wins</span>
+                          <span className="text-[10px] text-zinc-500">+{quickWinsScore} points if you fix all</span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500">{quickWins.length} open</span>
+                    </div>
+                    {quickWins.length === 0 ? (
+                      <div className="px-5 pb-5 flex items-center gap-2 text-[11px] text-emerald-400">
+                        <CheckCircle weight="fill" className="w-4 h-4" />
+                        <span>All caught up — your resume looks great.</span>
+                      </div>
+                    ) : (
+                      <div className="px-5 pb-5 space-y-2">
+                        {quickWins.map((win) => (
+                          <div key={win.key} className="flex items-start gap-3 p-3 rounded-2xl bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.04] hover:border-amber-500/30 transition-all group">
+                            <ListChecks weight="bold" className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[12px] font-semibold text-zinc-900 dark:text-white">{win.title}</p>
+                              <p className="text-[10px] text-zinc-500 mt-0.5 leading-relaxed">{win.detail}</p>
+                            </div>
+                            <button
+                              onClick={() => setActiveSection(win.section)}
+                              className="flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest text-amber-500 hover:bg-amber-500/10 transition-all opacity-0 group-hover:opacity-100 flex-shrink-0"
+                            >
+                              Fix
+                              <ArrowRight className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <ATSCheckerPanel resumeData={data} />
                   <ThemePicker
                     theme={resume.theme}
