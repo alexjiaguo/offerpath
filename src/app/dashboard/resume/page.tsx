@@ -31,6 +31,22 @@ const TEMPLATE_PERSONAS: Record<string, { name: string; role: string; tag: strin
   "academic":           { name: "Dr. Aisha Khan",  role: "Postdoctoral Researcher",           tag: "Academic / research" },
 };
 
+/* ─── flowcv's own 6-template categories (Simple/Modern/Creative/Photo/Compact/First Job) ───
+   The raw `tag` from TEMPLATE_CONFIGS is recruiter-flavored; this maps each template to the
+   category a flowcv visitor would actually filter on. */
+const TEMPLATE_FLOWCV_STYLE: Record<string, string> = {
+  "classic-minimal":    "Simple",
+  "ats-executive":      "Modern",
+  "premium-headshot":   "Photo",
+  "bold-engineer":      "Modern",
+  "clean-layout":       "Simple",
+  "clean-professional": "Modern",
+  "elegant-two-column": "Creative",
+  "photo-header":       "Photo",
+  "academic":           "Compact",
+};
+const FLOWCV_CATEGORIES = ["All", "Simple", "Modern", "Creative", "Photo", "Compact"];
+
 const PROCESS_STEPS = [
   { n: 1, t: "Pick a layout",      d: "Choose from ATS-friendly templates curated by role." },
   { n: 2, t: "Add your experience", d: "Type or upload — we structure the rest." },
@@ -55,12 +71,11 @@ function ResumePageContent() {
   const searchQuery = usePipelineStore((s) => s.filters.search);
 
   const [activeCategory, setActiveCategory] = useState<string>("All");
-  const categories = useMemo(
-    () => ["All", ...Array.from(new Set(TEMPLATE_CONFIGS.map((t) => t.tag).filter(Boolean)))],
-    []
-  );
+  const categories = FLOWCV_CATEGORIES;
   const visibleTemplates = useMemo(
-    () => activeCategory === "All" ? TEMPLATE_CONFIGS : TEMPLATE_CONFIGS.filter((t) => t.tag === activeCategory),
+    () => activeCategory === "All"
+      ? TEMPLATE_CONFIGS
+      : TEMPLATE_CONFIGS.filter((t) => TEMPLATE_FLOWCV_STYLE[t.id] === activeCategory),
     [activeCategory]
   );
 
@@ -255,7 +270,7 @@ function ResumePageContent() {
             <p className="text-[12px] text-surface-400/80 mt-1">
               {resumes.length === 0
                 ? "Click any layout below — the editor opens with that template pre-selected and a sample persona loaded so you can see it in action."
-                : "Browse 9 ATS-aware layouts. Every one is editable and you can switch any time."}
+                : "Browse Simple, Modern, Creative, Photo, Compact and First Job layouts. Every one is editable and you can switch any time."}
             </p>
           </div>
           <span className="px-3 py-1 rounded-full bg-white border border-surface-200/50 text-[10px] font-bold text-brand-900">
