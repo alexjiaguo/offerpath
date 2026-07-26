@@ -10,6 +10,76 @@ import { ResumeParserService } from "@/lib/ResumeParserService";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
+/* ─── Sample data per persona — the flowcv "Brian T. Wayne" hook ───
+   When a user lands on /new?template=X, the matching persona's pre-filled
+   resume data is offered so they can hit the ground running instead of staring at
+   a blank page. Mirrors the flowcv.com experience where each template has a
+   canonical real-world sample render. */
+const PERSONA_SAMPLE: Record<string, {
+  name: string; role: string; email: string; phone: string; location: string;
+  summary: string; experience: Array<{ company: string; title: string; location: string; start_date: string; end_date: string; current: boolean; bullets: string[] }>;
+  education: Array<{ school: string; degree: string; field: string; start_date: string; end_date: string; gpa?: string }>;
+  skills: string[];
+}> = {
+  "classic-minimal": {
+    name: "Brian T. Wayne", role: "Business Development Consultant", email: "brian.wayne@example.com", phone: "+1 415 555 0142", location: "San Francisco, CA",
+    summary: "Business Development Consultant with 7+ years driving revenue growth for early-stage SaaS companies. Specialized in cross-functional team leadership, partner enablement, and quantified pipeline generation.",
+    experience: [
+      { company: "Northwind Dynamics", title: "Senior Business Development Consultant", location: "San Francisco, CA", start_date: "2021-03", end_date: "", current: true,
+        bullets: [
+          "Built and managed a 12-person cross-functional pod that closed $4.2M in new ARR across 38 enterprise accounts in 12 months.",
+          "Designed partner enablement curriculum that lifted channel-sourced revenue 38% YoY.",
+          "Coached 6 junior BDRs to promotion; team NPS rose from 32 to 71 in 9 months.",
+        ] },
+      { company: "Aperture Labs", title: "Business Development Manager", location: "San Francisco, CA", start_date: "2018-06", end_date: "2021-02", current: false,
+        bullets: [
+          "Owned outbound motion for the West Coast; sourced 240+ SQLs per quarter, 18% close rate.",
+          "Built reporting dashboards in Looker that exposed $1.1M of pipeline risk to leadership.",
+        ] },
+    ],
+    education: [
+      { school: "UC Berkeley, Haas School of Business", degree: "MBA", field: "Marketing & Entrepreneurship", start_date: "2014", end_date: "2016", gpa: "3.8" },
+    ],
+    skills: ["Enterprise sales", "Pipeline forecasting", "Salesforce + HubSpot", "Looker", "Cross-functional leadership", "Channel partner enablement"],
+  },
+  "premium-headshot": {
+    name: "Camila Rivera", role: "Senior Sales Manager", email: "camila.rivera@example.com", phone: "+1 305 555 0193", location: "Miami, FL",
+    summary: "Senior Sales Manager with 9 years of enterprise SaaS experience. Track record of building high-performing LATAM-aligned sales teams and growing accounts from $50K to $2M+ ARR.",
+    experience: [
+      { company: "Cobalt Industries", title: "Senior Sales Manager — LATAM", location: "Miami, FL", start_date: "2020-08", end_date: "", current: true,
+        bullets: [
+          "Lead 8-person LATAM sales pod; overdelivered on quota by 142% in FY23 ($8.4M vs $5.9M target).",
+          "Closed largest single deal in company history: $1.6M 3-year enterprise agreement with MercadoLibre.",
+          "Built Spanish-language enablement library; ramp time for new AEs fell from 12 weeks to 6.",
+        ] },
+    ],
+    education: [
+      { school: "Universidad de los Andes", degree: "BBA", field: "International Business", start_date: "2012", end_date: "2016" },
+    ],
+    skills: ["Enterprise SaaS sales", "LATAM market expansion", "Salesforce", "Outreach + Salesloft", "Negotiation", "Bilingual EN/ES"],
+  },
+  "bold-engineer": {
+    name: "Rohan K. Patel", role: "Project Engineer", email: "rohan.patel@example.com", phone: "+1 408 555 0210", location: "San Jose, CA",
+    summary: "Project Engineer with 6+ years in hardware and embedded systems. Strong in cross-functional collaboration with manufacturing, firmware, and design teams.",
+    experience: [
+      { company: "Quantum Devices", title: "Project Engineer", location: "San Jose, CA", start_date: "2020-01", end_date: "", current: true,
+        bullets: [
+          "Led PCB bring-up on 3 product lines, reducing time-to-prototype by 38%.",
+          "Owned DFM handoff to contract manufacturer; first-pass yield rose from 78% to 94%.",
+          "Wrote internal tooling in Python that cut weekly QA reporting from 4 hours to 18 minutes.",
+        ] },
+    ],
+    education: [
+      { school: "University of Michigan", degree: "B.S.", field: "Electrical & Computer Engineering", start_date: "2014", end_date: "2018" },
+    ],
+    skills: ["Altium Designer", "Embedded C", "Python", "JTAG debugging", "Signal integrity", "I2C / SPI / UART"],
+  },
+};
+
+function getPersonaForTemplate(templateId: string) {
+  return PERSONA_SAMPLE[templateId] || null;
+}
+
 function NewResumeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -21,6 +91,40 @@ function NewResumeContent() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const persona = getPersonaForTemplate(templateId);
+  const TEMPLATE_PERSONAS: Record<string, { name: string; role: string }> = {
+    "classic-minimal":    { name: "Brian T. Wayne",  role: "Business Development Consultant" },
+    "ats-executive":      { name: "Margaret Holloway", role: "VP of Operations" },
+    "premium-headshot":   { name: "Camila Rivera",   role: "Senior Sales Manager" },
+    "bold-engineer":      { name: "Rohan K. Patel",  role: "Project Engineer" },
+    "clean-layout":       { name: "Priya Anand",     role: "Product Manager" },
+    "clean-professional": { name: "Daniel Whitford", role: "Finance Director" },
+    "elegant-two-column": { name: "Isabella Moreau", role: "Brand Strategist" },
+    "photo-header":       { name: "Theo Nakamura",   role: "UX Designer" },
+    "academic":           { name: "Dr. Aisha Khan",  role: "Postdoctoral Researcher" },
+  };
+  const personaMeta = TEMPLATE_PERSONAS[templateId];
+
+  const handleStartFromPersona = () => {
+    if (!persona) { handleCreateEmpty(); return; }
+    const id = addResume({
+      title: `${persona.name} — Sample`,
+      template: templateId,
+      data: {
+        personal: { name: persona.name, email: persona.email, phone: persona.phone, location: persona.location },
+        summary: persona.summary,
+        experience: persona.experience as any,
+        education: persona.education.map((e) => ({ institution: (e as any).school || (e as any).institution, degree: e.degree, field: e.field, start_date: e.start_date, end_date: e.end_date, gpa: e.gpa })),
+        skills: persona.skills.map((name, i) => ({ id: `s${i}`, name, isHighlighted: i < 2 })),
+      },
+      theme: { primaryColor: "#2c3e50", accentColor: "#7f8c8d", backgroundColor: "#ffffff", textColor: "#1a1a2e", fontFamily: "'Inter', sans-serif", baseFontSize: 11, headerFontSize: 24, sectionTitleSize: 11, companyFontSize: 11, lineHeight: 1.4, pagePadding: 30, sectionSpacing: 12, itemSpacing: 6 },
+      section_order: ["summary","experience","education","technicalSkills","skills","languages","certifications","projects"],
+      section_visibility: {},
+      is_base: true,
+    });
+    router.push(`/dashboard/resume/${id}`);
+  };
 
   const handleCreateEmpty = () => {
     const id = addResume({
@@ -128,7 +232,7 @@ function NewResumeContent() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="grid md:grid-cols-2 gap-6"
+              className="grid md:grid-cols-3 gap-6"
             >
               <button
                 onClick={() => setMode("upload")}
@@ -161,6 +265,29 @@ function NewResumeContent() {
                   Create Empty <ArrowRight className="w-4 h-4" />
                 </div>
               </button>
+
+              {persona && personaMeta && (
+                <button
+                  onClick={handleStartFromPersona}
+                  className="liquid-glass rounded-[32px] p-8 text-left border-2 border-brand-500/30 hover:border-brand-500/50 transition-all group relative overflow-hidden"
+                >
+                  <div className="absolute -top-3 right-4 px-2 py-0.5 rounded-full bg-brand-500 text-white text-[9px] font-bold uppercase tracking-widest">
+                    Flowcv signature
+                  </div>
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-200 to-brand-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                    <span className="text-white font-bold text-sm">
+                      {persona.name.split(' ').map((p) => p[0]).slice(0, 2).join('')}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold text-zinc-900 dark:text-white font-display mb-2">Start from {persona.name.split(' ')[0]}'s sample</h3>
+                  <p className="text-zinc-600 dark:text-zinc-500 text-sm leading-relaxed mb-8">
+                    Pre-filled with {personaMeta.role} experience, education, and skills. Edit anything.
+                  </p>
+                  <div className="flex items-center gap-2 text-brand-500 text-xs font-bold uppercase tracking-widest mt-auto">
+                    Use sample <ArrowRight className="w-4 h-4" />
+                  </div>
+                </button>
+              )}
             </motion.div>
           )}
 
