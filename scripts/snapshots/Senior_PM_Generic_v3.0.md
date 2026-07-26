@@ -28,11 +28,15 @@ Senior Product Manager with 8+ years owning **AI platform**, ad-tech, and ML inf
 *2020/08 – 2023/03 | New York, NY*
 
 - **Audience Targeting (AdTech & Programmatic & ML Platform & A/B Testing):** Owned the first-party audience graph and feature store used by 8 product lines. Cut audience build time 14 days → 36 hours; raised campaign ROAS by 22% across pilot advertisers.
+- **ML Feature Platform (ML Platform & SQL & Python):** Stood up the shared ML feature store consumed by 8 product lines and 3 model teams. Cut duplicate feature engineering work by ~40% and shrank new-model time-to-first-prediction from 3 weeks to 4 days.
+- **Cross-Channel Identity Migration (AdTech & Programmatic):** Tech-lead partner on a 6-month migration of 8 product lines from a third-party identity graph to an in-house first-party graph. Zero revenue loss; ~$1.2M annual cost takeout.
 
 #### Associate Product Manager | Beacon Analytics
 *2016/06 – 2018/06 | Boston, MA*
 
 - **Analytics Platform (A/B Testing & SQL & Looker & dbt & Amplitude):** Owned the self-serve analytics surface used by 12 product teams. Built SQL funnels and dbt marts in Looker; cut weekly reporting time 6 hours → 45 minutes per team.
+- **Onboarding Redesign (User Research & A/B Testing):** Led 32 user interviews and 5 usability studies. Cut D1 drop-off by 19% and added 0.8% to D7 retention across 2 product lines.
+- **Eval Working Group (LLM Harness & AI Agents):** Stood up a 12-person cross-functional group (Product, Eng, Legal) to standardize LLM eval harnesses and red-team prompts. Cut eval duplication ~50% across 3 product teams.
 
 ### Education
 

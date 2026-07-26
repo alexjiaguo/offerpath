@@ -66,7 +66,7 @@ user-facing goal was 99–101%; current state is shown below for reference.
 |---------|-------:|------:|------:|-----:|:---------------:|
 | v1.0 | 101.87 | n/a | n/a | n/a |  edge (just over) |
 | v2.0 | 102.40 | n/a | n/a | n/a |  edge (just over) |
-| v3.0 | 111.27 | 32.01 | 79.26 | 47.3 |  no (stacked layout, hard to fit on one A4) |
+| v3.0 | 112.60 | 112.60 | 112.60 |  0.0 |  no (visual underflow in main; 8 bullets) |
 | v4.0 | 101.25 | n/a | n/a | n/a |  yes |
 | v5.0 |  95.31 | 76.87 | 76.87 |  0.0 |  total close, columns under but equal |
 | v6.0 |  99.86 | n/a | n/a | n/a |  yes |
