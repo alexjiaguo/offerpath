@@ -240,21 +240,25 @@ export default function ResumeEditorPage({
 
   // Content-only completeness score (resume.io's "ATS-friendly" promise, made visible).
   // We never call a model — this is just a fast count of filled fields, so the badge is honest.
-  const completeness = useMemo(() => {
-    let score = 0;
-    if (data.personal?.name) score += 10;
-    if (data.personal?.email) score += 5;
-    if (data.personal?.phone) score += 5;
-    if (data.summary && data.summary.length > 60) score += 15;
+  // Returns per-category points too, so the score ring can render a breakdown.
+  const scoreBreakdown = useMemo(() => {
+    let personal = 0;
+    if (data.personal?.name) personal += 10;
+    if (data.personal?.email) personal += 5;
+    if (data.personal?.phone) personal += 5;
+    let content = 0;
+    if (data.summary && data.summary.length > 60) content += 15;
     if (data.experience && data.experience.length > 0) {
       const filled = data.experience.filter((e) => e.company && e.title && e.bullets && e.bullets.some((b) => b.trim().length > 10));
-      score += Math.min(30, filled.length * 10);
+      content += Math.min(30, filled.length * 10);
     }
-    if (data.education && data.education.length > 0 && data.education[0]?.institution) score += 15;
-    if (data.skills && data.skills.length >= 5) score += 20;
-    else if (data.skills && data.skills.length > 0) score += 10;
-    return Math.min(100, score);
+    if (data.education && data.education.length > 0 && data.education[0]?.institution) content += 15;
+    let skills = 0;
+    if (data.skills && data.skills.length >= 5) skills += 20;
+    else if (data.skills && data.skills.length > 0) skills += 10;
+    return { personal, content, skills, total: Math.min(100, personal + content + skills) };
   }, [data.personal, data.summary, data.experience, data.education, data.skills]);
+  const completeness = scoreBreakdown.total;
   const completenessLabel = completeness >= 80 ? "ATS-friendly" : completeness >= 50 ? "Getting there" : "Needs content";
   const completenessColor = completeness >= 80 ? "text-emerald-400" : completeness >= 50 ? "text-amber-400" : "text-zinc-500";
 
@@ -971,9 +975,28 @@ export default function ResumeEditorPage({
                     </svg>
                     <span className={cn("absolute text-[9px] font-bold", completenessColor)}>{completeness}</span>
                   </div>
-                  <div className="hidden sm:flex flex-col">
-                    <span className={cn("text-[9px] font-bold uppercase tracking-widest", completenessColor)}>{completenessLabel}</span>
-                    <span className="text-[9px] text-zinc-500">content completeness</span>
+                  <div className="hidden sm:flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className={cn("text-[9px] font-bold uppercase tracking-widest", completenessColor)}>{completenessLabel}</span>
+                      <span className="text-[9px] text-zinc-500">content completeness</span>
+                    </div>
+                    {/* Category breakdown — 3-segment bar so the score isn't a black box. */}
+                    <div className="flex items-center gap-1.5">
+                      {[
+                        { key: "personal", label: "Personal", points: scoreBreakdown.personal, max: 20, color: "bg-sky-400" },
+                        { key: "content",  label: "Content",  points: scoreBreakdown.content,  max: 60, color: "bg-indigo-400" },
+                        { key: "skills",   label: "Skills",   points: scoreBreakdown.skills,   max: 20, color: "bg-violet-400" },
+                      ].map((seg) => {
+                        const pct = Math.min(100, (seg.points / seg.max) * 100);
+                        return (
+                          <div key={seg.key} className="flex flex-col gap-0.5" title={`${seg.label}: ${seg.points}/${seg.max}`}>
+                            <div className="w-10 h-1 rounded-full bg-zinc-200 dark:bg-white/10 overflow-hidden">
+                              <div className={cn("h-full transition-all duration-500", seg.color)} style={{ width: `${pct}%` }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
