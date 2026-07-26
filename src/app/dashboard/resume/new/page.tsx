@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, UploadSimple } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Info, Sparkle, UploadSimple } from '@phosphor-icons/react';
 import Link from "next/link";
 import { useResumeStore } from "@/store/resumeStore";
 import { FileParserService } from "@/lib/FileParserService";
@@ -117,7 +117,12 @@ function NewResumeContent() {
 
       <div className="space-y-8">
         <div>
-          <h1 className="text-4xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">Create New Resume</h1>
+          <div className="flex items-center gap-2 mb-2">
+            <h1 className="text-4xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">Create New Resume</h1>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-50 border border-brand-200/50 text-[9px] font-bold uppercase tracking-widest text-brand-700">
+              <Info weight="fill" className="w-3 h-3" /> View Tips in editor
+            </span>
+          </div>
           <p className="text-zinc-600 dark:text-zinc-400 mt-2">Choose how you would like to start building your resume.</p>
         </div>
 
