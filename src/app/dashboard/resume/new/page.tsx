@@ -2,8 +2,9 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, UploadSimple } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, SquaresFour, UploadSimple } from '@phosphor-icons/react';
 import Link from "next/link";
+import { toast } from "sonner";
 import { useResumeStore } from "@/store/resumeStore";
 import { FileParserService } from "@/lib/FileParserService";
 import { ResumeParserService } from "@/lib/ResumeParserService";
@@ -87,7 +88,7 @@ function NewResumeContent() {
 
   const { addResume } = useResumeStore();
 
-  const [mode, setMode] = useState<"choice" | "upload" | "parsing">("choice");
+  const [mode, setMode] = useState<"choice" | "upload" | "browse" | "parsing">("choice");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,6 +106,27 @@ function NewResumeContent() {
     "academic":           { name: "Dr. Aisha Khan",  role: "Postdoctoral Researcher" },
   };
   const personaMeta = TEMPLATE_PERSONAS[templateId];
+
+  const handleBrowsePersona = (tid: string) => {
+    const p = PERSONA_SAMPLE[tid];
+    if (!p) { toast.error("That persona doesn't have a full sample yet — try Brian, Camila, or Rohan."); return; }
+    const id = addResume({
+      title: `${p.name} — Sample`,
+      template: tid,
+      data: {
+        personal: { name: p.name, email: p.email, phone: p.phone, location: p.location },
+        summary: p.summary,
+        experience: p.experience as any,
+        education: p.education.map((e) => ({ institution: (e as any).school || (e as any).institution, degree: e.degree, field: e.field, start_date: e.start_date, end_date: e.end_date, gpa: e.gpa })),
+        skills: p.skills.map((name, i) => ({ id: `s${i}`, name, isHighlighted: i < 2 })),
+      },
+      theme: { primaryColor: "#2c3e50", accentColor: "#7f8c8d", backgroundColor: "#ffffff", textColor: "#1a1a2e", fontFamily: "'Inter', sans-serif", baseFontSize: 11, headerFontSize: 24, sectionTitleSize: 11, companyFontSize: 11, lineHeight: 1.4, pagePadding: 30, sectionSpacing: 12, itemSpacing: 6 },
+      section_order: ["summary","experience","education","technicalSkills","skills","languages","certifications","projects"],
+      section_visibility: {},
+      is_base: true,
+    });
+    router.push(`/dashboard/resume/${id}`);
+  };
 
   const handleStartFromPersona = () => {
     if (!persona) { handleCreateEmpty(); return; }
@@ -288,6 +310,75 @@ function NewResumeContent() {
                   </div>
                 </button>
               )}
+
+              <button
+                onClick={() => setMode("browse")}
+                className="liquid-glass rounded-[32px] p-8 text-left border border-zinc-200 dark:border-white/[0.05] hover:border-indigo-500/30 transition-all group"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                  <SquaresFour weight="duotone" className="w-7 h-7 text-indigo-400" />
+                </div>
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white font-display mb-2">Browse all 9 samples</h3>
+                <p className="text-zinc-600 dark:text-zinc-500 text-sm leading-relaxed mb-8">
+                  See every persona in our library. 3 are fully filled today; the rest are coming this quarter.
+                </p>
+                <div className="flex items-center gap-2 text-indigo-500 text-xs font-bold uppercase tracking-widest mt-auto">
+                  See gallery <ArrowRight className="w-4 h-4" />
+                </div>
+              </button>
+            </motion.div>
+          )}
+
+          {mode === "browse" && (
+            <motion.div
+              key="browse"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              <div>
+                <button onClick={() => setMode("choice")} className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-indigo-600 transition-all mb-2">
+                  ← Back to options
+                </button>
+                <h2 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">9 sample personas</h2>
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">3 are fully filled today. The rest are coming — but you can already see what each role looks like.</p>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Object.entries(TEMPLATE_PERSONAS).map(([tid, meta]) => {
+                  const hasData = Boolean(PERSONA_SAMPLE[tid]);
+                  return (
+                    <button
+                      key={tid}
+                      onClick={() => hasData ? handleBrowsePersona(tid) : toast.info(`${meta.name} sample data is coming soon — try Brian, Camila, or Rohan for now.`)}
+                      className={cn(
+                        "liquid-glass rounded-2xl p-5 text-left border transition-all group relative",
+                        hasData
+                          ? "border-zinc-200 dark:border-white/[0.05] hover:border-indigo-500/40"
+                          : "border-zinc-200/40 dark:border-white/[0.02] opacity-60 cursor-not-allowed"
+                      )}
+                      disabled={!hasData}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className={cn(
+                          "w-10 h-10 rounded-xl flex items-center justify-center text-[11px] font-bold",
+                          hasData ? "bg-gradient-to-br from-indigo-500/30 to-blue-500/30 text-indigo-300" : "bg-zinc-200/40 dark:bg-white/5 text-zinc-500"
+                        )}>
+                          {meta.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}
+                        </div>
+                        {hasData ? (
+                          <span className="text-[9px] font-bold uppercase tracking-widest text-indigo-500">Ready</span>
+                        ) : (
+                          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Coming soon</span>
+                        )}
+                      </div>
+                      <p className="text-sm font-bold text-zinc-900 dark:text-white">{meta.name}</p>
+                      <p className="text-[11px] text-zinc-500 mt-0.5">{meta.role}</p>
+                      <p className="text-[9px] font-mono text-zinc-400 mt-2">{tid}</p>
+                    </button>
+                  );
+                })}
+              </div>
             </motion.div>
           )}
 
