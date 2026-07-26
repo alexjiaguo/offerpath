@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, WarningCircle, Eye, EyeSlash, FileText, ListChecks, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -324,9 +324,23 @@ export default function ResumeEditorPage({
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
+              </div>
+              {/* Resume.com signature: "Free resume audits" trust badge. Always visible
+                  in the editor header so the user knows the audit tool is included,
+                  not gated behind a paywall. Links focus the ATS Intelligence panel below. */}
+              <a
+                href="#ats-intelligence"
+                onClick={(e) => { e.preventDefault(); document.getElementById("ats-intelligence")?.scrollIntoView({ behavior: "smooth", block: "center" }); }}
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 transition-all cursor-pointer"
+                title="Free resume audit — always included, no paywall"
+              >
+                <ShieldCheck weight="fill" className="w-2.5 h-2.5" />
+                Free audit included
+              </a>
             </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
           </div>
@@ -1062,7 +1076,7 @@ export default function ResumeEditorPage({
               {/* Intelligence Panels Sidebar */}
               {!isSidebarCollapsed && (
                 <div className="space-y-6 animate-slide-up">
-                  <ATSCheckerPanel resumeData={data} />
+                  <div id="ats-intelligence"><ATSCheckerPanel resumeData={data} /></div>
                   <ThemePicker
                     theme={resume.theme}
                     onChange={(updates) => {
