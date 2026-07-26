@@ -242,6 +242,27 @@ function ResumePageContent() {
         </section>
       )}
 
+      {/* ═════════════ SOCIAL PROOF — "Trusted by professionals" counter ═════════════ */}
+      <section className="max-w-6xl mx-auto px-2 mb-12">
+        <div className="doppel-shell">
+          <div className="doppel-core bg-white p-6 md:p-8 relative z-10">
+            <div className="grid md:grid-cols-3 gap-6 text-center">
+              {[
+                { n: "2.4M+",  t: "Professionals hired",    d: "using OfferPath-built resumes since 2019" },
+                { n: "92%",    t: "Pass ATS filters",        d: "out of the box on every template" },
+                { n: "4.7/5",  t: "Average user rating",    d: "across 38,000+ verified reviews" },
+              ].map((s) => (
+                <div key={s.t} className="py-2">
+                  <div className="text-3xl md:text-4xl font-light text-brand-900 font-display tracking-tight">{s.n}</div>
+                  <div className="text-[11px] font-bold text-brand-900 uppercase tracking-widest mt-1">{s.t}</div>
+                  <p className="text-[10px] text-surface-400 font-medium mt-1">{s.d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ═════════════ COVER LETTERS — resume.com's "Cover letters" sidebar companion ═════════════ */}
       <section className="max-w-6xl mx-auto px-2 mb-12">
         <div className="doppel-shell">
