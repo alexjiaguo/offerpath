@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, WarningCircle, Eye, EyeSlash, FileText, ListChecks, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -92,12 +92,25 @@ export default function ResumeEditorPage({
     canRedo,
     saveToHistory,
     moveSection,
+    toggleVisibility,
   } = useResumeStore();
   const { getProfileSummary } = useProfileStore();
   const resume = getResumeById(id);
 
   const [saved, setSaved] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("personal");
+  const [manageOpen, setManageOpen] = useState(false);
+  const manageBtnRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (!manageOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (manageBtnRef.current && !manageBtnRef.current.parentElement?.contains(e.target as Node)) {
+        setManageOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", handler);
+    return () => window.removeEventListener("mousedown", handler);
+  }, [manageOpen]);
   const [editorMode, setEditorMode] = useState<EditorMode>("form");
   const [showPreview, setShowPreview] = useState(true);
   const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
@@ -550,35 +563,120 @@ export default function ResumeEditorPage({
               />
             ) : (
               <>
-                <div className="flex flex-wrap gap-1.5 bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] rounded-2xl p-1.5">
+                <div className="flex items-start gap-2 flex-wrap">
+                  <div className="flex flex-wrap gap-1.5 bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] rounded-2xl p-1.5">
                   {SECTIONS.map((section) => {
-                    const isVisible = (resume.section_visibility?.[selectedTemplate]?.[section.key as SectionKey]) ?? true;
-                    return (
-                      <div key={section.key} className="flex items-center gap-1 mb-1">
-                        <button
-                          onClick={() => setActiveSection(section.key)}
-                          className={cn(
-                            "flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap",
-                            activeSection === section.key
-                              ? "bg-zinc-100 dark:bg-white/[0.05] text-zinc-900 dark:text-white shadow-lg shadow-black/20"
-                              : "text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300",
-                            !isVisible && "opacity-40 grayscale"
-                          )}
-                        >
-                          <section.icon className="w-3.5 h-3.5" />
-                          {section.label}
+                  const isVisible = (resume.section_visibility?.[selectedTemplate]?.[section.key as SectionKey]) ?? true;
+                  return (
+                    <div key={section.key} className="flex items-center gap-1 mb-1">
+                      <button
+                        onClick={() => setActiveSection(section.key)}
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap",
+                          activeSection === section.key
+                            ? "bg-zinc-100 dark:bg-white/[0.05] text-zinc-900 dark:text-white shadow-lg shadow-black/20"
+                            : "text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300",
+                          !isVisible && "opacity-40 grayscale"
+                        )}
+                      >
+                        <section.icon className="w-3.5 h-3.5" />
+                        {section.label}
+                      </button>
+                      <div className="flex flex-col gap-0.5">
+                        <button onClick={() => moveSection(id, section.key as SectionKey, "up")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
+                          <CaretUp className="w-3 h-3" />
                         </button>
-                        <div className="flex flex-col gap-0.5">
-                          <button onClick={() => moveSection(id, section.key as SectionKey, "up")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
-                            <CaretUp className="w-3 h-3" />
-                          </button>
-                          <button onClick={() => moveSection(id, section.key as SectionKey, "down")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
-                            <CaretDown className="w-3 h-3" />
-                          </button>
-                        </div>
+                        <button onClick={() => moveSection(id, section.key as SectionKey, "down")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
+                          <CaretDown className="w-3 h-3" />
+                        </button>
                       </div>
-                    );
+                    </div>
+                  );
                   })}
+                </div>
+                  {/* Resume.com signature: "Manage Sections" affordance — a one-click popover
+                      that lets the user toggle visibility for every section, plus quick actions
+                      to show all / hide optional. Replaces 5 separate eye toggles in the toolbar. */}
+                  <div className="relative">
+                    <button
+                      ref={(el) => { manageBtnRef.current = el; }}
+                      onClick={() => setManageOpen(!manageOpen)}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                        manageOpen
+                          ? "bg-zinc-900 text-white"
+                          : "bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:border-zinc-900/40"
+                      )}
+                      title="Manage which sections appear on your resume"
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5" />
+                      Manage
+                      <span className="ml-1 px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-white/10 text-[9px]">
+                        {SECTIONS.filter((s) => (resume.section_visibility?.[selectedTemplate]?.[s.key as SectionKey]) ?? true).length}/{SECTIONS.length}
+                      </span>
+                    </button>
+                    {manageOpen && (
+                        <div className="absolute left-0 top-full mt-2 w-80 z-40 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.08] shadow-2xl p-4 bg-white dark:bg-zinc-900 animate-fade-in">
+                          <div className="flex items-center justify-between mb-3">
+                            <div>
+                              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-900 dark:text-white">Manage Sections</p>
+                              <p className="text-[10px] text-zinc-500 mt-0.5">Toggle what appears on the printed resume.</p>
+                            </div>
+                            <button onClick={() => setManageOpen(false)} className="p-1 rounded hover:bg-zinc-100 dark:hover:bg-white/5" title="Close">
+                              <X className="w-3.5 h-3.5 text-zinc-500" />
+                            </button>
+                          </div>
+                          <div className="flex items-center gap-1.5 mb-3">
+                            <button
+                              onClick={() => SECTIONS.forEach((s) => { if (!((resume.section_visibility?.[selectedTemplate]?.[s.key as SectionKey]) ?? true)) toggleVisibility(id, selectedTemplate, s.key as SectionKey); })}
+                              className="flex-1 px-2 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:border-zinc-900/40"
+                            >
+                              Show all
+                            </button>
+                            <button
+                              onClick={() => SECTIONS.slice(2).forEach((s) => { if ((resume.section_visibility?.[selectedTemplate]?.[s.key as SectionKey]) ?? true) toggleVisibility(id, selectedTemplate, s.key as SectionKey); })}
+                              className="flex-1 px-2 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-widest border border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:border-zinc-900/40"
+                            >
+                              Required only
+                            </button>
+                          </div>
+                          <div className="space-y-1">
+                            {SECTIONS.map((section) => {
+                              const isVisible = (resume.section_visibility?.[selectedTemplate]?.[section.key as SectionKey]) ?? true;
+                              return (
+                                <button
+                                  key={section.key}
+                                  onClick={() => toggleVisibility(id, selectedTemplate, section.key as SectionKey)}
+                                  className={cn(
+                                    "w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all",
+                                    isVisible
+                                      ? "bg-zinc-50 dark:bg-white/[0.04] hover:bg-zinc-100 dark:hover:bg-white/[0.08]"
+                                      : "bg-transparent hover:bg-zinc-50 dark:hover:bg-white/[0.02]"
+                                  )}
+                                >
+                                  <div className={cn(
+                                    "w-4 h-4 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all",
+                                    isVisible
+                                      ? "bg-zinc-900 border-zinc-900"
+                                      : "border-zinc-300 dark:border-white/20"
+                                  )}>
+                                    {isVisible && <CheckCircle weight="fill" className="w-3 h-3 text-white" />}
+                                  </div>
+                                  <section.icon className={cn("w-3.5 h-3.5", isVisible ? "text-zinc-700 dark:text-zinc-300" : "text-zinc-400")} />
+                                  <span className={cn(
+                                    "flex-1 text-left text-[12px] font-bold",
+                                    isVisible ? "text-zinc-900 dark:text-white" : "text-zinc-500"
+                                  )}>
+                                    {section.label}
+                                  </span>
+                                  {!isVisible && <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Hidden</span>}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Resume.com signature: contextual "next step" nudge — when experience is filled,
