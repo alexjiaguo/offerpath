@@ -89,6 +89,7 @@ function NewResumeContent() {
   const { addResume } = useResumeStore();
 
   const [mode, setMode] = useState<"choice" | "upload" | "browse" | "parsing">("choice");
+  const [levelFilter, setLevelFilter] = useState<"All" | "Senior" | "Mid" | "Lead">("All");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -347,8 +348,38 @@ function NewResumeContent() {
                 <h2 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">9 sample personas</h2>
                 <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">3 are fully filled today. The rest are coming — but you can already see what each role looks like.</p>
               </div>
+              {/* Career-level filter chips — narrows the 9-persona grid by seniority so users
+                  can scan for a persona at their career stage. Click a chip to filter. */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Filter by level</span>
+                {(["All", "Senior", "Mid", "Lead"] as const).map((lvl) => {
+                  const count = lvl === "All"
+                    ? Object.keys(TEMPLATE_PERSONAS).length
+                    : Object.values(TEMPLATE_PERSONAS).filter((m) => m.level === lvl).length;
+                  return (
+                    <button
+                      key={lvl}
+                      onClick={() => setLevelFilter(lvl)}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all border",
+                        levelFilter === lvl
+                          ? "bg-indigo-600 border-indigo-600 text-white"
+                          : "bg-white dark:bg-white/[0.04] border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:border-indigo-300"
+                      )}
+                    >
+                      {lvl}
+                      <span className={cn(
+                        "text-[9px] px-1 py-0.5 rounded",
+                        levelFilter === lvl ? "bg-white/20" : "bg-zinc-100 dark:bg-white/10"
+                      )}>{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Object.entries(TEMPLATE_PERSONAS).map(([tid, meta]) => {
+                {Object.entries(TEMPLATE_PERSONAS)
+                  .filter(([_, meta]) => levelFilter === "All" || meta.level === levelFilter)
+                  .map(([tid, meta]) => {
                   const hasData = Boolean(PERSONA_SAMPLE[tid]);
                   return (
                     <button
