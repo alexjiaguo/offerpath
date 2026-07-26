@@ -57,6 +57,22 @@ const TOOLS = [
   { t: "Career Coaching",d: "Async mentor review within 24h, on demand.",     href: "/dashboard/interview",      done: true },
 ];
 
+/* ─── "Get the interview with professional resume examples" — resume.io's role examples ─── */
+const RESUME_EXAMPLES = [
+  { role: "Nurse",                count: 12, hot: true },
+  { role: "High School Student",  count: 8,  hot: false },
+  { role: "Internship",           count: 14, hot: true },
+  { role: "Student",              count: 22, hot: false },
+  { role: "Accountant",           count: 9,  hot: false },
+  { role: "Engineer",             count: 31, hot: true },
+  { role: "Product Manager",      count: 18, hot: false },
+  { role: "Designer",             count: 11, hot: false },
+  { role: "Teacher",              count: 7,  hot: false },
+  { role: "Sales",                count: 16, hot: false },
+  { role: "Marketing",            count: 13, hot: false },
+  { role: "Executive",            count: 6,  hot: false },
+];
+
 /* ─── Score ring — the resume.io signature on the hero card ─── */
 function ScoreRing({ score, size = 56 }: { score: number; size?: number }) {
   const r = (size - 6) / 2;
@@ -417,6 +433,47 @@ function ResumePageContent() {
                 </div>
                 <p className="text-[10px] text-surface-500 font-medium leading-relaxed">{tool.d}</p>
                 <CaretRight weight="bold" className="w-3.5 h-3.5 text-brand-900 mt-3 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ═════════════ RESUME EXAMPLES — "Get the interview with professional resume examples" ═════════════ */}
+      <section className="max-w-6xl mx-auto px-2 mt-16">
+        <div className="flex items-end justify-between flex-wrap gap-4 mb-5 border-b border-surface-200/50 pb-3">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest text-emerald-600 mb-2">
+              <Sparkle weight="fill" className="w-3 h-3" />
+              Get the interview
+            </div>
+            <h2 className="text-2xl md:text-3xl font-light font-display text-brand-900 tracking-tight">
+              Professional resume examples
+            </h2>
+            <p className="text-[12px] text-surface-400 mt-1">
+              Click any role — start with a real-world sample, then tailor to the JD.
+            </p>
+          </div>
+          <Link href="#template-gallery" className="text-[10px] font-bold text-brand-900 uppercase tracking-widest hover:underline">
+            View all examples →
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          {RESUME_EXAMPLES.map((ex) => (
+            <Link
+              key={ex.role}
+              href={`/dashboard/resume/new?template=clean-layout`}
+              className="doppel-shell group hover:-translate-y-0.5 transition-all"
+            >
+              <div className="doppel-core bg-white p-4 relative z-10 text-center">
+                {ex.hot && (
+                  <div className="absolute -top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[8px] font-bold uppercase tracking-widest">
+                    Hot
+                  </div>
+                )}
+                <div className="text-[12px] font-bold text-brand-900 uppercase tracking-widest">{ex.role}</div>
+                <div className="text-[9px] text-surface-400 font-semibold mt-1.5">{ex.count} examples</div>
+                <CaretRight weight="bold" className="w-3.5 h-3.5 text-brand-900 mt-2 mx-auto group-hover:translate-x-0.5 transition-transform" />
               </div>
             </Link>
           ))}
