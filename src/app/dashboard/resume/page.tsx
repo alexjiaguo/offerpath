@@ -61,6 +61,13 @@ const TRUST_PILLS = [
   { icon: Sparkle,      text: "No watermarks · No paywalls · Yes, really 🚀" },
 ];
 
+const FAQ_ITEMS = [
+  { q: "Is FlowCV really free?", a: "Yes. Your first resume is free forever, with unlimited PDF and Word exports. Pro adds recruiter-match and auto-apply, but you never need to pay to build, save, or download." },
+  { q: "Will my resume pass ATS filters?", a: "All 9 templates are ATS-friendly out of the box. We score your resume on three axes — keyword match, readability, and quantified impact — and surface concrete suggestions before you apply." },
+  { q: "Can I import my existing resume?", a: "Yes. Upload a PDF or DOCX and our parser will extract your information into the editor. From there, re-skin it across all templates in one click." },
+  { q: "What if I want a cover letter too?", a: "Generate a matching cover letter from any resume in one click. Tailored to the JD, in your voice, ready to send." },
+];
+
 function ResumePageContent() {
   const searchParams = useSearchParams();
   const tailorForJobId = searchParams.get("tailorFor");
@@ -71,6 +78,7 @@ function ResumePageContent() {
   const searchQuery = usePipelineStore((s) => s.filters.search);
 
   const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const categories = FLOWCV_CATEGORIES;
   const visibleTemplates = useMemo(
     () => activeCategory === "All"
@@ -355,6 +363,71 @@ function ResumePageContent() {
               </motion.div>
             );
           })}
+        </div>
+      </section>
+
+      {/* ═════════════ FREE PLAN — flowcv "What's included in FlowCV's Free Plan" ═════════════ */}
+      <section className="max-w-6xl mx-auto px-2 mt-16">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200/50 text-[10px] font-bold uppercase tracking-widest text-brand-900 mb-3">
+            <Check weight="bold" className="w-3 h-3" />
+            Your first resume is 100% free forever
+          </div>
+          <h2 className="text-2xl md:text-3xl font-light font-display text-brand-900 tracking-tight">
+            What&apos;s included in the Free Plan
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {[
+            { t: "50+ Customizable Templates", d: "ATS-aware layouts, all 9 in our gallery + 41 more in our library." },
+            { t: "Unlimited PDF Downloads",   d: "No watermark, no paywall, no hidden fees. Yes, really." },
+            { t: "AI Tailoring",              d: "Paste a JD, get a keyword-matched draft in seconds." },
+            { t: "Import Content",            d: "Upload your old PDF or DOCX, we extract the rest." },
+            { t: "Just You on Your Resume",   d: "We never sell your data. Your work, your privacy." },
+            { t: "We Respect Your Privacy",   d: "GDPR-compliant. Export or delete any time, no questions." },
+          ].map((f) => (
+            <div key={f.t} className="doppel-shell">
+              <div className="doppel-core bg-white p-5 relative z-10 h-full">
+                <Check weight="bold" className="w-4 h-4 text-emerald-500 mb-3" />
+                <div className="text-[12px] font-bold text-brand-900 uppercase tracking-widest">{f.t}</div>
+                <p className="text-[10px] text-surface-500 font-medium mt-1.5 leading-relaxed">{f.d}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═════════════ FAQ — flowcv's "Frequently Asked Questions" ═════════════ */}
+      <section className="max-w-3xl mx-auto px-2 mt-16">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-light font-display text-brand-900 tracking-tight">
+            Frequently asked questions
+          </h2>
+          <p className="text-[12px] text-surface-400 font-semibold uppercase tracking-widest mt-2">
+            Everything you need to know before you start
+          </p>
+        </div>
+        <div className="doppel-shell">
+          <div className="doppel-core bg-white relative z-10 divide-y divide-surface-200/50">
+            {FAQ_ITEMS.map((item, i) => {
+              const open = openFaq === i;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setOpenFaq(open ? null : i)}
+                  className="w-full text-left px-5 py-4 flex items-start justify-between gap-4 hover:bg-surface-50/50 transition-colors"
+                >
+                  <div className="flex-1">
+                    <div className="text-[13px] font-bold text-brand-900">{item.q}</div>
+                    {open && (
+                      <p className="text-[12px] text-surface-500 mt-2 leading-relaxed font-medium">{item.a}</p>
+                    )}
+                  </div>
+                  <CaretRight weight="bold" className={cn("w-4 h-4 text-surface-400 transition-transform flex-shrink-0 mt-0.5", open && "rotate-90 text-brand-900")} />
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>
