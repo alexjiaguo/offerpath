@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, IdentificationCard, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -238,6 +238,43 @@ export default function ResumeEditorPage({
     { key: "skills", label: "Skills", icon: Wrench },
   ];
 
+  // Flowcv-style persona detection: if the resume was created from the
+  // /new "Start from sample" hook, the title is "Brian T. Wayne — Sample".
+  // We surface that as a banner so the user knows they're editing sample data.
+  const PERSONA_BY_TEMPLATE: Record<string, { name: string; role: string }> = {
+    "classic-minimal":    { name: "Brian T. Wayne",    role: "Business Development Consultant" },
+    "ats-executive":      { name: "Margaret Holloway", role: "VP of Operations" },
+    "premium-headshot":   { name: "Camila Rivera",     role: "Senior Sales Manager" },
+    "bold-engineer":      { name: "Rohan K. Patel",    role: "Project Engineer" },
+    "clean-layout":       { name: "Priya Anand",       role: "Product Manager" },
+    "clean-professional": { name: "Daniel Whitford",   role: "Finance Director" },
+    "elegant-two-column": { name: "Isabella Moreau",   role: "Brand Strategist" },
+    "photo-header":       { name: "Theo Nakamura",     role: "UX Designer" },
+    "academic":           { name: "Dr. Aisha Khan",    role: "Postdoctoral Researcher" },
+  };
+  const personaMatch = resume.title.match(/^(.+) — Sample$/);
+  const personaSample = personaMatch
+    ? { name: personaMatch[1], template: resume.template, role: PERSONA_BY_TEMPLATE[resume.template]?.role || "" }
+    : null;
+  const [personaDismissed, setPersonaDismissed] = useState(false);
+
+  // Per-section completion check — flowcv shows a tick in the section nav when a section has content.
+  const sectionHasContent: Record<string, boolean> = {
+    personal:   Boolean(data.personal?.name && data.personal?.email),
+    summary:    Boolean(data.summary && data.summary.length > 30),
+    experience: Boolean(data.experience && data.experience.length > 0 && data.experience[0]?.company),
+    education:  Boolean(data.education && data.education.length > 0 && data.education[0]?.institution),
+    skills:     Boolean(data.skills && data.skills.length > 0),
+  };
+  const completedCount = Object.values(sectionHasContent).filter(Boolean).length;
+
+  const handleClearPersonaSample = () => {
+    saveToHistory(id);
+    updateResume(id, { title: "New Resume" });
+    setPersonaDismissed(true);
+    toast.success("Sample cleared. Start with your own info.");
+  };
+
   const sectionOrder = resume.section_order || [
     "summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects"
   ];
@@ -291,6 +328,68 @@ export default function ResumeEditorPage({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Persona sample banner — flowcv "Brian T. Wayne" signature. Only shown for sample resumes. */}
+      {personaSample && !personaDismissed && (
+        <div className="mb-4 liquid-glass rounded-2xl p-4 border border-indigo-500/20 bg-gradient-to-r from-indigo-500/5 via-blue-500/5 to-transparent relative overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-40 h-40 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
+          <div className="flex items-center justify-between gap-4 flex-wrap relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                <IdentificationCard weight="duotone" className="w-5 h-5 text-indigo-400" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-indigo-400">Working from sample</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">·</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{personaSample.template}</span>
+                </div>
+                <p className="text-sm font-semibold text-zinc-900 dark:text-white">
+                  {personaSample.name}
+                  {personaSample.role && <span className="text-zinc-500 font-normal"> — {personaSample.role}</span>}
+                </p>
+                <p className="text-[11px] text-zinc-500 mt-0.5">Edit each section to replace the sample with your own info.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleClearPersonaSample}
+                className="px-3 py-1.5 rounded-xl bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.08] text-[10px] font-bold uppercase tracking-widest text-zinc-600 hover:text-indigo-600 hover:border-indigo-500/30 transition-all"
+              >
+                Start fresh
+              </button>
+              <button
+                onClick={() => setPersonaDismissed(true)}
+                className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 transition-all"
+                title="Dismiss"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Section completion bar — flowcv "complete each section" affordance */}
+      {personaSample && !personaDismissed && (
+        <div className="mb-4 flex items-center gap-3 px-2 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Sample progress</span>
+            <div className="flex items-center gap-1">
+              {SECTIONS.map((sec) => (
+                <span
+                  key={sec.key}
+                  className={cn(
+                    "w-1.5 h-1.5 rounded-full transition-all",
+                    sectionHasContent[sec.key] ? "bg-indigo-500" : "bg-zinc-300 dark:bg-white/10"
+                  )}
+                />
+              ))}
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-500">{completedCount} / 5 replaced</span>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4 px-2">
@@ -526,6 +625,9 @@ export default function ResumeEditorPage({
                         >
                           <section.icon className="w-3.5 h-3.5" />
                           {section.label}
+                          {sectionHasContent[section.key] && (
+                            <Check weight="bold" className="w-3 h-3 text-indigo-500" />
+                          )}
                         </button>
                         <div className="flex flex-col gap-0.5">
                           <button onClick={() => moveSection(id, section.key as SectionKey, "up")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
