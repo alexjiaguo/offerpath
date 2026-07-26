@@ -59,6 +59,28 @@ const PERSONA_SAMPLE: Record<string, {
     ],
     skills: ["Enterprise SaaS sales", "LATAM market expansion", "Salesforce", "Outreach + Salesloft", "Negotiation", "Bilingual EN/ES"],
   },
+  "clean-professional": {
+    name: "Daniel Whitford", role: "Finance Director", email: "daniel.whitford@example.com", phone: "+1 212 555 0319", location: "New York, NY",
+    summary: "Finance Director with 12+ years across corporate finance, FP&A, and capital markets. Built and led 6-person finance teams at two high-growth SaaS companies through Series B → pre-IPO. Strong on financial modeling, board reporting, and audit/SOX controls.",
+    experience: [
+      { company: "Halycon Software", title: "Finance Director", location: "New York, NY", start_date: "2020-06", end_date: "", current: true,
+        bullets: [
+          "Led the financial planning cycle for a \M ARR SaaS business; cut forecast variance from 9% to 3% by rebuilding the driver-based model.",
+          "Owned the board reporting package and quarterly investor updates; CFO promoted me to lead the post-Series-C operating model redesign.",
+          "Designed the SOX 404 controls program from scratch and passed the first external audit with zero material weaknesses.",
+        ] },
+      { company: "Meridian Capital", title: "Senior Finance Manager", location: "New York, NY", start_date: "2016-08", end_date: "2020-05", current: false,
+        bullets: [
+          "Ran the monthly close for a \.1B AUM credit fund; shortened close from 12 business days to 6.",
+          "Built the LBO/returns model used to evaluate 14 platform acquisitions; 3 closed in 2019 at an avg. 2.4x MOIC.",
+        ] },
+    ],
+    education: [
+      { school: "NYU Stern School of Business", degree: "MBA", field: "Finance & Accounting", start_date: "2012", end_date: "2014" },
+      { school: "Boston College", degree: "B.S.", field: "Finance", start_date: "2006", end_date: "2010" },
+    ],
+    skills: ["FP&A", "Financial modeling (3-statement, DCF, LBO)", "Board reporting", "SOX 404", "Audit & controls", "NetSuite + Adaptive Insights"],
+  },
   "clean-layout": {
     name: "Priya Anand", role: "Senior Product Manager", email: "priya.anand@example.com", phone: "+1 650 555 0287", location: "Mountain View, CA",
     summary: "Senior Product Manager with 8+ years driving B2B SaaS and developer-tooling products from 0→1 to scale. Track record of unblocking engineering velocity through ruthless prioritization, customer research depth, and tight feedback loops with sales and design.",
@@ -496,7 +518,7 @@ function NewResumeContent() {
                   return (
                     <button
                       key={tid}
-                      onClick={() => hasData ? handleBrowsePersona(tid) : toast.info(`${meta.name} sample data is coming soon — try Brian, Camila, Rohan, or Priya for now.`)}
+                      onClick={() => hasData ? handleBrowsePersona(tid) : toast.info(`${meta.name} sample data is coming soon — try Brian, Camila, Rohan, Priya, or Daniel for now.`)}
                       className={cn(
                         "liquid-glass rounded-2xl p-5 text-left border transition-all group relative",
                         hasData
