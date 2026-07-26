@@ -94,16 +94,19 @@ function NewResumeContent() {
   const [error, setError] = useState<string | null>(null);
 
   const persona = getPersonaForTemplate(templateId);
-  const TEMPLATE_PERSONAS: Record<string, { name: string; role: string }> = {
-    "classic-minimal":    { name: "Brian T. Wayne",  role: "Business Development Consultant" },
-    "ats-executive":      { name: "Margaret Holloway", role: "VP of Operations" },
-    "premium-headshot":   { name: "Camila Rivera",   role: "Senior Sales Manager" },
-    "bold-engineer":      { name: "Rohan K. Patel",  role: "Project Engineer" },
-    "clean-layout":       { name: "Priya Anand",     role: "Product Manager" },
-    "clean-professional": { name: "Daniel Whitford", role: "Finance Director" },
-    "elegant-two-column": { name: "Isabella Moreau", role: "Brand Strategist" },
-    "photo-header":       { name: "Theo Nakamura",   role: "UX Designer" },
-    "academic":           { name: "Dr. Aisha Khan",  role: "Postdoctoral Researcher" },
+  // flowcv "find a persona at your level" affordance. Seniority + industry
+  // are the two filters a job-seeker uses first; both are inferred from the
+  // role itself so we don't have to keep a separate metadata table.
+  const TEMPLATE_PERSONAS: Record<string, { name: string; role: string; level: "Senior" | "Mid" | "Entry" | "Lead"; industry: string }> = {
+    "classic-minimal":    { name: "Brian T. Wayne",  role: "Business Development Consultant", level: "Senior", industry: "SaaS" },
+    "ats-executive":      { name: "Margaret Holloway", role: "VP of Operations",              level: "Lead",   industry: "Operations" },
+    "premium-headshot":   { name: "Camila Rivera",   role: "Senior Sales Manager",            level: "Senior", industry: "Enterprise Sales" },
+    "bold-engineer":      { name: "Rohan K. Patel",  role: "Project Engineer",                level: "Mid",    industry: "Hardware" },
+    "clean-layout":       { name: "Priya Anand",     role: "Product Manager",                 level: "Senior", industry: "Product" },
+    "clean-professional": { name: "Daniel Whitford", role: "Finance Director",                level: "Lead",   industry: "Finance" },
+    "elegant-two-column": { name: "Isabella Moreau", role: "Brand Strategist",                level: "Mid",    industry: "Marketing" },
+    "photo-header":       { name: "Theo Nakamura",   role: "UX Designer",                     level: "Mid",    industry: "Design" },
+    "academic":           { name: "Dr. Aisha Khan",  role: "Postdoctoral Researcher",         level: "Senior", industry: "Academia" },
   };
   const personaMeta = TEMPLATE_PERSONAS[templateId];
 
@@ -374,6 +377,19 @@ function NewResumeContent() {
                       </div>
                       <p className="text-sm font-bold text-zinc-900 dark:text-white">{meta.name}</p>
                       <p className="text-[11px] text-zinc-500 mt-0.5">{meta.role}</p>
+                      <div className="flex items-center gap-1.5 mt-3 flex-wrap">
+                        <span className={cn(
+                          "text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-md border",
+                          hasData
+                            ? "border-indigo-500/30 text-indigo-600 bg-indigo-500/5"
+                            : "border-zinc-200 dark:border-white/10 text-zinc-500 bg-white/40"
+                        )}>
+                          {meta.level}
+                        </span>
+                        <span className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-md border border-zinc-200 dark:border-white/10 text-zinc-500 bg-white/40">
+                          {meta.industry}
+                        </span>
+                      </div>
                       <p className="text-[9px] font-mono text-zinc-400 mt-2">{tid}</p>
                     </button>
                   );
