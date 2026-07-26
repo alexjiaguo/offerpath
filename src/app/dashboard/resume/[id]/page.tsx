@@ -275,7 +275,7 @@ export default function ResumeEditorPage({
               </div>
             </div>
             
-            <div className="flex-1 overflow-auto bg-zinc-900/50 p-12 flex justify-center">
+            <div className="flex-1 overflow-auto bg-zinc-900/50 p-12 flex justify-center relative">
               <div className="w-full max-w-5xl shadow-[0_0_80px_rgba(0,0,0,0.5)] h-fit">
                 <ResumePreview
                   data={data}
@@ -286,6 +286,13 @@ export default function ResumeEditorPage({
                   className="w-full"
                   fullScale
                 />
+              </div>
+              {/* Floating "Ask AI coach" pill — resume.io's signature */}
+              <div className="sticky bottom-6 left-6 self-end z-30">
+                <button className="flex items-center gap-2 pl-3 pr-4 py-2.5 rounded-full bg-zinc-900/95 backdrop-blur text-white shadow-2xl hover:scale-[1.02] active:scale-95 transition-all text-[12px] font-semibold border border-white/10">
+                  <span className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 flex items-center justify-center text-[10px] font-bold text-zinc-900">AI</span>
+                  Ask AI coach anything...
+                </button>
               </div>
             </div>
           </motion.div>
