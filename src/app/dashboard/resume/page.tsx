@@ -45,6 +45,18 @@ const FAQ = [
     a: "Upload it as a base. We parse your structure, then re-skin it across all 9 templates in one click." },
 ];
 
+/* ─── "Every tool you need is here" — resume.io's signature cross-sell grid ─── */
+const TOOLS = [
+  { t: "Resume Builder", d: "ATS-aware templates with quantified scoring.", href: "/dashboard/resume",        done: true },
+  { t: "Job Tracker",    d: "Kanban pipeline from applied → offer.",          href: "/dashboard/pipeline",       done: true },
+  { t: "Job Search",     d: "Curated feed of fresh roles, JD-matched.",      href: "/dashboard/discover",       done: true },
+  { t: "Interview Prep", d: "Rehearse with AI, get scorecards after.",        href: "/dashboard/interview",      done: true },
+  { t: "Recruiter Match",d: "Surface warm intros from alumni + ex-colleagues.", href: "/dashboard/discover",     done: true },
+  { t: "Auto Apply",     d: "Tailor + send in one click, to 50 roles/week.", href: "/dashboard/pipeline",       done: true },
+  { t: "Salary Analyzer",d: "See comp bands before you accept the offer.",    href: "/dashboard/pipeline/analytics", done: true },
+  { t: "Career Coaching",d: "Async mentor review within 24h, on demand.",     href: "/dashboard/interview",      done: true },
+];
+
 /* ─── Score ring — the resume.io signature on the hero card ─── */
 function ScoreRing({ score, size = 56 }: { score: number; size?: number }) {
   const r = (size - 6) / 2;
@@ -374,6 +386,40 @@ function ResumePageContent() {
               </motion.div>
             );
           })}
+        </div>
+      </section>
+
+      {/* ═════════════ "Way beyond a resume builder" — resume.io's full tool grid ═════════════ */}
+      <section className="max-w-6xl mx-auto px-2 mt-16">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-light font-display text-brand-900 tracking-tight">
+            Way beyond a resume builder...
+          </h2>
+          <p className="text-[12px] text-surface-400 font-semibold uppercase tracking-widest mt-2">
+            Every tool you need to land the offer is here
+          </p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {TOOLS.map((tool) => (
+            <Link
+              key={tool.t}
+              href={tool.href}
+              className="group doppel-shell hover:-translate-y-0.5 hover:shadow-md transition-all"
+            >
+              <div className="doppel-core bg-white p-4 relative z-10 h-full">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-[12px] font-bold text-brand-900 uppercase tracking-widest">{tool.t}</div>
+                  {tool.done ? (
+                    <CheckCircle weight="fill" className="w-3.5 h-3.5 text-emerald-500" />
+                  ) : (
+                    <Sparkle weight="fill" className="w-3.5 h-3.5 text-surface-300" />
+                  )}
+                </div>
+                <p className="text-[10px] text-surface-500 font-medium leading-relaxed">{tool.d}</p>
+                <CaretRight weight="bold" className="w-3.5 h-3.5 text-brand-900 mt-3 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
