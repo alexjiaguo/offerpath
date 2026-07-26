@@ -513,6 +513,27 @@ export default function ResumeEditorPage({
               </div>
             </motion.div>
 
+            {/* Resume.com signature: three floating value-prop chips ("AI writer" /
+                "Easy to match" / "Build-in jobs"). Mirrors the floating badges on
+                resume.com's home page that hover over the hero — a single row that
+                signals the editor is the hub of a broader job-search toolkit, not
+                a standalone form. Each chip is informational only; hover reveals
+                what it does. */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="inline-flex items-center gap-1.5 pl-2 pr-3 py-1.5 rounded-full bg-white/70 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06]" title="Resume.com’s AI writer rewrites bullets to match a job description in one click.">
+                <span className="text-base leading-none">🤖</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">AI writer</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 pl-2 pr-3 py-1.5 rounded-full bg-white/70 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06]" title="Match score compares your resume against the pasted target JD and surfaces the gap.">
+                <span className="text-base leading-none">🎯</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">Easy to match</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 pl-2 pr-3 py-1.5 rounded-full bg-white/70 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06]" title="Built-in job board surfaces roles that pair with your completed resume.">
+                <span className="text-base leading-none">💼</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">Build-in jobs</span>
+              </div>
+            </div>
+
             {/* Section progress + tips — resume.com signature */}
             <div className="flex items-center gap-3 pb-2 flex-wrap">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05]">
