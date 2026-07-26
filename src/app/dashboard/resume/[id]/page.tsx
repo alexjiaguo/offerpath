@@ -322,9 +322,9 @@ export default function ResumeEditorPage({
         <div className="flex items-center gap-3 flex-wrap">
           {/* Resume.com signature: one-click "Build cover letter from this resume" pill. */}
           <Link
-            href="/dashboard/resume/cover-letters"
+            href={`/dashboard/resume/cover-letters?resume=${id}`}
             className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300 bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.08] hover:border-brand-500/40 hover:text-brand-600 transition-all"
-            title="Open the cover letter builder for this resume"
+            title={`Open the cover letter builder paired with "${resume.title}"`}
           >
             <EnvelopeSimple className="w-3.5 h-3.5" />
             Cover Letter

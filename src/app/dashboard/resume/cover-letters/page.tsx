@@ -103,11 +103,52 @@ export default function CoverLettersPage() {
   const [letters, setLetters] = useState<CoverLetter[]>([]);
   const [editing, setEditing] = useState<CoverLetter | null>(null);
   const [draft, setDraft] = useState<Omit<CoverLetter, "id" | "updatedAt"> | null>(null);
+  const [pairedResumeTitle, setPairedResumeTitle] = useState<string | null>(null);
+  const [pairedResumeSummary, setPairedResumeSummary] = useState<string | null>(null);
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setLetters(JSON.parse(raw));
+    } catch {}
+  }, []);
+
+  // If the user came in from the editor's "Cover Letter" pill, pre-fill the draft
+  // from the paired resume's personal + summary + first experience.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const resumeId = params.get("resume");
+    if (!resumeId) return;
+    try {
+      const raw = localStorage.getItem("offerpath-resume");
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      const state = parsed?.state;
+      const resume = state?.resumes?.find((r: any) => r.id === resumeId);
+      if (!resume) return;
+      setPairedResumeTitle(resume.title || "Paired resume");
+      setPairedResumeSummary(resume.data?.summary || null);
+      const personal = resume.data?.personal || {};
+      const exps = resume.data?.experience || [];
+      const firstExp = exps[0];
+      const lastExp = exps[exps.length - 1];
+      const role = firstExp?.title || "";
+      const mostRecentCompany = lastExp?.company || "";
+      const lastBullet = (firstExp?.bullets || []).filter((b: string) => b.trim())[0] || "";
+      setDraft({
+        title: `Cover letter for ${resume.title || "resume"}`,
+        recipient: "Hiring Manager",
+        company: mostRecentCompany,
+        role: role,
+        greeting: "Dear Hiring Team,",
+        body: resume.data?.summary
+          ? `${resume.data.summary}\n\nI was especially drawn to your team because of the work I have been doing on the same problems at ${mostRecentCompany || "my current role"} — and the bullet I am proudest of from the last year is this one: ${lastBullet ? `"${lastBullet}"` : "(swap in a recent win)"}.\n\nI would welcome the chance to walk through any of this in more depth.`
+          : "",
+        closing: "Thank you for your time and consideration.",
+        signoff: "Best regards,\n" + (personal.name || ""),
+      });
+      setTab("new");
     } catch {}
   }, []);
 
@@ -199,7 +240,7 @@ export default function CoverLettersPage() {
         {[
           { key: "mine",    label: `My Letters · ${letters.length}` },
           { key: "samples", label: "Samples" },
-          { key: "new",     label: draft ? "Editor" : "Tips" },
+          { key: "new",     label: draft ? (pairedResumeTitle ? `Editor · ${pairedResumeTitle}` : "Editor") : "Tips" },
         ].map((t) => (
           <button
             key={t.key}
@@ -315,7 +356,22 @@ export default function CoverLettersPage() {
       )}
 
       {tab === "new" && (
-        <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6">
+        <div className="space-y-4">
+          {pairedResumeTitle && (
+            <div className="flex items-center gap-3 p-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 flex-wrap">
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <CheckCircle weight="fill" className="w-4 h-4 text-emerald-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">Paired with: <span className="font-mono">{pairedResumeTitle}</span></p>
+                <p className="text-[10px] text-zinc-500 mt-0.5">Pre-filled from your resume. Edit anything — this is just a starting draft.</p>
+              </div>
+              <Link href={`/dashboard/resume/${typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("resume") : ""}`} className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+                Open resume <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+          )}
+          <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6">
           {/* Editor */}
           {draft ? (
             <div className="doppel-shell">
@@ -401,6 +457,7 @@ export default function CoverLettersPage() {
               </div>
             </div>
           )}
+          </div>
         </div>
       )}
     </div>
