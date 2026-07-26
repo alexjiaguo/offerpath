@@ -59,6 +59,28 @@ const PERSONA_SAMPLE: Record<string, {
     ],
     skills: ["Enterprise SaaS sales", "LATAM market expansion", "Salesforce", "Outreach + Salesloft", "Negotiation", "Bilingual EN/ES"],
   },
+  "clean-layout": {
+    name: "Priya Anand", role: "Senior Product Manager", email: "priya.anand@example.com", phone: "+1 650 555 0287", location: "Mountain View, CA",
+    summary: "Senior Product Manager with 8+ years driving B2B SaaS and developer-tooling products from 0→1 to scale. Track record of unblocking engineering velocity through ruthless prioritization, customer research depth, and tight feedback loops with sales and design.",
+    experience: [
+      { company: "Lattice Analytics", title: "Senior Product Manager — Platform", location: "Mountain View, CA", start_date: "2021-09", end_date: "", current: true,
+        bullets: [
+          "Led 0→1 launch of Lattice Insights (usage-based pricing tier); reached \.4M ARR in 9 months against \.5M target.",
+          "Cut average query p95 latency from 4.1s to 1.3s by re-architecting the metrics pipeline with the platform team.",
+          "Ran a 24-customer discovery round that re-scoped the v2 roadmap; net retention rose 11pts in 2 quarters.",
+        ] },
+      { company: "Plural Insights", title: "Product Manager — Growth", location: "Remote", start_date: "2018-04", end_date: "2021-08", current: false,
+        bullets: [
+          "Owned activation funnel; improved D7 retention 18% by replacing the onboarding wizard with a 3-step guided setup.",
+          "Shipped 14 A/B tests in 6 months, statistically significant on 9; cumulative lift to free→paid conversion: +24%.",
+        ] },
+    ],
+    education: [
+      { school: "Carnegie Mellon University", degree: "M.S.", field: "Information Systems", start_date: "2014", end_date: "2016" },
+      { school: "BITS Pilani", degree: "B.E.", field: "Computer Science", start_date: "2010", end_date: "2014" },
+    ],
+    skills: ["0→1 product strategy", "User research & JTBD", "Product analytics (Mixpanel, Amplitude)", "SQL", "Pricing & packaging", "Cross-functional leadership"],
+  },
   "bold-engineer": {
     name: "Rohan K. Patel", role: "Project Engineer", email: "rohan.patel@example.com", phone: "+1 408 555 0210", location: "San Jose, CA",
     summary: "Project Engineer with 6+ years in hardware and embedded systems. Strong in cross-functional collaboration with manufacturing, firmware, and design teams.",
@@ -381,7 +403,7 @@ function NewResumeContent() {
                 </div>
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white font-display mb-2">Browse all 9 samples</h3>
                 <p className="text-zinc-600 dark:text-zinc-500 text-sm leading-relaxed mb-8">
-                  See every persona in our library. 3 are fully filled today; the rest are coming this quarter.
+                  See every persona in our library. {Object.keys(PERSONA_SAMPLE).length} are fully filled today; the rest are coming this quarter.
                 </p>
                 <div className="flex items-center gap-2 text-indigo-500 text-xs font-bold uppercase tracking-widest mt-auto">
                   See gallery <ArrowRight className="w-4 h-4" />
@@ -403,7 +425,7 @@ function NewResumeContent() {
                   ← Back to options
                 </button>
                 <h2 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">9 sample personas</h2>
-                <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">3 are fully filled today. The rest are coming — but you can already see what each role looks like.</p>
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">{Object.keys(PERSONA_SAMPLE).length} are fully filled today. The rest are coming — but you can already see what each role looks like.</p>
               </div>
               {/* Career-level filter chips — narrows the 9-persona grid by seniority so users
                   can scan for a persona at their career stage. Click a chip to filter. */}
@@ -441,7 +463,7 @@ function NewResumeContent() {
                   return (
                     <button
                       key={tid}
-                      onClick={() => hasData ? handleBrowsePersona(tid) : toast.info(`${meta.name} sample data is coming soon — try Brian, Camila, or Rohan for now.`)}
+                      onClick={() => hasData ? handleBrowsePersona(tid) : toast.info(`${meta.name} sample data is coming soon — try Brian, Camila, Rohan, or Priya for now.`)}
                       className={cn(
                         "liquid-glass rounded-2xl p-5 text-left border transition-all group relative",
                         hasData
