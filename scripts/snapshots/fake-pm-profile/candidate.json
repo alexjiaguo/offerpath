@@ -1,0 +1,25 @@
+{
+  "experience_order": [
+    "Aperture AI",
+    "Northwind Ad Systems",
+    "Meridian Mobile",
+    "Beacon Analytics"
+  ],
+  "company_aliases": [
+    "Aperture",
+    "Northwind",
+    "Meridian"
+  ],
+  "source_files": [
+    "Professional Experience 2026.md",
+    "Career_Stories_Bank.md",
+    "Personal Projects.md",
+    "Skills_Bank.md"
+  ],
+  "linkedin_url": "https://www.linkedin.com/in/priya-anand-pm",
+  "portfolio_url": "https://priya-anand.cc.cd/",
+  "github_url": "https://github.com/priya-anand-pm",
+  "phone": "+1 415-555-0142",
+  "email": "priya.anand@example.com",
+  "full_name": "Priya Anand"
+}

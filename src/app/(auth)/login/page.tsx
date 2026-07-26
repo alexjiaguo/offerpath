@@ -3,8 +3,8 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { SignIn, Envelope, Eye, EyeSlash, Lock } from '@phosphor-icons/react';
-import { signInWithEmail } from "@/lib/auth";
+import { SignIn, Envelope, Eye, EyeSlash, Lock, ArrowRight } from "@phosphor-icons/react";
+import { signInWithEmail, setGuestSession } from "@/lib/auth";
 
 /* ═══════════════════════════════════════════════════
    Login Page — Glassmorphism auth form
@@ -140,6 +140,27 @@ function LoginForm() {
           )}
         </button>
       </form>
+
+{/* Divider */}
+      <div className="flex items-center gap-4 my-6">
+        <div className="flex-1 h-px bg-white/[0.06]" />
+        <span className="text-xs text-zinc-700 dark:text-zinc-400 dark:text-gray-600 uppercase tracking-wider">
+          or
+        </span>
+        <div className="flex-1 h-px bg-white/[0.06]" />
+      </div>
+
+      <button
+        type="button"
+        onClick={() => {
+          setGuestSession();
+          router.push(redirect || "/dashboard");
+        }}
+        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-sm font-medium text-zinc-700 dark:text-gray-300 transition-all"
+      >
+        Continue without account
+        <ArrowRight className="w-4 h-4" />
+      </button>
 
       <p className="text-center text-sm text-zinc-500 dark:text-gray-500 mt-6">
         Don&apos;t have an account?{" "}

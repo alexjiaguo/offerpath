@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const PROTECTED_ROUTES = ["/dashboard"];
+// Auth is optional. Signed-in users skip /login and /register; everyone else
+// (including guests) can reach /dashboard directly. Server actions still gate
+// writes to Supabase, and a guest who later signs in triggers a one-time
+// localStorage -> Supabase migration.
 const AUTH_ROUTES = ["/login", "/register"];
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -12,15 +15,15 @@ const useSupabase = !!(supabaseUrl && supabaseAnonKey && supabaseUrl !== "");
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
-    pathname.startsWith(route)
-  );
   const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
 
-  let isAuthenticated = false;
+  // Only signed-in users are redirected away from /login and /register.
+  // /dashboard is open to everyone — guests and authenticated users alike.
+  if (!isAuthRoute) {
+    return NextResponse.next();
+  }
 
   if (useSupabase) {
-    // Real Supabase auth check
     const res = NextResponse.next();
     const supabase = createServerClient(supabaseUrl!, supabaseAnonKey!, {
       cookies: {
@@ -38,33 +41,16 @@ export async function middleware(request: NextRequest) {
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    isAuthenticated = !!session;
-
-    if (isAuthRoute && isAuthenticated) {
+    if (session) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
-
-    if (isProtectedRoute && !isAuthenticated) {
-      const loginUrl = new URL("/login", request.url);
-      loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-
     return res;
   }
 
   // Fallback: mock auth token in cookies (for development without Supabase)
   const authToken = request.cookies.get("auth_token")?.value;
-  isAuthenticated = !!authToken;
-
-  if (isAuthRoute && isAuthenticated) {
+  if (authToken) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
-
-  if (isProtectedRoute && !isAuthenticated) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();

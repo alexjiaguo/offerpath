@@ -194,8 +194,8 @@ export default function LandingPage() {
           className="mx-auto max-w-[90rem] grid grid-cols-[1fr_auto_1fr] items-center bg-white/85 backdrop-blur-2xl border border-white/40 shadow-[0_10px_40px_-12px_rgba(15,23,42,0.12)] rounded-full px-3 py-2.5"
         >
           <Link href="/" className="flex items-center gap-3 pl-3 group">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden border border-surface-200 shadow-sm">
-              <Image src="/logo-mark.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-cover scale-110" />
+            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+              <Image src="/logo-infinity.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-contain" />
             </div>
             <span className="text-lg font-medium tracking-tight text-brand-900 font-display hidden sm:inline">
               OfferPath
@@ -513,8 +513,8 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-12">
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full overflow-hidden border border-surface-200">
-                  <Image src="/logo-mark.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-cover scale-110" />
+                <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+                  <Image src="/logo-infinity.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-contain" />
                 </div>
                 <span className="text-base font-medium tracking-tight text-brand-900 font-display">OfferPath</span>
               </Link>

@@ -18,6 +18,7 @@ import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
+import { migrateGuestDataToSupabase } from "@/lib/supabase-migration";
 
 const DEBOUNCE_MS = 500;
 
@@ -185,6 +186,12 @@ export function useSupabaseSync(): SyncState {
       if (!cancelled) {
         hydratedRef.current = true;
         setState({ isSynced: true, isSyncing: false });
+
+        // One-time migration: if the user came in as a guest, push their
+        // localStorage data into Supabase now that they have an account.
+        migrateGuestDataToSupabase().catch((err) => {
+          console.error("[useSupabaseSync] migration failed:", err);
+        });
 
         // Subscribe to store changes for debounced sync-back ONLY after hydration completes
         unsubscribers.push(

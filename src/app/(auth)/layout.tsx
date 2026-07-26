@@ -36,7 +36,7 @@ export default function AuthLayout({
         
         {/* Footer */}
         <div className="mt-8 text-center text-xs text-surface-300">
-          By signing in, you agree to our Terms and Privacy Policy.
+          By continuing, you agree to our Terms and Privacy Policy.
         </div>
       </div>
     </div>
