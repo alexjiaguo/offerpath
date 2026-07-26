@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   EnvelopeSimple,
@@ -98,7 +99,7 @@ const TIPS = [
   "Keep it under 350 words. Long letters don't get finished.",
 ];
 
-export default function CoverLettersPage() {
+function CoverLettersPageInner() {
   const [tab, setTab] = useState<"mine" | "samples" | "new">("mine");
   const [letters, setLetters] = useState<CoverLetter[]>([]);
   const [editing, setEditing] = useState<CoverLetter | null>(null);
@@ -115,17 +116,20 @@ export default function CoverLettersPage() {
 
   // If the user came in from the editor's "Cover Letter" pill, pre-fill the draft
   // from the paired resume's personal + summary + first experience.
+  // useSearchParams is the App-Router-safe way — window.location.search can be
+  // empty during the first paint and would cause the pairing to silently skip.
+  const searchParams = useSearchParams();
+  const pairedResumeId = searchParams?.get("resume") ?? null;
+
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    const resumeId = params.get("resume");
-    if (!resumeId) return;
+    if (!pairedResumeId) return;
     try {
       const raw = localStorage.getItem("offerpath-resume");
       if (!raw) return;
       const parsed = JSON.parse(raw);
       const state = parsed?.state;
-      const resume = state?.resumes?.find((r: any) => r.id === resumeId);
+      const resume = state?.resumes?.find((r: any) => r.id === pairedResumeId);
       if (!resume) return;
       setPairedResumeTitle(resume.title || "Paired resume");
       setPairedResumeSummary(resume.data?.summary || null);
@@ -150,7 +154,7 @@ export default function CoverLettersPage() {
       });
       setTab("new");
     } catch {}
-  }, []);
+  }, [pairedResumeId]);
 
   const persist = (next: CoverLetter[]) => {
     setLetters(next);
@@ -255,6 +259,29 @@ export default function CoverLettersPage() {
         ))}
       </div>
 
+      {/* Persistent paired-resume banner (shows on every tab when ?resume=... is present) */}
+      {pairedResumeTitle && (
+        <div className="flex items-center gap-3 p-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 flex-wrap">
+          <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+            <CheckCircle weight="fill" className="w-4 h-4 text-emerald-500" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+              Paired with: <span className="font-mono">{pairedResumeTitle}</span>
+            </p>
+            <p className="text-[10px] text-zinc-500 mt-0.5">
+              Your draft below was pre-filled from this resume — switch to the Editor tab to see it.
+            </p>
+          </div>
+          <Link
+            href={`/dashboard/resume/${pairedResumeId ?? ""}`}
+            className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
+          >
+            Open resume <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
+      )}
+
       {/* Tab content */}
       {tab === "mine" && (
         <div className="grid lg:grid-cols-[1fr_1.4fr] gap-6">
@@ -357,20 +384,6 @@ export default function CoverLettersPage() {
 
       {tab === "new" && (
         <div className="space-y-4">
-          {pairedResumeTitle && (
-            <div className="flex items-center gap-3 p-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 flex-wrap">
-              <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                <CheckCircle weight="fill" className="w-4 h-4 text-emerald-500" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">Paired with: <span className="font-mono">{pairedResumeTitle}</span></p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">Pre-filled from your resume. Edit anything — this is just a starting draft.</p>
-              </div>
-              <Link href={`/dashboard/resume/${typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("resume") : ""}`} className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
-                Open resume <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-          )}
           <div className="grid lg:grid-cols-[1.4fr_1fr] gap-6">
           {/* Editor */}
           {draft ? (
@@ -461,5 +474,20 @@ export default function CoverLettersPage() {
         </div>
       )}
     </div>
+  );
+}
+
+
+export default function CoverLettersPage() {
+  return (
+    <Suspense fallback={<CoverLettersFallback />}>
+      <CoverLettersPageInner />
+    </Suspense>
+  );
+}
+
+function CoverLettersFallback() {
+  return (
+    <div className="p-10 text-center text-sm text-zinc-500">Loading cover letter builder...</div>
   );
 }
