@@ -98,6 +98,7 @@ export default function ResumeEditorPage({
   const resume = getResumeById(id);
 
   const [saved, setSaved] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [activeSection, setActiveSection] = useState<string>("personal");
   const [manageOpen, setManageOpen] = useState(false);
   const manageBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -194,6 +195,7 @@ export default function ResumeEditorPage({
     }
     
     setSaved(true);
+    setLastSavedAt(new Date());
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -462,18 +464,25 @@ export default function ResumeEditorPage({
 
           <ExportButtons resumeData={data} resumeTitle={resume.title} />
 
-          <button
-            onClick={handleSave}
-            className={cn(
-              "flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-xl",
-              saved
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                : "bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
+          <div className="flex items-center gap-2">
+            {lastSavedAt && (
+              <span className="text-[10px] text-zinc-500 hidden md:inline" title={lastSavedAt.toLocaleString()}>
+                Last saved {Math.max(1, Math.round((Date.now() - lastSavedAt.getTime()) / 60000))} min ago
+              </span>
             )}
-          >
-            <FloppyDisk className="w-4.5 h-4.5" />
-            <span className="uppercase tracking-widest text-[11px]">{saved ? "Saved" : "Save"}</span>
-          </button>
+            <button
+              onClick={handleSave}
+              className={cn(
+                "flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-xl",
+                saved
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                  : "bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
+              )}
+            >
+              <FloppyDisk className="w-4.5 h-4.5" />
+              <span className="uppercase tracking-widest text-[11px]">{saved ? "Saved" : "Save Draft"}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -534,15 +543,46 @@ export default function ResumeEditorPage({
               </div>
             </div>
 
-            {/* Section progress + tips — resume.com signature */}
+            {/* Section progress + tips — resume.com signature. R13 adds a status
+                dot per section (filled = green, empty = outline) so the user can
+                see at a glance which sections still need content, not just a
+                generic "0/5" count. */}
             <div className="flex items-center gap-3 pb-2 flex-wrap">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05]">
+              <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05]">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{startedCount} / 5 sections started</span>
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 5 }, (_, k) => (
-                    <span key={k} className={cn("w-1.5 h-1.5 rounded-full", k < startedCount ? "bg-brand-500" : "bg-zinc-200 dark:bg-white/10")} />
-                  ))}
+                <div className="flex items-center gap-1">
+                  {[
+                    { k: "personal", label: "Personal" },
+                    { k: "summary", label: "Summary" },
+                    { k: "experience", label: "Experience" },
+                    { k: "education", label: "Education" },
+                    { k: "skills", label: "Skills" },
+                  ].map(({ k, label }) => {
+                    const filled = (() => {
+                      if (k === "personal") return Boolean(data.personal?.name);
+                      if (k === "summary") return Boolean(data.summary && data.summary.length > 20);
+                      if (k === "experience") return Boolean(data.experience && data.experience.length > 0 && data.experience[0]?.company);
+                      if (k === "education") return Boolean(data.education && data.education.length > 0 && data.education[0]?.institution);
+                      if (k === "skills") return Boolean(data.skills && data.skills.length >= 3);
+                      return false;
+                    })();
+                    return (
+                      <span
+                        key={k}
+                        title={filled ? `${label} — filled` : `${label} — needs content`}
+                        className={cn(
+                          "w-2 h-2 rounded-full border transition-all",
+                          filled
+                            ? "bg-emerald-500 border-emerald-500"
+                            : "bg-transparent border-zinc-300 dark:border-white/20"
+                        )}
+                      />
+                    );
+                  })}
                 </div>
+                {startedCount === 5 && (
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">All set</span>
+                )}
               </div>
               <button
                 onClick={() => setShowTips(!showTips)}
