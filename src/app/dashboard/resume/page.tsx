@@ -34,6 +34,17 @@ const OUTCOMES = [
   { n: 4, t: "Get Promoted",  d: "A live document tracks your impact, ready when promo season comes.", icon: ArrowRight },
 ];
 
+const FAQ = [
+  { q: "How does the AI score my resume?",
+    a: "We score on three axes: ATS keyword match, recruiter-readability, and quantified impact. Anything below 80 surfaces concrete suggestions you can apply in one click." },
+  { q: "Is OfferPath really free?",
+    a: "Yes — your first resume is free forever with unlimited PDF and Word exports. Pro adds recruiter-match, auto-apply, and salary analyzer." },
+  { q: "Can I tailor to a specific job?",
+    a: "Paste a JD link or text and we'll rewrite your bullets to match keywords, lift your score, and surface missing sections — in under a minute." },
+  { q: "What if I already have a resume?",
+    a: "Upload it as a base. We parse your structure, then re-skin it across all 9 templates in one click." },
+];
+
 /* ─── Score ring — the resume.io signature on the hero card ─── */
 function ScoreRing({ score, size = 56 }: { score: number; size?: number }) {
   const r = (size - 6) / 2;
@@ -62,6 +73,7 @@ function ResumePageContent() {
   const searchQuery = usePipelineStore((s) => s.filters.search);
 
   const [activeRole, setActiveRole] = useState<string>("All");
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const roles = useMemo(() => {
     const r = Array.from(new Set(Object.values(TEMPLATE_ROLE).map((v) => v.role)));
     return ["All", ...r];
@@ -103,7 +115,10 @@ function ResumePageContent() {
             <h1 className="text-3xl md:text-5xl font-light text-brand-900 font-display tracking-tight leading-[1.05]">
               This resume builder<br />gets you <span className="font-medium text-brand-900">a job offer</span>.
             </h1>
-            <p className="mt-5 text-surface-500 text-[15px] md:text-base font-medium max-w-md leading-relaxed">
+                          <p className="mt-3 text-[13px] md:text-sm font-bold text-emerald-600 uppercase tracking-widest">
+                Only 2% of resumes win. Yours will be one of them.
+              </p>
+              <p className="mt-5 text-surface-500 text-[15px] md:text-base font-medium max-w-md leading-relaxed">
               Every tool you need is here. ATS-aware templates, JD-tailoring AI, score tracking, and unlimited PDF + Word exports.
             </p>
 
@@ -123,10 +138,19 @@ function ResumePageContent() {
               </Link>
             </div>
 
-            {/* Trust strip — resume.io's stats row */}
-            <div className="mt-6 flex items-center gap-4 text-[11px] font-semibold text-surface-400 uppercase tracking-widest">
+            {/* Trust strip — resume.io's stats row: 92% + Trustpilot + step-by-step */}
+            <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-semibold text-surface-400 uppercase tracking-widest">
               <span className="inline-flex items-center gap-1.5 text-emerald-600">
                 <CheckCircle weight="fill" className="w-3.5 h-3.5" /> 92% recommend us
+              </span>
+              <span className="text-surface-300">|</span>
+              <span className="inline-flex items-center gap-1.5">
+                <Star weight="fill" className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-surface-700">Trustpilot</span>
+                <span className="inline-flex items-center gap-0.5">
+                  {[0,1,2,3,4].map((i) => <Star key={i} weight="fill" className="w-2.5 h-2.5 text-emerald-500" />)}
+                </span>
+                <span className="text-surface-700 normal-case tracking-normal">4.2 / 5 · 55,896 reviews</span>
               </span>
               <span className="text-surface-300">|</span>
               <span>Step-by-step guidance</span>
@@ -350,6 +374,45 @@ function ResumePageContent() {
               </motion.div>
             );
           })}
+        </div>
+      </section>
+
+      {/* ═════════════ FAQ — resume.io's signature accordion ═════════════ */}
+      <section className="max-w-3xl mx-auto px-2 mt-16 mb-4">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-light font-display text-brand-900 tracking-tight">
+            Frequently asked questions
+          </h2>
+          <p className="text-[12px] text-surface-400 font-semibold uppercase tracking-widest mt-2">
+            Everything you need to know before you start
+          </p>
+        </div>
+        <div className="doppel-shell">
+          <div className="doppel-core bg-white relative z-10 divide-y divide-surface-200/50">
+            {FAQ.map((item, i) => {
+              const open = openFaq === i;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setOpenFaq(open ? null : i)}
+                  className="w-full text-left px-5 py-4 flex items-start justify-between gap-4 hover:bg-surface-50/50 transition-colors"
+                >
+                  <div className="flex-1">
+                    <div className="text-[13px] font-bold text-brand-900">{item.q}</div>
+                    {open && (
+                      <p className="text-[12px] text-surface-500 mt-2 leading-relaxed font-medium">
+                        {item.a}
+                      </p>
+                    )}
+                  </div>
+                  <CaretRight
+                    weight="bold"
+                    className={cn("w-4 h-4 text-surface-400 transition-transform flex-shrink-0 mt-0.5", open && "rotate-90 text-brand-900")}
+                  />
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>
