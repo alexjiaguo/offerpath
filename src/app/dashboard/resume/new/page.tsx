@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, UploadSimple } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, UploadSimple, Eye, Briefcase, CurrencyDollar, TrendUp } from '@phosphor-icons/react';
 import Link from "next/link";
 import { useResumeStore } from "@/store/resumeStore";
 import { FileParserService } from "@/lib/FileParserService";
@@ -125,6 +125,42 @@ function NewResumeContent() {
             </span>
           </div>
           <p className="text-zinc-600 dark:text-zinc-400 mt-2">Choose how you would like to start building your resume.</p>
+        </div>
+
+        {/* Resume.io signature: outcome stat + 4-step career framework. Mirrors the
+            “This builder gets you a remote job” hero with the 4-up “Get Noticed /
+            Get Hired / Get Paid More / Get Promoted” grid. Reminds the user that
+            this is a job-outcome product, not just a doc editor. */}
+        <div className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 flex-wrap">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+            <TrendUp weight="fill" className="w-4 h-4 text-emerald-500" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">A finished resume that gets interviews, not just pages.</p>
+            <p className="text-[10px] text-zinc-500 mt-0.5">Designed around the 4 outcomes that actually move a job search forward.</p>
+          </div>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Built for outcomes
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { n: "1", icon: Eye, label: "Get Noticed", note: "Beat the 6-second recruiter scan" },
+            { n: "2", icon: Briefcase, label: "Get Hired", note: "Land interviews that match your level" },
+            { n: "3", icon: CurrencyDollar, label: "Get Paid More", note: "Quantified bullets that justify comp" },
+            { n: "4", icon: TrendUp, label: "Get Promoted", note: "Tell a story your next boss will read" },
+          ].map((s2, i) => (
+            <div key={i} className="relative p-4 rounded-2xl border border-zinc-200 dark:border-white/[0.05] bg-white/40 dark:bg-white/[0.02]">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[10px] font-bold text-zinc-400">{s2.n}</span>
+                <s2.icon className="w-4 h-4 text-brand-500" weight="duotone" />
+              </div>
+              <p className="text-[11px] font-bold text-zinc-900 dark:text-white leading-tight">{s2.label}</p>
+              <p className="text-[10px] text-zinc-500 mt-1 leading-tight">{s2.note}</p>
+            </div>
+          ))}
         </div>
 
         <AnimatePresence mode="wait">
