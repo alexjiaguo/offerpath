@@ -216,6 +216,16 @@ function NewResumeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const templateId = searchParams.get("template") || "classic-minimal";
+  // R19: Resume / CV toggle now drives the template picker. Picking "CV" routes to
+  // the academic template; picking "Resume" routes to classic-minimal. The
+  // display copy and template sample render then follow from the URL. The format
+  // state is derived (not stored) so the back/forward buttons stay in sync.
+  const format: "resume" | "cv" = templateId === "academic" ? "cv" : "resume";
+  const handleFormatChange = (next: "resume" | "cv") => {
+    const targetTpl = next === "cv" ? "academic" : "classic-minimal";
+    if (targetTpl === templateId) return;
+    router.replace(`/dashboard/resume/new?template=${targetTpl}`);
+  };
 
   const { addResume } = useResumeStore();
 
@@ -223,7 +233,6 @@ function NewResumeContent() {
   // Resume vs CV — flowcv's signature distinction. CVs are longer, more academic,
   // and include a publications / research / coursework section. Resumes are 1-2 pages,
   // bullet-heavy, and aimed at industry roles.
-  const [format, setFormat] = useState<"resume" | "cv">("resume");
   const [levelFilter, setLevelFilter] = useState<"All" | "Senior" | "Mid" | "Lead">("All");
   // R14: industry filter mirrors flowcv.com’s resume-templates category chips
   // (Popular / Simple / Modern / Creative / Photo / Compact / First Job) so users
@@ -395,7 +404,7 @@ function NewResumeContent() {
               flowcv positions itself as supporting both formats natively. */}
           <div className="mt-4 inline-flex items-center gap-1 p-1 rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10">
             <button
-              onClick={() => setFormat("resume")}
+              onClick={() => handleFormatChange("resume")}
               className={cn(
                 "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
                 format === "resume" ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
@@ -404,7 +413,7 @@ function NewResumeContent() {
               Resume
             </button>
             <button
-              onClick={() => setFormat("cv")}
+              onClick={() => handleFormatChange("cv")}
               className={cn(
                 "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
                 format === "cv" ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
