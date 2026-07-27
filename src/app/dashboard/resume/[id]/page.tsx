@@ -282,6 +282,13 @@ export default function ResumeEditorPage({
     Boolean(data.education && data.education.length > 0),
     Boolean(data.skills && data.skills.length > 0),
   ].filter(Boolean).length;
+  // R25: Quality Score — same heuristic as flowcv R21 (5 base sections x 15 +
+  // up to 25 experience bullets, capped at 100). Shown as a static badge in
+  // the editor title row so the user has a single 0-100 number to track
+  // alongside the existing '5/5 sections started' indicator below.
+  const bulletCount = (data.experience || []).reduce((sum, e) => sum + (e.bullets?.filter((b) => b.trim()).length || 0), 0);
+  const qualityScore = Math.min(100, startedCount * 15 + Math.min(25, bulletCount));
+  const qualityTone = qualityScore >= 80 ? "emerald" : qualityScore >= 50 ? "amber" : "red";
 
   const sectionOrder = resume.section_order || [
     "summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects"
@@ -364,6 +371,25 @@ export default function ResumeEditorPage({
                 <ShieldCheck weight="fill" className="w-2.5 h-2.5" />
                 Free audit included
               </a>
+              {/* R25: Quality Score badge — static 0-100 number using the same
+                  heuristic as flowcv R21. Honest 'Quality Score' label, not
+                  'ATS score', so we don't claim a parsing model we don't have. */}
+              <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${
+                qualityTone === "emerald" ? "bg-emerald-500/10 border-emerald-500/30" :
+                qualityTone === "amber"   ? "bg-amber-500/10 border-amber-500/30" :
+                                            "bg-red-500/10 border-red-500/30"
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${
+                  qualityTone === "emerald" ? "bg-emerald-500" :
+                  qualityTone === "amber"   ? "bg-amber-500" :
+                                              "bg-red-500"
+                }`} />
+                <span className={`text-[10px] font-bold uppercase tracking-widest ${
+                  qualityTone === "emerald" ? "text-emerald-700 dark:text-emerald-300" :
+                  qualityTone === "amber"   ? "text-amber-700 dark:text-amber-300" :
+                                              "text-red-700 dark:text-red-300"
+                }`}>Quality Score {qualityScore}/100</span>
+              </div>
             </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
           </div>
