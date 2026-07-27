@@ -342,6 +342,13 @@ export default function ResumeEditorPage({
     skills:     Boolean(data.skills && data.skills.length > 0),
   };
   const completedCount = Object.values(sectionHasContent).filter(Boolean).length;
+  // R21: Resume Quality Score — deterministic 0-100 from sections + bullet density.
+  // Heuristic only; honest about it via the "Quality Score" label (not "ATS").
+  // 5 base sections × 15 = 75 baseline, +1 per experience bullet (cap 25) to reward
+  // quantified detail. Recomputes on every render since data changes.
+  const bulletCount = (data.experience || []).reduce((sum, e) => sum + (e.bullets?.filter((b) => b.trim()).length || 0), 0);
+  const qualityScore = Math.min(100, completedCount * 15 + Math.min(25, bulletCount));
+  const qualityTone = qualityScore >= 80 ? "emerald" : qualityScore >= 50 ? "amber" : "red";
 
   const handleClearPersonaSample = () => {
     saveToHistory(id);
@@ -520,9 +527,31 @@ export default function ResumeEditorPage({
             </Link>
           </div>
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
+              </div>
+              {/* R21: Quality Score badge — deterministic 0-100. Color shifts emerald /
+                  amber / red as the user fills out sections and adds bullets. The
+                  label says "Quality Score" not "ATS" so we don't claim a parsing
+                  model we don't have. */}
+              <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${
+                qualityTone === "emerald" ? "bg-emerald-500/10 border-emerald-500/30" :
+                qualityTone === "amber"   ? "bg-amber-500/10 border-amber-500/30" :
+                                            "bg-red-500/10 border-red-500/30"
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${
+                  qualityTone === "emerald" ? "bg-emerald-500" :
+                  qualityTone === "amber"   ? "bg-amber-500" :
+                                              "bg-red-500"
+                }`} />
+                <span className={`text-[10px] font-bold uppercase tracking-widest ${
+                  qualityTone === "emerald" ? "text-emerald-700 dark:text-emerald-300" :
+                  qualityTone === "amber"   ? "text-amber-700 dark:text-amber-300" :
+                                              "text-red-700 dark:text-red-300"
+                }`}>Quality Score {qualityScore}/100</span>
+              </div>
             </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
           </div>
