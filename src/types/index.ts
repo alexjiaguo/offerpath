@@ -52,6 +52,7 @@ export interface ResumeData {
   personal?: PersonalInfo;
   summary?: string;
   experience?: ExperienceEntry[];
+  tailoredFor?: TailoredForMeta;
   education?: EducationEntry[];
   skills?: SkillItem[];
   technicalSkills?: TechnicalSkillCategory[];
@@ -59,6 +60,13 @@ export interface ResumeData {
   projects?: ProjectEntry[];
   languages?: string[];
   [key: string]: unknown;
+}
+
+export interface TailoredForMeta {
+  jobTitle: string;
+  companyName: string;
+  score: number; // 0-100, derived from completeness at apply time
+  appliedAt: string; // ISO timestamp
 }
 
 export interface PersonalInfo {
