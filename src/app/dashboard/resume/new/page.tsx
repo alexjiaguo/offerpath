@@ -140,6 +140,29 @@ const PERSONA_SAMPLE: Record<string, {
     ],
     skills: ["Brand positioning", "Voice & messaging", "Qualitative research", "Customer interviews", "Naming", "Workshop facilitation"],
   },
+  "academic": {
+    name: "Dr. Aisha Khan", role: "Postdoctoral Researcher", email: "aisha.khan@example.com", phone: "+1 617 555 0156", location: "Cambridge, MA",
+    summary: "Postdoctoral Researcher in computational neuroscience with 8 years of academic experience across MIT and Stanford. Track record of first-author publications in NeurIPS, Nature Neuroscience, and eLife, and three successful NIH R-series grant collaborations as co-Investigator.",
+    experience: [
+      { company: "MIT — McGovern Institute", title: "Postdoctoral Researcher", location: "Cambridge, MA", start_date: "2021-09", end_date: "", current: true,
+        bullets: [
+          "First author on a NeurIPS 2024 paper (citation count 142) modeling cortical microcircuits with spiking neural networks; adopted as a teaching reference in 3 graduate courses.",
+          "Co-Investigator on a $1.4M NIH R01 grant; led the data analysis pipeline for a 96-subject longitudinal fMRI study.",
+          "Mentored 4 PhD students through dissertation milestones; 2 secured tenure-track faculty offers in 2024.",
+        ] },
+      { company: "Stanford University — Wu Tsai Neurosciences Institute", title: "PhD Candidate, Neuroscience", location: "Stanford, CA", start_date: "2016-09", end_date: "2021-08", current: false,
+        bullets: [
+          "Dissertation: 'Closed-loop decoding of motor cortex during reach-and-grasp tasks' (committee: Shenoy, Henderson, Ganguli).",
+          "Published 6 peer-reviewed papers in 5 years; 2 as first author in Nature Neuroscience and eLife.",
+          "Teaching assistant for 4 graduate courses in computational neuroscience and linear systems; received the 2019 departmental TA of the year award.",
+        ] },
+    ],
+    education: [
+      { school: "Stanford University", degree: "Ph.D.", field: "Neuroscience", start_date: "2016", end_date: "2021" },
+      { school: "MIT", degree: "B.S.", field: "Brain & Cognitive Sciences", start_date: "2012", end_date: "2016", gpa: "4.0" },
+    ],
+    skills: ["Python (NumPy, PyTorch, scikit-learn)", "MATLAB", "fMRI analysis (FSL, AFNI)", "Spiking neural networks (Brian2, NEST)", "Grant writing (NSF GRFP, NIH R01)", "Graduate mentoring", "Scientific writing", "Public speaking"],
+  },
 };
 
 function getPersonaForTemplate(templateId: string) {
@@ -186,7 +209,7 @@ function NewResumeContent() {
 
   const handleBrowsePersona = (tid: string) => {
     const p = PERSONA_SAMPLE[tid];
-    if (!p) { toast.error("That persona doesn't have a full sample yet — try Brian, Camila, or Rohan."); return; }
+    if (!p) { toast.error("That persona doesn't have a full sample yet — try Brian, Camila, Rohan, Priya, Daniel, Isabella, or Aisha."); return; }
     const id = addResume({
       title: `${p.name} — Sample`,
       template: tid,
