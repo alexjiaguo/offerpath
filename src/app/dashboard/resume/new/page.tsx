@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Info, Sparkle, UploadSimple } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, EnvelopeSimple, FileText, Info, Sparkle, UploadSimple } from '@phosphor-icons/react';
 import Link from "next/link";
 import { useResumeStore } from "@/store/resumeStore";
 import { FileParserService } from "@/lib/FileParserService";
@@ -246,6 +246,34 @@ function NewResumeContent() {
             </motion.div>
           )}
         </AnimatePresence>
+        {/* R17: Cover Letter cross-sell — resume.com's "My Resumes" + "Cover Letters"
+            are sibling nav items, so the /new page surfaces the cover-letter builder
+            here. Uses the same /new card style for visual consistency. */}
+        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+            <EnvelopeSimple weight="duotone" className="w-5 h-5 text-amber-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-[14px] font-bold text-zinc-900">Need a cover letter too?</h3>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[9px] font-bold uppercase tracking-widest text-amber-700">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                76% of recruiters read it first
+              </span>
+            </div>
+            <p className="text-[12px] text-zinc-500 mt-1.5 leading-relaxed">
+              Pair this resume with a tailored letter in under 2 minutes. The Cover Letter Builder pulls your name, experience, and target role straight from this resume.
+            </p>
+            <Link
+              href="/dashboard/resume/cover-letters"
+              className="inline-flex items-center gap-1.5 mt-3 text-[11px] font-bold text-amber-700 hover:text-amber-900 transition-colors"
+            >
+              Open Cover Letter Builder
+              <ArrowRight className="w-3 h-3" weight="bold" />
+            </Link>
+          </div>
+        </div>
+
       </div>
     </div>
   );
