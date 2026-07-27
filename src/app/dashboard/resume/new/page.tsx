@@ -119,6 +119,27 @@ const PERSONA_SAMPLE: Record<string, {
     ],
     skills: ["Altium Designer", "Embedded C", "Python", "JTAG debugging", "Signal integrity", "I2C / SPI / UART"],
   },
+  "elegant-two-column": {
+    name: "Isabella Moreau", role: "Brand Strategist", email: "isabella.moreau@example.com", phone: "+1 415 555 0421", location: "San Francisco, CA",
+    summary: "Brand Strategist with 7 years shaping identity and narrative for consumer brands from seed to Series C. Strong on positioning, voice, and the qualitative research that turns customer interviews into a brand the market actually remembers.",
+    experience: [
+      { company: "North Star Studio", title: "Senior Brand Strategist", location: "San Francisco, CA", start_date: "2021-03", end_date: "", current: true,
+        bullets: [
+          "Led rebrand for a Series B fintech; unaided brand recall rose from 6% to 22% in 9 months post-launch.",
+          "Built the brand strategy playbook now used across all 14 of the studio's consumer clients.",
+          "Ran 32 in-depth customer interviews for a D2C skincare launch; positioning held through 3 board pivots.",
+        ] },
+      { company: "Lumen & Co", title: "Brand Strategist", location: "Brooklyn, NY", start_date: "2018-08", end_date: "2021-02", current: false,
+        bullets: [
+          "Owned positioning work for 9 client engagements across CPG, fintech, and DTC apparel.",
+          "Wrote the studio's first voice & tone guide; reused across 40+ projects.",
+        ] },
+    ],
+    education: [
+      { school: "Rhode Island School of Design (RISD)", degree: "BFA", field: "Graphic Design", start_date: "2013", end_date: "2017" },
+    ],
+    skills: ["Brand positioning", "Voice & messaging", "Qualitative research", "Customer interviews", "Naming", "Workshop facilitation"],
+  },
 };
 
 function getPersonaForTemplate(templateId: string) {
@@ -518,7 +539,7 @@ function NewResumeContent() {
                   return (
                     <button
                       key={tid}
-                      onClick={() => hasData ? handleBrowsePersona(tid) : toast.info(`${meta.name} sample data is coming soon — try Brian, Camila, Rohan, Priya, or Daniel for now.`)}
+                      onClick={() => hasData ? handleBrowsePersona(tid) : toast.info(`${meta.name} sample data is coming soon — try Brian, Camila, Rohan, Priya, Daniel, or Isabella for now.`)}
                       className={cn(
                         "liquid-glass rounded-2xl p-5 text-left border transition-all group relative",
                         hasData
