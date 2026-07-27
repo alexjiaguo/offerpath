@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, CheckCircle, EnvelopeSimple, FileText, Info, Sparkle, Target, UploadSimple, WarningCircle } from '@phosphor-icons/react';
 import Link from "next/link";
@@ -16,7 +16,20 @@ function NewResumeContent() {
   const searchParams = useSearchParams();
   const templateId = searchParams.get("template") || "classic-minimal";
 
-  const { addResume } = useResumeStore();
+  const { addResume, resumes } = useResumeStore();
+  // R21: Documents count — read N resumes from the store and M cover letters from
+  // their own localStorage key. The cover letter count is a best-effort read; if
+  // the key is missing or malformed we treat it as 0 rather than throwing.
+  const [coverLetterCount, setCoverLetterCount] = useState<number>(0);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem("offerpath:cover-letters:v1");
+      if (!raw) { setCoverLetterCount(0); return; }
+      const parsed = JSON.parse(raw);
+      setCoverLetterCount(Array.isArray(parsed) ? parsed.length : 0);
+    } catch { setCoverLetterCount(0); }
+  }, []);
 
   const [mode, setMode] = useState<"choice" | "upload" | "parsing">("choice");
   const [file, setFile] = useState<File | null>(null);
@@ -190,7 +203,31 @@ function NewResumeContent() {
             </motion.div>
           )}
 
-          {/* R20: Templates gallery — resume.com's "Examples" and "Templates" nav
+
+          {/* R21: Documents counter — resume.com's "My Resumes" + "Cover Letters" are
+              the two document types; surface the totals here so the user sees
+              they have a real library growing. Pulls from the resume store and
+              the cover-letters localStorage key. */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.05] p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="w-4 h-4 text-brand-400" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Resumes</span>
+              </div>
+              <p className="text-3xl font-bold text-zinc-900 dark:text-white font-display">{resumes.length}</p>
+              <p className="text-[10px] text-zinc-500 mt-1">In your studio</p>
+            </div>
+            <div className="liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.05] p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <EnvelopeSimple className="w-4 h-4 text-amber-500" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Cover Letters</span>
+              </div>
+              <p className="text-3xl font-bold text-zinc-900 dark:text-white font-display">{coverLetterCount}</p>
+              <p className="text-[10px] text-zinc-500 mt-1">Paired with resumes</p>
+            </div>
+          </div>
+
+                    {/* R20: Templates gallery — resume.com's "Examples" and "Templates" nav
               surface the catalog right at the entry funnel so users can pick a
               starting design. We mirror that with a 3x3 grid of all 9 templates,
               each as a clickable card that creates a new empty resume with that
