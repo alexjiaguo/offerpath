@@ -11,11 +11,16 @@ import type { ResumeData } from "@/types";
 interface ExportButtonsProps {
   resumeData: ResumeData;
   resumeTitle: string;
+  // R24: optional callback fired after a successful export. The editor
+  //  uses it to stamp data.lastExportedAt / data.lastExportFormat so
+  //  the R23 meta footer can show 'Last export: PDF · 2h ago'.
+  onExport?: (format: "pdf" | "docx" | "txt") => void;
 }
 
 export default function ExportButtons({
   resumeData,
   resumeTitle,
+  onExport,
 }: ExportButtonsProps) {
   const [exportingDocx, setExportingDocx] = useState(false);
   const [exportedDocx, setExportedDocx] = useState(false);
@@ -71,6 +76,7 @@ export default function ExportButtons({
       document.body.removeChild(link);
 
       setExportedPdf(true);
+      onExport?.("pdf");
       setTimeout(() => setExportedPdf(false), 2000);
     } catch (err) {
       console.error("PDF export failed:", err);
@@ -88,6 +94,7 @@ export default function ExportButtons({
       const { generateDocx } = await import("@/lib/exportDocx");
       await generateDocx(resumeData, resumeTitle);
       setExportedDocx(true);
+      onExport?.("docx");
       setTimeout(() => setExportedDocx(false), 2000);
     } catch (err) {
       console.error("DOCX export failed:", err);

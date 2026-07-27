@@ -284,6 +284,25 @@ export default function ResumeEditorPage({
     return () => clearInterval(id);
   }, []);
   const formatElapsed = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  // R24: live 'Xh ago' label for the meta footer's 'Last export' line.
+  const [, setExportTick] = useState(0);
+  useEffect(() => {
+    if (!data.lastExportedAt) return;
+    const id = setInterval(() => setExportTick((t) => t + 1), 30000);
+    return () => clearInterval(id);
+  }, [data.lastExportedAt]);
+  const formatLastExported = (iso: string) => {
+    const ms = Date.now() - new Date(iso).getTime();
+    if (ms < 0) return "just now";
+    const sec = Math.floor(ms / 1000);
+    if (sec < 60) return "just now";
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}m ago`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr}h ago`;
+    const day = Math.floor(hr / 24);
+    return `${day}d ago`;
+  };
   // Draft-ready milestone — true once the user has been editing for 10+ minutes AND
   // the resume is at least 80% complete. The pill swaps to "Draft ready" in green.
   const draftReady = elapsedSec >= 600 && completeness >= 80;
@@ -410,7 +429,7 @@ export default function ResumeEditorPage({
                 <div className="px-4 py-2 rounded-xl bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-bold uppercase tracking-widest">
                   Live Preview
                 </div>
-                <ExportButtons resumeData={data} resumeTitle={resume.title} />
+                <ExportButtons resumeData={data} resumeTitle={resume.title} onExport={(fmt) => updateResume(id, { data: { ...data, lastExportedAt: new Date().toISOString(), lastExportFormat: fmt } })} />
               </div>
             </div>
             
@@ -1452,6 +1471,15 @@ export default function ResumeEditorPage({
               <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Template</span>
               {TEMPLATE_CONFIGS.find((t) => t.id === selectedTemplate)?.name ?? selectedTemplate}
             </span>
+            {((data as { lastExportedAt?: string; lastExportFormat?: "pdf" | "docx" | "txt" }).lastExportedAt) && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                <span>
+                  <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Last export</span>
+                  {((data as { lastExportedAt?: string; lastExportFormat?: "pdf" | "docx" | "txt" }).lastExportFormat ?? "file").toUpperCase()} · {formatLastExported((data as { lastExportedAt?: string }).lastExportedAt!)}
+                </span>
+              </>
+            )}
           </div>
         </div>
       </div>
