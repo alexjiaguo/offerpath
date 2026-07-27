@@ -817,6 +817,10 @@ export default function ResumeEditorPage({
                       <div className="space-y-4">
                         {[
                           { label: "Full Name", field: "name", value: data.personal?.name || "" },
+                          // R23: Title / Headline — sits below the name on the resume
+                          // (already rendered by 7 of 9 templates), so adding the
+                          // form field surfaces an existing affordance.
+                          { label: "Headline", field: "title", value: data.personal?.title || "", placeholder: "e.g. Senior PM | AI Platforms | 0->1 Specialist" },
                           { label: "Email", field: "email", value: data.personal?.email || "" },
                           { label: "Phone", field: "phone", value: data.personal?.phone || "" },
                           { label: "Location", field: "location", value: data.personal?.location || "" },
@@ -828,6 +832,7 @@ export default function ResumeEditorPage({
                             <input
                               type="text"
                               value={input.value as string}
+                              placeholder={(input as { placeholder?: string }).placeholder}
                               onBlur={() => saveToHistory(id)}
                               onChange={(e) => updateField("personal", input.field, e.target.value)}
                               className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-100 dark:bg-white/[0.05] transition-all font-sans"
