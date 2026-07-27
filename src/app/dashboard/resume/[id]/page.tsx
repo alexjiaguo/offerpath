@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, Clock, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Target} from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CalendarBlank, CheckCircle, CaretDown, CaretUp, Clock, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Target} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -1428,6 +1428,32 @@ export default function ResumeEditorPage({
             </div>
           </div>
         )}
+
+        {/* R23: Resume meta footer — surfaces created / updated / template fields
+            that already live on the resume record. No new data, no fabricated
+            counters. */ }
+        <div className="liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.05] px-5 py-3 mt-6 flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <CalendarBlank weight="duotone" className="w-4 h-4 text-zinc-400" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Resume meta</span>
+          </div>
+          <div className="flex items-center gap-4 flex-wrap text-[10px] text-zinc-500">
+            <span>
+              <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Created</span>
+              {new Date(resume.created_at).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            <span>
+              <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Updated</span>
+              {new Date(resume.updated_at).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            <span>
+              <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Template</span>
+              {TEMPLATE_CONFIGS.find((t) => t.id === selectedTemplate)?.name ?? selectedTemplate}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Tailor Modal */}
