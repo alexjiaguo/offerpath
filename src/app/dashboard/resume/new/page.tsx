@@ -163,6 +163,49 @@ const PERSONA_SAMPLE: Record<string, {
     ],
     skills: ["Python (NumPy, PyTorch, scikit-learn)", "MATLAB", "fMRI analysis (FSL, AFNI)", "Spiking neural networks (Brian2, NEST)", "Grant writing (NSF GRFP, NIH R01)", "Graduate mentoring", "Scientific writing", "Public speaking"],
   },
+  "ats-executive": {
+    name: "Margaret Holloway", role: "VP of Operations", email: "margaret.holloway@example.com", phone: "+1 312 555 0188", location: "Chicago, IL",
+    summary: "VP of Operations with 14 years scaling operations at high-growth SaaS companies from Series A through post-IPO. Track record of building operating cadences, vendor and procurement orgs, and the cross-functional playbooks that turn chaotic scaling into repeatable execution.",
+    experience: [
+      { company: "Westline Logistics", title: "VP of Operations", location: "Chicago, IL", start_date: "2019-04", end_date: "", current: true,
+        bullets: [
+          "Built and led a 48-person cross-functional ops org (Sales Ops, RevOps, Customer Ops, BizOps); net revenue retention rose from 104% to 119% in 24 months.",
+          "Designed the quarterly operating review now used across 6 business units; CEO adopted the format for the all-hands.",
+          "Cut vendor spend by $3.2M annually by consolidating 14 procurement contracts and renegotiating the top 3 SaaS renewals.",
+        ] },
+      { company: "Northbound Freight", title: "Director of Operations", location: "Chicago, IL", start_date: "2014-08", end_date: "2019-03", current: false,
+        bullets: [
+          "Owned the operations function for a $220M ARR business; reduced quarterly close variance from 7% to 2%.",
+          "Hired and scaled 3 sub-teams (procurement, facilities, IT) from 6 to 31 in 3 years without missing a single SLA.",
+        ] },
+    ],
+    education: [
+      { school: "Kellogg School of Management, Northwestern University", degree: "MBA", field: "Operations & Strategy", start_date: "2010", end_date: "2012" },
+      { school: "University of Illinois at Urbana-Champaign", degree: "B.S.", field: "Industrial Engineering", start_date: "2004", end_date: "2008" },
+    ],
+    skills: ["RevOps / SalesOps", "Vendor & procurement", "Operating cadences (QBR, MBR)", "Org design (4 sub-teams, 48 headcount)", "NetSuite + Looker", "SaaS post-IPO ops", "Cross-functional playbooks", "Budget ownership ($40M+)"],
+  },
+  "photo-header": {
+    name: "Theo Nakamura", role: "UX Designer", email: "theo.nakamura@example.com", phone: "+1 206 555 0144", location: "Seattle, WA",
+    summary: "UX Designer with 6 years at consumer and prosumer SaaS companies. Strong in product design for AI-assisted workflows, end-to-end research, and design systems that scale across web and mobile. Comfortable going from low-fi sketches to high-fi prototypes in a single day.",
+    experience: [
+      { company: "Lumen Health", title: "Senior UX Designer", location: "Seattle, WA", start_date: "2021-06", end_date: "", current: true,
+        bullets: [
+          "Led the 0→1 design of an AI clinician-copilot used by 4,200 nurse practitioners; first-month task completion rose from 52% to 81%.",
+          "Owned the design system refresh across 32 surfaces; ship time for new flows fell from 3 weeks to 4 days.",
+          "Ran a 14-participant diary study that reframed the v2 roadmap; PMs cited the synthesis deck in 4 quarterly reviews.",
+        ] },
+      { company: "Northwind Labs", title: "Product Designer", location: "Remote", start_date: "2018-09", end_date: "2021-05", current: false,
+        bullets: [
+          "Designed the activation flow for a prosumer creator tool; D7 retention rose 22% within the first quarter post-launch.",
+          "Built and maintained the company's first component library (Figma + React); used in 11 product surfaces.",
+        ] },
+    ],
+    education: [
+      { school: "Rhode Island School of Design (RISD)", degree: "BFA", field: "Graphic Design", start_date: "2013", end_date: "2017" },
+    ],
+    skills: ["Figma", "Design systems (tokens, components, theming)", "User research & diary studies", "Prototyping (Figma, Framer, Principle)", "AI-assisted workflow design", "Cross-functional collaboration", "Accessibility (WCAG 2.1 AA)"],
+  },
 };
 
 function getPersonaForTemplate(templateId: string) {
@@ -209,7 +252,7 @@ function NewResumeContent() {
 
   const handleBrowsePersona = (tid: string) => {
     const p = PERSONA_SAMPLE[tid];
-    if (!p) { toast.error("That persona doesn't have a full sample yet — try Brian, Camila, Rohan, Priya, Daniel, Isabella, or Aisha."); return; }
+    if (!p) { toast.error("That persona doesn't have a full sample yet."); return; }
     const id = addResume({
       title: `${p.name} — Sample`,
       template: tid,
