@@ -1235,6 +1235,53 @@ export default function ResumeEditorPage({
                       )}
                     </div>
                   </div>
+                  {/* R19: Resume Length — body-text word count + page estimate.
+                      Deterministic walk of the resume data; no model call. Sits
+                      between Top Skills and ATS so the sidebar reads
+                      actions -> your assets -> size -> score. */}
+                  {(() => {
+                    const parts: string[] = [];
+                    if (data.summary) parts.push(data.summary);
+                    (data.experience || []).forEach((e) => (e.bullets || []).forEach((b) => parts.push(b)));
+                    (data.projects || []).forEach((p) => { if (p.description) parts.push(p.description); });
+                    const bodyWords = parts.join(" ").split(/\s+/).filter(Boolean).length;
+                    // 1 page ≈ 450 body words; 2 pages ≈ 1000. Source: typical US resume norms.
+                    const pages = bodyWords < 200 ? "Under 1 page" : bodyWords <= 600 ? "1 page" : bodyWords <= 1100 ? "2 pages" : "2+ pages";
+                    const pct = Math.min(100, Math.round((bodyWords / 1100) * 100));
+                    return (
+                      <div className="liquid-glass rounded-3xl border border-zinc-200 dark:border-white/[0.05] overflow-hidden">
+                        <div className="w-full flex items-center justify-between p-5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">
+                              <FileText weight="duotone" className="w-4 h-4 text-sky-400" />
+                            </div>
+                            <div>
+                              <span className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white block">Resume Length</span>
+                              <span className="text-[10px] text-zinc-500">{bodyWords.toLocaleString()} body words · {pages}</span>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-sky-500">{pct}%</span>
+                        </div>
+                        <div className="px-5 pb-5 space-y-2">
+                          <div className="h-1.5 w-full rounded-full bg-zinc-100 dark:bg-white/[0.04] overflow-hidden">
+                            <div
+                              className={`h-full transition-all ${bodyWords <= 600 ? "bg-emerald-500" : bodyWords <= 1100 ? "bg-amber-500" : "bg-red-500"}`}
+                              style={{ width: `${Math.max(4, Math.min(100, pct))}%` }}
+                            />
+                          </div>
+                          <p className="text-[10px] text-zinc-500 leading-relaxed">
+                            {bodyWords < 200
+                              ? "Add a summary and 1–2 bullets per role to fill a single page."
+                              : bodyWords <= 600
+                              ? "Right in the 1-page sweet spot for industry roles."
+                              : bodyWords <= 1100
+                              ? "Reads as 2 pages — fine for senior ICs and execs."
+                              : "Long. Trim the oldest or least-relevant role to get under 2 pages."}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })()}
                   <ATSCheckerPanel resumeData={data} />
                   <ThemePicker
                     theme={resume.theme}
