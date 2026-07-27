@@ -51,6 +51,7 @@ export interface Resume {
 export interface ResumeData {
   personal?: PersonalInfo;
   summary?: string;
+  pairedCoverLetter?: PairedCoverLetterMeta;
   experience?: ExperienceEntry[];
   education?: EducationEntry[];
   skills?: SkillItem[];
@@ -59,6 +60,12 @@ export interface ResumeData {
   projects?: ProjectEntry[];
   languages?: string[];
   [key: string]: unknown;
+}
+
+export interface PairedCoverLetterMeta {
+  coverLetterId: string;
+  title: string;
+  linkedAt: string; // ISO timestamp
 }
 
 export interface PersonalInfo {

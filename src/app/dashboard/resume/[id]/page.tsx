@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, Link as LinkIcon, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -379,6 +379,33 @@ export default function ResumeEditorPage({
             <EnvelopeSimple className="w-3.5 h-3.5" />
             Cover Letter
           </Link>
+          {/* R24: Cover-letter-linked status toggle. When paired, shows a
+              green check pill with an Unlink affordance; otherwise shows
+              a small 'Link' action that stamps the resume record. */}
+          {data.pairedCoverLetter ? (
+            <div className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300">
+              <CheckCircle weight="fill" className="w-3 h-3" />
+              <span>Cover letter linked</span>
+              <button
+                type="button"
+                onClick={() => updateResume(id, { data: { ...data, pairedCoverLetter: undefined } })}
+                className="ml-0.5 px-1.5 py-0.5 rounded-lg text-[9px] font-bold hover:bg-emerald-500/20 transition-colors"
+                title="Unlink the cover letter from this resume"
+              >
+                Unlink
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => updateResume(id, { data: { ...data, pairedCoverLetter: { coverLetterId: `cl-${Date.now()}`, title: `${resume.title} cover letter`, linkedAt: new Date().toISOString() } } })}
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 bg-white dark:bg-white/[0.04] border border-dashed border-zinc-300 dark:border-white/15 hover:border-emerald-500/40 hover:text-emerald-600 transition-all"
+              title="Mark this resume as having a paired cover letter"
+            >
+              <LinkIcon className="w-3.5 h-3.5" />
+              Link cover letter
+            </button>
+          )}
           {/* Resume.com signature: shortcut to the 6 sample archetypes. */}
           <Link
             href="/dashboard/resume#resume-samples"
