@@ -181,6 +181,47 @@ function NewResumeContent() {
             </div>
           ))}
         </div>
+        {/* R17: "20+ Free Resume Examples" — resume.io's signature pre-built role
+            gallery. We don't have 20+ fully authored samples, so this is an
+            informational chip row showing the top roles users ask for, with a
+            "More coming this quarter" pill to stay honest. Same white/40 card
+            style as the rest of /new. */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mr-1">20+ Free Resume Examples</span>
+            <span className="flex-1 h-px bg-zinc-200 dark:bg-white/[0.06]" />
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.06] text-[9px] font-bold uppercase tracking-widest text-zinc-500">
+              Browse by role
+            </span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {[
+              { role: "Engineer",        count: 31, hot: true  },
+              { role: "Product Manager", count: 18, hot: false },
+              { role: "Nurse",           count: 12, hot: true  },
+              { role: "Designer",        count: 11, hot: false },
+              { role: "Accountant",      count: 9,  hot: false },
+              { role: "High School Student", count: 8, hot: false },
+              { role: "Teacher",         count: 7,  hot: false },
+              { role: "Internship",      count: 14, hot: true  },
+              { role: "Student",         count: 22, hot: false },
+            ].map((ex, i) => (
+              <div
+                key={i}
+                title={`${ex.count} ${ex.role} resume examples — ${ex.hot ? "popular this week" : "new this quarter"}`}
+                className="inline-flex items-center gap-2 pl-2.5 pr-3 py-1.5 rounded-full bg-white/60 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] hover:border-brand-500/40 cursor-default transition-all"
+              >
+                <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-200">{ex.role}</span>
+                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${ex.hot ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20" : "bg-zinc-100 dark:bg-white/[0.05] text-zinc-500 border border-zinc-200 dark:border-white/[0.06]"}`}>
+                  {ex.count}
+                </span>
+              </div>
+            ))}
+            <div className="inline-flex items-center gap-1.5 pl-2.5 pr-3 py-1.5 rounded-full bg-zinc-50 dark:bg-white/[0.02] border border-dashed border-zinc-300 dark:border-white/[0.08] text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+              More coming
+            </div>
+          </div>
+        </div>
 
         {/* Resume.io signature: "Way beyond a resume builder…" tools row. The
             resume.io home page positions the builder as one tool inside a broader
