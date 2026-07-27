@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, SquaresFour, UploadSimple, ListChecks, EnvelopeSimple } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, SquaresFour, UploadSimple, Check, ListChecks, EnvelopeSimple } from '@phosphor-icons/react';
 import Link from "next/link";
 import { toast } from "sonner";
 import { useResumeStore } from "@/store/resumeStore";
@@ -531,6 +531,37 @@ function NewResumeContent() {
                   See gallery <ArrowRight className="w-4 h-4" />
                 </div>
               </button>
+                {/* R20: "What you'll get" feature checklist — flowcv-style social
+                    proof for what's bundled with every resume. Mirrors the
+                    "Tested templates / Step-by-step / AI / Cover letters" chip
+                    row above but expanded into a real checklist so the user
+                    can see the full value prop before picking a path. */}
+                <div className="mt-6 liquid-glass rounded-3xl border border-zinc-200 dark:border-white/[0.05] p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">What you'll get</span>
+                    <span className="flex-1 h-px bg-zinc-200 dark:bg-white/[0.06]" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">All included</span>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
+                    {[
+                      { label: "9 fully-built sample resumes", note: "Open one, swap your details, done" },
+                      { label: "ATS-friendly PDF + Word export", note: "No watermarks, unlimited downloads" },
+                      { label: "Inline editor tips per section", note: "What recruiters actually look for" },
+                      { label: "Cover letter pairing", note: "One click from any resume" },
+                    ].map((row, i) => (
+                      <div key={i} className="flex items-start gap-3">
+                        <span className="w-5 h-5 rounded-md bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Check weight="bold" className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-[12px] font-bold text-zinc-900 dark:text-white leading-snug">{row.label}</p>
+                          <p className="text-[10px] text-zinc-500 mt-0.5 leading-snug">{row.note}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
             </motion.div>
           )}
 
