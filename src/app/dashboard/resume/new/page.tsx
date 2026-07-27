@@ -227,7 +227,13 @@ function NewResumeContent() {
     router.replace(`/dashboard/resume/new?template=${targetTpl}`);
   };
 
-  const { addResume } = useResumeStore();
+  const { addResume, resumes } = useResumeStore();
+  // R22: Recently edited — surface the user's most recently touched resume as a
+  // "Pick up where you left off" card above the 3-up choice grid. Only renders
+  // when the user has at least one non-sample resume.
+  const recentlyEdited = [...resumes]
+    .filter((r) => r.data?.personal?.name || (r.data?.experience && r.data.experience.length > 0))
+    .sort((a, b) => (b.updated_at || "").localeCompare(a.updated_at || ""))[0];
 
   const [mode, setMode] = useState<"choice" | "upload" | "browse" | "parsing">("choice");
   // Resume vs CV — flowcv's signature distinction. CVs are longer, more academic,
@@ -453,6 +459,34 @@ function NewResumeContent() {
         </div>
 
         <AnimatePresence mode="wait">
+          {/* R22: Recently edited resume — appears only when the user has at
+              least one resume with real content. */}
+          {recentlyEdited && mode === "choice" && (
+            <div className="liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.05] p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-200 to-brand-400 flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">
+                  {(recentlyEdited.data?.personal?.name || recentlyEdited.title || "U").split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Pick up where you left off</span>
+                <p className="text-[14px] font-bold text-zinc-900 dark:text-white mt-0.5 truncate">
+                  {recentlyEdited.data?.personal?.name ? recentlyEdited.data?.personal?.name : recentlyEdited.title}
+                </p>
+                <p className="text-[10px] text-zinc-500 mt-0.5 truncate">
+                  Last edited {new Date(recentlyEdited.updated_at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                </p>
+              </div>
+              <a
+                href={`/dashboard/resume/${recentlyEdited.id}`}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-500 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-brand-600 transition-colors flex-shrink-0"
+              >
+                Continue
+                <ArrowRight className="w-3 h-3" weight="bold" />
+              </a>
+            </div>
+          )}
+
           {mode === "choice" && (
             <motion.div
               key="choice"
