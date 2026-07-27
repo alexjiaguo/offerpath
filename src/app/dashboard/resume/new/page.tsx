@@ -2,13 +2,31 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, UploadSimple, Eye, Briefcase, CurrencyDollar, TrendUp, Robot, MagnifyingGlass, Rocket, GraduationCap } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, UploadSimple, Eye, Briefcase, CurrencyDollar, TrendUp, Robot, MagnifyingGlass, Rocket, GraduationCap, CaretDown } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useResumeStore } from "@/store/resumeStore";
 import { FileParserService } from "@/lib/FileParserService";
 import { ResumeParserService } from "@/lib/ResumeParserService";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   R16: Mini-FAQ — resume.io's signature accordion. Sits at the bottom of
+   /new to answer the top "is this for me / how long / is it private" questions
+   before the user bounces. Matches the FAQ pattern on /dashboard/resume but
+   uses the /new card style (white/40 backdrop, zinc-200 border) for visual
+   consistency with the rest of this page. ═════════════════════════════════ */
+const NEW_FAQ = [
+  { q: "How long does it take to build a resume?",
+    a: "Most people finish a clean, ATS-friendly resume in about 10 minutes. Pick a template, paste in your experience, and the editor auto-formats dates, headings, and contact info for you." },
+  { q: "Can I import an existing resume?",
+    a: "Yes. Upload a PDF or DOCX and our parser pulls out your contact info, experience, and education. You can review and tweak every field before saving." },
+  { q: "Is my data private?",
+    a: "Your resume lives in your OfferPath account only. We never share it with recruiters or sell it to third parties, and you can delete it any time from Settings." },
+  { q: "What can I do once the resume is done?",
+    a: "Export to PDF or Word, tailor the bullets to a specific JD, run the ATS score, and apply to roles in the Discover feed — all without leaving OfferPath." },
+];
 
 function NewResumeContent() {
   const router = useRouter();
@@ -18,6 +36,7 @@ function NewResumeContent() {
   const { addResume } = useResumeStore();
 
   const [mode, setMode] = useState<"choice" | "upload" | "parsing">("choice");
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -328,6 +347,40 @@ function NewResumeContent() {
             </motion.div>
           )}
         </AnimatePresence>
+        {/* R16: Mini-FAQ — see NEW_FAQ const above. Same accordion pattern as
+            /dashboard/resume but with this page's white/40 card style. */}
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mr-1">Questions, answered</span>
+            <span className="flex-1 h-px bg-zinc-200 dark:bg-white/[0.06]" />
+          </div>
+          <div className="rounded-2xl border border-zinc-200 dark:border-white/[0.05] bg-white/40 dark:bg-white/[0.02] divide-y divide-zinc-200/60 dark:divide-white/[0.04] overflow-hidden">
+            {NEW_FAQ.map((item, i) => {
+              const open = openFaq === i;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setOpenFaq(open ? null : i)}
+                  className="w-full text-left px-5 py-4 flex items-start justify-between gap-4 hover:bg-white/70 dark:hover:bg-white/[0.04] transition-colors"
+                >
+                  <div className="flex-1">
+                    <div className="text-[13px] font-bold text-zinc-900 dark:text-white">{item.q}</div>
+                    {open && (
+                      <p className="text-[12px] text-zinc-500 dark:text-zinc-400 mt-2 leading-relaxed font-medium">
+                        {item.a}
+                      </p>
+                    )}
+                  </div>
+                  <CaretDown
+                    weight="bold"
+                    className={cn("w-4 h-4 text-zinc-400 transition-transform flex-shrink-0 mt-0.5", open && "rotate-180 text-zinc-900 dark:text-white")}
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
     </div>
   );
