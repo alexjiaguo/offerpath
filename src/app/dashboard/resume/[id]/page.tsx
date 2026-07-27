@@ -9,6 +9,7 @@ import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
 import type { ExperienceEntry, EducationEntry, ResumeTheme, SectionKey, ResumeData } from "@/types";
+import { DEFAULT_SECTION_VISIBILITY } from "@/types";
 import ExportButtons from "@/components/resume/ExportButtons";
 import ResumePreview, {
   TEMPLATE_CONFIGS,
@@ -92,6 +93,7 @@ export default function ResumeEditorPage({
     canRedo,
     saveToHistory,
     moveSection,
+    toggleVisibility,
   } = useResumeStore();
   const { getProfileSummary } = useProfileStore();
   const resume = getResumeById(id);
@@ -1182,7 +1184,53 @@ export default function ResumeEditorPage({
                       </div>
                     );
                   })()}
-                  {/* Resume.io signature: Quick Wins — 3 specific, actionable improvements. */}
+                  {/* R21: Section Visibility — resume.io signature: per-template toggle
+                      for each of the 11 sections. Reads from
+                      resume.section_visibility[template] (defaulting to all-true
+                      for templates that have no override), and writes back via
+                      the store's toggleVisibility action. Visual: green eye icon
+                      when visible, dimmed EyeSlash when hidden. */}
+                  <div className="liquid-glass rounded-3xl border border-zinc-200 dark:border-white/[0.05] overflow-hidden">
+                    <div className="w-full flex items-center justify-between p-5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                          <Eye weight="duotone" className="w-4 h-4 text-emerald-400" />
+                        </div>
+                        <div>
+                          <span className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white block">Section Visibility</span>
+                          <span className="text-[10px] text-zinc-500">
+                            {Object.values(resume.section_visibility?.[selectedTemplate] || DEFAULT_SECTION_VISIBILITY).filter(Boolean).length} of 11 visible
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="px-3 pb-3 grid grid-cols-2 gap-1">
+                      {(["summary", "experience", "education", "skills", "technicalSkills", "languages", "certifications", "projects", "photo", "portfolio", "visaStatus"] as SectionKey[]).map((sk) => {
+                        const isVisible = (resume.section_visibility?.[selectedTemplate]?.[sk] ?? true);
+                        const labels: Record<SectionKey, string> = {
+                          summary: "Summary", experience: "Experience", education: "Education",
+                          skills: "Skills", technicalSkills: "Tech Skills", languages: "Languages",
+                          certifications: "Certifications", projects: "Projects", photo: "Photo",
+                          portfolio: "Portfolio", visaStatus: "Visa",
+                        };
+                        return (
+                          <button
+                            key={sk}
+                            onClick={() => toggleVisibility(id, selectedTemplate, sk)}
+                            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left text-[11px] transition-colors ${isVisible ? "text-zinc-700 dark:text-zinc-200 hover:bg-emerald-500/5" : "text-zinc-400 dark:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-white/[0.03]"}`}
+                            title={isVisible ? `Hide ${labels[sk]} from this template` : `Show ${labels[sk]} on this template`}
+                          >
+                            {isVisible
+                              ? <Eye weight="regular" className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                              : <EyeSlash weight="regular" className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />}
+                            <span className={`truncate ${isVisible ? "font-semibold" : "font-medium line-through"}`}>{labels[sk]}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                                    {/* Resume.io signature: Quick Wins — 3 specific, actionable improvements. */}
                   <div className="liquid-glass rounded-3xl border border-zinc-200 dark:border-white/[0.05] overflow-hidden">
                     <div className="w-full flex items-center justify-between p-5">
                       <div className="flex items-center gap-3">
