@@ -1148,6 +1148,40 @@ export default function ResumeEditorPage({
               {/* Intelligence Panels Sidebar */}
               {!isSidebarCollapsed && (
                 <div className="space-y-6 animate-slide-up">
+                  {/* R20: "Boost your score" — the single highest-impact quick win
+                      promoted to its own CTA card above the Quick Wins panel. Mirrors
+                      resume.io's "magic resume" callout but stays deterministic
+                      (just picks the top points earner from the existing quickWins). */}
+                  {quickWins.length > 0 && (() => {
+                    const top = [...quickWins].sort((a, b) => b.points - a.points)[0];
+                    return (
+                      <div className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent p-5">
+                        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-amber-500/10 blur-2xl pointer-events-none" />
+                        <div className="relative flex items-start gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
+                            <Sparkle weight="fill" className="w-4 h-4 text-amber-500" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">Boost your score</span>
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                                +{top.points} pts
+                              </span>
+                            </div>
+                            <p className="text-[12px] font-bold text-zinc-900 dark:text-white mt-1.5 leading-snug">{top.title}</p>
+                            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">{top.detail}</p>
+                            <button
+                              onClick={() => setActiveSection(top.section)}
+                              className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg bg-amber-500 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-amber-600 transition-colors"
+                            >
+                              Fix now
+                              <ArrowRight className="w-3 h-3" weight="bold" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                   {/* Resume.io signature: Quick Wins — 3 specific, actionable improvements. */}
                   <div className="liquid-glass rounded-3xl border border-zinc-200 dark:border-white/[0.05] overflow-hidden">
                     <div className="w-full flex items-center justify-between p-5">
