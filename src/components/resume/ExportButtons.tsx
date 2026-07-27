@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowsClockwise, Check, File, FileText } from '@phosphor-icons/react';
+import { ArrowsClockwise, Check, File, FileText, Printer } from '@phosphor-icons/react';
 import type { ResumeData } from "@/types";
 
 /* ═══════════════════════════════════════════════════
@@ -206,6 +206,20 @@ export default function ExportButtons({
         <span className="hidden md:inline">
           {exportedTxt ? "Downloaded!" : "Download TXT"}
         </span>
+      </button>
+
+      {/* R16: Print button — resume.com's "Print Resume" affordance, alongside
+          the PDF / Word / TXT exports. Uses the browser's native window.print()
+          so it works without any PDF-generation backend. The CSS @media print
+          rules elsewhere in the app hide the editor chrome and show only the
+          resume preview. */}
+      <button
+        onClick={() => window.print()}
+        className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface-200 text-surface-400 font-semibold text-sm hover:text-brand-600 hover:bg-surface-100 transition-all"
+        title="Open the browser's print dialog — best for paper or PDF-via-print"
+      >
+        <Printer className="w-4 h-4 text-surface-400" />
+        <span className="hidden md:inline">Print</span>
       </button>
       {exportError && (
         <span className="text-xs text-red-500">{exportError}</span>
