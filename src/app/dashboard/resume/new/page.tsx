@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, EnvelopeSimple, FileText, Info, Sparkle, UploadSimple } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, CheckCircle, EnvelopeSimple, FileText, Info, Sparkle, Target, UploadSimple, WarningCircle } from '@phosphor-icons/react';
 import Link from "next/link";
 import { useResumeStore } from "@/store/resumeStore";
 import { FileParserService } from "@/lib/FileParserService";
@@ -133,7 +133,7 @@ function NewResumeContent() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="grid md:grid-cols-2 gap-6"
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               <button
                 onClick={() => setMode("upload")}
@@ -166,6 +166,26 @@ function NewResumeContent() {
                   Create Empty <ArrowRight className="w-4 h-4" />
                 </div>
               </button>
+              <button
+                onClick={() => router.push("/dashboard/discover")}
+                className="relative liquid-glass rounded-[32px] p-8 text-left border border-brand-500/30 hover:border-brand-500/60 transition-all group"
+              >
+                <div className="absolute -top-3 left-8 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-500 text-white text-[9px] font-bold uppercase tracking-widest shadow-md">
+                  <Sparkle weight="fill" className="w-2.5 h-2.5" />
+                  Popular
+                </div>
+                <div className="w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                  <Target weight="duotone" className="w-7 h-7 text-brand-400" />
+                </div>
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white font-display mb-2">Tailor to a Job</h3>
+                <p className="text-zinc-600 dark:text-zinc-500 text-sm leading-relaxed mb-8">
+                  Pick a target role from the Discover feed and we'll rewrite your bullets to match keywords, lift your ATS score, and surface missing sections.
+                </p>
+                <div className="flex items-center gap-2 text-brand-400 text-xs font-bold uppercase tracking-widest mt-auto">
+                  Pick a Role <ArrowRight className="w-4 h-4" />
+                </div>
+              </button>
+
             </motion.div>
           )}
 
