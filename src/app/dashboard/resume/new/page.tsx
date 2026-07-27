@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, SquaresFour, UploadSimple, Check, ListChecks, EnvelopeSimple } from '@phosphor-icons/react';
 import Link from "next/link";
@@ -235,6 +235,31 @@ function NewResumeContent() {
     .filter((r) => r.data?.personal?.name || (r.data?.experience && r.data.experience.length > 0))
     .sort((a, b) => (b.updated_at || "").localeCompare(a.updated_at || ""))[0];
 
+  // R24: Template usage memory — track which persona templates the user has
+  // actually started a resume from. Persisted in localStorage so it survives
+  // page loads. Top 3 are surfaced as quick-revisit chips above the R22
+  // 'Pick up where you left off' card. Keyed by template id.
+  const TEMPLATE_USAGE_KEY = "offerpath:flowcv-template-usage:v1";
+  const [templateUsage, setTemplateUsage] = useState<Record<string, number>>({});
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(TEMPLATE_USAGE_KEY);
+      if (raw) setTemplateUsage(JSON.parse(raw));
+    } catch { /* ignore corrupt entries */ }
+  }, []);
+  const bumpTemplateUsage = (tid: string) => {
+    setTemplateUsage((prev) => {
+      const next = { ...prev, [tid]: (prev[tid] || 0) + 1 };
+      try { window.localStorage.setItem(TEMPLATE_USAGE_KEY, JSON.stringify(next)); } catch { /* quota */ }
+      return next;
+    });
+  };
+  const recentTemplates = Object.entries(templateUsage)
+    .filter(([tid]) => Boolean(PERSONA_SAMPLE[tid]))
+    .sort(([a, ac], [b, bc]) => bc - ac || a.localeCompare(b))
+    .slice(0, 3);
+
   const [mode, setMode] = useState<"choice" | "upload" | "browse" | "parsing">("choice");
   // Resume vs CV — flowcv's signature distinction. CVs are longer, more academic,
   // and include a publications / research / coursework section. Resumes are 1-2 pages,
@@ -268,6 +293,7 @@ function NewResumeContent() {
   const handleBrowsePersona = (tid: string) => {
     const p = PERSONA_SAMPLE[tid];
     if (!p) { toast.error("That persona doesn't have a full sample yet."); return; }
+    bumpTemplateUsage(tid);
     const id = addResume({
       title: `${p.name} — Sample`,
       template: tid,
@@ -288,6 +314,7 @@ function NewResumeContent() {
 
   const handleStartFromPersona = () => {
     if (!persona) { handleCreateEmpty(); return; }
+    bumpTemplateUsage(templateId);
     const id = addResume({
       title: `${persona.name} — Sample`,
       template: templateId,
@@ -459,6 +486,33 @@ function NewResumeContent() {
         </div>
 
         <AnimatePresence mode="wait">
+          {/* R24: Recently used templates — top 3 persona templates the user has
+              actually started a resume from. Hidden when usage is empty. Click
+              routes to ?template=X so the choice grid below loads that persona
+              as the recommended option. */}
+          {recentTemplates.length > 0 && mode === "choice" && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mr-1">Recently used</span>
+              {recentTemplates.map(([tid, count]) => {
+                const meta = TEMPLATE_PERSONAS[tid];
+                if (!meta) return null;
+                return (
+                  <button
+                    key={tid}
+                    onClick={() => router.replace(`/dashboard/resume/new?template=${tid}`)}
+                    className="group inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-white dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.08] hover:border-brand-500/40 transition-colors"
+                    title={`Use ${meta.name}'s template (used ${count} ${count === 1 ? "time" : "times"})`}
+                  >
+                    <span className="w-5 h-5 rounded-full bg-gradient-to-br from-brand-200 to-brand-400 text-white text-[9px] font-bold flex items-center justify-center flex-shrink-0">
+                      {meta.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}
+                    </span>
+                    <span className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300 group-hover:text-brand-600 transition-colors">{meta.name}</span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 border border-zinc-200 dark:border-white/10 rounded px-1.5 py-0.5">{count}×</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
           {/* R22: Recently edited resume — appears only when the user has at
               least one resume with real content. */}
           {recentlyEdited && mode === "choice" && (
