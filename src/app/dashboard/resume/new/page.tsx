@@ -8,6 +8,7 @@ import { useResumeStore } from "@/store/resumeStore";
 import { FileParserService } from "@/lib/FileParserService";
 import { ResumeParserService } from "@/lib/ResumeParserService";
 import { cn } from "@/lib/utils";
+import { TEMPLATE_CONFIGS } from "@/components/resume/templates/config";
 import { motion, AnimatePresence } from "framer-motion";
 
 function NewResumeContent() {
@@ -188,6 +189,72 @@ function NewResumeContent() {
 
             </motion.div>
           )}
+
+          {/* R20: Templates gallery — resume.com's "Examples" and "Templates" nav
+              surface the catalog right at the entry funnel so users can pick a
+              starting design. We mirror that with a 3x3 grid of all 9 templates,
+              each as a clickable card that creates a new empty resume with that
+              template pre-selected. */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mr-1">9 Templates</span>
+              <span className="flex-1 h-px bg-zinc-200 dark:bg-white/[0.06]" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Click to start with this design</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
+              {TEMPLATE_CONFIGS.map((tpl) => (
+                <button
+                  key={tpl.id}
+                  onClick={() => {
+                    // Create an empty resume with the chosen template and go to the editor
+                    const id = addResume({
+                      title: `Untitled — ${tpl.name}`,
+                      template: tpl.id,
+                      data: {
+                        personal: { name: "" },
+                        experience: [],
+                        education: [],
+                        skills: [],
+                      },
+                      theme: {
+                        primaryColor: "#2c3e50",
+                        accentColor: "#7f8c8d",
+                        backgroundColor: "#ffffff",
+                        textColor: "#1a1a2e",
+                        fontFamily: "'Inter', sans-serif",
+                        baseFontSize: 11,
+                        headerFontSize: 24,
+                        sectionTitleSize: 11,
+                        companyFontSize: 11,
+                        lineHeight: 1.4,
+                        pagePadding: 30,
+                        sectionSpacing: 12,
+                        itemSpacing: 6,
+                      },
+                      section_order: [
+                        "summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects"
+                      ],
+                      section_visibility: {},
+                      is_base: true,
+                    });
+                    router.push(`/dashboard/resume/${id}`);
+                  }}
+                  className="group rounded-2xl border border-zinc-200 dark:border-white/[0.05] bg-white/40 dark:bg-white/[0.02] hover:border-brand-500/40 hover:bg-white/60 dark:hover:bg-white/[0.04] transition-all p-4 text-left"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="w-10 h-12 rounded-md bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 border border-zinc-200 dark:border-white/10 flex items-center justify-center text-[10px] font-bold text-zinc-400 group-hover:from-brand-500/10 group-hover:to-brand-500/5 transition-all">
+                      {tpl.thumbnail}
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 px-1.5 py-0.5 rounded-full bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.06]">
+                      {tpl.tag}
+                    </span>
+                  </div>
+                  <p className="text-[12px] font-bold text-zinc-900 dark:text-white leading-tight">{tpl.name}</p>
+                  <p className="text-[10px] text-zinc-500 mt-1 leading-snug line-clamp-2">{tpl.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
 
           {mode === "upload" && (
             <motion.div
