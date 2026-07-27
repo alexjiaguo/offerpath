@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowsClockwise, Check, File, FileText, Printer } from '@phosphor-icons/react';
+import { ArrowsClockwise, Check, EnvelopeSimple, File, FileText, Printer } from '@phosphor-icons/react';
+import Link from "next/link";
 import type { ResumeData } from "@/types";
 
 /* ═══════════════════════════════════════════════════
@@ -11,11 +12,13 @@ import type { ResumeData } from "@/types";
 interface ExportButtonsProps {
   resumeData: ResumeData;
   resumeTitle: string;
+  resumeId: string;
 }
 
 export default function ExportButtons({
   resumeData,
   resumeTitle,
+  resumeId,
 }: ExportButtonsProps) {
   const [exportingDocx, setExportingDocx] = useState(false);
   const [exportedDocx, setExportedDocx] = useState(false);
@@ -221,6 +224,19 @@ export default function ExportButtons({
         <Printer className="w-4 h-4 text-surface-400" />
         <span className="hidden md:inline">Print</span>
       </button>
+
+      {/* R19: Cover Letter shortcut — pairs this resume with the Cover Letter
+          Builder, matching the resume.com editor's "one-click cover letter" pill
+          already in the action bar but putting it next to the export actions so
+          the user can ship both in one stop. */}
+      <Link
+        href={`/dashboard/resume/cover-letters?resume=${resumeId}`}
+        className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface-200 text-surface-400 font-semibold text-sm hover:text-brand-600 hover:bg-surface-100 transition-all"
+        title={`Open the cover letter builder paired with "${resumeTitle}"`}
+      >
+        <EnvelopeSimple className="w-4 h-4 text-surface-400" />
+        <span className="hidden md:inline">Cover Letter</span>
+      </Link>
       {exportError && (
         <span className="text-xs text-red-500">{exportError}</span>
       )}

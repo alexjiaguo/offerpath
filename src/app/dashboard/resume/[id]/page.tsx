@@ -295,7 +295,7 @@ export default function ResumeEditorPage({
                 <div className="px-4 py-2 rounded-xl bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-bold uppercase tracking-widest">
                   Live Preview
                 </div>
-                <ExportButtons resumeData={data} resumeTitle={resume.title} />
+                <ExportButtons resumeData={data} resumeTitle={resume.title} resumeId={id} />
               </div>
             </div>
             
@@ -462,7 +462,7 @@ export default function ResumeEditorPage({
             <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Preview</span>
           </button>
 
-          <ExportButtons resumeData={data} resumeTitle={resume.title} />
+          <ExportButtons resumeData={data} resumeTitle={resume.title} resumeId={id} />
 
           <div className="flex items-center gap-2">
             {lastSavedAt && (
