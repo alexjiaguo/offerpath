@@ -364,6 +364,21 @@ export default function ResumeEditorPage({
   const bulletCount = (data.experience || []).reduce((sum, e) => sum + (e.bullets?.filter((b) => b.trim()).length || 0), 0);
   const qualityScore = Math.min(100, completedCount * 15 + Math.min(25, bulletCount));
   const qualityTone = qualityScore >= 80 ? "emerald" : qualityScore >= 50 ? "amber" : "red";
+  // R25: live word count across the resume's body text. Same sweep style as
+  // resume.io's R19 length widget, but kept inline so the editor title row
+  // can show it as a single stat without a sidebar panel.
+  const wordCount = (() => {
+    const parts: string[] = [];
+    if (data.summary) parts.push(data.summary);
+    (data.experience || []).forEach((e) => (e.bullets || []).forEach((b) => parts.push(b)));
+    (data.education || []).forEach((e) => {
+      if (e.institution) parts.push(e.institution);
+      if (e.degree) parts.push(e.degree);
+      if (e.field) parts.push(e.field);
+    });
+    (data.skills || []).forEach((s) => parts.push(typeof s === "string" ? s : s.name));
+    return parts.join(" ").split(/\s+/).filter(Boolean).length;
+  })();
   // R23: per-section contributions shown in the badge popover. Kept in sync
     // with the same heuristic so the breakdown never disagrees with the
     // headline number.
@@ -616,6 +631,13 @@ export default function ResumeEditorPage({
                   </div>
                 )}
               </div>
+            </div>
+            {/* R25: live word count — small stat pill next to the Quality Score
+                so the user can see body-text length at a glance. Honest sweep
+                of summary + bullets + education + skills (no fabricated target). */}
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400" title="Body word count across summary, experience, education, and skills">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+              <span className="text-[10px] font-bold uppercase tracking-widest">{wordCount.toLocaleString()} words</span>
             </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
           </div>
