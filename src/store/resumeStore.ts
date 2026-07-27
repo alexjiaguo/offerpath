@@ -16,6 +16,9 @@ export interface HistorySnapshot {
   data: ResumeData;
   template: string;
   theme: ResumeTheme;
+  // R25: optional timestamp for the sidebar 'Edit history' panel. Optional
+  // so older persisted state without it still hydrates.
+  timestamp?: string;
 }
 
 export interface ResumeState {
@@ -381,6 +384,7 @@ export const useResumeStore = create<ResumeState>()(
       data: JSON.parse(JSON.stringify(resume.data)),
       template: resume.template,
       theme: { ...resume.theme },
+      timestamp: new Date().toISOString(),
     };
 
     set((state) => ({

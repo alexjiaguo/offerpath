@@ -93,6 +93,7 @@ export default function ResumeEditorPage({
     canRedo,
     saveToHistory,
     moveSection,
+    history,
     toggleVisibility,
   } = useResumeStore();
   const { getProfileSummary } = useProfileStore();
@@ -1444,6 +1445,48 @@ export default function ResumeEditorPage({
                   />
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* R25: Edit history panel — last few saveToHistory snapshots with
+            a Restore button per row that calls the existing undo(id) action.
+            Hidden when no edits yet. Sits between the main content and the
+            R23 meta footer. */}
+        {history.past.length > 0 && (
+          <div className="liquid-glass rounded-3xl border border-zinc-200 dark:border-white/[0.05] overflow-hidden mt-6">
+            <div className="w-full flex items-center justify-between p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                  <Clock weight="duotone" className="w-4 h-4 text-amber-400" />
+                </div>
+                <div>
+                  <span className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white block">Edit history</span>
+                  <span className="text-[10px] text-zinc-500">{history.past.length} {history.past.length === 1 ? "snapshot" : "snapshots"} · click Restore to revert</span>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500">{history.past.length}</span>
+            </div>
+            <div className="px-5 pb-5 space-y-1.5 max-h-48 overflow-y-auto">
+              {history.past.slice(-5).reverse().map((snap, i) => (
+                <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-white dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.04] hover:border-amber-500/30 transition-all group">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] font-semibold text-zinc-900 dark:text-white truncate">
+                      {snap.timestamp ? new Date(snap.timestamp).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "earlier edit"}
+                    </p>
+                    <p className="text-[10px] text-zinc-500 truncate">
+                      {snap.template} · {Object.keys(snap.data || {}).filter((k) => Array.isArray((snap.data as Record<string, unknown>)[k]) ? ((snap.data as Record<string, unknown[]>)[k] as unknown[]).length > 0 : Boolean((snap.data as Record<string, unknown>)[k])).length} sections
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => undo(id)}
+                    className="flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest text-amber-500 hover:bg-amber-500/10 transition-all opacity-0 group-hover:opacity-100 flex-shrink-0"
+                    title="Restore to this snapshot (undo back to it)"
+                  >
+                    Restore
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         )}
