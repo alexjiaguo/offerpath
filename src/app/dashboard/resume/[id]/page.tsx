@@ -113,6 +113,20 @@ export default function ResumeEditorPage({
       window.addEventListener("mousedown", handler);
       return () => window.removeEventListener("mousedown", handler);
     }, [scoreOpen]);
+    // R26: word count breakdown popover - same outside-click pattern as the
+    // Quality Score popover so the two badges feel consistent.
+    const [wordsOpen, setWordsOpen] = useState(false);
+    const wordsRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+      if (!wordsOpen) return;
+      const handler = (e: MouseEvent) => {
+        if (wordsRef.current && !wordsRef.current.contains(e.target as Node)) {
+          setWordsOpen(false);
+        }
+      };
+      window.addEventListener("mousedown", handler);
+      return () => window.removeEventListener("mousedown", handler);
+    }, [wordsOpen]);
   const [editorMode, setEditorMode] = useState<EditorMode>("form");
   const [showPreview, setShowPreview] = useState(true);
   const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
@@ -367,18 +381,39 @@ export default function ResumeEditorPage({
   // R25: live word count across the resume's body text. Same sweep style as
   // resume.io's R19 length widget, but kept inline so the editor title row
   // can show it as a single stat without a sidebar panel.
-  const wordCount = (() => {
-    const parts: string[] = [];
-    if (data.summary) parts.push(data.summary);
-    (data.experience || []).forEach((e) => (e.bullets || []).forEach((b) => parts.push(b)));
-    (data.education || []).forEach((e) => {
-      if (e.institution) parts.push(e.institution);
-      if (e.degree) parts.push(e.degree);
-      if (e.field) parts.push(e.field);
-    });
-    (data.skills || []).forEach((s) => parts.push(typeof s === "string" ? s : s.name));
-    return parts.join(" ").split(/\s+/).filter(Boolean).length;
+  // R26: per-section word counts so the 'X words' pill can show a breakdown
+  // popover (mirrors the R23 Quality Score popover). Each row jumps to its
+  // section. Total is summed from the same parts so the headline and the
+  // breakdown never disagree.
+  const wordBreakdown = (() => {
+    const count = (text: string) => text.split(/\s+/).filter(Boolean).length;
+    const summaryPart = data.summary || "";
+    const summaryWords = count(summaryPart);
+    const summaryParts = summaryPart ? 1 : 0;
+    const experienceWords = (data.experience || []).reduce(
+      (sum, e) => sum + (e.bullets || []).reduce((s, b) => s + count(b), 0), 0);
+    const experienceParts = (data.experience || []).reduce(
+      (sum, e) => sum + (e.bullets || []).filter((b) => b.trim()).length, 0);
+    const educationText = (data.education || [])
+      .map((e) => [e.institution, e.degree, e.field].filter(Boolean).join(" "))
+      .filter(Boolean).join(" ");
+    const educationWords = count(educationText);
+    const educationParts = (data.education || []).filter(
+      (e) => e.institution || e.degree || e.field).length;
+    const skillsText = (data.skills || [])
+      .map((s) => (s && s.name) || "")
+      .filter(Boolean).join(" ");
+    const skillsWords = count(skillsText);
+    const skillsParts = (data.skills || []).filter((s) => Boolean(s && s.name)).length;
+    return [
+      { key: "personal",   label: "Identity",   words: 0, parts: 0 },
+      { key: "summary",    label: "Summary",    words: summaryWords,    parts: summaryParts },
+      { key: "experience", label: "Experience", words: experienceWords, parts: experienceParts },
+      { key: "education",  label: "Education",  words: educationWords,  parts: educationParts },
+      { key: "skills",     label: "Skills",     words: skillsWords,     parts: skillsParts },
+    ];
   })();
+  const wordCount = wordBreakdown.reduce((sum, row) => sum + row.words, 0);
   // R23: per-section contributions shown in the badge popover. Kept in sync
     // with the same heuristic so the breakdown never disagrees with the
     // headline number.
@@ -632,12 +667,54 @@ export default function ResumeEditorPage({
                 )}
               </div>
             </div>
-            {/* R25: live word count — small stat pill next to the Quality Score
-                so the user can see body-text length at a glance. Honest sweep
-                of summary + bullets + education + skills (no fabricated target). */}
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400" title="Body word count across summary, experience, education, and skills">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
-              <span className="text-[10px] font-bold uppercase tracking-widest">{wordCount.toLocaleString()} words</span>
+            {/* R25+R26: live word count - R25 added the pill, R26 made it
+                click-to-expand so the per-section breakdown is one tap away.
+                Same outside-click pattern as the Quality Score popover. */}
+            <div className="relative" ref={wordsRef}>
+              <button
+                type="button"
+                onClick={() => setWordsOpen((o) => !o)}
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/70 dark:hover:bg-white/[0.08] transition-colors"
+                title="Click for per-section word breakdown"
+                aria-expanded={wordsOpen}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+                <span className="text-[10px] font-bold uppercase tracking-widest">{wordCount.toLocaleString()} words</span>
+              </button>
+              {wordsOpen && (
+                <div className="absolute left-0 top-full mt-2 w-72 z-30 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.08] shadow-2xl p-4 animate-fade-in">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Word count by section</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">{wordCount.toLocaleString()} total</span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {wordBreakdown.filter((row) => row.key !== "personal").map((row) => {
+                      const hasContent = row.parts > 0;
+                      return (
+                        <button
+                          key={row.key}
+                          type="button"
+                          onClick={() => { setActiveSection(row.key); setWordsOpen(false); }}
+                          disabled={!hasContent}
+                          className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors ${hasContent ? "hover:bg-zinc-100 dark:hover:bg-white/[0.04]" : "opacity-50 cursor-not-allowed"}`}
+                          title={hasContent ? `Jump to ${row.label}` : `${row.label} is empty`}
+                        >
+                          <span className={`w-4 h-4 rounded-md flex items-center justify-center flex-shrink-0 border ${hasContent ? "bg-brand-500/10 border-brand-500/30" : "bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/10"}`}>
+                            {hasContent ? <span className="w-1.5 h-1.5 rounded-full bg-brand-500" /> : <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />}
+                          </span>
+                          <span className={`text-[11px] flex-1 ${hasContent ? "text-zinc-900 dark:text-white font-semibold" : "text-zinc-500"}`}>{row.label}</span>
+                          <span className={`text-[10px] font-mono ${hasContent ? "text-zinc-700 dark:text-zinc-300" : "text-zinc-400"}`}>
+                            {row.words.toLocaleString()}{row.parts > 0 ? ` · ${row.parts}` : ""}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-3 pt-3 border-t border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-500 leading-relaxed">
+                    Counts summary, experience bullets, education, and skills. Identity (name/email) is excluded since it isn&apos;t body prose.
+                  </p>
+                </div>
+              )}
             </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
           </div>
