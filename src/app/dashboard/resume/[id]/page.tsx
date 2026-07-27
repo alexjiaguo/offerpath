@@ -98,7 +98,6 @@ export default function ResumeEditorPage({
   const resume = getResumeById(id);
 
   const [saved, setSaved] = useState(false);
-  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [activeSection, setActiveSection] = useState<string>("personal");
   const [manageOpen, setManageOpen] = useState(false);
   const manageBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -112,6 +111,29 @@ export default function ResumeEditorPage({
     window.addEventListener("mousedown", handler);
     return () => window.removeEventListener("mousedown", handler);
   }, [manageOpen]);
+
+  // R22: Live auto-save indicator pill — zustand persist already writes
+  // resume.updated_at on every updateResume, so the pill derives its label
+  // from that and ticks once per second. Reflects both the manual Save Draft
+  // button and implicit saves from any in-form edit. Replaces the older
+  // static "Last saved X min ago" that only showed up after a manual click.
+  const [autoSavedLabel, setAutoSavedLabel] = useState("Saved just now");
+  useEffect(() => {
+    if (!resume?.updated_at) return;
+    const compute = () => {
+      const ms = Date.now() - new Date(resume.updated_at).getTime();
+      if (ms < 0) { setAutoSavedLabel("Saved just now"); return; }
+      const sec = Math.floor(ms / 1000);
+      if (sec < 5) setAutoSavedLabel("Saved just now");
+      else if (sec < 60) setAutoSavedLabel(`Saved ${sec}s ago`);
+      else if (sec < 3600) setAutoSavedLabel(`Saved ${Math.floor(sec / 60)}m ago`);
+      else if (sec < 86400) setAutoSavedLabel(`Saved ${Math.floor(sec / 3600)}h ago`);
+      else setAutoSavedLabel(`Saved ${Math.floor(sec / 86400)}d ago`);
+    };
+    compute();
+    const id = setInterval(compute, 1000);
+    return () => clearInterval(id);
+  }, [resume?.updated_at]);
   const [editorMode, setEditorMode] = useState<EditorMode>("form");
   const [showPreview, setShowPreview] = useState(true);
   const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
@@ -195,7 +217,6 @@ export default function ResumeEditorPage({
     }
     
     setSaved(true);
-    setLastSavedAt(new Date());
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -465,11 +486,13 @@ export default function ResumeEditorPage({
           <ExportButtons resumeData={data} resumeTitle={resume.title} resumeId={id} />
 
           <div className="flex items-center gap-2">
-            {lastSavedAt && (
-              <span className="text-[10px] text-zinc-500 hidden md:inline" title={lastSavedAt.toLocaleString()}>
-                Last saved {Math.max(1, Math.round((Date.now() - lastSavedAt.getTime()) / 60000))} min ago
-              </span>
-            )}
+            <span
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 hidden md:inline-flex"
+              title={resume?.updated_at ? new Date(resume.updated_at).toLocaleString() : undefined}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              {autoSavedLabel}
+            </span>
             <button
               onClick={handleSave}
               className={cn(
