@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, IdentificationCard, Printer, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, IdentificationCard, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -215,6 +215,10 @@ export default function ResumeEditorPage({
     if (s < 3600) return `${Math.floor(s / 60)}m ago`;
     return `${Math.floor(s / 3600)}h ago`;
   };
+  // R31: read the tailoredFor meta off the resume data. Renders a small
+  // "Tailored for [Job]" chip in the title row when this resume was generated
+  // for a specific job. Hidden on the base resume (which has no tailoredFor).
+  const tailoredFor = (data as { tailoredFor?: { jobTitle: string; companyName: string; score: number; appliedAt: string } }).tailoredFor;
 
   const handleSave = async () => {
     updateResume(id, { template: selectedTemplate });
@@ -764,6 +768,21 @@ export default function ResumeEditorPage({
                 <ArrowsClockwise weight="duotone" className="w-2.5 h-2.5 text-sky-600 dark:text-sky-300" />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-sky-700 dark:text-sky-300">
                   Synced {formatSyncedAgo(syncedAt)}
+                </span>
+              </span>
+            )}
+            {/* R31: "Tailored for [Job]" chip. Renders only when this resume
+                has tailoredFor meta (i.e. it was AI-tailored for a specific
+                role). Hidden on the base resume. Amber tone so it's clearly
+                distinct from the sky-blue "Synced" chip. */}
+            {tailoredFor && (
+              <span
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-amber-500/10 border-amber-500/30"
+                title={`Tailored for ${tailoredFor.jobTitle} @ ${tailoredFor.companyName} — ${tailoredFor.score}/100 match`}
+              >
+                <Target weight="duotone" className="w-2.5 h-2.5 text-amber-600 dark:text-amber-300" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">
+                  Tailored for {tailoredFor.jobTitle} · {tailoredFor.score}/100
                 </span>
               </span>
             )}
