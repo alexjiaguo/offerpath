@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CalendarBlank, CheckCircle, CaretDown, CaretUp, Clock, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, Printer, User, Plus, Sparkle, Trash, Browser, Wrench, X, Target} from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CalendarBlank, CheckCircle, CaretDown, CaretUp, Clock, Copy, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, Printer, User, Plus, Sparkle, Trash, Browser, Wrench, X, Target} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -186,6 +186,63 @@ export default function ResumeEditorPage({
     setSaved(true);
     setLastSavedAt(new Date());
     setTimeout(() => setSaved(false), 2000);
+  };
+
+
+  // R32: serialize the resume data as plain text for the "Copy as plain
+  // text" action. Walks the same data the editor sees — no fabricated
+  // content, no extra fields.
+  const serializeAsPlainText = (d: typeof data, title: string) => {
+    const lines: string[] = [];
+    const p = d.personal;
+    if (p?.name) {
+      lines.push(p.name);
+      if (p.title) lines.push(p.title);
+      const contact = [p.email, p.phone, p.location].filter(Boolean).join(" | ");
+      if (contact) lines.push(contact);
+      if (p.linkedin) lines.push(p.linkedin);
+      lines.push("");
+    }
+    if (d.summary && d.summary.trim()) {
+      lines.push("SUMMARY");
+      lines.push(d.summary.trim());
+      lines.push("");
+    }
+    if (d.experience && d.experience.length > 0) {
+      lines.push("EXPERIENCE");
+      for (const exp of d.experience) {
+        const header = [exp.company, exp.title].filter(Boolean).join(" — ");
+        const meta = [exp.location, exp.start_date, exp.end_date].filter(Boolean).join(" · ");
+        if (header) lines.push(meta ? `${header} (${meta})` : header);
+        for (const bullet of (exp.bullets || [])) {
+          if (bullet && bullet.trim()) lines.push(`• ${bullet.trim()}`);
+        }
+        lines.push("");
+      }
+    }
+    if (d.education && d.education.length > 0) {
+      lines.push("EDUCATION");
+      for (const edu of d.education) {
+        const line = [edu.institution, [edu.degree, edu.field].filter(Boolean).join(", ")].filter(Boolean).join(" — ");
+        if (line) lines.push(line);
+      }
+      lines.push("");
+    }
+    const skills = (d.skills || []).map((s: { name?: string }) => s?.name).filter(Boolean) as string[];
+    if (skills.length > 0) {
+      lines.push("SKILLS");
+      lines.push(skills.join(", "));
+    }
+    return lines.filter((l) => l !== "").join("\n");
+  };
+  const handleCopyAsText = async () => {
+    try {
+      const text = serializeAsPlainText(data, resume.title);
+      await navigator.clipboard.writeText(text);
+      toast.success("Resume copied as plain text");
+    } catch {
+      toast.error("Couldn't access the clipboard");
+    }
   };
 
   const handleTailorWithAI = async () => {
@@ -763,6 +820,16 @@ export default function ResumeEditorPage({
           >
             <Printer className="w-4 h-4" />
             <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Print</span>
+          </button>
+          {/* R32: Copy as plain text - one-tap clipboard write. */}
+          <button
+            type="button"
+            onClick={handleCopyAsText}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-white/[0.12] transition-all"
+            title="Copy this resume as plain text to your clipboard"
+          >
+            <Copy className="w-4 h-4" />
+            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Copy</span>
           </button>
 
           <button
