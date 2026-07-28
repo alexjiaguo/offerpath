@@ -325,6 +325,12 @@ export default function ResumeEditorPage({
     const id = setInterval(() => setSyncTick((n) => n + 1), 10000);
     return () => clearInterval(id);
   }, [syncedAt]);
+  // R31: tick to refresh the "Last viewed Xm ago" label every 30s.
+  const [, setViewedTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setViewedTick((n) => n + 1), 30000);
+    return () => clearInterval(id);
+  }, []);
   const formatSavedAgo = (d: Date) => {
     const s = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
     if (s < 60) return `${s}s ago`;
@@ -340,6 +346,18 @@ export default function ResumeEditorPage({
     if (s < 60) return `${s}s ago`;
     if (s < 3600) return `${Math.floor(s / 60)}m ago`;
     return `${Math.floor(s / 3600)}h ago`;
+  };
+  // R31: format a "Last viewed Xm ago" label from the real `updated_at`
+  // timestamp on the resume record. Honest because it uses the actual
+  // last-saved timestamp — not a fabricated viewing event.
+  const formatViewedAgo = (iso: string) => {
+    const ms = Date.now() - new Date(iso).getTime();
+    if (ms < 0) return "just now";
+    const s = Math.floor(ms / 1000);
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+    return `${Math.floor(s / 86400)}d ago`;
   };
   useEffect(() => {
     const id = setInterval(() => setElapsedSec(Math.floor((Date.now() - startedAtRef.current) / 1000)), 1000);
@@ -1608,6 +1626,18 @@ export default function ResumeEditorPage({
             {/* R30: "Last synced" line shows when the base data was pulled from
                 the OfferPath profile. Hidden on resumes that were never
                 profile-linked (e.g. fully custom ones). */}
+            {/* R31: "Last viewed" line derived from the real `updated_at`
+                timestamp. Honest — uses the same field that's already
+                displayed as the "Updated" date in the footer. Renders always
+                (every resume has an updated_at), unlike the conditional
+                Synced/Saved/Export lines around it. */}
+            <>
+              <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              <span title={`Last viewed ${formatViewedAgo(resume.updated_at)}`}>
+                <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Last viewed</span>
+                {formatViewedAgo(resume.updated_at)}
+              </span>
+            </>
             {syncedAt && (
               <>
                 <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />

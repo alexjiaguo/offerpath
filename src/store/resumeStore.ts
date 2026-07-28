@@ -216,6 +216,13 @@ const MOCK_RESUMES: Resume[] = [
     user_id: "demo",
     title: "Tailored — Google Ads PM",
     data: {
+      tailoredFor: {
+        jobTitle: "Google Ads PM",
+        companyName: "Google",
+        score: 87,
+        appliedAt: "2026-07-26T14:18:38"
+      },
+
       personal: {
         name: "Alex Chen",
         title: "Ad Tech Product Leader",
@@ -284,6 +291,13 @@ const MOCK_RESUMES: Resume[] = [
     user_id: "demo",
     title: "Tailored — Grab Lead PM",
     data: {
+      tailoredFor: {
+        jobTitle: "Grab Lead PM",
+        companyName: "Grab",
+        score: 78,
+        appliedAt: "2026-07-26T14:18:38"
+      },
+
       personal: {
         name: "Alex Chen",
         title: "Super-App Product Leader",
