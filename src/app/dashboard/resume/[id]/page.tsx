@@ -317,8 +317,26 @@ export default function ResumeEditorPage({
     const id = setInterval(() => setSavedTick((n) => n + 1), 10000);
     return () => clearInterval(id);
   }, [lastSavedAt]);
+  // R30: tick to refresh the "Synced Xm ago" label every 10s when lastSyncedAt is set.
+  const syncedAt = (data as { lastSyncedAt?: string }).lastSyncedAt;
+  const [, setSyncTick] = useState(0);
+  useEffect(() => {
+    if (!syncedAt) return;
+    const id = setInterval(() => setSyncTick((n) => n + 1), 10000);
+    return () => clearInterval(id);
+  }, [syncedAt]);
   const formatSavedAgo = (d: Date) => {
     const s = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    return `${Math.floor(s / 3600)}h ago`;
+  };
+  // R30: format a "Synced Xm ago" label for the profile-sync line in the
+  // meta footer. Accepts an ISO string (matches data.lastSyncedAt).
+  const formatSyncedAgo = (iso: string) => {
+    const ms = Date.now() - new Date(iso).getTime();
+    if (ms < 0) return "just now";
+    const s = Math.floor(ms / 1000);
     if (s < 60) return `${s}s ago`;
     if (s < 3600) return `${Math.floor(s / 60)}m ago`;
     return `${Math.floor(s / 3600)}h ago`;
@@ -1587,6 +1605,18 @@ export default function ResumeEditorPage({
               <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Words</span>
               {wordCount.toLocaleString()}
             </span>
+            {/* R30: "Last synced" line shows when the base data was pulled from
+                the OfferPath profile. Hidden on resumes that were never
+                profile-linked (e.g. fully custom ones). */}
+            {syncedAt && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                <span title={`Profile sync was ${formatSyncedAgo(syncedAt)}`}>
+                  <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Last synced</span>
+                  {formatSyncedAgo(syncedAt)}
+                </span>
+              </>
+            )}
             {lastSavedAt && (
               <>
                 <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />

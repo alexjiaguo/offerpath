@@ -92,6 +92,7 @@ const MOCK_RESUMES: Resume[] = [
     user_id: "demo",
     title: "Base Resume — Product Leader",
     data: {
+      lastSyncedAt: "2026-07-28T14:08:45",
       personal: {
         name: "Alex Chen",
         title: "Senior Product Manager",
