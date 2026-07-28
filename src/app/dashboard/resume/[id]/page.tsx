@@ -167,6 +167,24 @@ export default function ResumeEditorPage({
   }
 
   const data = resume.data;
+  // R35: count the total number of experience bullets and how many include a
+  // numeric metric. Walks the real `data.experience[*].bullets[*]` strings —
+  // honest, no LLM.
+  const bulletStats = (() => {
+    const exp = data.experience || [];
+    let total = 0;
+    let withMetrics = 0;
+    for (const e of exp) {
+      for (const b of (e.bullets || [])) {
+        if (typeof b === "string" && b.trim()) {
+          total += 1;
+          if (/\d/.test(b)) withMetrics += 1;
+        }
+      }
+    }
+    return { total, withMetrics };
+  })();
+
   // R33: inline title editing state. Click the H1 to enter edit mode,
   // Enter or blur saves, Escape cancels.
   const [editingTitle, setEditingTitle] = useState(false);
@@ -1746,6 +1764,15 @@ export default function ResumeEditorPage({
                 displayed as the "Updated" date in the footer. Renders always
                 (every resume has an updated_at), unlike the conditional
                 Synced/Saved/Export lines around it. */}
+            {bulletStats.total > 0 && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                <span title={`${bulletStats.total} experience bullets — ${bulletStats.withMetrics} include a numeric metric`}>
+                  <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Bullets</span>
+                  {bulletStats.total} · {bulletStats.withMetrics} w/ metrics
+                </span>
+              </>
+            )}
             <>
               <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
               <span title={`Last viewed ${formatViewedAgo(resume.updated_at)}`}>
