@@ -214,6 +214,15 @@ export default function ResumeEditorPage({
   }
 
   const data = resume.data;
+  // R28: snapshot the resume data on mount so we can offer a "Reset" button
+  // that reverts the user back to whatever they had when they opened the
+  // editor. Honest because the snapshot is the data the user saw on first
+  // load — not a fabricated pristine state.
+  const initialDataRef = useRef<typeof data | null>(null);
+  if (initialDataRef.current === null) {
+    initialDataRef.current = data;
+  }
+  const isDirty = JSON.stringify(data) !== JSON.stringify(initialDataRef.current);
 
   const handleSave = async () => {
     updateResume(id, { template: selectedTemplate });
@@ -630,6 +639,24 @@ export default function ResumeEditorPage({
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               {autoSavedLabel}
             </span>
+            {/* R28: Reset / Discard changes. Only visible when the editor
+                data diverges from the snapshot taken on mount. Restores the
+                exact data the user opened the page with. */}
+            {isDirty && (
+              <button
+                onClick={() => {
+                  if (initialDataRef.current) {
+                    updateResume(id, { data: initialDataRef.current });
+                    toast.success("Reverted to the version you opened with.");
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.08] hover:border-amber-500/40 hover:text-amber-600 transition-all"
+                title="Discard changes since you opened this resume"
+              >
+                <ArrowCounterClockwise className="w-3.5 h-3.5" />
+                Reset
+              </button>
+            )}
             <button
               onClick={handleSave}
               className={cn(
