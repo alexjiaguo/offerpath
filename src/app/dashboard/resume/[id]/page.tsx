@@ -272,6 +272,31 @@ export default function ResumeEditorPage({
     return { personal, content, skills, total: Math.min(100, personal + content + skills) };
   }, [data.personal, data.summary, data.experience, data.education, data.skills]);
   const completeness = scoreBreakdown.total;
+  // R26: live body-text word count for the R23 meta footer. Same sweep as
+  // flowcv R25: summary + experience bullets + education + skills, no
+  // fabricated target. Typecast because ResumeData has a [key: string]: unknown
+  // index signature that narrows the typed access.
+  const wordCount = useMemo(() => {
+    const d = data as {
+      summary?: string;
+      experience?: { bullets?: string[] }[];
+      education?: { institution?: string; degree?: string; field?: string }[];
+      skills?: { name?: string }[] | string[];
+    };
+    const count = (text: string) => text.split(/\s+/).filter(Boolean).length;
+    let total = 0;
+    if (d.summary) total += count(d.summary);
+    (d.experience || []).forEach((e) => (e.bullets || []).forEach((b) => total += count(b)));
+    (d.education || []).forEach((e) => {
+      const text = [e.institution, e.degree, e.field].filter(Boolean).join(" ");
+      if (text) total += count(text);
+    });
+    (d.skills || []).forEach((s) => {
+      const name = typeof s === "string" ? s : s && s.name;
+      if (name) total += count(name);
+    });
+    return total;
+  }, [data.summary, data.experience, data.education, data.skills]);
   const completenessLabel = completeness >= 80 ? "ATS-friendly" : completeness >= 50 ? "Getting there" : "Needs content";
   const completenessColor = completeness >= 80 ? "text-emerald-400" : completeness >= 50 ? "text-amber-400" : "text-zinc-500";
 
@@ -1513,6 +1538,11 @@ export default function ResumeEditorPage({
             <span>
               <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Template</span>
               {TEMPLATE_CONFIGS.find((t) => t.id === selectedTemplate)?.name ?? selectedTemplate}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            <span title="Body word count across summary, experience bullets, education, and skills">
+              <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Words</span>
+              {wordCount.toLocaleString()}
             </span>
             {((data as { lastExportedAt?: string; lastExportFormat?: "pdf" | "docx" | "txt" }).lastExportedAt) && (
               <>
