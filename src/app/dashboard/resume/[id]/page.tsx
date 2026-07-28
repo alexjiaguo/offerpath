@@ -754,6 +754,9 @@ export default function ResumeEditorPage({
                 {resume.title}
               </h1>
             )}
+            <p className="text-[11px] text-zinc-500 mt-0.5">
+              Last edited {formatViewedAgo(resume.updated_at)}
+            </p>
           </div>
         </div>
 
