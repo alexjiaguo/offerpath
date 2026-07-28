@@ -98,6 +98,23 @@ export default function ResumeEditorPage({
   const resume = getResumeById(id);
 
   const [saved, setSaved] = useState(false);
+  // R29: timestamp of the last successful save. Renders a small "Saved Xs ago"
+  // pill in the title row (next to Quality Score / Tailor chip) so the user
+  // has a real, persistent indicator of when their last manual save happened.
+  // Mirrors resume.io R27 but lives in the title row per the resumecom spec.
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [, setSavedTick] = useState(0);
+  useEffect(() => {
+    if (!lastSavedAt) return;
+    const id = setInterval(() => setSavedTick((n) => n + 1), 10000);
+    return () => clearInterval(id);
+  }, [lastSavedAt]);
+  const formatSavedAgo = (d: Date) => {
+    const s = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    return `${Math.floor(s / 3600)}h ago`;
+  };
   const [activeSection, setActiveSection] = useState<string>("personal");
   const [manageOpen, setManageOpen] = useState(false);
   const manageBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -240,6 +257,7 @@ export default function ResumeEditorPage({
     }
     
     setSaved(true);
+    setLastSavedAt(new Date());
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -451,6 +469,17 @@ export default function ResumeEditorPage({
                   <Sparkle weight="fill" className="w-2.5 h-2.5" />
                   <span className="text-[10px] font-bold uppercase tracking-widest">Tailor</span>
                 </button>
+                {lastSavedAt && (
+                  <span
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-emerald-500/10 border-emerald-500/30"
+                    title={`Last saved ${formatSavedAgo(lastSavedAt)}`}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-300">
+                      Saved {formatSavedAgo(lastSavedAt)}
+                    </span>
+                  </span>
+                )}
                 {scoreOpen && (
                   <div className="absolute left-0 top-full mt-2 w-72 z-30 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.08] shadow-2xl p-4 animate-fade-in">
                     <div className="flex items-center justify-between mb-3">
