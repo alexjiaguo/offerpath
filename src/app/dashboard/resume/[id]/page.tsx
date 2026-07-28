@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, Check, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, Link as LinkIcon, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, Check, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, Link as LinkIcon, Target, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -241,6 +241,11 @@ export default function ResumeEditorPage({
   }
 
   const data = resume.data;
+
+  // R31: read the tailoredFor meta off the resume data. Renders a
+  // "Tailored for [Job] @ [Company]" pill + match score in the title row.
+  // Hidden on the base resume.
+  const tailoredFor = (data as { tailoredFor?: { jobTitle: string; companyName: string; score: number; appliedAt: string } }).tailoredFor;
   // R28: snapshot the resume data on mount so we can offer a "Reset" button
   // that reverts the user back to whatever they had when they opened the
   // editor. Honest because the snapshot is the data the user saw on first
@@ -513,6 +518,25 @@ export default function ResumeEditorPage({
                     >
                       Re-sync
                     </button>
+                  </span>
+                )}
+                {/* R31: "Tailored for [Job] @ [Company]" pill + match score.
+                    Sits in the title row after the R30 Synced chip. Renders
+                    only when this resume has tailoredFor meta. Amber tone to
+                    distinguish from the sky-blue Synced chip and the emerald
+                    Saved pill. */}
+                {tailoredFor && (
+                  <span
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-amber-500/10 border-amber-500/30"
+                    title={`Tailored for ${tailoredFor.jobTitle} @ ${tailoredFor.companyName} — ${tailoredFor.score}/100 match`}
+                  >
+                    <Target weight="duotone" className="w-2.5 h-2.5 text-amber-600 dark:text-amber-300" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">
+                      Tailored for {tailoredFor.jobTitle} @ {tailoredFor.companyName}
+                    </span>
+                    <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 border-l border-amber-500/30 pl-1.5">
+                      {tailoredFor.score}/100
+                    </span>
                   </span>
                 )}
                 {scoreOpen && (
