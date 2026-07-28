@@ -428,6 +428,20 @@ export default function ResumeEditorPage({
                                                 "text-red-700 dark:text-red-300"
                   }`}>Quality Score {qualityScore}/100</span>
                 </button>
+                {/* R27: One-tap "Tailor" chip in the title row — mirrors
+                    resume.com's prominent "Tailor to a job" CTA. Opens the
+                    same dialog as the AI TAILORING card below, so the
+                    affordance is honest: it just shortcuts an action that
+                    already exists on the page. */}
+                <button
+                  type="button"
+                  onClick={() => setShowTailorDialog(true)}
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-purple-500/10 border-purple-500/30 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20 transition-colors"
+                  title="Tailor this resume to a specific job"
+                >
+                  <Sparkle weight="fill" className="w-2.5 h-2.5" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Tailor</span>
+                </button>
                 {scoreOpen && (
                   <div className="absolute left-0 top-full mt-2 w-72 z-30 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.08] shadow-2xl p-4 animate-fade-in">
                     <div className="flex items-center justify-between mb-3">
