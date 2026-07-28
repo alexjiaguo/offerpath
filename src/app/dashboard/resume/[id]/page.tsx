@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, IdentificationCard, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, IdentificationCard, Printer, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -817,6 +817,18 @@ export default function ResumeEditorPage({
           </button>
 
           <ExportButtons resumeData={data} resumeTitle={resume.title} />
+
+          {/* R27: Print button - one-tap browser print dialog. PDF/DOCX
+              still route through ExportButtons; this is for users who just
+              want a quick print without re-rendering. */}
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-white/[0.12] transition-all"
+            title="Print this resume"
+          >
+            <Printer className="w-4 h-4" />
+            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Print</span>
+          </button>
 
           <button
             onClick={handleSave}
