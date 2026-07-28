@@ -241,6 +241,24 @@ export default function ResumeEditorPage({
   }
 
   const data = resume.data;
+  // R35: count the total number of experience bullets and how many of
+  // them include at least one numeric metric (any digit). Honest
+  // because it just walks the actual bullet strings; no LLM.
+  const bulletStats = (() => {
+    const exp = data.experience || [];
+    let total = 0;
+    let withMetrics = 0;
+    for (const e of exp) {
+      for (const b of (e.bullets || [])) {
+        if (typeof b === "string" && b.trim()) {
+          total += 1;
+          if (/\d/.test(b)) withMetrics += 1;
+        }
+      }
+    }
+    return { total, withMetrics };
+  })();
+
   // R34: format a "Last edited Xm ago" label from the real `updated_at`
   // timestamp on the resume record. Honest: the resume store already tracks
   // this, the subtitle just makes it visible above the fold.
@@ -656,6 +674,24 @@ export default function ResumeEditorPage({
             {/* R33: Inline editable title. Click the H1 to edit in place;
                 Enter or blur saves via updateResume, Escape cancels. Uses the
                 real resume.title field — no separate draft title. */}
+            {/* R35: bullet count + bullets-with-metrics chip. Walks the
+                actual data.experience bullets; conditional on total > 0. */}
+            {bulletStats.total > 0 && (
+              <span
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
+                title={`${bulletStats.total} experience bullets — ${bulletStats.withMetrics} include a numeric metric`}
+              >
+                <ListChecks weight="duotone" className="w-2.5 h-2.5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">
+                  {bulletStats.total} {bulletStats.total === 1 ? "bullet" : "bullets"}
+                </span>
+                {bulletStats.withMetrics > 0 && (
+                  <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 border-l border-zinc-300/60 dark:border-white/10 pl-1.5">
+                    {bulletStats.withMetrics} w/ metrics
+                  </span>
+                )}
+              </span>
+            )}
             {editingTitle ? (
               <input
                 ref={titleInputRef}
