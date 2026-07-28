@@ -184,6 +184,7 @@ export default function ResumeEditorPage({
     }
     
     setSaved(true);
+    setLastSavedAt(new Date());
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -305,6 +306,23 @@ export default function ResumeEditorPage({
   // while the page is open so the editor pill stays fresh.
   const startedAtRef = useRef<number>(Date.now());
   const [elapsedSec, setElapsedSec] = useState(0);
+  // R27: timestamp of the last successful save. Used by the "Saved Xs ago"
+  // pill in the title row so the user has a real, honest "last saved"
+  // indicator next to the elapsed time-to-draft pill.
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  // Tick to refresh the relative-time label every 10s when lastSavedAt is set.
+  const [, setSavedTick] = useState(0);
+  useEffect(() => {
+    if (!lastSavedAt) return;
+    const id = setInterval(() => setSavedTick((n) => n + 1), 10000);
+    return () => clearInterval(id);
+  }, [lastSavedAt]);
+  const formatSavedAgo = (d: Date) => {
+    const s = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    return `${Math.floor(s / 3600)}h ago`;
+  };
   useEffect(() => {
     const id = setInterval(() => setElapsedSec(Math.floor((Date.now() - startedAtRef.current) / 1000)), 1000);
     return () => clearInterval(id);
@@ -583,6 +601,19 @@ export default function ResumeEditorPage({
                   </>
                 )}
               </span>
+              {/* R27: "Saved Xs ago" pill — real, computed from the
+                  lastSavedAt timestamp set inside handleSave. Hidden
+                  until the first save so we don't show a fabricated
+                  timestamp. */}
+              {lastSavedAt && (
+                <span
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest border bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-300"
+                  title={lastSavedAt.toLocaleString()}
+                >
+                  <FloppyDisk weight="fill" className="w-2.5 h-2.5" />
+                  Saved {formatSavedAgo(lastSavedAt)}
+                </span>
+              )}
             </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
           </div>
