@@ -2,6 +2,7 @@
 
 import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, IdentificationCard, Printer, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
@@ -83,15 +84,17 @@ export default function ResumeEditorPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { 
-    getResumeById, 
-    updateResume, 
-    undo, 
-    redo, 
-    canUndo, 
+  const router = useRouter();
+  const {
+    getResumeById,
+    updateResume,
+    undo,
+    redo,
+    canUndo,
     canRedo,
     saveToHistory,
     moveSection,
+    duplicateResume,
   } = useResumeStore();
   const { getProfileSummary } = useProfileStore();
   const resume = getResumeById(id);
@@ -828,6 +831,26 @@ export default function ResumeEditorPage({
           >
             <Printer className="w-4 h-4" />
             <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Print</span>
+          </button>
+
+          {/* R28: Duplicate button - one-tap copy of this resume. Uses the
+              existing duplicateResume from the store, then navigates to the
+              new copy. */}
+          <button
+            onClick={() => {
+              const newId = duplicateResume(id);
+              if (newId) {
+                toast.success("Duplicated. Editing the copy now.");
+                router.push(`/dashboard/resume/${newId}`);
+              } else {
+                toast.error("Could not duplicate this resume.");
+              }
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-white/[0.12] transition-all"
+            title="Create an editable copy of this resume"
+          >
+            <ArrowsLeftRight className="w-4 h-4" />
+            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Duplicate</span>
           </button>
 
           <button
