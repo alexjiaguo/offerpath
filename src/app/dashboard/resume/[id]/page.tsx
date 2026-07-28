@@ -196,6 +196,18 @@ export default function ResumeEditorPage({
   }
 
   const data = resume.data;
+  // R33: inline title editing state. Click the H1 to enter edit mode,
+  // Enter or blur saves, Escape cancels.
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState(resume.title);
+  const titleInputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (editingTitle) {
+      titleInputRef.current?.focus();
+      titleInputRef.current?.select();
+    }
+  }, [editingTitle]);
+
 
   // R30: profile-sync timestamp + tick. Reads lastSyncedAt off the resume
   // data and refreshes the "Synced Xm ago" label every 10s. Hidden when
@@ -842,7 +854,40 @@ export default function ResumeEditorPage({
                 </span>
               </span>
             )}
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
+            {/* R33: Inline editable title. Click the H1 to edit in place;
+                Enter or blur saves via updateResume, Escape cancels. Uses the
+                real resume.title field — no separate draft title. */}
+            {editingTitle ? (
+              <input
+                ref={titleInputRef}
+                value={titleDraft}
+                onChange={(e) => setTitleDraft(e.target.value)}
+                onBlur={() => {
+                  if (titleDraft.trim() && titleDraft !== resume.title) {
+                    updateResume(id, { title: titleDraft.trim() });
+                  }
+                  setEditingTitle(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.currentTarget.blur();
+                  } else if (e.key === "Escape") {
+                    setTitleDraft(resume.title);
+                    setEditingTitle(false);
+                  }
+                }}
+                className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight bg-transparent border-b-2 border-brand-500/60 focus:outline-none focus:border-brand-500 px-0 py-0 min-w-[200px] max-w-full"
+                aria-label="Edit resume title"
+              />
+            ) : (
+              <h1
+                onClick={() => { setTitleDraft(resume.title); setEditingTitle(true); }}
+                className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight cursor-text hover:bg-zinc-100 dark:hover:bg-white/[0.04] rounded px-1 -mx-1 transition-colors"
+                title="Click to rename this resume"
+              >
+                {resume.title}
+              </h1>
+            )}
           </div>
         </div>
 
