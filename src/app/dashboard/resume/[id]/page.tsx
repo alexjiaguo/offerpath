@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, Link as LinkIcon, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, Check, CheckCircle, CaretDown, CaretUp, EnvelopeSimple, Link as LinkIcon, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -101,6 +101,20 @@ export default function ResumeEditorPage({
   const [activeSection, setActiveSection] = useState<string>("personal");
   const [manageOpen, setManageOpen] = useState(false);
   const manageBtnRef = useRef<HTMLButtonElement | null>(null);
+  // R26: Quality Score breakdown popover - same outside-click pattern as the
+  // flowcv score popover. Click the badge to see where the points come from.
+  const [scoreOpen, setScoreOpen] = useState(false);
+  const scoreRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!scoreOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (scoreRef.current && !scoreRef.current.contains(e.target as Node)) {
+        setScoreOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", handler);
+    return () => window.removeEventListener("mousedown", handler);
+  }, [scoreOpen]);
   useEffect(() => {
     if (!manageOpen) return;
     const handler = (e: MouseEvent) => {
@@ -289,6 +303,22 @@ export default function ResumeEditorPage({
   const bulletCount = (data.experience || []).reduce((sum, e) => sum + (e.bullets?.filter((b) => b.trim()).length || 0), 0);
   const qualityScore = Math.min(100, startedCount * 15 + Math.min(25, bulletCount));
   const qualityTone = qualityScore >= 80 ? "emerald" : qualityScore >= 50 ? "amber" : "red";
+  // R26: per-section score breakdown for the click-to-expand popover. Built
+  // from the same arithmetic as qualityScore so the breakdown never disagrees
+  // with the headline number. Each row jumps to its section.
+  const scoreBreakdown = SECTIONS.map((s) => {
+    const hasContent = [
+      Boolean(data.personal?.name),
+      Boolean(data.summary && data.summary.length > 30),
+      Boolean(data.experience && data.experience.length > 0),
+      Boolean(data.education && data.education.length > 0),
+      Boolean(data.skills && data.skills.length > 0),
+    ][SECTIONS.findIndex((x) => x.key === s.key)] || false;
+    if (s.key === "experience") {
+      return { key: s.key, label: s.label, points: (hasContent ? 15 : 0) + Math.min(25, bulletCount), max: 40 };
+    }
+    return { key: s.key, label: s.label, points: hasContent ? 15 : 0, max: 15 };
+  });
 
   const sectionOrder = resume.section_order || [
     "summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects"
@@ -371,24 +401,64 @@ export default function ResumeEditorPage({
                 <ShieldCheck weight="fill" className="w-2.5 h-2.5" />
                 Free audit included
               </a>
-              {/* R25: Quality Score badge — static 0-100 number using the same
-                  heuristic as flowcv R21. Honest 'Quality Score' label, not
-                  'ATS score', so we don't claim a parsing model we don't have. */}
-              <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${
-                qualityTone === "emerald" ? "bg-emerald-500/10 border-emerald-500/30" :
-                qualityTone === "amber"   ? "bg-amber-500/10 border-amber-500/30" :
-                                            "bg-red-500/10 border-red-500/30"
-              }`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${
-                  qualityTone === "emerald" ? "bg-emerald-500" :
-                  qualityTone === "amber"   ? "bg-amber-500" :
-                                              "bg-red-500"
-                }`} />
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${
-                  qualityTone === "emerald" ? "text-emerald-700 dark:text-emerald-300" :
-                  qualityTone === "amber"   ? "text-amber-700 dark:text-amber-300" :
-                                              "text-red-700 dark:text-red-300"
-                }`}>Quality Score {qualityScore}/100</span>
+              {/* R25+R26: Quality Score badge - R25 added the static 0-100, R26
+                  made it click-to-expand so the per-section breakdown is one
+                  tap away. Same outside-click pattern as the flowcv score
+                  popover. Honest 'Quality Score' label, not 'ATS score'. */}
+              <div className="relative" ref={scoreRef}>
+                <button
+                  type="button"
+                  onClick={() => setScoreOpen((o) => !o)}
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border transition-colors ${
+                    qualityTone === "emerald" ? "bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20" :
+                    qualityTone === "amber"   ? "bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20" :
+                                                "bg-red-500/10 border-red-500/30 hover:bg-red-500/20"
+                  }`}
+                  title="Click for per-section breakdown"
+                  aria-expanded={scoreOpen}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    qualityTone === "emerald" ? "bg-emerald-500" :
+                    qualityTone === "amber"   ? "bg-amber-500" :
+                                                "bg-red-500"
+                  }`} />
+                  <span className={`text-[10px] font-bold uppercase tracking-widest ${
+                    qualityTone === "emerald" ? "text-emerald-700 dark:text-emerald-300" :
+                    qualityTone === "amber"   ? "text-amber-700 dark:text-amber-300" :
+                                                "text-red-700 dark:text-red-300"
+                  }`}>Quality Score {qualityScore}/100</span>
+                </button>
+                {scoreOpen && (
+                  <div className="absolute left-0 top-full mt-2 w-72 z-30 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.08] shadow-2xl p-4 animate-fade-in">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">How your score adds up</span>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest ${qualityTone === "emerald" ? "text-emerald-500" : qualityTone === "amber" ? "text-amber-500" : "text-red-500"}`}>{qualityScore}/100</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      {scoreBreakdown.map((row) => {
+                        const filled = row.points >= row.max;
+                        const partial = row.points > 0 && !filled;
+                        return (
+                          <button
+                            key={row.key}
+                            type="button"
+                            onClick={() => { setActiveSection(row.key); setScoreOpen(false); }}
+                            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/[0.04] transition-colors text-left"
+                          >
+                            <span className={`w-4 h-4 rounded-md flex items-center justify-center flex-shrink-0 ${filled ? "bg-emerald-500/15 border border-emerald-500/30" : partial ? "bg-amber-500/15 border border-amber-500/30" : "bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/10"}`}>
+                              {filled ? <Check className="w-2.5 h-2.5 text-emerald-500" weight="bold" /> : partial ? <span className="text-[8px] font-bold text-amber-600 dark:text-amber-300">{row.points}</span> : <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />}
+                            </span>
+                            <span className={`text-[11px] flex-1 ${filled ? "text-zinc-900 dark:text-white font-semibold" : partial ? "text-zinc-700 dark:text-zinc-300 font-medium" : "text-zinc-500"}`}>{row.label}</span>
+                            <span className={`text-[10px] font-mono ${filled ? "text-emerald-600 dark:text-emerald-400" : partial ? "text-amber-600 dark:text-amber-300" : "text-zinc-400"}`}>{row.points}/{row.max}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="mt-3 pt-3 border-t border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-500 leading-relaxed">
+                      Heuristic only — 5 base sections × 15 pts, plus up to 25 pts for experience bullets. Not an ATS score.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
