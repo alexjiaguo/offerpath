@@ -1587,6 +1587,15 @@ export default function ResumeEditorPage({
               <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Words</span>
               {wordCount.toLocaleString()}
             </span>
+            {lastSavedAt && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                <span title={`Last manual save was ${formatSavedAgo(lastSavedAt)}`}>
+                  <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Last saved</span>
+                  {formatSavedAgo(lastSavedAt)}
+                </span>
+              </>
+            )}
             {((data as { lastExportedAt?: string; lastExportFormat?: "pdf" | "docx" | "txt" }).lastExportedAt) && (
               <>
                 <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
