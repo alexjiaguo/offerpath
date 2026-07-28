@@ -197,6 +197,25 @@ export default function ResumeEditorPage({
 
   const data = resume.data;
 
+  // R30: profile-sync timestamp + tick. Reads lastSyncedAt off the resume
+  // data and refreshes the "Synced Xm ago" label every 10s. Hidden when
+  // lastSyncedAt is unset so non-profile-linked resumes stay clean.
+  const syncedAt = (data as { lastSyncedAt?: string }).lastSyncedAt;
+  const [, setSyncTick] = useState(0);
+  useEffect(() => {
+    if (!syncedAt) return;
+    const id = setInterval(() => setSyncTick((n) => n + 1), 10000);
+    return () => clearInterval(id);
+  }, [syncedAt]);
+  const formatSyncedAgo = (iso: string) => {
+    const ms = Date.now() - new Date(iso).getTime();
+    if (ms < 0) return "just now";
+    const s = Math.floor(ms / 1000);
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    return `${Math.floor(s / 3600)}h ago`;
+  };
+
   const handleSave = async () => {
     updateResume(id, { template: selectedTemplate });
     
@@ -731,6 +750,21 @@ export default function ResumeEditorPage({
               >
                 <IdentificationCard weight="duotone" className="w-2.5 h-2.5" />
                 Sample · {personaSample.template}
+              </span>
+            )}
+            {/* R30: Profile-sync chip. Sits in the title row next to the
+                Quality Score badge and the R29 persona chip. Renders only when
+                data.lastSyncedAt is set, so resumes that were never linked to
+                the profile stay clean. */}
+            {syncedAt && (
+              <span
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-sky-500/10 border-sky-500/30"
+                title={`Last synced from profile ${formatSyncedAgo(syncedAt)}`}
+              >
+                <ArrowsClockwise weight="duotone" className="w-2.5 h-2.5 text-sky-600 dark:text-sky-300" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-sky-700 dark:text-sky-300">
+                  Synced {formatSyncedAgo(syncedAt)}
+                </span>
               </span>
             )}
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
