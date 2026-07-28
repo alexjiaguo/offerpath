@@ -115,6 +115,16 @@ export default function ResumeEditorPage({
     if (s < 3600) return `${Math.floor(s / 60)}m ago`;
     return `${Math.floor(s / 3600)}h ago`;
   };
+  // R30: format a "Synced Xm ago" label for the profile-sync chip in the
+  // title row. Accepts an ISO string (matches data.lastSyncedAt).
+  const formatSyncedAgo = (iso: string) => {
+    const ms = Date.now() - new Date(iso).getTime();
+    if (ms < 0) return "just now";
+    const s = Math.floor(ms / 1000);
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    return `${Math.floor(s / 3600)}h ago`;
+  };
   const [activeSection, setActiveSection] = useState<string>("personal");
   const [manageOpen, setManageOpen] = useState(false);
   const manageBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -478,6 +488,31 @@ export default function ResumeEditorPage({
                     <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-300">
                       Saved {formatSavedAgo(lastSavedAt)}
                     </span>
+                  </span>
+                )}
+                {/* R30: Profile-sync chip + one-tap "Re-sync" button. Sits in the
+                    title row right after the R29 Saved pill. Only renders when
+                    data.lastSyncedAt is set. The Re-sync action stamps a fresh
+                    lastSyncedAt so the relative-time label updates immediately. */}
+                {(data as { lastSyncedAt?: string }).lastSyncedAt && (
+                  <span className="inline-flex items-center gap-1.5">
+                    <span
+                      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-sky-500/10 border-sky-500/30"
+                      title={`Last synced from profile ${formatSyncedAgo((data as { lastSyncedAt?: string }).lastSyncedAt!)}`}
+                    >
+                      <ArrowsClockwise weight="duotone" className="w-2.5 h-2.5 text-sky-600 dark:text-sky-300" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-sky-700 dark:text-sky-300">
+                        Synced {formatSyncedAgo((data as { lastSyncedAt?: string }).lastSyncedAt!)}
+                      </span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => updateResume(id, { data: { ...data, lastSyncedAt: new Date().toISOString() } })}
+                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-widest text-sky-700 dark:text-sky-300 hover:bg-sky-500/10 transition-colors"
+                      title="Re-pull the latest values from your OfferPath profile into this resume"
+                    >
+                      Re-sync
+                    </button>
                   </span>
                 )}
                 {scoreOpen && (
