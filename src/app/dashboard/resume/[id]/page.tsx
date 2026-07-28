@@ -719,6 +719,20 @@ export default function ResumeEditorPage({
                 </div>
               )}
             </div>
+            {/* R29: Sample persona chip - small, persistent indicator that
+                this title row belongs to a sample persona. Mirrors the
+                "Working from sample" banner below but stays in the title
+                row so users always know which template's data they're
+                looking at, even after dismissing the banner. */}
+            {personaSample && (
+              <span
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest border bg-indigo-500/10 border-indigo-500/30 text-indigo-600 dark:text-indigo-300"
+                title={`Sample persona: ${personaSample.name}${personaSample.role ? ` — ${personaSample.role}` : ""}`}
+              >
+                <IdentificationCard weight="duotone" className="w-2.5 h-2.5" />
+                Sample · {personaSample.template}
+              </span>
+            )}
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
           </div>
         </div>
