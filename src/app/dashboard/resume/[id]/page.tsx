@@ -196,6 +196,19 @@ export default function ResumeEditorPage({
   }
 
   const data = resume.data;
+  // R34: format a "Last edited Xm ago" label from the real `updated_at`
+  // timestamp on the resume record. Honest: the resume store already tracks
+  // this, the subtitle just makes it visible above the fold.
+  const formatViewedAgo = (iso: string) => {
+    const ms = Date.now() - new Date(iso).getTime();
+    if (ms < 0) return "just now";
+    const s = Math.floor(ms / 1000);
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+    return `${Math.floor(s / 86400)}d ago`;
+  };
+
   // R33: inline title editing state. Click the H1 to enter edit mode,
   // Enter or blur saves, Escape cancels.
   const [editingTitle, setEditingTitle] = useState(false);
@@ -888,6 +901,9 @@ export default function ResumeEditorPage({
                 {resume.title}
               </h1>
             )}
+            <p className="text-[11px] text-zinc-500 mt-0.5">
+              Last edited {formatViewedAgo(resume.updated_at)}
+            </p>
           </div>
         </div>
 
