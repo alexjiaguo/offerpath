@@ -127,6 +127,18 @@ export default function ResumeEditorPage({
     if (s < 3600) return `${Math.floor(s / 60)}m ago`;
     return `${Math.floor(s / 3600)}h ago`;
   };
+  // R101: time-to-draft timer — backport from resumeio. The "A draft in
+  // 10 mins" claim, made visible. Captures mount time in a ref so it
+  // doesn't reset on re-render; ticks every second while the page is open.
+  // draftReady is the same 80% threshold resumeio uses to flip the pill
+  // from "Editing" to "Draft ready".
+  const startedAtRef = useRef<number>(Date.now());
+  const [elapsedSec, setElapsedSec] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setElapsedSec(Math.floor((Date.now() - startedAtRef.current) / 1000)), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const formatElapsed = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
   const [activeSection, setActiveSection] = useState<string>("personal");
   const [manageOpen, setManageOpen] = useState(false);
   const manageBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -389,6 +401,10 @@ export default function ResumeEditorPage({
     const complete = [personalOk, summaryOk, experienceOk, educationOk, skillsOk].filter(Boolean).length;
     return { complete, total: 5 };
   })();
+  // R101: Draft-ready signal — at least 10 minutes of editing AND the
+  // 5-section completion counter is full. Same threshold resumeio uses,
+  // gated on the same sectionStats walked a few lines up.
+  const draftReady = elapsedSec >= 600 && sectionStats.complete === sectionStats.total && sectionStats.total > 0;
 
   // R70: latest role summary. Picks the experience entry with the most
   // recent start_date (YYYY-MM format) and surfaces title + company +
@@ -917,6 +933,29 @@ export default function ResumeEditorPage({
                 <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
               </div>
+              {/* R101: time-to-draft pill — backport from resumeio. Sits in
+                  the title row right after the Base/Tailored label. Three
+                  states: 'Editing' (under 10 min, muted), 'Still polishing'
+                  (over 10 min but not full, amber), 'Draft ready' (10+ min
+                  AND all 5 sections complete, emerald). mm:ss format. */}
+              <span
+                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest border ${
+                  draftReady
+                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-300"
+                    : elapsedSec >= 600
+                      ? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-300"
+                      : "bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-zinc-500"
+                }`}
+                title={draftReady ? "All 5 sections complete and you've been editing for 10+ minutes" : elapsedSec >= 600 ? "You've been editing for 10+ minutes — finish the remaining sections" : "Elapsed time on this resume"}
+              >
+                {draftReady ? (
+                  <><CheckCircle weight="fill" className="w-2.5 h-2.5" />Draft ready · {formatElapsed(elapsedSec)}</>
+                ) : elapsedSec >= 600 ? (
+                  <><WarningCircle weight="fill" className="w-2.5 h-2.5" />Still polishing · {formatElapsed(elapsedSec)}</>
+                ) : (
+                  <><Clock weight="regular" className="w-2.5 h-2.5" />Editing · {formatElapsed(elapsedSec)}</>
+                )}
+              </span>
               {/* Resume.com signature: "Free resume audits" trust badge. Always visible
                   in the editor header so the user knows the audit tool is included,
                   not gated behind a paywall. Links focus the ATS Intelligence panel below. */}
