@@ -1482,6 +1482,7 @@ export default function ResumeEditorPage({
                                       rows={2}
                                       className="flex-1 px-3 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-100 dark:bg-white/[0.05] transition-all resize-none font-sans placeholder:text-zinc-400"
                                     />
+                                      <span className="mt-2 text-[10px] tabular-nums text-zinc-400 dark:text-zinc-500 select-none w-7 text-right">{bullet.length}c</span>
                                     <button
                                       onClick={() => {
                                         saveToHistory(id);
