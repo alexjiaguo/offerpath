@@ -1817,21 +1817,29 @@ export default function ResumeEditorPage({
                         <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1 mb-1">Add New Skill</label>
                         <input
                           type="text"
-                          placeholder="Type a skill and press enter..."
+                          placeholder="Type or paste skills, separate with commas or new lines..."
                           onKeyDown={(e) => {
                             if (
                               e.key === "Enter" &&
                               (e.target as HTMLInputElement).value.trim()
                             ) {
                               saveToHistory(id);
-                              const newSkillName = (
-                                e.target as HTMLInputElement
-                              ).value.trim();
-                              const newSkill = { id: `s-${Date.now()}`, name: newSkillName, isHighlighted: false };
+                              // R74: accept comma- or newline-separated
+                              // lists so the user can paste a long skill
+                              // inventory in one go.
+                              const raw = (e.target as HTMLInputElement).value.trim();
+                              const parts = raw.split(/[,\n]+/).map((p) => p.trim()).filter(Boolean);
+                              if (parts.length === 0) return;
+                              const now = Date.now();
+                              const newSkills = parts.map((name, i) => ({
+                                id: `s-${now}-${i}`,
+                                name,
+                                isHighlighted: false,
+                              }));
                               updateResume(id, {
                                 data: {
                                   ...data,
-                                  skills: [...(data.skills || []), newSkill],
+                                  skills: [...(data.skills || []), ...newSkills],
                                 },
                               });
                               (e.target as HTMLInputElement).value = "";
