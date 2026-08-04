@@ -70,6 +70,45 @@ function NewResumeContent() {
     router.push(`/dashboard/resume/${id}`);
   };
 
+  // R93: 'Tailor to a Job' card. Was hard-routed to /dashboard/discover
+  // (a separate browsing page) which was the wrong destination — users
+  // landed there and never got to actually tailor anything. Now we
+  // create a new resume and navigate to its editor with ?tailor=open;
+  // the editor reads the flag in a useEffect and pops the tailor dialog.
+  const handleTailorToJob = () => {
+    const id = addResume({
+      title: "Tailored Resume",
+      template: templateId,
+      data: {
+        personal: { name: "" },
+        experience: [],
+        education: [],
+        skills: [],
+      },
+      theme: {
+        primaryColor: "#2c3e50",
+        accentColor: "#7f8c8d",
+        backgroundColor: "#ffffff",
+        textColor: "#1a1a2e",
+        fontFamily: "'Inter', sans-serif",
+        baseFontSize: 11,
+        headerFontSize: 24,
+        sectionTitleSize: 11,
+        companyFontSize: 11,
+        lineHeight: 1.4,
+        pagePadding: 30,
+        sectionSpacing: 12,
+        itemSpacing: 6
+      },
+      section_order: [
+        "summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects"
+      ],
+      section_visibility: {},
+      is_base: false,
+    });
+    router.push(`/dashboard/resume/${id}?tailor=open`);
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
@@ -181,7 +220,7 @@ function NewResumeContent() {
                 </div>
               </button>
               <button
-                onClick={() => router.push("/dashboard/discover")}
+                onClick={handleTailorToJob}
                 className="relative liquid-glass rounded-[32px] p-8 text-left border border-brand-500/30 hover:border-brand-500/60 transition-all group"
               >
                 <div className="absolute -top-3 left-8 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-500 text-white text-[9px] font-bold uppercase tracking-widest shadow-md">

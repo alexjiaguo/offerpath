@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useMemo, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
@@ -202,6 +203,16 @@ export default function ResumeEditorPage({
   
   // AI Tailoring state
   const [showTailorDialog, setShowTailorDialog] = useState(false);
+  // R93: when /new's 'Tailor to a Job' card routes here with ?tailor=open,
+  // pop the tailor dialog automatically so the user lands in the flow.
+  // useSearchParams is the App-Router-safe way (window.location.search can
+  // be empty during the first paint and would silently skip the pop).
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams?.get("tailor") === "open") {
+      setShowTailorDialog(true);
+    }
+  }, [searchParams]);
   const [tailorJD, setTailorJD] = useState("");
   const [tailorJobTitle, setTailorJobTitle] = useState("");
   const [tailorCompany, setTailorCompany] = useState("");
