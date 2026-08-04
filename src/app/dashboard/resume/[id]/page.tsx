@@ -180,6 +180,10 @@ export default function ResumeEditorPage({
     let shortCount = 0;
     let goodCount = 0;
     let longCount = 0;
+    // R44: same first-word verb check as the R40 dot tinting; duplicated
+    // inline so we don't need a module-level constant for one extra count.
+    let strongCount = 0;
+    const STRONG = new Set("led,built,shipped,drove,launched,created,designed,managed,delivered,grew,achieved,increased,reduced,saved,generated,implemented,executed,transformed,established,founded,secured,won,pioneered,optimized,accelerated,scaled,mentored,coached,owned,architected,negotiated,closed,cut,raised,produced,authored".split(","));
     for (const e of exp) {
       for (const b of (e.bullets || [])) {
         if (typeof b === "string" && b.trim()) {
@@ -188,10 +192,12 @@ export default function ResumeEditorPage({
           if (b.length < 50) shortCount += 1;
           else if (b.length <= 200) goodCount += 1;
           else longCount += 1;
+          const firstWord = b.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, "");
+          if (firstWord && STRONG.has(firstWord)) strongCount += 1;
         }
       }
     }
-    return { total, withMetrics, short: shortCount, good: goodCount, long: longCount };
+    return { total, withMetrics, short: shortCount, good: goodCount, long: longCount, strong: strongCount };
   })();
   // R38: walk the 5 base sections and check whether each is "complete".
   // personal: 5 base fields filled. summary: at least 50 chars. experience:
@@ -1866,7 +1872,7 @@ export default function ResumeEditorPage({
                 <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
                 <span title={`${bulletStats.total} experience bullets — ${bulletStats.withMetrics} with a metric, length ${bulletStats.good} good / ${bulletStats.short} short / ${bulletStats.long} long`}>
                   <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Bullets</span>
-                  {bulletStats.total} · {bulletStats.withMetrics} w/ metrics · {bulletStats.good}g{bulletStats.short > 0 ? ` · ${bulletStats.short}s` : ""}{bulletStats.long > 0 ? ` · ${bulletStats.long}l` : ""}
+                  {bulletStats.total} · {bulletStats.withMetrics} w/ metrics · {bulletStats.strong} strong · {bulletStats.good}g{bulletStats.short > 0 ? ` · ${bulletStats.short}s` : ""}{bulletStats.long > 0 ? ` · ${bulletStats.long}l` : ""}
                 </span>
               </>
             )}
