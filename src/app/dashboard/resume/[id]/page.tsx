@@ -1141,6 +1141,17 @@ export default function ResumeEditorPage({
                 )}
               </h1>
             )}
+            {sectionStats.complete === sectionStats.total && sectionStats.total > 0 && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-widest"
+                title="All 5 base sections have content"
+              >
+                <CheckCircle weight="duotone" className="w-3 h-3" />
+                All 5 sections complete — ready to export
+              </div>
+            )}
             <p className="text-[11px] text-zinc-500 mt-0.5">
               Last edited {formatViewedAgo(resume.updated_at)}
               {staleness && <span role="status" aria-live="polite" className="text-amber-600 dark:text-amber-400 font-medium" title={staleness.title}>{staleness.label}</span>}
