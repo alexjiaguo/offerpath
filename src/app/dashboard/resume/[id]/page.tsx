@@ -1887,7 +1887,33 @@ export default function ResumeEditorPage({
                                       {sv > 0 && (
                                         <>
                                           <span className="text-zinc-300 dark:text-zinc-600">·</span>
-                                          <span className="tabular-nums text-emerald-600 dark:text-emerald-400 font-bold">{sv} strong</span>
+                                          <span className="tabular-nums text-emerald-600 dark:text-emerald-400 font-bold">{sv} strong</span>{(() => {
+                                  // R107: roll up the R103 per-bullet
+                                  // quality score across this role. Each
+                                  // bullet scores 0-3; the role is the
+                                  // sum over (3 * bullets). Tone uses the
+                                  // same 80/50 thresholds as the editor
+                                  // Quality Score badge (R21).
+                                  const total = bs.length * 3;
+                                  let sum = 0;
+                                  for (const b of bs) {
+                                    const fw = b.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, '') || '';
+                                    const hasStrong = STRONG.has(fw);
+                                    const ln = b.length;
+                                    const hasMetric = /\d/.test(b);
+                                    const lenOK = ln >= 50 && ln <= 200;
+                                    sum += (hasStrong ? 1 : 0) + (lenOK ? 1 : 0) + (hasMetric ? 1 : 0);
+                                  }
+                                  if (total === 0) return null;
+                                  const pct = Math.round((sum / total) * 100);
+                                  const toneCls = pct >= 80 ? 'text-emerald-600 dark:text-emerald-400' : pct >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-red-500 dark:text-red-400';
+                                  return (
+                                    <>
+                                      <span className='text-zinc-300 dark:text-zinc-600'>·</span>
+                                      <span className={'tabular-nums font-bold ' + toneCls} title={'Aggregate bullet quality ' + sum + '/' + total + ' across ' + bs.length + ' bullet(s)' + ' — strong verb + length 50-200 + has digit'}>{pct}% quality</span>
+                                    </>
+                                  );
+                                })()}
                                         </>
                                       )}
                                     </div>
