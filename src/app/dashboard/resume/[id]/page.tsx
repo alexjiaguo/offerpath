@@ -210,6 +210,33 @@ export default function ResumeEditorPage({
     const complete = [personalOk, summaryOk, experienceOk, educationOk, skillsOk].filter(Boolean).length;
     return { complete, total: 5 };
   })();
+  // R43: total years of experience computed from real start_date / end_date
+  // on each ExperienceEntry. No fabrication — entries without dates contribute 0.
+  // end_date is omitted for "current" roles; treated as today.
+  const yearsOfExperience = (() => {
+    const expArr = (data as { experience?: Array<{ start_date?: string; end_date?: string }> }).experience || [];
+    const now = new Date();
+    let total = 0;
+    for (const e of expArr) {
+      if (!e.start_date) continue;
+      const [sy, sm] = e.start_date.split("-").map(Number);
+      if (!sy || !sm) continue;
+      let endYear: number;
+      let endMonth: number;
+      if (e.end_date) {
+        const [ey, em] = e.end_date.split("-").map(Number);
+        if (!ey || !em) continue;
+        endYear = ey; endMonth = em;
+      } else {
+        endYear = now.getFullYear(); endMonth = now.getMonth() + 1;
+      }
+      const start = sy + (sm - 1) / 12;
+      const end = endYear + (endMonth - 1) / 12;
+      const yrs = end - start;
+      if (yrs > 0) total += yrs;
+    }
+    return total; // raw fractional years
+  })();
 
   // R33: inline title editing state. Click the H1 to enter edit mode,
   // Enter or blur saves, Escape cancels.
@@ -1859,6 +1886,13 @@ export default function ResumeEditorPage({
               <span title={`Currently editing: ${SECTIONS.find((s) => s.key === activeSection)?.label ?? activeSection}`}>
                 <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Editing</span>
                 {SECTIONS.find((s) => s.key === activeSection)?.label ?? activeSection}
+              </span>
+            </>
+            <>
+              <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              <span title={`${yearsOfExperience.toFixed(1)} years of experience across ${((data as { experience?: unknown[] }).experience || []).length} role(s)`}>
+                <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Experience</span>
+                {yearsOfExperience >= 1 ? `${yearsOfExperience.toFixed(1)} yrs` : `${Math.round(yearsOfExperience * 12)} mo`}
               </span>
             </>
               <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
