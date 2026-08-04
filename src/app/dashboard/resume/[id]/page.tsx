@@ -257,6 +257,28 @@ export default function ResumeEditorPage({
   }
 
   const data = resume.data;
+  // R92: backport of the resume.io 'Last export' meta pill. Stamps
+  // data.lastExportedAt / data.lastExportFormat when ExportButtons fires,
+  // then refreshes the relative-time label every 30s. Hidden until the
+  // user actually exports.
+  const [, setExportTick] = useState(0);
+  useEffect(() => {
+    if (!(data as { lastExportedAt?: string }).lastExportedAt) return;
+    const id = setInterval(() => setExportTick((t) => t + 1), 30000);
+    return () => clearInterval(id);
+  }, [(data as { lastExportedAt?: string }).lastExportedAt]);
+  const formatLastExported = (iso: string) => {
+    const ms = Date.now() - new Date(iso).getTime();
+    if (ms < 0) return "just now";
+    const sec = Math.floor(ms / 1000);
+    if (sec < 60) return "just now";
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}m ago`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr}h ago`;
+    const day = Math.floor(hr / 24);
+    return `${day}d ago`;
+  };
   // R35: count the total number of experience bullets and how many of
   // them include at least one numeric metric (any digit). Honest
   // because it just walks the actual bullet strings; no LLM.
@@ -805,7 +827,7 @@ export default function ResumeEditorPage({
                 <div className="px-4 py-2 rounded-xl bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-bold uppercase tracking-widest">
                   Live Preview
                 </div>
-                <ExportButtons resumeData={data} resumeTitle={resume.title} resumeId={id} />
+                <ExportButtons resumeData={data} resumeTitle={resume.title} resumeId={id} onExport={(fmt) => updateResume(id, { data: { ...data, lastExportedAt: new Date().toISOString(), lastExportFormat: fmt } })} />
               </div>
             </div>
             
@@ -928,6 +950,21 @@ export default function ResumeEditorPage({
                     >
                       Re-sync
                     </button>
+                  </span>
+                )}
+                {/* R92: 'Last export' pill — appears once the user has
+                    exported the resume at least once. Sits in the title row
+                    right after the Synced + Re-sync cluster. Brand-tinted
+                    to read as an 'action taken' indicator. */}
+                {((data as { lastExportedAt?: string }).lastExportedAt) && (
+                  <span
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-brand-500/10 border-brand-500/30"
+                    title={`Last export: ${((data as { lastExportFormat?: "pdf" | "docx" | "txt" }).lastExportFormat ?? "file").toUpperCase()}`}
+                  >
+                    <FileText weight="duotone" className="w-2.5 h-2.5 text-brand-600 dark:text-brand-300" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-brand-700 dark:text-brand-300">
+                      Exported {((data as { lastExportFormat?: "pdf" | "docx" | "txt" }).lastExportFormat ?? "file").toUpperCase()} {formatLastExported((data as { lastExportedAt?: string }).lastExportedAt!)}
+                    </span>
                   </span>
                 )}
                 {/* R31: "Tailored for [Job] @ [Company]" pill + match score.
@@ -1343,7 +1380,7 @@ export default function ResumeEditorPage({
             <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Preview</span>
           </button>
 
-          <ExportButtons resumeData={data} resumeTitle={resume.title} resumeId={id} />
+          <ExportButtons resumeData={data} resumeTitle={resume.title} resumeId={id} onExport={(fmt) => updateResume(id, { data: { ...data, lastExportedAt: new Date().toISOString(), lastExportFormat: fmt } })} />
 
           <div className="flex items-center gap-2">
             <span

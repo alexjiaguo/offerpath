@@ -13,12 +13,17 @@ interface ExportButtonsProps {
   resumeData: ResumeData;
   resumeTitle: string;
   resumeId: string;
+  // R92: optional callback fired after a successful export. The editor
+  //  uses it to stamp data.lastExportedAt / data.lastExportFormat so
+  //  the meta footer can show 'Last export: PDF · 2h ago'.
+  onExport?: (format: "pdf" | "docx" | "txt") => void;
 }
 
 export default function ExportButtons({
   resumeData,
   resumeTitle,
   resumeId,
+  onExport,
 }: ExportButtonsProps) {
   const [exportingDocx, setExportingDocx] = useState(false);
   const [exportedDocx, setExportedDocx] = useState(false);
@@ -76,6 +81,7 @@ export default function ExportButtons({
       document.body.removeChild(link);
 
       setExportedPdf(true);
+      onExport?.("pdf");
       setTimeout(() => setExportedPdf(false), 2000);
     } catch (err) {
       console.error("PDF export failed:", err);
@@ -93,6 +99,7 @@ export default function ExportButtons({
       const { generateDocx } = await import("@/lib/exportDocx");
       await generateDocx(resumeData, resumeTitle);
       setExportedDocx(true);
+      onExport?.("docx");
       setTimeout(() => setExportedDocx(false), 2000);
     } catch (err) {
       console.error("DOCX export failed:", err);
@@ -143,6 +150,7 @@ export default function ExportButtons({
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       setExportedTxt(true);
+      onExport?.("txt");
       setTimeout(() => setExportedTxt(false), 2000);
     } catch (err) {
       setExportError("TXT export failed");
