@@ -264,6 +264,32 @@ export default function ResumeEditorPage({
     const complete = [personalOk, summaryOk, experienceOk, educationOk, skillsOk].filter(Boolean).length;
     return { complete, total: 5 };
   })();
+
+  // R48: next incomplete base section. Walks the same checks as
+  // sectionStats in order, returns the first key that is not yet complete
+  // (or null if all 5 are done).
+  const nextIncompleteSection = (() => {
+    const p = (data as { personal?: { name?: string; email?: string; phone?: string; location?: string; title?: string } }).personal || {};
+    const personalOk = !!(p.name && p.email && p.phone && p.location && p.title);
+    const summaryOk = typeof data.summary === "string" && data.summary.trim().length >= 50;
+    const expArr = (data as { experience?: Array<{ bullets?: string[] }> }).experience || [];
+    const experienceOk = expArr.some((e) => (e.bullets || []).some((b) => typeof b === "string" && b.trim()));
+    const eduArr = (data as { education?: unknown[] }).education || [];
+    const educationOk = eduArr.length > 0;
+    const skillsArr = (data as { skills?: unknown[] }).skills || [];
+    const skillsOk = skillsArr.length > 0;
+    const checks: Array<[string, boolean]> = [
+      ["personal", personalOk],
+      ["summary", summaryOk],
+      ["experience", experienceOk],
+      ["education", educationOk],
+      ["skills", skillsOk],
+    ];
+    for (const [k, ok] of checks) {
+      if (!ok) return k;
+    }
+    return null;
+  })();
   // R47: total resume character count used to estimate page length.
   // Walks the real personal / summary / experience / education / skills
   // strings — no fabrication, no LLM. ~3000 chars/page rule of thumb.
@@ -1101,6 +1127,18 @@ export default function ResumeEditorPage({
                 Editing {SECTIONS.find((s) => s.key === activeSection)?.label ?? activeSection}
               </span>
             </span>
+            {nextIncompleteSection && nextIncompleteSection !== activeSection && (
+              <button
+                onClick={() => setActiveSection(nextIncompleteSection)}
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-amber-100 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-500/20 transition-colors"
+                title={`Jump to the next incomplete section: ${SECTIONS.find((s) => s.key === nextIncompleteSection)?.label ?? nextIncompleteSection}`}
+              >
+                <SquaresFour weight="duotone" className="w-2.5 h-2.5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">
+                  Next: {SECTIONS.find((s) => s.key === nextIncompleteSection)?.label ?? nextIncompleteSection}
+                </span>
+              </button>
+            )}
             <span
               className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
               title={`${yearsOfExperience.toFixed(1)} years of experience across ${((data as { experience?: unknown[] }).experience || []).length} role(s)`}
