@@ -1524,7 +1524,7 @@ export default function ResumeEditorPage({
                         <div className="px-5 pb-5 space-y-3">
                           <div className="flex items-center gap-2 text-[10px] text-zinc-500">
                             <Clock weight="regular" className="w-3 h-3" />
-                            <span>Last applied {new Date(tf.appliedAt).toLocaleDateString()}</span>
+                            <span>Last applied {formatViewedAgo(tf.appliedAt)}</span>
                           </div>
                           <button
                             onClick={() => setShowTailorDialog(true)}
