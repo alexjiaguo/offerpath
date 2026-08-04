@@ -2080,7 +2080,26 @@ export default function ResumeEditorPage({
                       </div>
 
                       <div className="space-y-4">
-                        {(data.education || []).map((edu, index) => (
+                        {(data.education || []).length === 0 ? (
+                          <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/[0.1] p-8 text-center space-y-3 bg-zinc-50/50 dark:bg-white/[0.02]">
+                            <GraduationCap className="w-8 h-8 text-zinc-400 dark:text-zinc-600 mx-auto" weight="duotone" />
+                            <h3 className="text-sm font-bold text-zinc-700 dark:text-zinc-300">No education yet</h3>
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto">Add your highest degree first. Honors or GPA only if recent and impressive.</p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                saveToHistory(id);
+                                const newEdu: EducationEntry = { institution: "", degree: "", field: "" };
+                                updateResume(id, { data: { ...data, education: [...(data.education || []), newEdu] } });
+                              }}
+                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all"
+                            >
+                              <Plus className="w-4 h-4" />
+                              Add your first school
+                            </button>
+                          </div>
+                        ) : (
+                          (data.education || []).map((edu, index) => (
                           <div key={`edu-${edu.institution}-${edu.degree}-${index}`} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
                             <button
                               type="button"
@@ -2141,7 +2160,8 @@ export default function ResumeEditorPage({
                               </div>
                             </div>
                           </div>
-                        ))}
+                        ))
+                        )}
                       </div>
                     </div>
                   )}
