@@ -409,6 +409,24 @@ export default function ResumeEditorPage({
     const arr = (data as { skills?: Array<{ isHighlighted?: boolean }> }).skills || [];
     return { total: arr.length, highlighted: arr.filter((s) => s.isHighlighted).length };
   })();
+
+  // R67: skills used in bullets. Counts how many skills appear in at
+  // least one experience bullet (case-insensitive whole-word match).
+  const skillsUsage = (() => {
+    const arr = (data as { skills?: Array<{ name?: string }> }).skills || [];
+    const names = arr.map((s) => (s.name || "").trim()).filter(Boolean);
+    if (names.length === 0) return null;
+    const expArr = (data as { experience?: Array<{ bullets?: string[] }> }).experience || [];
+    const allText = expArr
+      .flatMap((e) => (e.bullets || []).map((b) => (typeof b === "string" ? b.toLowerCase() : "")))
+      .join(" ");
+    let used = 0;
+    for (const name of names) {
+      const re = new RegExp("\\b" + name.toLowerCase().replace(/[-/\\^$*+?.()|[\\]{}]/g, "\\$&") + "\\b");
+      if (re.test(allText)) used += 1;
+    }
+    return { used, total: names.length };
+  })();
   // R43: total years of experience computed from real start_date / end_date
   // on each ExperienceEntry. No fabrication — entries without dates contribute 0.
   // end_date is omitted for "current" roles; treated as today.
@@ -1998,7 +2016,18 @@ export default function ResumeEditorPage({
                   {/* Skills */}
                   {activeSection === "skills" && (
                     <div className="space-y-6" role="region" aria-labelledby="sec-skills">
-                      <h2 id="sec-skills" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Skills</h2>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <h2 id="sec-skills" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Skills</h2>
+                        {skillsUsage && (
+                          <span
+                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-600 dark:text-zinc-400"
+                            title={`${skillsUsage.used} of ${skillsUsage.total} skills appear in at least one experience bullet`}
+                          >
+                            <Wrench weight="duotone" className="w-3 h-3 text-zinc-500 flex-shrink-0" />
+                            <span className="font-bold">{skillsUsage.used}/{skillsUsage.total} used in bullets</span>
+                          </span>
+                        )}
+                      </div>
                       
                       <div className="flex flex-wrap gap-2">
                         {(data.skills || []).map((skill, index) => (
