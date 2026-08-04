@@ -245,7 +245,16 @@ export default function ResumeEditorPage({
         }
       }
     }
-    return { total, withMetrics, short: shortCount, good: goodCount, long: longCount, strong: strongCount };
+    const verbSet = new Set<string>();
+    for (const e of exp) {
+      for (const b of (e.bullets || [])) {
+        if (typeof b === "string" && b.trim()) {
+          const fw = b.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, "");
+          if (fw) verbSet.add(fw);
+        }
+      }
+    }
+    return { total, withMetrics, short: shortCount, good: goodCount, long: longCount, strong: strongCount, verbDiversity: verbSet.size };
   })();
   // R38: walk the 5 base sections and check whether each is "complete".
   // personal: 5 base fields filled. summary: at least 50 chars. experience:
@@ -1167,6 +1176,11 @@ export default function ResumeEditorPage({
                 {bulletStats.strong > 0 && (
                   <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 border-l border-zinc-300/60 dark:border-white/10 pl-1.5" title={`${bulletStats.strong} bullets start with a strong action verb`}>
                     {bulletStats.strong} strong
+                  </span>
+                )}
+                {bulletStats.total >= 3 && (
+                  <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 border-l border-zinc-300/60 dark:border-white/10 pl-1.5" title={`${bulletStats.verbDiversity} unique first-words across ${bulletStats.total} bullets`}>
+                    {bulletStats.verbDiversity} verbs
                   </span>
                 )}
               </span>
