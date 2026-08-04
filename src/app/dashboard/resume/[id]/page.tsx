@@ -1449,7 +1449,26 @@ export default function ResumeEditorPage({
                         </button>
                       </div>
                       <div className="space-y-4">
-                        {(data.experience || []).map((exp, index) => (
+                        {(data.experience || []).length === 0 ? (
+                          <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/[0.1] p-8 text-center space-y-3 bg-zinc-50/50 dark:bg-white/[0.02]">
+                            <Briefcase className="w-8 h-8 text-zinc-400 dark:text-zinc-600 mx-auto" weight="duotone" />
+                            <h3 className="text-sm font-bold text-zinc-700 dark:text-zinc-300">No work experience yet</h3>
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto">Add your most recent role first. Lead each bullet with a strong verb and quantify the result.</p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                saveToHistory(id);
+                                const newExp: ExperienceEntry = { company: "", title: "", location: "", start_date: "", end_date: "", current: false, bullets: [""] };
+                                updateResume(id, { data: { ...data, experience: [...(data.experience || []), newExp] } });
+                              }}
+                              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all"
+                            >
+                              <Plus className="w-4 h-4" />
+                              Add your first role
+                            </button>
+                          </div>
+                        ) : (
+                          (data.experience || []).map((exp, index) => (
                           <div key={`exp-${exp.company}-${exp.title}-${exp.start_date}-${index}`} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
                             <button
                               type="button"
@@ -1678,7 +1697,8 @@ export default function ResumeEditorPage({
                               </div>
                             </div>
                           </div>
-                        ))}
+                        ))
+                        )}
                       </div>
                     </div>
                   )}
