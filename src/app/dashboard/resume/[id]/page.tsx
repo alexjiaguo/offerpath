@@ -801,6 +801,16 @@ export default function ResumeEditorPage({
                 </span>
               </span>
             )}
+            {/* R42: active section chip. */}
+            <span
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
+              title={`Currently editing: ${SECTIONS.find((s) => s.key === activeSection)?.label ?? activeSection}`}
+            >
+              <PenNib weight="duotone" className="w-2.5 h-2.5" />
+              <span className="text-[10px] font-bold uppercase tracking-widest">
+                Editing {SECTIONS.find((s) => s.key === activeSection)?.label ?? activeSection}
+              </span>
+            </span>
             {editingTitle ? (
               <input
                 ref={titleInputRef}
