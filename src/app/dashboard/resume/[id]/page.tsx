@@ -2472,6 +2472,23 @@ export default function ResumeEditorPage({
                                     newEdus[index] = { ...newEdus[index], gpa: e.target.value };
                                     updateResume(id, { data: { ...data, education: newEdus } });
                                   }} placeholder="e.g. 3.9 GPA" className="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-100 dark:bg-white/[0.05] transition-all font-sans placeholder:text-zinc-400" />
+                                {(() => {
+                                  // R104: GPA range check. Quiet by design —
+                                  // we only flag clearly out-of-range values
+                                  // so the user isn't nagged for empty fields
+                                  // or text-only honors lines like 'Magna cum laude'.
+                                  const raw = (edu.gpa || '').trim();
+                                  if (!raw) return null;
+                                  const m = raw.match(/^(\d+(?:\.\d+)?)/);
+                                  if (!m) return null;
+                                  const n = parseFloat(m[1]);
+                                  if (!Number.isFinite(n)) return null;
+                                  if (n >= 0 && n <= 4.0) return null;
+                                  if (n > 4.0 && n <= 5.0) {
+                                    return <div className='text-[10px] text-amber-600 dark:text-amber-400 mt-1 pl-1' title='Looks like a 4.0+ weighted scale. Most resumes use the 4.0 standard — keep this only if your school really uses weighted.'>Looks weighted — most use 4.0</div>;
+                                  }
+                                  return <div className='text-[10px] text-red-500 dark:text-red-400 mt-1 pl-1' title={'GPA should be between 0 and 4.0 (got ' + n + ').'}>GPA should be between 0 and 4.0</div>;
+                                })()}
                                 </div>
                               </div>
                             </div>
