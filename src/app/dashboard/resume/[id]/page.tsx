@@ -441,6 +441,16 @@ export default function ResumeEditorPage({
     if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
     return `${Math.floor(s / 86400)}d ago`;
   };
+  // R51: stale-data nudge. Returns null when the resume was edited within
+  // the last 30 days, otherwise a {label, title} pair for the subtitle.
+  // Honest: derived from the real updated_at ISO timestamp, not invented.
+  const staleness = (() => {
+    const days = (Date.now() - new Date(resume.updated_at).getTime()) / 86400000;
+    if (days < 30) return null;
+    if (days < 60) return { label: " · 30+ days old — consider refreshing", title: `This resume hasn't been edited in ${Math.floor(days)} days. Refresh the dates and bullets before applying.` };
+    if (days < 90) return { label: " · 60+ days old — likely stale", title: `This resume hasn't been edited in ${Math.floor(days)} days. Recruiters may notice the gap.` };
+    return { label: ` · ${Math.floor(days)} days old — definitely stale`, title: `This resume hasn't been edited in ${Math.floor(days)} days. Time to revisit and refresh.` };
+  })();
 
   // R33: inline title editing state. Click the H1 to enter edit mode,
   // Enter or blur saves, Escape cancels.
@@ -1017,6 +1027,7 @@ export default function ResumeEditorPage({
             )}
             <p className="text-[11px] text-zinc-500 mt-0.5">
               Last edited {formatViewedAgo(resume.updated_at)}
+              {staleness && <span className="text-amber-600 dark:text-amber-400 font-medium" title={staleness.title}>{staleness.label}</span>}
             </p>
           </div>
         </div>
