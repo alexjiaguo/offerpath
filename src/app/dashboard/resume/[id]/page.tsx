@@ -220,6 +220,36 @@ export default function ResumeEditorPage({
     return { complete, total: 5 };
   })();
 
+  // R57: per-section completion map. Each base section is 0..1 based on
+  // the same checks R38 uses. Lets the right-rail tab show a tiny progress
+  // bar under the label so users see at a glance which sections are weak.
+  const sectionProgress = (() => {
+    const p = (data as { personal?: { name?: string; email?: string; phone?: string; location?: string; title?: string; linkedin?: string; website?: string } }).personal || {};
+    const personalFields = [p.name, p.email, p.phone, p.location, p.title];
+    const personalDone = personalFields.filter((v) => typeof v === "string" && v.trim()).length;
+    const personalPct = personalDone / 5;
+    const summaryLen = typeof data.summary === "string" ? data.summary.trim().length : 0;
+    const summaryPct = Math.min(1, summaryLen / 200);
+    const expArr = (data as { experience?: Array<{ bullets?: string[] }> }).experience || [];
+    const expFilled = expArr.filter((e) => (e.bullets || []).some((b) => typeof b === "string" && b.trim())).length;
+    const experiencePct = expArr.length === 0 ? 0 : Math.min(1, expFilled / expArr.length);
+    const eduArr = (data as { education?: unknown[] }).education || [];
+    const eduFilled = eduArr.filter((e) => {
+      const inst = (e as { institution?: string }).institution;
+      return typeof inst === "string" && inst.trim();
+    }).length;
+    const educationPct = eduArr.length === 0 ? 0 : Math.min(1, eduFilled / eduArr.length);
+    const skillsArr = (data as { skills?: unknown[] }).skills || [];
+    const skillsPct = Math.min(1, skillsArr.length / 8);
+    return {
+      personal: personalPct,
+      summary: summaryPct,
+      experience: experiencePct,
+      education: educationPct,
+      skills: skillsPct,
+    } as Record<string, number>;
+  })();
+
   // R48: next incomplete base section. Walks the same checks as
   // sectionStats in order, returns the first key that is not yet complete
   // (or null if all 5 are done).
@@ -1188,6 +1218,16 @@ export default function ResumeEditorPage({
                         >
                           <section.icon className="w-3.5 h-3.5" />
                           {section.label}
+                          {/* R57: 1px progress bar under the label. */}
+                          <span
+                            className="absolute left-0 right-0 -bottom-0.5 h-0.5 bg-zinc-200 dark:bg-white/[0.06] overflow-hidden rounded-full"
+                            aria-hidden="true"
+                          >
+                            <span
+                              className="block h-full bg-indigo-500 dark:bg-indigo-400 transition-all"
+                              style={{ width: `${Math.round((sectionProgress[section.key] ?? 0) * 100)}%` }}
+                            />
+                          </span>
                         </button>
                         <div className="flex flex-col gap-0.5">
                           <button onClick={() => moveSection(id, section.key as SectionKey, "up")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
