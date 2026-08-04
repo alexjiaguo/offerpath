@@ -1791,6 +1791,32 @@ export default function ResumeEditorPage({
                           <span>Pro tip: 3-4 lines is the sweet spot. Cut anything that doesn’t change how a recruiter reads you.</span>
                         </div>
                       )}
+                      {!data.summary && (
+                        <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/[0.1] p-5 space-y-3 bg-zinc-50/50 dark:bg-white/[0.02]">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-zinc-500" weight="duotone" />
+                            <h3 className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">No summary yet — try one of these</h3>
+                          </div>
+                          <div className="space-y-2">
+                            {[
+                              'Senior product leader with 8+ years shipping AI/ML platforms and ad-tech at scale. Led teams of 12+ to launch products reaching 40M MAU. Ex-TikTok, ex-Meta.',
+                              'Staff PM with deep ad-tech chops. Owned a $200M revenue line, grew it 3x in 18 months. Strong on ML platform products and cross-functional execution.',
+                              'Engineering leader turned PM. 10 years building infra, last 5 in product. Specializes in taking 0→1 products to PMF with data-driven iteration.',
+                            ].map((ex, i) => (
+                              <button
+                                key={'ex-' + i}
+                                type="button"
+                                onClick={() => updateResume(id, { data: { ...data, summary: ex } })}
+                                className="block w-full text-left text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-400 px-3 py-2 rounded-lg border border-zinc-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] hover:border-brand-500/40 hover:text-zinc-900 dark:hover:text-white transition-all"
+                                title="Click to use this example"
+                              >
+                                {ex}
+                              </button>
+                            ))}
+                          </div>
+                          <p className="text-[10px] text-zinc-500 dark:text-zinc-400">Click an example to drop it in, then edit it. Or just start typing — your real voice is the goal.</p>
+                        </div>
+                      )}
                       <textarea
                         value={data.summary || ""}
                         onBlur={() => saveToHistory(id)}
