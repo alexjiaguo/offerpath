@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, Copy, IdentificationCard, ListChecks, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler, SquaresFour} from '@phosphor-icons/react';
+import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, Copy, IdentificationCard, ListChecks, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler, SquaresFour, Clock} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -324,6 +324,44 @@ export default function ResumeEditorPage({
     if (totalChars < 5000) return "1-2 pages";
     if (totalChars < 8000) return "2 pages";
     return "2+ pages";
+  })();
+
+  // R50: total word count for read-time estimate. Walks the same text
+  // fields as R47's totalChars, just counts whitespace-separated tokens.
+  const totalWords = (() => {
+    let n = 0;
+    const count = (s: string) => (s.trim() ? s.trim().split(/\s+/).filter(Boolean).length : 0);
+    const p = (data as { personal?: { name?: string; email?: string; phone?: string; location?: string; title?: string; linkedin?: string; website?: string } }).personal || {};
+    for (const v of [p.name, p.email, p.phone, p.location, p.title, p.linkedin, p.website]) {
+      if (typeof v === "string") n += count(v);
+    }
+    if (typeof data.summary === "string") n += count(data.summary);
+    for (const e of (data.experience || [])) {
+      for (const v of [e.company, e.title, e.location, e.start_date, e.end_date]) {
+        if (typeof v === "string") n += count(v);
+      }
+      for (const b of (e.bullets || [])) {
+        if (typeof b === "string") n += count(b);
+      }
+    }
+    for (const e of (data.education || [])) {
+      for (const v of [e.institution, e.degree, e.field, e.start_date, e.end_date, e.location]) {
+        if (typeof v === "string") n += count(v);
+      }
+    }
+    const skillsArr = (data as { skills?: Array<{ name?: string }> }).skills || [];
+    for (const s of skillsArr) {
+      if (typeof s.name === "string") n += count(s.name);
+    }
+    return n;
+  })();
+  // R50: read-time estimate at ~200 wpm. "<1 min" for very short resumes,
+  // "1 min" / "2 min" otherwise. Honest: just a word count divided by wpm.
+  const readTime = (() => {
+    const minutes = totalWords / 200;
+    if (minutes < 0.5) return "<1 min read";
+    if (minutes < 1.5) return "1 min read";
+    return `${Math.round(minutes)} min read`;
   })();
   // R43: total years of experience computed from real start_date / end_date
   // on each ExperienceEntry. No fabrication — entries without dates contribute 0.
@@ -1155,6 +1193,15 @@ export default function ResumeEditorPage({
               <FileText weight="duotone" className="w-2.5 h-2.5" />
               <span className="text-[10px] font-bold uppercase tracking-widest">
                 {pageEstimate}
+              </span>
+            </span>
+            <span
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
+              title={`${totalWords.toLocaleString()} words across all sections (~200 wpm)`}
+            >
+              <Clock weight="duotone" className="w-2.5 h-2.5" />
+              <span className="text-[10px] font-bold uppercase tracking-widest">
+                {readTime}
               </span>
             </span>
             {editingTitle ? (
