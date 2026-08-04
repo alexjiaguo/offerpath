@@ -1851,6 +1851,23 @@ export default function ResumeEditorPage({
                                     updateResume(id, { data: { ...data, experience: newExps } });
                                   }} placeholder="e.g. Present" className="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-100 dark:bg-white/[0.05] transition-all font-sans placeholder:text-zinc-400" />
                                 </div>
+                                  {/* R76: "current role" toggle. When
+                                      on, the end_date is treated as "now"
+                                      and the input is locked. */}
+                                  <label className="mt-1.5 flex items-center gap-2 pl-1 cursor-pointer select-none">
+                                    <input
+                                      type="checkbox"
+                                      checked={!!exp.current}
+                                      onChange={(e) => {
+                                        saveToHistory(id);
+                                        const newExps = [...(data.experience || [])];
+                                        newExps[index] = { ...newExps[index], current: e.target.checked };
+                                        updateResume(id, { data: { ...data, experience: newExps } });
+                                      }}
+                                      className="w-3.5 h-3.5 rounded border-zinc-300 text-brand-500 focus:ring-brand-500/30"
+                                    />
+                                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Current Role</span>
+                                  </label>
                               </div>
                               {(() => {
                                 // R58: date sanity check. Only fires when
