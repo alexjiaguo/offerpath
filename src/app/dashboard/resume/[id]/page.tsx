@@ -604,6 +604,22 @@ export default function ResumeEditorPage({
     if (s < 3600) return `${Math.floor(s / 60)}m ago`;
     return `${Math.floor(s / 3600)}h ago`;
   };
+  // R101: time-to-draft timer — backport from resumeio. The "A draft in
+  // 10 mins" claim, made visible. Captures mount time in a ref so it
+  // doesn't reset on re-render; ticks every second while the page is open.
+  // draftReady is the same 80% threshold resumeio uses to flip the pill
+  // from "Editing" to "Draft ready".
+  const startedAtRef = useRef<number>(Date.now());
+  const [elapsedSec, setElapsedSec] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setElapsedSec(Math.floor((Date.now() - startedAtRef.current) / 1000)), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const formatElapsed = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  // Honest "Draft ready" signal: at least 10 minutes of editing AND the
+  // 5-section completion counter is full. Avoids the inflated claim of
+  // a generic timer that flips green the moment 600s pass.
+  const draftReady = elapsedSec >= 600 && sectionStats.complete === sectionStats.total && sectionStats.total > 0;
   // R92: backport of the resume.io 'Last export' meta pill. Stamps
   // data.lastExportedAt / data.lastExportFormat when ExportButtons fires,
   // then refreshes the relative-time label every 30s. Hidden until the
@@ -1115,6 +1131,29 @@ export default function ResumeEditorPage({
                 <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
               </div>
+              {/* R101: time-to-draft pill — backport from resumeio. Sits in
+                  the title row right after the Base/Tailored label. Three
+                  states: 'Editing' (under 10 min, muted), 'Still polishing'
+                  (over 10 min but not full, amber), 'Draft ready' (10+ min
+                  AND all 5 sections complete, emerald). mm:ss format. */}
+              <span
+                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest border ${
+                  draftReady
+                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-300"
+                    : elapsedSec >= 600
+                      ? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-300"
+                      : "bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-zinc-500"
+                }`}
+                title={draftReady ? "All 5 sections complete and you've been editing for 10+ minutes" : elapsedSec >= 600 ? "You've been editing for 10+ minutes — finish the remaining sections" : "Elapsed time on this resume"}
+              >
+                {draftReady ? (
+                  <><CheckCircle weight="fill" className="w-2.5 h-2.5" />Draft ready · {formatElapsed(elapsedSec)}</>
+                ) : elapsedSec >= 600 ? (
+                  <><WarningCircle weight="fill" className="w-2.5 h-2.5" />Still polishing · {formatElapsed(elapsedSec)}</>
+                ) : (
+                  <><Clock weight="regular" className="w-2.5 h-2.5" />Editing · {formatElapsed(elapsedSec)}</>
+                )}
+              </span>
               {/* R21+R23: Quality Score badge — click to expand the per-section
                   breakdown. Same heuristic as before; R23 just surfaces the
                   contribution of each section so the user can see what is
