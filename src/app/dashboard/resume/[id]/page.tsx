@@ -1538,17 +1538,38 @@ export default function ResumeEditorPage({
                                     </button>
                                   </div>
                                 ))}
-                                <button
-                                  onClick={() => {
-                                    saveToHistory(id);
-                                    const newExps = [...(data.experience || [])];
-                                    newExps[index] = { ...newExps[index], bullets: [...(newExps[index].bullets || []), ""] };
-                                    updateResume(id, { data: { ...data, experience: newExps } });
-                                  }}
-                                  className="text-[10px] font-bold text-brand-500 hover:text-brand-400 transition-colors uppercase tracking-widest pl-3 mt-1"
-                                >
-                                  + Add Bullet
-                                </button>
+                                <div className="flex items-center gap-3 mt-1 pl-3">
+                                  <button
+                                    onClick={() => {
+                                      saveToHistory(id);
+                                      const newExps = [...(data.experience || [])];
+                                      const oldBullets = newExps[index].bullets || [];
+                                      // R65: capitalize first letter of each non-empty bullet.
+                                      const cap = (s: string) => {
+                                        const t = s.trimStart();
+                                        if (!t) return s;
+                                        return s.slice(0, s.length - t.length) + t.charAt(0).toUpperCase() + t.slice(1);
+                                      };
+                                      newExps[index] = { ...newExps[index], bullets: oldBullets.map(cap) };
+                                      updateResume(id, { data: { ...data, experience: newExps } });
+                                    }}
+                                    className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-brand-500 transition-colors uppercase tracking-widest"
+                                    title="Capitalize the first letter of every bullet in this role"
+                                  >
+                                    Capitalize all
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      saveToHistory(id);
+                                      const newExps = [...(data.experience || [])];
+                                      newExps[index] = { ...newExps[index], bullets: [...(newExps[index].bullets || []), ""] };
+                                      updateResume(id, { data: { ...data, experience: newExps } });
+                                    }}
+                                    className="text-[10px] font-bold text-brand-500 hover:text-brand-400 transition-colors uppercase tracking-widest"
+                                  >
+                                    + Add Bullet
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
