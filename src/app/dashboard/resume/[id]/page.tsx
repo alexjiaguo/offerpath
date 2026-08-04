@@ -220,6 +220,43 @@ export default function ResumeEditorPage({
   // bulletStats for the R44 strong-verb count).
   const STRONG = new Set("led,built,shipped,drove,launched,created,designed,managed,delivered,grew,achieved,increased,reduced,saved,generated,implemented,executed,transformed,established,founded,secured,won,pioneered,optimized,accelerated,scaled,mentored,coached,owned,architected,negotiated,closed,cut,raised,produced,authored".split(","));
   const WEAK = new Set("helped,worked,responsible,participated,assisted,supported,contributed,involved,was,did,tried".split(","));
+  // R100: skills auto-suggest — backport from resumeio. Scan experience
+  // bullets + job titles for known tool/skill keywords and offer them
+  // as 1-click adds to the skills list. No model call — just a curated
+  // keyword bank + case-insensitive match. Mirrors resumeio's "extract
+  // skills from your experience" affordance.
+  const SKILL_BANK = [
+    "JavaScript", "TypeScript", "Python", "Go", "Rust", "Java", "Kotlin", "Swift",
+    "React", "Next.js", "Vue", "Svelte", "Node.js", "Django", "Flask", "FastAPI",
+    "PostgreSQL", "MySQL", "MongoDB", "Redis", "Snowflake", "BigQuery",
+    "AWS", "GCP", "Azure", "Docker", "Kubernetes", "Terraform",
+    "Figma", "Sketch", "Adobe XD", "Photoshop", "Illustrator",
+    "Salesforce", "HubSpot", "Looker", "Tableau", "Mixpanel", "Amplitude",
+    "Jira", "Asana", "Notion", "Linear", "Confluence",
+    "SQL", "ETL", "A/B Testing", "SEO", "SEM", "CRO",
+  ];
+  const suggestedSkills = useMemo(() => {
+    if (activeSection !== "skills") return [] as string[];
+    const corpus = [
+      data.summary || "",
+      ...((data.experience || []).flatMap((e) => [e.title || "", e.company || "", ...(e.bullets || [])])),
+    ].join(" ").toLowerCase();
+    const existing = new Set((data.skills || []).map((s) => (typeof s === "string" ? s : s.name).toLowerCase()));
+    return SKILL_BANK
+      .filter((skill) => !existing.has(skill.toLowerCase()) && corpus.includes(skill.toLowerCase()))
+      .slice(0, 5);
+  }, [activeSection, data.summary, data.experience, data.skills]);
+  const addSuggestedSkill = (skill: string) => {
+    saveToHistory(id);
+    updateResume(id, {
+      data: {
+        ...data,
+        skills: [...(data.skills || []), { id: `s-${Date.now()}`, name: skill, isHighlighted: false }],
+      },
+    });
+    toast.success(`Added "${skill}" to skills`);
+  };
+
   const bulletStats = (() => {
     const exp = data.experience || [];
     let total = 0;
@@ -2373,6 +2410,28 @@ export default function ResumeEditorPage({
                         )}
                       </div>
                       
+                      {suggestedSkills.length > 0 && (
+                        <div className="p-3 rounded-2xl border border-amber-500/20 bg-amber-500/5 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Sparkle weight="fill" className="w-3.5 h-3.5 text-amber-500" />
+                            <p className="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-widest">
+                              {suggestedSkills.length} suggested from your experience
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {suggestedSkills.map((s) => (
+                              <button
+                                key={s}
+                                onClick={() => addSuggestedSkill(s)}
+                                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold bg-white dark:bg-white/[0.04] border border-amber-500/30 text-zinc-700 dark:text-zinc-300 hover:border-amber-500 hover:text-amber-700 dark:hover:text-amber-300 transition-all"
+                              >
+                                <Plus className="w-2.5 h-2.5" />
+                                {s}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       <div className="flex flex-wrap gap-2">
                         {(data.skills || []).length === 0 && (
                           <div className="w-full rounded-2xl border border-dashed border-zinc-300 dark:border-white/[0.1] p-8 text-center space-y-3 bg-zinc-50/50 dark:bg-white/[0.02]">
