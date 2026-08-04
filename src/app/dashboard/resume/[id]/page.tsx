@@ -503,6 +503,17 @@ export default function ResumeEditorPage({
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(resume.title);
   const titleInputRef = useRef<HTMLInputElement | null>(null);
+  // R61: brief "Saved" pulse. Tracks data identity; flips to true for
+  // 1.6s whenever data changes, then back to false. The H1 renders a
+  // small "Saved" badge while true. No fake timestamps; the effect
+  // only fires on real data changes.
+  const [justSaved, setJustSaved] = useState(false);
+  useEffect(() => {
+    if (!resume.id) return;
+    setJustSaved(true);
+    const t = setTimeout(() => setJustSaved(false), 1600);
+    return () => clearTimeout(t);
+  }, [data, resume.id]);
   useEffect(() => {
     if (editingTitle) {
       titleInputRef.current?.focus();
@@ -1080,6 +1091,12 @@ export default function ResumeEditorPage({
                 title="Click to rename this resume"
               >
                 {resume.title}
+                {justSaved && (
+                  <span role="status" aria-live="polite" className="ml-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-widest animate-fade-in" title="Changes saved">
+                    <Check weight="bold" className="w-2.5 h-2.5" />
+                    Saved
+                  </span>
+                )}
               </h1>
             )}
             <p className="text-[11px] text-zinc-500 mt-0.5">
