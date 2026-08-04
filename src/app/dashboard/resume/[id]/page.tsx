@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, Copy, IdentificationCard, ListChecks, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler} from '@phosphor-icons/react';
+import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, Copy, IdentificationCard, ListChecks, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler, SquaresFour} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -237,8 +237,25 @@ export default function ResumeEditorPage({
     }
     return { total, withMetrics, short: shortCount, good: goodCount, long: longCount };
   })();
+  // R38: walk the 5 base sections and check whether each is "complete".
+  // personal: 5 base fields filled. summary: at least 50 chars. experience:
+  // at least one entry with a non-empty bullet. education: at least one
+  // entry. skills: at least one skill. Returns { complete, total: 5 }.
+  const sectionStats = (() => {
+    const p = (data as { personal?: { name?: string; email?: string; phone?: string; location?: string; title?: string } }).personal || {};
+    const personalOk = !!(p.name && p.email && p.phone && p.location && p.title);
+    const summaryOk = typeof data.summary === "string" && data.summary.trim().length >= 50;
+    const expArr = (data as { experience?: Array<{ bullets?: string[] }> }).experience || [];
+    const experienceOk = expArr.some((e) => (e.bullets || []).some((b) => typeof b === "string" && b.trim()));
+    const eduArr = (data as { education?: unknown[] }).education || [];
+    const educationOk = eduArr.length > 0;
+    const skillsArr = (data as { skills?: unknown[] }).skills || [];
+    const skillsOk = skillsArr.length > 0;
+    const complete = [personalOk, summaryOk, experienceOk, educationOk, skillsOk].filter(Boolean).length;
+    return { complete, total: 5 };
+  })();
 
-  // R34: format a "Last edited Xm ago" label from the real `updated_at`
+  // R34 from the real `updated_at`
   // timestamp on the resume record. Honest: the resume store already tracks
   // this, the subtitle just makes it visible above the fold.
   const formatViewedAgo = (iso: string) => {
@@ -980,6 +997,19 @@ export default function ResumeEditorPage({
                 </span>
                 <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 border-l border-zinc-300/60 dark:border-white/10 pl-1.5">
                   {bulletStats.good}g{bulletStats.short > 0 ? ` · ${bulletStats.short}s` : ""}{bulletStats.long > 0 ? ` · ${bulletStats.long}l` : ""}
+                </span>
+              </span>
+            )}
+            {/* R38: section completion counter. Renders only when not at 5/5
+                so a fully-tuned resume doesn't get noise in the title row. */}
+            {sectionStats.complete < sectionStats.total && (
+              <span
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
+                title={`${sectionStats.complete} of ${sectionStats.total} base sections filled: personal, summary, experience, education, skills`}
+              >
+                <SquaresFour weight="duotone" className="w-2.5 h-2.5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">
+                  {sectionStats.complete}/{sectionStats.total} sections
                 </span>
               </span>
             )}
