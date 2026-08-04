@@ -2070,6 +2070,27 @@ export default function ResumeEditorPage({
                                       if (/^(Times|TechCrunch|Forbes|Atlantic|Guardian|Verge|Wall Street|New York|Paris|London|Academy|Award|Report)/.test(noun)) return null;
                                       return <span className="mt-2 flex-shrink-0" title={`Bullets that start with '${m[1]}' read as prose. Lead with the verb (e.g. "Drove", "Shipped", "Led").`}><WarningCircle weight="duotone" className="w-3 h-3 text-amber-500" aria-hidden="true" /></span>;
                                     })()}
+                                    {(() => {
+                                      // R98: repeated-first-word check. Two
+                                      // bullets in the same role that open
+                                      // with the same verb usually mean the
+                                      // writer copy-pasted a template — most
+                                      // roles have 4-5 distinct verbs across
+                                      // their bullets. Pure-presentation, no
+                                      // state, scans the role's bullets once.
+                                      const b = (bullet || "").trim();
+                                      if (!b) return null;
+                                      const fw = b.split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, "");
+                                      if (!fw) return null;
+                                      const roleBullets = (exp.bullets || []).filter((x) => typeof x === "string" && x.trim());
+                                      let dupes = 0;
+                                      for (const x of roleBullets) {
+                                        const xw = x.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, "");
+                                        if (xw === fw) dupes += 1;
+                                      }
+                                      if (dupes <= 1) return null;
+                                      return <span className="mt-2 flex-shrink-0" title={`${dupes} bullets in this role start with '${fw}' — vary the verbs (e.g. "Drove", "Built", "Shipped").`}><ArrowsClockwise weight="duotone" className="w-3 h-3 text-amber-500" aria-hidden="true" /></span>;
+                                    })()}
                                     <textarea
                                       value={bullet}
                                       onBlur={() => saveToHistory(id)}
