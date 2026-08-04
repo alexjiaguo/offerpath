@@ -200,7 +200,16 @@ export default function ResumeEditorPage({
         }
       }
     }
-    return { total, withMetrics, short: shortCount, good: goodCount, long: longCount, strong: strongCount };
+    const verbSet = new Set<string>();
+    for (const e of exp) {
+      for (const b of (e.bullets || [])) {
+        if (typeof b === "string" && b.trim()) {
+          const fw = b.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, "");
+          if (fw) verbSet.add(fw);
+        }
+      }
+    }
+    return { total, withMetrics, short: shortCount, good: goodCount, long: longCount, strong: strongCount, verbDiversity: verbSet.size };
   })();
   // R38: walk the 5 base sections and check whether each is "complete".
   // personal: 5 base fields filled. summary: at least 50 chars. experience:
@@ -2095,7 +2104,7 @@ export default function ResumeEditorPage({
                 <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
                 <span title={`${bulletStats.total} experience bullets — ${bulletStats.withMetrics} with a metric, length ${bulletStats.good} good / ${bulletStats.short} short / ${bulletStats.long} long`}>
                   <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Bullets</span>
-                  {bulletStats.total} · {bulletStats.withMetrics} w/ metrics · {bulletStats.strong} strong · {bulletStats.good}g{bulletStats.short > 0 ? ` · ${bulletStats.short}s` : ""}{bulletStats.long > 0 ? ` · ${bulletStats.long}l` : ""}
+                  {bulletStats.total} · {bulletStats.withMetrics} w/ metrics · {bulletStats.strong} strong · {bulletStats.verbDiversity} verbs · {bulletStats.good}g{bulletStats.short > 0 ? ` · ${bulletStats.short}s` : ""}{bulletStats.long > 0 ? ` · ${bulletStats.long}l` : ""}
                 </span>
               </>
             )}
