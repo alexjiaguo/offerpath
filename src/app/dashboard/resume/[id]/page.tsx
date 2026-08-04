@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, Check, CheckCircle, Copy, CaretDown, CaretUp, EnvelopeSimple, Link as LinkIcon, Target, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, Check, CheckCircle, Copy, CaretDown, CaretUp, EnvelopeSimple, Link as LinkIcon, Target, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -142,6 +142,21 @@ export default function ResumeEditorPage({
     window.addEventListener("mousedown", handler);
     return () => window.removeEventListener("mousedown", handler);
   }, [scoreOpen]);
+    // R36: Tailored-for chip popover (R31 chip -> click to expand). Same
+    // outside-click pattern as the R23 Quality Score popover.
+    const [tailoredOpen, setTailoredOpen] = useState(false);
+    const tailoredRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+      if (!tailoredOpen) return;
+      const handler = (e: MouseEvent) => {
+        if (tailoredRef.current && !tailoredRef.current.contains(e.target as Node)) {
+          setTailoredOpen(false);
+        }
+      };
+      window.addEventListener('mousedown', handler);
+      return () => window.removeEventListener('mousedown', handler);
+    }, [tailoredOpen]);
+
   useEffect(() => {
     if (!manageOpen) return;
     const handler = (e: MouseEvent) => {
@@ -625,9 +640,12 @@ export default function ResumeEditorPage({
                     distinguish from the sky-blue Synced chip and the emerald
                     Saved pill. */}
                 {tailoredFor && (
-                  <span
-                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-amber-500/10 border-amber-500/30"
-                    title={`Tailored for ${tailoredFor.jobTitle} @ ${tailoredFor.companyName} — ${tailoredFor.score}/100 match`}
+                <div className="relative" ref={tailoredRef}>
+                  <button
+                    type="button"
+                    onClick={() => setTailoredOpen((o) => !o)}
+                    aria-expanded={tailoredOpen}
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20 transition-colors"
                   >
                     <Target weight="duotone" className="w-2.5 h-2.5 text-amber-600 dark:text-amber-300" />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">
@@ -636,8 +654,43 @@ export default function ResumeEditorPage({
                     <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 border-l border-amber-500/30 pl-1.5">
                       {tailoredFor.score}/100
                     </span>
-                  </span>
-                )}
+                    <CaretDown weight="bold" className={`w-2 h-2 transition-transform ${tailoredOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {tailoredOpen && (
+                    <div className="absolute left-0 top-full mt-2 w-72 z-30 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.08] shadow-2xl p-4 animate-fade-in">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Tailoring details</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">{tailoredFor.score}/100</span>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between gap-2 text-[11px]">
+                          <span className="text-zinc-500">Role</span>
+                          <span className="font-semibold text-zinc-900 dark:text-white truncate ml-2 text-right">{tailoredFor.jobTitle}</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-2 text-[11px]">
+                          <span className="text-zinc-500">Company</span>
+                          <span className="font-semibold text-zinc-900 dark:text-white truncate ml-2 text-right">{tailoredFor.companyName}</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-2 text-[11px]">
+                          <span className="text-zinc-500">Applied</span>
+                          <span className="font-mono text-zinc-700 dark:text-zinc-300">{formatViewedAgo(tailoredFor.appliedAt)}</span>
+                        </div>
+                      </div>
+                      <p className="mt-3 pt-3 border-t border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-500 leading-relaxed">
+                        Score is the same heuristic that powers the resume.com quality breakdown. Re-tailor to recompute against a new job description.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => toast.info("Re-tailor flow coming soon")}
+                        className="mt-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 transition-all"
+                      >
+                        <Target weight="duotone" className="w-3 h-3" />
+                        Re-tailor for a different role
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
                 {scoreOpen && (
                   <div className="absolute left-0 top-full mt-2 w-72 z-30 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.08] shadow-2xl p-4 animate-fade-in">
                     <div className="flex items-center justify-between mb-3">
