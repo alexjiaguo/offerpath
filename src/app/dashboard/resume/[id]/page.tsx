@@ -2482,16 +2482,15 @@ export default function ResumeEditorPage({
               </span>
             </>
             {skillsCount.total > 0 && (
-              /* R79: switch to amber + warning marker when the user
-                 has 20+ skills (ATS sweet spot is 8-15). */
+              /* R79: warn at 20+, R84: warn at <8. */
               <>
                 <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
                 <span
-                  className={skillsCount.total > 20 ? "text-amber-700 dark:text-amber-400" : ""}
-                  title={skillsCount.total > 20 ? `${skillsCount.total} skills is a lot — ATS sweet spot is 8-15. Trim to your target JD.` : `${skillsCount.total} skills total, ${skillsCount.highlighted} marked as highlighted`}
+                  className={skillsCount.total > 20 || skillsCount.total < 8 ? "text-amber-700 dark:text-amber-400" : ""}
+                  title={skillsCount.total > 20 ? `${skillsCount.total} skills is a lot — ATS sweet spot is 8-15.` : skillsCount.total < 8 ? `Only ${skillsCount.total} skill${skillsCount.total === 1 ? "" : "s"} — ATS sweet spot is 8-15.` : `${skillsCount.total} skills total, ${skillsCount.highlighted} marked as highlighted`}
                 >
                   <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Skills</span>
-                  {skillsCount.total}{skillsCount.highlighted > 0 ? ` · ${skillsCount.highlighted}★` : ""}{skillsCount.total > 20 ? " · trim" : ""}
+                  {skillsCount.total}{skillsCount.highlighted > 0 ? ` · ${skillsCount.highlighted}★` : ""}{skillsCount.total > 20 ? " · trim" : skillsCount.total < 8 ? " · add more" : ""}
                 </span>
               </>
             )}
