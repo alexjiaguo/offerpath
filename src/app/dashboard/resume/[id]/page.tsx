@@ -1613,8 +1613,8 @@ export default function ResumeEditorPage({
                 <div className="liquid-glass rounded-[32px] p-6 animate-fade-in min-h-[500px]">
                   {/* Personal Info */}
                   {activeSection === "personal" && (
-                    <div className="space-y-6">
-                      <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Personal Details</h2>
+                    <div className="space-y-6" role="region" aria-labelledby="sec-personal">
+                      <h2 id="sec-personal" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Personal Details</h2>
                       <div className="space-y-4">
                         {(() => {
                           // R49: per-field format validation. Email and URL
@@ -1664,9 +1664,9 @@ export default function ResumeEditorPage({
 
                   {/* Summary */}
                   {activeSection === "summary" && (
-                    <div className="space-y-6">
+                    <div className="space-y-6" role="region" aria-labelledby="sec-summary">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Professional Summary</h2>
+                        <h2 id="sec-summary" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Professional Summary</h2>
                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-600 dark:text-zinc-400" title={SECTIONS.find((s) => s.key === "summary")?.tip ?? ""}>
                           <Info weight="fill" className="w-3 h-3 text-zinc-500 flex-shrink-0" />
                           <span className="max-w-xs truncate">{SECTIONS.find((s) => s.key === "summary")?.tip ?? ""}</span>
@@ -1685,9 +1685,9 @@ export default function ResumeEditorPage({
 
                   {/* Experience */}
                   {activeSection === "experience" && (
-                    <div className="space-y-6">
+                    <div className="space-y-6" role="region" aria-labelledby="sec-experience">
                       <div className="flex items-center justify-between">
-                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Work Experience</h2>
+                        <h2 id="sec-experience" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Work Experience</h2>
                         <button
                           onClick={() => {
                             saveToHistory(id);
@@ -1883,9 +1883,9 @@ export default function ResumeEditorPage({
 
                   {/* Education */}
                   {activeSection === "education" && (
-                    <div className="space-y-6">
+                    <div className="space-y-6" role="region" aria-labelledby="sec-education">
                       <div className="flex items-center justify-between">
-                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Education</h2>
+                        <h2 id="sec-education" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Education</h2>
                         <button
                           onClick={() => {
                             saveToHistory(id);
@@ -1952,8 +1952,8 @@ export default function ResumeEditorPage({
 
                   {/* Skills */}
                   {activeSection === "skills" && (
-                    <div className="space-y-6">
-                      <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Skills</h2>
+                    <div className="space-y-6" role="region" aria-labelledby="sec-skills">
+                      <h2 id="sec-skills" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Skills</h2>
                       
                       <div className="flex flex-wrap gap-2">
                         {(data.skills || []).map((skill, index) => (
