@@ -2240,7 +2240,25 @@ export default function ResumeEditorPage({
                                       rows={2}
                                       className="flex-1 px-3 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-100 dark:bg-white/[0.05] transition-all resize-none font-sans placeholder:text-zinc-400"
                                     />
-                                      <span className="mt-2 flex flex-col items-end gap-0.5 text-[10px] tabular-nums text-zinc-400 dark:text-zinc-500 select-none" title={`${bullet.trim().split(/\s+/).filter(Boolean).length} words, ${bullet.length} characters`}><span className="text-zinc-500 dark:text-zinc-500 flex items-center gap-1">B{bi + 1}/{(exp.bullets || [""]).length}{(/\d/.test(bullet)) && <span className="inline-flex items-center justify-center w-3 h-3 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold text-[8px]" title="Includes a numeric metric">N</span>}</span><span className={(() => { const n = bullet.length; if (n === 0) return ""; if (n < 50) return "text-red-500 dark:text-red-400"; if (n <= 200) return "text-emerald-600 dark:text-emerald-400"; return "text-amber-500 dark:text-amber-400"; })()}>{bullet.length}c · {bullet.trim().split(/\s+/).filter(Boolean).length}w</span></span>
+                                      <span className="mt-2 flex flex-col items-end gap-0.5 text-[10px] tabular-nums text-zinc-400 dark:text-zinc-500 select-none" title={`${bullet.trim().split(/\s+/).filter(Boolean).length} words, ${bullet.length} characters`}><span className="text-zinc-500 dark:text-zinc-500 flex items-center gap-1">B{bi + 1}/{(exp.bullets || [""]).length}{(/\d/.test(bullet)) && <span className="inline-flex items-center justify-center w-3 h-3 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold text-[8px]" title="Includes a numeric metric">N</span>}</span><span className={(() => { const n = bullet.length; if (n === 0) return ""; if (n < 50) return "text-red-500 dark:text-red-400"; if (n <= 200) return "text-emerald-600 dark:text-emerald-400"; return "text-amber-500 dark:text-amber-400"; })()}>{bullet.length}c · {bullet.trim().split(/\s+/).filter(Boolean).length}w</span>{(() => {
+                                    // R103: per-bullet quality aggregate.
+                                    // 3 dots = strong verb + length 50-200 + has metric.
+                                    // Stays inside the meta column so it doesn't crowd the bullet row.
+                                    const fw = (bullet || '').trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, '') || '';
+                                    const hasStrong = STRONG.has(fw);
+                                    const hasMetric = /\d/.test(bullet);
+                                    const ln = bullet.length;
+                                    const lenOK = ln >= 50 && ln <= 200;
+                                    const lenShort = ln > 0 && ln < 50;
+                                    const score = (hasStrong ? 1 : 0) + (lenOK ? 1 : 0) + (hasMetric ? 1 : 0);
+                                    return (
+                                      <span className='flex items-center gap-0.5' title={'Quality ' + score + '/3: ' + (hasStrong ? 'strong verb' : 'weak verb') + ' · ' + ln + ' chars ' + (lenOK ? 'in zone' : lenShort ? 'too short' : ln === 0 ? 'empty' : 'too long') + ' · ' + (hasMetric ? 'has metric' : 'no metric')}>
+                                        <span className={'w-1 h-1 rounded-full ' + (hasStrong ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-600')} />
+                                        <span className={'w-1 h-1 rounded-full ' + (lenOK ? 'bg-emerald-500' : lenShort ? 'bg-red-500' : ln === 0 ? 'bg-zinc-300 dark:bg-zinc-600' : 'bg-amber-500')} />
+                                        <span className={'w-1 h-1 rounded-full ' + (hasMetric ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-600')} />
+                                      </span>
+                                    );
+                                  })()}</span>
                                     <button
                                       type="button"
                                       onClick={() => {
