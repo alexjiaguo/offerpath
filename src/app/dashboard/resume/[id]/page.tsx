@@ -2183,6 +2183,14 @@ export default function ResumeEditorPage({
                       </div>
                       
                       <div className="flex flex-wrap gap-2">
+                        {(data.skills || []).length === 0 && (
+                          <div className="w-full rounded-2xl border border-dashed border-zinc-300 dark:border-white/[0.1] p-8 text-center space-y-3 bg-zinc-50/50 dark:bg-white/[0.02]">
+                            <Wrench className="w-8 h-8 text-zinc-400 dark:text-zinc-600 mx-auto" weight="duotone" />
+                            <h3 className="text-sm font-bold text-zinc-700 dark:text-zinc-300">No skills yet</h3>
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto">List 8-12 skills. Mirror the keywords in your target job description. Star the ones you want to emphasize.</p>
+                            <p className="text-[10px] text-zinc-500 dark:text-zinc-400">Type or paste below — comma or new-line separated lists work too.</p>
+                          </div>
+                        )}
                         {(data.skills || []).map((skill, index) => {
                           const isHighlighted = typeof skill !== 'string' && !!skill.isHighlighted;
                           const name = typeof skill === 'string' ? skill : skill.name;
