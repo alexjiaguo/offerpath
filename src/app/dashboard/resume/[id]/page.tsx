@@ -477,8 +477,9 @@ export default function ResumeEditorPage({
     return () => clearTimeout(t);
   }, [data, resume.id]);
 
-  // R64: keyboard 1-5 to switch sections. Ignored when focus is in an
-  // input/textarea so users can still type digits.
+  // R64: keyboard 1-5 to switch sections. R66: '?' opens a shortcut
+  // popover. Both ignored when focus is in an input/textarea.
+  const [showShortcuts, setShowShortcuts] = useState(false);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
@@ -489,6 +490,11 @@ export default function ResumeEditorPage({
       if (next) {
         e.preventDefault();
         setActiveSection(next);
+        return;
+      }
+      if (e.key === "?" || (e.key === "/" && e.shiftKey)) {
+        e.preventDefault();
+        setShowShortcuts((s) => !s);
       }
     };
     document.addEventListener("keydown", handler);
@@ -2172,6 +2178,43 @@ export default function ResumeEditorPage({
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+      {showShortcuts && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="shortcuts-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setShowShortcuts(false)}
+        >
+          <div
+            className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-white/[0.08] p-6 w-[420px] max-w-[92vw] shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 id="shortcuts-title" className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white">Keyboard Shortcuts</h3>
+              <button onClick={() => setShowShortcuts(false)} aria-label="Close shortcuts" className="p-1 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/[0.04]">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <ul className="space-y-2 text-[12px] text-zinc-700 dark:text-zinc-300">
+              {[
+                ["1", "Personal section"],
+                ["2", "Summary section"],
+                ["3", "Experience section"],
+                ["4", "Education section"],
+                ["5", "Skills section"],
+                ["?", "Toggle this shortcuts panel"],
+              ].map(([key, label]) => (
+                <li key={key} className="flex items-center justify-between gap-3">
+                  <span>{label}</span>
+                  <kbd className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-white/[0.06] border border-zinc-200 dark:border-white/[0.08] font-mono text-[10px] font-bold text-zinc-700 dark:text-zinc-300">{key}</kbd>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 pt-3 border-t border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-500">Press <kbd className="px-1 rounded bg-zinc-100 dark:bg-white/[0.06] font-mono">?</kbd> anywhere outside a text field to toggle.</p>
           </div>
         </div>
       )}
