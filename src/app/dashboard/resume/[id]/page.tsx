@@ -1715,6 +1715,15 @@ export default function ResumeEditorPage({
                     <div className="space-y-6" role="region" aria-labelledby="sec-personal">
                       <div className="flex items-center gap-3 flex-wrap">
                         <h2 id="sec-personal" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Personal Details</h2>
+                      {!(data.personal?.name || data.personal?.email) && (
+                        <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-white/[0.1] p-5 space-y-3 bg-zinc-50/50 dark:bg-white/[0.02]">
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4 text-zinc-500" weight="duotone" />
+                            <h3 className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">Start with name and email</h3>
+                          </div>
+                          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">Recruiters filter on these in the first 6 seconds. Add your phone and location once you have name + email in.</p>
+                        </div>
+                      )}
                         <div className="inline-flex items-center gap-1.5 pl-2 pr-2.5 py-0.5 rounded-full bg-brand-500/5 border border-brand-500/15 text-[10px] text-zinc-600 dark:text-zinc-400 leading-tight">
                           <Info weight="fill" className="w-3 h-3 text-brand-500 flex-shrink-0" />
                           {SECTIONS.find((s2) => s2.key === "personal")?.tip}
