@@ -2058,7 +2058,10 @@ export default function ResumeEditorPage({
                                   const newExps = [...(data.experience || [])];
                                   newExps[index] = { ...newExps[index], title: e.target.value };
                                   updateResume(id, { data: { ...data, experience: newExps } });
-                                }} placeholder="Job Title" className="w-full bg-transparent border-none p-0 text-base font-bold text-zinc-900 dark:text-white focus:ring-0 placeholder:text-zinc-400 dark:placeholder:text-zinc-700" />
+<div className="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">
+                                  Role {index + 1} of {(data.experience || []).length}
+                                </div>
+                                                                }} placeholder="Job Title" className="w-full bg-transparent border-none p-0 text-base font-bold text-zinc-900 dark:text-white focus:ring-0 placeholder:text-zinc-400 dark:placeholder:text-zinc-700" />
                                 
                                 <input type="text" value={exp.company} onBlur={() => saveToHistory(id)} onChange={(e) => {
                                   const newExps = [...(data.experience || [])];
