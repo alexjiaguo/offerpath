@@ -514,6 +514,24 @@ export default function ResumeEditorPage({
     const t = setTimeout(() => setJustSaved(false), 1600);
     return () => clearTimeout(t);
   }, [data, resume.id]);
+
+  // R64: keyboard 1-5 to switch sections. Ignored when focus is in an
+  // input/textarea so users can still type digits.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const map: Record<string, string> = { "1": "personal", "2": "summary", "3": "experience", "4": "education", "5": "skills" };
+      const next = map[e.key];
+      if (next) {
+        e.preventDefault();
+        setActiveSection(next);
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
   useEffect(() => {
     if (editingTitle) {
       titleInputRef.current?.focus();
