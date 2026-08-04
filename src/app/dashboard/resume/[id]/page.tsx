@@ -1822,6 +1822,19 @@ export default function ResumeEditorPage({
                         rows={12}
                         className="w-full px-5 py-4 rounded-2xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-50 dark:focus:bg-zinc-100 dark:focus:bg-white/[0.05] transition-all resize-none leading-relaxed font-sans"
                       />
+                      {(() => {
+                        // R89: live char count + zone color. 50-200 is the
+                        // sweet spot recruiters will actually read; below 50
+                        // reads as empty, above 200 as a wall of text.
+                        const len = (data.summary || "").trim().length;
+                        const tone = len === 0 ? "text-zinc-400 dark:text-zinc-500" : len < 50 ? "text-red-500 dark:text-red-400" : len <= 200 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-500 dark:text-amber-400";
+                        return (
+                          <div className="flex items-center justify-between text-[10px] pl-1">
+                            <span className="text-zinc-500">Aim for 3-4 lines (50-200 chars). Recruiters skim.</span>
+                            <span className={`tabular-nums font-bold ${tone}`}>{len} / 200 chars</span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   )}
 
