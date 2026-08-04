@@ -2084,6 +2084,30 @@ export default function ResumeEditorPage({
                                   updateResume(id, { data: { ...data, experience: newExps } });
 <div className="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">
                                   Role {index + 1} of {(data.experience || []).length}
+                                  {(() => {
+                                    // R110: per-role duration. Same
+                                    // YYYY-MM parsing as R108. 'current'
+                                    // roles use today's date so the user
+                                    // sees the running length at a glance.
+                                    const sm = /^(\d{4})-(\d{2})$/.exec(exp.start_date || '');
+                                    if (!sm) return null;
+                                    let ey = 0, em = 0;
+                                    if (exp.current || !exp.end_date) {
+                                      const now = new Date();
+                                      ey = now.getFullYear();
+                                      em = now.getMonth() + 1;
+                                    } else {
+                                      const em2 = /^(\d{4})-(\d{2})$/.exec(exp.end_date || '');
+                                      if (!em2) return null;
+                                      ey = Number(em2[1]);
+                                      em = Number(em2[2]);
+                                    }
+                                    const totalMonths = (ey * 12 + em) - (Number(sm[1]) * 12 + Number(sm[2]));
+                                    if (totalMonths <= 0) return null;
+                                    const yrs = Math.floor(totalMonths / 12);
+                                    const mos = totalMonths % 12;
+                                    return <span className='ml-2 text-zinc-400 dark:text-zinc-600 normal-case tracking-normal font-medium'>· {(yrs > 0 ? yrs + 'y ' : '') + mos + 'mo'}</span>;
+                                  })()}
                                 </div>
                                                                 }} placeholder="Job Title" className="w-full bg-transparent border-none p-0 text-base font-bold text-zinc-900 dark:text-white focus:ring-0 placeholder:text-zinc-400 dark:placeholder:text-zinc-700" />
                                 
