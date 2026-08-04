@@ -1604,9 +1604,9 @@ export default function ResumeEditorPage({
                 <div className="liquid-glass rounded-[32px] p-6 animate-fade-in min-h-[500px]">
                   {/* Personal Info */}
                   {activeSection === "personal" && (
-                    <div className="space-y-6">
+                    <div className="space-y-6" role="region" aria-labelledby="sec-personal">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Personal Details</h2>
+                        <h2 id="sec-personal" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Personal Details</h2>
                         <div className="inline-flex items-center gap-1.5 pl-2 pr-2.5 py-0.5 rounded-full bg-brand-500/5 border border-brand-500/15 text-[10px] text-zinc-600 dark:text-zinc-400 leading-tight">
                           <Info weight="fill" className="w-3 h-3 text-brand-500 flex-shrink-0" />
                           {SECTIONS.find((s2) => s2.key === "personal")?.tip}
@@ -1669,9 +1669,9 @@ export default function ResumeEditorPage({
 
                   {/* Summary */}
                   {activeSection === "summary" && (
-                    <div className="space-y-6">
+                    <div className="space-y-6" role="region" aria-labelledby="sec-summary">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Professional Summary</h2>
+                        <h2 id="sec-summary" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Professional Summary</h2>
                         <div className="inline-flex items-center gap-1.5 pl-2 pr-2.5 py-0.5 rounded-full bg-brand-500/5 border border-brand-500/15 text-[10px] text-zinc-600 dark:text-zinc-400 leading-tight">
                           <Info weight="fill" className="w-3 h-3 text-brand-500 flex-shrink-0" />
                           {SECTIONS.find((s2) => s2.key === "summary")?.tip}
@@ -1696,9 +1696,9 @@ export default function ResumeEditorPage({
 
                   {/* Experience */}
                   {activeSection === "experience" && (
-                    <div className="space-y-6">
+                    <div className="space-y-6" role="region" aria-labelledby="sec-experience">
                       <div className="flex items-center justify-between">
-                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Work Experience</h2>
+                        <h2 id="sec-experience" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Work Experience</h2>
                       {showTips && (
                         <div className="mt-2 flex items-start gap-2 px-3 py-2 rounded-xl bg-brand-500/5 border border-brand-500/15 text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
                           <Info weight="fill" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0 mt-0.5" />
@@ -1900,9 +1900,9 @@ export default function ResumeEditorPage({
 
                   {/* Education */}
                   {activeSection === "education" && (
-                    <div className="space-y-6">
+                    <div className="space-y-6" role="region" aria-labelledby="sec-education">
                       <div className="flex items-center justify-between">
-                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Education</h2>
+                        <h2 id="sec-education" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Education</h2>
                       {showTips && (
                         <div className="mt-2 flex items-start gap-2 px-3 py-2 rounded-xl bg-brand-500/5 border border-brand-500/15 text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
                           <Info weight="fill" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0 mt-0.5" />
@@ -1975,8 +1975,8 @@ export default function ResumeEditorPage({
 
                   {/* Skills */}
                   {activeSection === "skills" && (
-                    <div className="space-y-6">
-                      <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Skills</h2>
+                    <div className="space-y-6" role="region" aria-labelledby="sec-skills">
+                      <h2 id="sec-skills" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Skills</h2>
                       {showTips && (
                         <div className="mt-2 flex items-start gap-2 px-3 py-2 rounded-xl bg-brand-500/5 border border-brand-500/15 text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
                           <Info weight="fill" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0 mt-0.5" />
