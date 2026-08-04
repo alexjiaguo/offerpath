@@ -95,6 +95,7 @@ export default function ResumeEditorPage({
     moveSection,
     history,
     toggleVisibility,
+    resetToSample,
   } = useResumeStore();
   const { getProfileSummary } = useProfileStore();
   const resume = getResumeById(id);
@@ -1202,6 +1203,21 @@ export default function ResumeEditorPage({
             <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Copy</span>
           </button>
 
+          <button
+            type="button"
+            onClick={() => {
+              if (confirm("Reset this resume to the original sample data? Your current edits will be lost.")) {
+                saveToHistory(id);
+                resetToSample(id);
+                toast.success("Reset to the original sample data.");
+              }
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-white/[0.12] transition-all"
+            title="Restore the original sample data \u2014 your current changes will be lost"
+          >
+            <ArrowCounterClockwise className="w-4 h-4" />
+            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Reset</span>
+          </button>
           <button
             onClick={handleSave}
             className={cn(

@@ -33,6 +33,7 @@ export interface ResumeState {
   addResume: (resume: Omit<Resume, "id" | "user_id" | "created_at" | "updated_at">) => string;
   updateResume: (id: string, updates: Partial<Resume>) => void;
   deleteResume: (id: string) => void;
+  resetToSample: (id: string) => void;
   duplicateResume: (id: string, newTitle?: string) => string | null;
   
   // History Actions
@@ -501,6 +502,13 @@ export const useResumeStore = create<ResumeState>()(
         r.id === id ? { ...r, ...updates, updated_at: new Date().toISOString() } : r
       ),
     }));
+  },
+
+  resetToSample: (id) => {
+    // R71: restore the base resume's data onto the given resume id.
+    const base = MOCK_RESUMES.find((r) => r.id === "r1") || MOCK_RESUMES[0];
+    if (!base) return;
+    get().updateResume(id, { data: JSON.parse(JSON.stringify(base.data)) });
   },
 
   deleteResume: (id) => {
