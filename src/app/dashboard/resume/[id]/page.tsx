@@ -2503,6 +2503,22 @@ export default function ResumeEditorPage({
                                     newEdus[index] = { ...newEdus[index], end_date: e.target.value, start_date: e.target.value }; // Simplification for UI consistency
                                     updateResume(id, { data: { ...data, education: newEdus } });
                                   }} placeholder="e.g. May 2024" className="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-100 dark:bg-white/[0.05] transition-all font-sans placeholder:text-zinc-400" />
+                                {(() => {
+                                  // R108: graduation-date sanity check.
+                                  // Free-text input so we only fire on a
+                                  // recognizable 4-digit year. Flag obvious
+                                  // outliers: >6 years out (likely a typo)
+                                  // or before 1950 (likely a typo or stale
+                                  // entry).
+                                  const raw = (edu.end_date || edu.start_date || '').trim();
+                                  const m = raw.match(/(19|20)\d{2}/);
+                                  if (!m) return null;
+                                  const y = Number(m[0]);
+                                  const maxY = new Date().getFullYear() + 6;
+                                  if (y > maxY) return <p className='text-[10px] text-amber-600 dark:text-amber-400 mt-1 pl-1 font-medium' title={'Year ' + y + ' is more than 6 years in the future.'}>Graduation year looks too far out — double-check</p>;
+                                  if (y < 1950) return <p className='text-[10px] text-amber-600 dark:text-amber-400 mt-1 pl-1 font-medium' title={'Year ' + y + ' is more than 70 years ago.'}>Graduation year looks like a typo</p>;
+                                  return null;
+                                })()}
                                 </div>
                                 <div>
                                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1 mb-1">GPA / Honors</label>
