@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, Copy, IdentificationCard, ListChecks, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
+import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, Copy, IdentificationCard, ListChecks, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -218,15 +218,24 @@ export default function ResumeEditorPage({
     const exp = data.experience || [];
     let total = 0;
     let withMetrics = 0;
+    // R37: bucket each bullet by character length. <50 chars is too short to
+    // carry a result; 50-200 is the readable sweet spot; >200 is a wall of
+    // text recruiters will skip. Same walk as the R35 count + metrics check.
+    let shortCount = 0;
+    let goodCount = 0;
+    let longCount = 0;
     for (const e of exp) {
       for (const b of (e.bullets || [])) {
         if (typeof b === "string" && b.trim()) {
           total += 1;
           if (/\d/.test(b)) withMetrics += 1;
+          if (b.length < 50) shortCount += 1;
+          else if (b.length <= 200) goodCount += 1;
+          else longCount += 1;
         }
       }
     }
-    return { total, withMetrics };
+    return { total, withMetrics, short: shortCount, good: goodCount, long: longCount };
   })();
 
   // R34: format a "Last edited Xm ago" label from the real `updated_at`
@@ -955,6 +964,23 @@ export default function ResumeEditorPage({
                     {bulletStats.withMetrics} w/ metrics
                   </span>
                 )}
+              </span>
+            )}
+            {/* R37: bullet length distribution chip. Only renders when at least one
+                bullet is outside the 50-200 char "good" range, so the title row
+                stays clean on a fully-tuned resume. */}
+            {bulletStats.total > 0 && (bulletStats.short + bulletStats.long > 0) && (
+              <span
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
+                title={`Length buckets — short (<50 chars): ${bulletStats.short}, good (50-200): ${bulletStats.good}, long (>200): ${bulletStats.long}`}
+              >
+                <Ruler weight="duotone" className="w-2.5 h-2.5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">
+                  Length
+                </span>
+                <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 border-l border-zinc-300/60 dark:border-white/10 pl-1.5">
+                  {bulletStats.good}g{bulletStats.short > 0 ? ` · ${bulletStats.short}s` : ""}{bulletStats.long > 0 ? ` · ${bulletStats.long}l` : ""}
+                </span>
               </span>
             )}
             {editingTitle ? (
