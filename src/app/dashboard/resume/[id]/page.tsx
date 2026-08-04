@@ -280,6 +280,44 @@ export default function ResumeEditorPage({
     if (totalChars < 8000) return "2 pages";
     return "2+ pages";
   })();
+
+  // R50: total word count for read-time estimate. Walks the same text
+  // fields as R47's totalChars, just counts whitespace-separated tokens.
+  const totalWords = (() => {
+    let n = 0;
+    const count = (s: string) => (s.trim() ? s.trim().split(/\s+/).filter(Boolean).length : 0);
+    const p = (data as { personal?: { name?: string; email?: string; phone?: string; location?: string; title?: string; linkedin?: string; website?: string } }).personal || {};
+    for (const v of [p.name, p.email, p.phone, p.location, p.title, p.linkedin, p.website]) {
+      if (typeof v === "string") n += count(v);
+    }
+    if (typeof data.summary === "string") n += count(data.summary);
+    for (const e of (data.experience || [])) {
+      for (const v of [e.company, e.title, e.location, e.start_date, e.end_date]) {
+        if (typeof v === "string") n += count(v);
+      }
+      for (const b of (e.bullets || [])) {
+        if (typeof b === "string") n += count(b);
+      }
+    }
+    for (const e of (data.education || [])) {
+      for (const v of [e.institution, e.degree, e.field, e.start_date, e.end_date, e.location]) {
+        if (typeof v === "string") n += count(v);
+      }
+    }
+    const skillsArr = (data as { skills?: Array<{ name?: string }> }).skills || [];
+    for (const s of skillsArr) {
+      if (typeof s.name === "string") n += count(s.name);
+    }
+    return n;
+  })();
+  // R50: read-time estimate at ~200 wpm. "<1 min" for very short resumes,
+  // "1 min" / "2 min" otherwise. Honest: just a word count divided by wpm.
+  const readTime = (() => {
+    const minutes = totalWords / 200;
+    if (minutes < 0.5) return "<1 min read";
+    if (minutes < 1.5) return "1 min read";
+    return `${Math.round(minutes)} min read`;
+  })();
   // R43: total years of experience computed from real start_date / end_date
   // on each ExperienceEntry. No fabrication — entries without dates contribute 0.
   // end_date is omitted for "current" roles; treated as today.
@@ -2013,6 +2051,13 @@ export default function ResumeEditorPage({
               <span title={`${totalChars.toLocaleString()} characters across all sections`}>
                 <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Length</span>
                 {pageEstimate}
+              </span>
+            </>
+            <>
+              <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              <span title={`${totalWords.toLocaleString()} words across all sections (~200 wpm)`}>
+                <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Read</span>
+                {readTime}
               </span>
             </>
               <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
