@@ -2320,6 +2320,37 @@ export default function ResumeEditorPage({
                             </button>
                             <span>{name}</span>
                             <button
+                              type="button"
+                              onClick={() => {
+                                if (index === 0) return;
+                                saveToHistory(id);
+                                const newSkills = [...(data.skills || [])];
+                                [newSkills[index - 1], newSkills[index]] = [newSkills[index], newSkills[index - 1]];
+                                updateResume(id, { data: { ...data, skills: newSkills } });
+                              }}
+                              disabled={index === 0}
+                              className="text-zinc-700 dark:text-zinc-400 hover:text-brand-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors opacity-0 group-hover:opacity-100"
+                              title="Move skill up"
+                            >
+                              <CaretUp weight="bold" className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const total = (data.skills || []).length;
+                                if (index >= total - 1) return;
+                                saveToHistory(id);
+                                const newSkills = [...(data.skills || [])];
+                                [newSkills[index + 1], newSkills[index]] = [newSkills[index], newSkills[index + 1]];
+                                updateResume(id, { data: { ...data, skills: newSkills } });
+                              }}
+                              disabled={index >= (data.skills || []).length - 1}
+                              className="text-zinc-700 dark:text-zinc-400 hover:text-brand-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors opacity-0 group-hover:opacity-100"
+                              title="Move skill down"
+                            >
+                              <CaretDown weight="bold" className="w-3 h-3" />
+                            </button>
+                            <button
                               onClick={() => {
                                 saveToHistory(id);
                                 const newSkills = [...(data.skills || [])];
