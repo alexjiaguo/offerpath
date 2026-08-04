@@ -2075,6 +2075,23 @@ export default function ResumeEditorPage({
                                       if (!first || !/[a-z]/.test(first)) return null;
                                       return <span className="mt-2 flex-shrink-0" title="Starts with a lowercase letter — capitalize the first word for a polished look"><PenNib weight="duotone" className="w-3 h-3 text-amber-500" aria-hidden="true" /></span>;
                                     })()}
+                                    {(() => {
+                                      // R94: leading-article check. Bullets
+                                      // that open with 'The', 'A', or 'An' tend
+                                      // to read as prose rather than punchy
+                                      // achievements — leading with the verb
+                                      // is the rewrite. Skip if the article is
+                                      // followed by a recognized proper noun
+                                      // (e.g. "The New York Times" — keeps
+                                      // the warning honest).
+                                      const t = (bullet || "").trimStart();
+                                      if (!t) return null;
+                                      const m = /^(The|A|An)\s+([A-Z][a-zA-Z'-]*)/.exec(t);
+                                      if (!m) return null;
+                                      const noun = m[2];
+                                      if (/^(Times|TechCrunch|Forbes|Atlantic|Guardian|Verge|Wall Street|New York|Paris|London|Academy|Award|Report)/.test(noun)) return null;
+                                      return <span className="mt-2 flex-shrink-0" title={`Bullets that start with '${m[1]}' read as prose. Lead with the verb (e.g. "Drove", "Shipped", "Led").`}><WarningCircle weight="duotone" className="w-3 h-3 text-amber-500" aria-hidden="true" /></span>;
+                                    })()}
                                     <textarea
                                       value={bullet}
                                       onBlur={() => saveToHistory(id)}
