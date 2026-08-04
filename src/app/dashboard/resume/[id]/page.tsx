@@ -1853,6 +1853,14 @@ export default function ResumeEditorPage({
                 </span>
               </>
             )}
+            {/* R42: active section line in the meta footer. */}
+            <>
+              <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              <span title={`Currently editing: ${SECTIONS.find((s) => s.key === activeSection)?.label ?? activeSection}`}>
+                <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Editing</span>
+                {SECTIONS.find((s) => s.key === activeSection)?.label ?? activeSection}
+              </span>
+            </>
               <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
               <span title={`Last viewed ${formatViewedAgo(resume.updated_at)}`}>
                 <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Last viewed</span>
