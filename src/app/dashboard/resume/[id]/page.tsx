@@ -1386,6 +1386,15 @@ export default function ResumeEditorPage({
                               <CaretUp className="w-3 h-3" />
                             </button>
                             <button onClick={() => moveSection(id, section.key as SectionKey, "down")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
+                          <button
+                            onClick={() => toggleVisibility(id, selectedTemplate, section.key as SectionKey)}
+                            className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300"
+                            title={isVisible ? "Hide from this template" : "Show on this template"}
+                            aria-label={isVisible ? "Hide " + section.label + " from this template" : "Show " + section.label + " on this template"}
+                          >
+                            {isVisible ? <Eye className="w-3 h-3" /> : <EyeSlash className="w-3 h-3" />}
+                          </button>
+                          
                               <CaretDown className="w-3 h-3" />
                             </button>
                           </div>
