@@ -1126,15 +1126,14 @@ export default function ResumeEditorPage({
               </span>
             </span>
             {skillsCount.total > 0 && (
-              /* R79: switch to amber + warning marker when the user
-                 has 20+ skills (ATS sweet spot is 8-15). */
+              /* R79: warn at 20+, R84: warn at <8. ATS sweet spot is 8-15. */
               <span
-                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${skillsCount.total > 20 ? "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400" : "bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"}`}
-                title={skillsCount.total > 20 ? `${skillsCount.total} skills is a lot — ATS sweet spot is 8-15. Trim to your target JD.` : `${skillsCount.total} skills total, ${skillsCount.highlighted} marked as highlighted`}
+                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${skillsCount.total > 20 || skillsCount.total < 8 ? "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400" : "bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"}`}
+                title={skillsCount.total > 20 ? `${skillsCount.total} skills is a lot — ATS sweet spot is 8-15. Trim to your target JD.` : skillsCount.total < 8 ? `Only ${skillsCount.total} skill${skillsCount.total === 1 ? "" : "s"} — ATS sweet spot is 8-15. Add a few more.` : `${skillsCount.total} skills total, ${skillsCount.highlighted} marked as highlighted`}
               >
                 <Wrench weight="duotone" className="w-2.5 h-2.5" />
                 <span className="text-[10px] font-bold uppercase tracking-widest">
-                  {skillsCount.total} skill{skillsCount.total === 1 ? "" : "s"}{skillsCount.highlighted > 0 ? ` · ${skillsCount.highlighted}★` : ""}{skillsCount.total > 20 ? " · trim" : ""}
+                  {skillsCount.total} skill{skillsCount.total === 1 ? "" : "s"}{skillsCount.highlighted > 0 ? ` · ${skillsCount.highlighted}★` : ""}{skillsCount.total > 20 ? " · trim" : skillsCount.total < 8 ? " · add more" : ""}
                 </span>
               </span>
             )}
