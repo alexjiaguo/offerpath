@@ -1493,6 +1493,40 @@ export default function ResumeEditorPage({
                                     />
                                       <span className="mt-2 text-[10px] tabular-nums text-zinc-400 dark:text-zinc-500 select-none w-7 text-right">{bullet.length}c</span>
                                     <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (bi === 0) return;
+                                        saveToHistory(id);
+                                        const newExps = [...(data.experience || [])];
+                                        const newBullets = [...(newExps[index].bullets || [])];
+                                        [newBullets[bi - 1], newBullets[bi]] = [newBullets[bi], newBullets[bi - 1]];
+                                        newExps[index] = { ...newExps[index], bullets: newBullets };
+                                        updateResume(id, { data: { ...data, experience: newExps } });
+                                      }}
+                                      disabled={bi === 0}
+                                      className="mt-2 p-1 text-zinc-700 dark:text-zinc-400 hover:text-brand-500 disabled:opacity-30 disabled:hover:text-zinc-700 dark:disabled:hover:text-zinc-400 disabled:cursor-not-allowed transition-colors opacity-0 group-hover/bullet:opacity-100"
+                                      title="Move bullet up"
+                                    >
+                                      <CaretUp weight="bold" className="w-3 h-3" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (bi >= exp.bullets.length - 1) return;
+                                        saveToHistory(id);
+                                        const newExps = [...(data.experience || [])];
+                                        const newBullets = [...(newExps[index].bullets || [])];
+                                        [newBullets[bi + 1], newBullets[bi]] = [newBullets[bi], newBullets[bi + 1]];
+                                        newExps[index] = { ...newExps[index], bullets: newBullets };
+                                        updateResume(id, { data: { ...data, experience: newExps } });
+                                      }}
+                                      disabled={bi >= exp.bullets.length - 1}
+                                      className="mt-2 p-1 text-zinc-700 dark:text-zinc-400 hover:text-brand-500 disabled:opacity-30 disabled:hover:text-zinc-700 dark:disabled:hover:text-zinc-400 disabled:cursor-not-allowed transition-colors opacity-0 group-hover/bullet:opacity-100"
+                                      title="Move bullet down"
+                                    >
+                                      <CaretDown weight="bold" className="w-3 h-3" />
+                                    </button>
+                                    <button
                                       onClick={() => {
                                         saveToHistory(id);
                                         const newExps = [...(data.experience || [])];
