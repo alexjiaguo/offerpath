@@ -1957,9 +1957,17 @@ export default function ResumeEditorPage({
                               <div className="pt-2">
                                 <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1 mb-2">
                                   Bullet Points
-                                  {((exp.bullets || []).filter((b) => typeof b === "string" && b.trim()).length > 6) && (
-                                    <span className="ml-2 text-amber-600 dark:text-amber-400 normal-case tracking-normal font-medium" title="Recruiters spend ~6 seconds on a resume; 5-6 bullets is the sweet spot">· {(exp.bullets || []).filter((b) => typeof b === "string" && b.trim()).length} bullets — consider trimming</span>
-                                  )}
+                                  {(() => {
+                                    // R87: include total character count in the
+                                    // 7+ bullet warning so users see the aggregate
+                                    // size of this entry at a glance.
+                                    const bs = (exp.bullets || []).filter((b) => typeof b === "string" && b.trim());
+                                    if (bs.length <= 6) return null;
+                                    const tc = bs.reduce((s, b) => s + b.length, 0);
+                                    return (
+                                      <span className="ml-2 text-amber-600 dark:text-amber-400 normal-case tracking-normal font-medium" title="Recruiters spend ~6 seconds on a resume; 5-6 bullets is the sweet spot">· {bs.length} bullets · {tc} chars — consider trimming</span>
+                                    );
+                                  })()}
                                 </label>
                                 {(exp.bullets || [""]).map((bullet, bi) => (
                                   <div key={`bullet-${index}-${bi}-${bullet.slice(0,20)}`} className="flex items-start gap-2 mb-2 group/bullet">
