@@ -1428,7 +1428,16 @@ export default function ResumeEditorPage({
                                 <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1 mb-2">Bullet Points</label>
                                 {(exp.bullets || [""]).map((bullet, bi) => (
                                   <div key={`bullet-${index}-${bi}-${bullet.slice(0,20)}`} className="flex items-start gap-2 mb-2 group/bullet">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600 mt-2 flex-shrink-0" />
+                                    <div
+                                      className={(() => {
+                                        const w = (bullet || "").trim().split(/\s+/)[0] || "";
+                                        const lc = w.toLowerCase().replace(/[^a-z]/g, "");
+                                        const strong = new Set(["led","built","shipped","drove","launched","created","designed","managed","delivered","grew","achieved","increased","reduced","saved","generated","implemented","executed","transformed","established","founded","secured","won","pioneered","optimized","accelerated","scaled","mentored","coached","owned","architected","negotiated","closed","cut","raised","built","drove","produced","authored"]);
+                                        const weak = new Set(["helped","worked","responsible","participated","assisted","supported","contributed","involved","was","did","tried"]);
+                                        const tone = strong.has(lc) ? "strong" : weak.has(lc) ? "weak" : "neutral";
+                                        return "w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0 " + (tone === "strong" ? "bg-emerald-500" : tone === "weak" ? "bg-amber-500" : "bg-zinc-300 dark:bg-zinc-600");
+                                      })()}
+                                    />
                                     <textarea
                                       value={bullet}
                                       onBlur={() => saveToHistory(id)}
