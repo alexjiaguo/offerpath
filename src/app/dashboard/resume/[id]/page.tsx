@@ -363,6 +363,13 @@ export default function ResumeEditorPage({
     if (minutes < 1.5) return "1 min read";
     return `${Math.round(minutes)} min read`;
   })();
+
+  // R54: skills count. Walks the real skills array; isHighlighted is a
+  // per-skill flag surfaced in the editor as the star toggle.
+  const skillsCount = (() => {
+    const arr = (data as { skills?: Array<{ isHighlighted?: boolean }> }).skills || [];
+    return { total: arr.length, highlighted: arr.filter((s) => s.isHighlighted).length };
+  })();
   // R43: total years of experience computed from real start_date / end_date
   // on each ExperienceEntry. No fabrication — entries without dates contribute 0.
   // end_date is omitted for "current" roles; treated as today.
@@ -1214,6 +1221,17 @@ export default function ResumeEditorPage({
                 {readTime}
               </span>
             </span>
+            {skillsCount.total > 0 && (
+              <span
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
+                title={`${skillsCount.total} skills total, ${skillsCount.highlighted} marked as highlighted`}
+              >
+                <Wrench weight="duotone" className="w-2.5 h-2.5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">
+                  {skillsCount.total} skill{skillsCount.total === 1 ? "" : "s"}{skillsCount.highlighted > 0 ? ` · ${skillsCount.highlighted}★` : ""}
+                </span>
+              </span>
+            )}
             {editingTitle ? (
               <input
                 ref={titleInputRef}
