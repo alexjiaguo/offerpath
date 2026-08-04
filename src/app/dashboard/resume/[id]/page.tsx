@@ -1824,6 +1824,21 @@ export default function ResumeEditorPage({
                                         <span className={'w-1 h-1 rounded-full ' + (hasMetric ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-600')} />
                                       </span>
                                     );
+})()}{(() => {
+                                    // R111: per-bullet low-quality hint.
+                                    // Same scoring as R103 but only fires
+                                    // on score 0/3 so we don't nag the
+                                    // user for decent bullets. Amber tone
+                                    // reads as advice, not a defect.
+                                    if (!bullet || !bullet.trim()) return null;
+                                    const fw = (bullet || '').trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, '') || '';
+                                    const hasStrong = STRONG.has(fw);
+                                    const hasMetric = /\d/.test(bullet);
+                                    const ln = bullet.length;
+                                    const lenOK = ln >= 50 && ln <= 200;
+                                    const score = (hasStrong ? 1 : 0) + (lenOK ? 1 : 0) + (hasMetric ? 1 : 0);
+                                    if (score > 0) return null;
+                                    return <span className='text-amber-600 dark:text-amber-400 normal-case tracking-normal' title='Lead with a strong verb, keep it 50-200 chars, add a number'>low — verb, length, or number</span>;
                                   })()}</span>
                                     <button
                                       type="button"
