@@ -219,6 +219,41 @@ export default function ResumeEditorPage({
     const complete = [personalOk, summaryOk, experienceOk, educationOk, skillsOk].filter(Boolean).length;
     return { complete, total: 5 };
   })();
+  // R47: total resume character count used to estimate page length.
+  // Walks the real personal / summary / experience / education / skills
+  // strings — no fabrication, no LLM. ~3000 chars/page rule of thumb.
+  const totalChars = (() => {
+    let n = 0;
+    const p = (data as { personal?: { name?: string; email?: string; phone?: string; location?: string; title?: string; linkedin?: string; website?: string } }).personal || {};
+    for (const v of [p.name, p.email, p.phone, p.location, p.title, p.linkedin, p.website]) {
+      if (typeof v === "string") n += v.length;
+    }
+    if (typeof data.summary === "string") n += data.summary.length;
+    for (const e of (data.experience || [])) {
+      for (const v of [e.company, e.title, e.location, e.start_date, e.end_date]) {
+        if (typeof v === "string") n += v.length;
+      }
+      for (const b of (e.bullets || [])) {
+        if (typeof b === "string") n += b.length;
+      }
+    }
+    for (const e of (data.education || [])) {
+      for (const v of [e.institution, e.degree, e.field, e.start_date, e.end_date, e.location]) {
+        if (typeof v === "string") n += v.length;
+      }
+    }
+    const skillsArr = (data as { skills?: Array<{ name?: string }> }).skills || [];
+    for (const s of skillsArr) {
+      if (typeof s.name === "string") n += s.name.length;
+    }
+    return n;
+  })();
+  const pageEstimate = (() => {
+    if (totalChars < 2000) return "~1 page";
+    if (totalChars < 5000) return "1-2 pages";
+    if (totalChars < 8000) return "2 pages";
+    return "2+ pages";
+  })();
   // R43: total years of experience computed from real start_date / end_date
   // on each ExperienceEntry. No fabrication — entries without dates contribute 0.
   // end_date is omitted for "current" roles; treated as today.
@@ -1909,6 +1944,13 @@ export default function ResumeEditorPage({
               <span title={`${yearsOfExperience.toFixed(1)} years of experience across ${((data as { experience?: unknown[] }).experience || []).length} role(s)`}>
                 <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Experience</span>
                 {yearsOfExperience >= 1 ? `${yearsOfExperience.toFixed(1)} yrs` : `${Math.round(yearsOfExperience * 12)} mo`}
+              </span>
+            </>
+            <>
+              <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              <span title={`${totalChars.toLocaleString()} characters across all sections`}>
+                <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Length</span>
+                {pageEstimate}
               </span>
             </>
               <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
