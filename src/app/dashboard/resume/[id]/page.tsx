@@ -1651,7 +1651,12 @@ export default function ResumeEditorPage({
                                 </div>
                               </div>
                               <div className="pt-2">
-                                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1 mb-2">Bullet Points</label>
+                                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1 mb-2">
+                                  Bullet Points
+                                  {((exp.bullets || []).filter((b) => typeof b === "string" && b.trim()).length > 6) && (
+                                    <span className="ml-2 text-amber-600 dark:text-amber-400 normal-case tracking-normal font-medium" title="Recruiters spend ~6 seconds on a resume; 5-6 bullets is the sweet spot">· {(exp.bullets || []).filter((b) => typeof b === "string" && b.trim()).length} bullets — consider trimming</span>
+                                  )}
+                                </label>
                                 {(exp.bullets || [""]).map((bullet, bi) => (
                                   <div key={`bullet-${index}-${bi}-${bullet.slice(0,20)}`} className="flex items-start gap-2 mb-2 group/bullet">
                                     <div
