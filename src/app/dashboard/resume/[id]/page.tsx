@@ -318,6 +318,13 @@ export default function ResumeEditorPage({
     if (minutes < 1.5) return "1 min read";
     return `${Math.round(minutes)} min read`;
   })();
+
+  // R54: skills count. Walks the real skills array; isHighlighted is a
+  // per-skill flag surfaced in the editor as the star toggle.
+  const skillsCount = (() => {
+    const arr = (data as { skills?: Array<{ isHighlighted?: boolean }> }).skills || [];
+    return { total: arr.length, highlighted: arr.filter((s) => s.isHighlighted).length };
+  })();
   // R43: total years of experience computed from real start_date / end_date
   // on each ExperienceEntry. No fabrication — entries without dates contribute 0.
   // end_date is omitted for "current" roles; treated as today.
@@ -2077,6 +2084,15 @@ export default function ResumeEditorPage({
                 {readTime}
               </span>
             </>
+            {skillsCount.total > 0 && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                <span title={`${skillsCount.total} skills total, ${skillsCount.highlighted} marked as highlighted`}>
+                  <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Skills</span>
+                  {skillsCount.total}{skillsCount.highlighted > 0 ? ` · ${skillsCount.highlighted}★` : ""}
+                </span>
+              </>
+            )}
               <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
               <span title={`Last viewed ${formatViewedAgo(resume.updated_at)}`}>
                 <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Last viewed</span>
