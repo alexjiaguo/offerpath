@@ -1928,7 +1928,12 @@ export default function ResumeEditorPage({
                                   }).length;
                                   return (
                                     <div className="text-[10px] text-zinc-500 dark:text-zinc-500 pl-3 mt-1 flex items-center gap-2">
-                                      <span className="tabular-nums font-bold">{bs.length} {bs.length === 1 ? "bullet" : "bullets"}</span>
+                                      <span className="tabular-nums font-bold">{bs.length} {bs.length === 1 ? "bullet" : "bullets"}</span>{bs.length < 4 && (
+                                    <>
+                                      <span className="text-zinc-300 dark:text-zinc-600">·</span>
+                                      <span className="text-amber-600 dark:text-amber-400 normal-case tracking-normal font-medium" title="Recruiters expect 4-6 bullets per role. Add 1-3 more to be competitive.">+ add {4 - bs.length} more</span>
+                                    </>
+                                  )}
                                       <span className="text-zinc-300 dark:text-zinc-600">·</span>
                                       <span className="tabular-nums">{tc} chars</span>
                                       {wm > 0 && (
