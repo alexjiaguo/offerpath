@@ -2673,6 +2673,20 @@ export default function ResumeEditorPage({
                 <div className="space-y-2">
                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">Job Description</label>
                   <textarea value={tailorJD} onChange={(e) => setTailorJD(e.target.value)} rows={8} placeholder="Paste the job description here..." className="w-full px-5 py-4 rounded-2xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-purple-500/40 transition-all resize-none font-sans" />
+                  {(() => {
+                    // R99: live char count + zone color on the JD field.
+                    // Same pattern as the R89 summary char count — under
+                    // 100 chars the AI has nothing to work with, over
+                    // 5,000 the prompt gets noisy and slows the model.
+                    const len = (tailorJD || "").trim().length;
+                    const tone = len === 0 ? "text-zinc-400 dark:text-zinc-500" : len < 100 ? "text-red-500 dark:text-red-400" : len <= 5000 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-500 dark:text-amber-400";
+                    return (
+                      <div className="flex items-center justify-between text-[10px] pl-1">
+                        <span className="text-zinc-500">Aim for 200-3,000 chars. More context = better tailoring.</span>
+                        <span className={`tabular-nums font-bold ${tone}`}>{len.toLocaleString()} / 5,000 chars</span>
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div className="flex gap-4">
                   <button onClick={() => setShowTailorDialog(false)} className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-zinc-500 bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/5 hover:bg-zinc-200 dark:bg-white/10 transition-all uppercase tracking-widest">Cancel</button>
