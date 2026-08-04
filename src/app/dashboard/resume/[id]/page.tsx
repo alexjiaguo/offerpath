@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, Check, CheckCircle, Copy, CaretDown, CaretUp, EnvelopeSimple, Link as LinkIcon, Target, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler, SquaresFour, Clock, DotsSixVertical, ArrowRight} from '@phosphor-icons/react';
+import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Bookmarks, Briefcase, Check, CheckCircle, Copy, CaretDown, CaretUp, EnvelopeSimple, Link as LinkIcon, Target, WarningCircle, Eye, EyeSlash, FileText, ListChecks, ShieldCheck, SlidersHorizontal, FloppyDisk, Info, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler, SquaresFour, Clock, DotsSixVertical, ArrowRight, Star} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -2138,12 +2138,33 @@ export default function ResumeEditorPage({
                       )}
                       
                       <div className="flex flex-wrap gap-2">
-                        {(data.skills || []).map((skill, index) => (
+                        {(data.skills || []).map((skill, index) => {
+                          const isHighlighted = typeof skill !== 'string' && !!skill.isHighlighted;
+                          const name = typeof skill === 'string' ? skill : skill.name;
+                          return (
                           <div
                             key={typeof skill === 'string' ? `skill-${index}-${skill}` : skill.id}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.05] text-xs font-bold text-zinc-700 dark:text-zinc-300 group transition-all"
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold group transition-all ${isHighlighted ? "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-300" : "bg-zinc-100 dark:bg-white/[0.05] border-zinc-200 dark:border-white/[0.05] text-zinc-700 dark:text-zinc-300"}`}
                           >
-                            <span>{typeof skill === 'string' ? skill : skill.name}</span>
+                            {/* R75: star toggle for highlight */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                saveToHistory(id);
+                                const newSkills = [...(data.skills || [])];
+                                if (typeof newSkills[index] === 'string') {
+                                  newSkills[index] = { id: `s-${Date.now()}-${index}`, name: newSkills[index] as string, isHighlighted: true };
+                                } else {
+                                  newSkills[index] = { ...(newSkills[index] as { id: string; name: string; isHighlighted?: boolean }), isHighlighted: !isHighlighted };
+                                }
+                                updateResume(id, { data: { ...data, skills: newSkills } });
+                              }}
+                              className="opacity-70 hover:opacity-100 transition-opacity"
+                              title={isHighlighted ? "Unmark as highlighted" : "Mark as a highlight skill"}
+                            >
+                              <Star weight={isHighlighted ? "fill" : "regular"} className={`w-3.5 h-3.5 ${isHighlighted ? "text-amber-500" : "text-zinc-500 dark:text-zinc-400"}`} />
+                            </button>
+                            <span>{name}</span>
                             <button
                               onClick={() => {
                                 saveToHistory(id);
@@ -2156,7 +2177,8 @@ export default function ResumeEditorPage({
                               <X className="w-3.5 h-3.5" />
                             </button>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                       
                       <div className="space-y-1.5">
