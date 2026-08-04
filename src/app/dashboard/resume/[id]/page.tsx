@@ -494,6 +494,21 @@ export default function ResumeEditorPage({
     setLastSavedAt(new Date());
     setTimeout(() => setSaved(false), 2000);
   };
+  // R78: Cmd/Ctrl+S triggers the Save button. Stored in a ref so
+  // the keyboard listener can stay stable (one registration) while
+  // still always invoking the latest handleSave closure.
+  const handleSaveRef = useRef<() => void>(() => {});
+  handleSaveRef.current = handleSave;
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === "s" || e.key === "S")) {
+        e.preventDefault();
+        handleSaveRef.current();
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
 
 
   // R32: serialize the resume data as plain text for the "Copy as plain
