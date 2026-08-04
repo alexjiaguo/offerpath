@@ -1767,6 +1767,30 @@ export default function ResumeEditorPage({
                                     </button>
                                   </div>
                                 ))}
+                                {(() => {
+                                  // R95: per-experience total stats line. Always
+                                  // visible (not gated on 7+ like the R87
+                                  // warning) so the user sees the aggregate of
+                                  // this role at a glance. Quiet tone so it
+                                  // doesn't compete with the bullet rows.
+                                  const bs = (exp.bullets || []).filter((b) => typeof b === "string" && b.trim());
+                                  if (bs.length === 0) return null;
+                                  const tc = bs.reduce((s, b) => s + b.length, 0);
+                                  const wm = bs.filter((b) => /\d/.test(b)).length;
+                                  return (
+                                    <div className="text-[10px] text-zinc-500 dark:text-zinc-500 pl-3 mt-1 flex items-center gap-2">
+                                      <span className="tabular-nums font-bold">{bs.length} {bs.length === 1 ? "bullet" : "bullets"}</span>
+                                      <span className="text-zinc-300 dark:text-zinc-600">·</span>
+                                      <span className="tabular-nums">{tc} chars</span>
+                                      {wm > 0 && (
+                                        <>
+                                          <span className="text-zinc-300 dark:text-zinc-600">·</span>
+                                          <span className="tabular-nums text-emerald-600 dark:text-emerald-400 font-bold">{wm} w/ metrics</span>
+                                        </>
+                                      )}
+                                    </div>
+                                  );
+                                })()}
                                 <div className="flex items-center gap-3 mt-1 pl-3">
                                   <button
                                     onClick={() => {
