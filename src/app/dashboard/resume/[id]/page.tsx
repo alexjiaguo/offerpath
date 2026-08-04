@@ -170,6 +170,11 @@ export default function ResumeEditorPage({
   // R35: count the total number of experience bullets and how many include a
   // numeric metric. Walks the real `data.experience[*].bullets[*]` strings —
   // honest, no LLM.
+  // R45: action-verb sets hoisted to component scope so the R40 per-bullet
+  // dot can reuse them for its hover tooltip (and they were already in
+  // bulletStats for the R44 strong-verb count).
+  const STRONG = new Set("led,built,shipped,drove,launched,created,designed,managed,delivered,grew,achieved,increased,reduced,saved,generated,implemented,executed,transformed,established,founded,secured,won,pioneered,optimized,accelerated,scaled,mentored,coached,owned,architected,negotiated,closed,cut,raised,produced,authored".split(","));
+  const WEAK = new Set("helped,worked,responsible,participated,assisted,supported,contributed,involved,was,did,tried".split(","));
   const bulletStats = (() => {
     const exp = data.experience || [];
     let total = 0;
@@ -180,10 +185,8 @@ export default function ResumeEditorPage({
     let shortCount = 0;
     let goodCount = 0;
     let longCount = 0;
-    // R44: same first-word verb check as the R40 dot tinting; duplicated
-    // inline so we don't need a module-level constant for one extra count.
+    // R44: same first-word verb check as the R40 dot tinting.
     let strongCount = 0;
-    const STRONG = new Set("led,built,shipped,drove,launched,created,designed,managed,delivered,grew,achieved,increased,reduced,saved,generated,implemented,executed,transformed,established,founded,secured,won,pioneered,optimized,accelerated,scaled,mentored,coached,owned,architected,negotiated,closed,cut,raised,produced,authored".split(","));
     for (const e of exp) {
       for (const b of (e.bullets || [])) {
         if (typeof b === "string" && b.trim()) {
@@ -1192,11 +1195,18 @@ export default function ResumeEditorPage({
                                 {(exp.bullets || [""]).map((bullet, bi) => (
                                   <div key={`bullet-${index}-${bi}-${bullet.slice(0,20)}`} className="flex items-start gap-2 mb-2 group/bullet">
                                     <div
+                                      title={(() => {
+                                        const w = (bullet || "").trim().split(/\s+/)[0] || "";
+                                        const lc = w.toLowerCase().replace(/[^a-z]/g, "");
+                                        if (STRONG.has(lc)) return "Starts with a strong action verb";
+                                        if (WEAK.has(lc)) return "Weak verb — try Led, Built, Drove, Shipped, or Launched";
+                                        return "Verb not recognized — consider leading with a strong action verb";
+                                      })()}
                                       className={(() => {
                                         const w = (bullet || "").trim().split(/\s+/)[0] || "";
                                         const lc = w.toLowerCase().replace(/[^a-z]/g, "");
-                                        const strong = new Set(["led","built","shipped","drove","launched","created","designed","managed","delivered","grew","achieved","increased","reduced","saved","generated","implemented","executed","transformed","established","founded","secured","won","pioneered","optimized","accelerated","scaled","mentored","coached","owned","architected","negotiated","closed","cut","raised","built","drove","produced","authored"]);
-                                        const weak = new Set(["helped","worked","responsible","participated","assisted","supported","contributed","involved","was","did","tried"]);
+                                        const strong = STRONG;
+                                        const weak = WEAK;
                                         const tone = strong.has(lc) ? "strong" : weak.has(lc) ? "weak" : "neutral";
                                         return "w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0 " + (tone === "strong" ? "bg-emerald-500" : tone === "weak" ? "bg-amber-500" : "bg-zinc-300 dark:bg-zinc-600");
                                       })()}
