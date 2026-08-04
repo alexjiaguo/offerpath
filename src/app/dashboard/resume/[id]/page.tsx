@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CalendarBlank, CheckCircle, CaretDown, CaretUp, Clock, Copy, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, Printer, User, Plus, Sparkle, Trash, Browser, Wrench, X, Target, Ruler} from '@phosphor-icons/react';
+import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CalendarBlank, CheckCircle, CaretDown, CaretUp, Clock, Copy, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, Printer, User, Plus, Sparkle, Trash, Browser, Wrench, X, Target, Ruler, SquaresFour} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -192,6 +192,23 @@ export default function ResumeEditorPage({
       }
     }
     return { total, withMetrics, short: shortCount, good: goodCount, long: longCount };
+  })();
+  // R38: walk the 5 base sections and check whether each is "complete".
+  // personal: 5 base fields filled. summary: at least 50 chars. experience:
+  // at least one entry with a non-empty bullet. education: at least one
+  // entry. skills: at least one skill. Returns { complete, total: 5 }.
+  const sectionStats = (() => {
+    const p = (data as { personal?: { name?: string; email?: string; phone?: string; location?: string; title?: string } }).personal || {};
+    const personalOk = !!(p.name && p.email && p.phone && p.location && p.title);
+    const summaryOk = typeof data.summary === "string" && data.summary.trim().length >= 50;
+    const expArr = (data as { experience?: Array<{ bullets?: string[] }> }).experience || [];
+    const experienceOk = expArr.some((e) => (e.bullets || []).some((b) => typeof b === "string" && b.trim()));
+    const eduArr = (data as { education?: unknown[] }).education || [];
+    const educationOk = eduArr.length > 0;
+    const skillsArr = (data as { skills?: unknown[] }).skills || [];
+    const skillsOk = skillsArr.length > 0;
+    const complete = [personalOk, summaryOk, experienceOk, educationOk, skillsOk].filter(Boolean).length;
+    return { complete, total: 5 };
   })();
 
   // R33: inline title editing state. Click the H1 to enter edit mode,
@@ -1783,6 +1800,15 @@ export default function ResumeEditorPage({
               </>
             )}
             <>
+            {sectionStats.complete < sectionStats.total && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                <span title={`${sectionStats.complete} of ${sectionStats.total} base sections filled: personal, summary, experience, education, skills`}>
+                  <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Sections</span>
+                  {sectionStats.complete}/{sectionStats.total}
+                </span>
+              </>
+            )}
               <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
               <span title={`Last viewed ${formatViewedAgo(resume.updated_at)}`}>
                 <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Last viewed</span>
