@@ -229,6 +229,22 @@ export default function ResumeEditorPage({
     return { complete, total: 5 };
   })();
 
+  // R70: latest role summary. Picks the experience entry with the most
+  // recent start_date (YYYY-MM format) and surfaces title + company +
+  // start-end range for the Experience section heading.
+  const latestRole = (() => {
+    const arr = (data as { experience?: Array<{ start_date?: string; end_date?: string; title?: string; company?: string }> }).experience || [];
+    const parsed = arr
+      .map((e) => ({ ...e, _key: (e.start_date || "") }))
+      .filter((e) => /\d{4}-\d{2}/.test(e._key))
+      .sort((a, b) => b._key.localeCompare(a._key));
+    const top = parsed[0];
+    if (!top) return null;
+    const start = top.start_date || "";
+    const end = top.end_date || "now";
+    return { title: top.title || "Role", company: top.company || "Company", start, end };
+  })();
+
   // R57: per-section completion map. Each base section is 0..1 based on
   // the same checks R38 uses. Lets the right-rail tab show a tiny progress
   // bar under the label so users see at a glance which sections are weak.
@@ -1404,7 +1420,7 @@ export default function ResumeEditorPage({
                   {activeSection === "experience" && (
                     <div className="space-y-6" role="region" aria-labelledby="sec-experience">
                       <div className="flex items-center justify-between">
-                        <h2 id="sec-experience" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Work Experience</h2>
+                        <h2 id="sec-experience" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Work Experience</h2>{latestRole && (<span className="ml-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-600 dark:text-zinc-400 normal-case tracking-normal font-medium" title={`${latestRole.title} at ${latestRole.company} (${latestRole.start} - ${latestRole.end})`}> <ArrowRight weight="duotone" className="w-3 h-3" /> Latest: {latestRole.title} @ {latestRole.company} ({latestRole.start} - {latestRole.end}) </span>)}
                         <button
                           onClick={() => {
                             saveToHistory(id);
