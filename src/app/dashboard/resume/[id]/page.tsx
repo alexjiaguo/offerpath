@@ -1917,7 +1917,10 @@ export default function ResumeEditorPage({
                               label: "Email", field: "email", value: data.personal?.email || "",
                               validate: (v) => v && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) ? "Doesn't look like an email address" : null,
                             },
-                            { label: "Phone", field: "phone", value: data.personal?.phone || "" },
+                            {
+                              label: "Phone", field: "phone", value: data.personal?.phone || "",
+                              validate: (v) => v && v.replace(/\D/g, "").length < 7 ? "Looks too short to be a real phone" : null,
+                            },
                             { label: "Location", field: "location", value: data.personal?.location || "" },
                             {
                               label: "LinkedIn", field: "linkedin", value: data.personal?.linkedin || "",
