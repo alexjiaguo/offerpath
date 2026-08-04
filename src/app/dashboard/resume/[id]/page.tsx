@@ -1737,6 +1737,21 @@ export default function ResumeEditorPage({
                                   }} placeholder="e.g. Present" className="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-100 dark:bg-white/[0.05] transition-all font-sans placeholder:text-zinc-400" />
                                 </div>
                               </div>
+                              {(() => {
+                                // R58: date sanity check. Only fires when
+                                // both dates match the YYYY-MM pattern so
+                                // free-text inputs (e.g. "Present") are
+                                // never flagged.
+                                const sm = /^(\d{4})-(\d{2})$/.exec(exp.start_date || "");
+                                const em = /^(\d{4})-(\d{2})$/.exec(exp.end_date || "");
+                                if (!sm || !em) return null;
+                                const s = Number(sm[1]) * 12 + Number(sm[2]);
+                                const e = Number(em[1]) * 12 + Number(em[2]);
+                                if (s >= e) return null;
+                                return (
+                                  <p className="mt-1 text-[10px] text-red-500 dark:text-red-400 pl-1 font-medium" title="Start date is after end date">Start date is after end date — please check</p>
+                                );
+                              })()}
                               <div className="pt-2">
                                 <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1 mb-2">
                                   Bullet Points
