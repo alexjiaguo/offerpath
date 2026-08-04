@@ -1045,7 +1045,7 @@ export default function ResumeEditorPage({
             )}
             <p className="text-[11px] text-zinc-500 mt-0.5">
               Last edited {formatViewedAgo(resume.updated_at)}
-              {staleness && <span className="text-amber-600 dark:text-amber-400 font-medium" title={staleness.title}>{staleness.label}</span>}
+              {staleness && <span role="status" aria-live="polite" className="text-amber-600 dark:text-amber-400 font-medium" title={staleness.title}>{staleness.label}</span>}
             </p>
           </div>
         </div>
@@ -1406,6 +1406,7 @@ export default function ResumeEditorPage({
                       <button
                         onClick={() => setActiveSection(section.key)}
                         title={section.tip}
+                        aria-current={activeSection === section.key ? "page" : undefined}
                         className={cn(
                           "flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap",
                           activeSection === section.key
@@ -1780,6 +1781,8 @@ export default function ResumeEditorPage({
                                         newExps[index] = { ...newExps[index], bullets: newBullets };
                                         updateResume(id, { data: { ...data, experience: newExps } });
                                       }}
+                                      aria-label="Delete bullet"
+                                      title="Delete bullet"
                                       className="mt-2 p-1 text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover/bullet:opacity-100"
                                     >
                                       <X className="w-3.5 h-3.5" />
