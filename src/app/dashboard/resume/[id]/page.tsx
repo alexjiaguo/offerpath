@@ -290,7 +290,16 @@ export default function ResumeEditorPage({
         }
       }
     }
-    return { total, withMetrics, short: shortCount, good: goodCount, long: longCount, strong: strongCount };
+    const verbSet = new Set<string>();
+    for (const e of exp) {
+      for (const b of (e.bullets || [])) {
+        if (typeof b === "string" && b.trim()) {
+          const fw = b.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, "");
+          if (fw) verbSet.add(fw);
+        }
+      }
+    }
+    return { total, withMetrics, short: shortCount, good: goodCount, long: longCount, strong: strongCount, verbDiversity: verbSet.size };
   })();
   // R38: walk the 5 base sections and check whether each is "complete".
   // personal: 5 base fields filled. summary: at least 50 chars. experience:
