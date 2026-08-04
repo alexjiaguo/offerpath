@@ -1413,6 +1413,15 @@ export default function ResumeEditorPage({
                                         return "w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0 " + (tone === "strong" ? "bg-emerald-500" : tone === "weak" ? "bg-amber-500" : "bg-zinc-300 dark:bg-zinc-600");
                                       })()}
                                     />
+                                    {(() => {
+                                      // R59: bullet-typo check. Flag a bullet
+                                      // whose first non-whitespace character is
+                                      // a lowercase letter — common resume typo
+                                      // ("managed" instead of "Managed").
+                                      const first = (bullet || "").trim().charAt(0);
+                                      if (!first || !/[a-z]/.test(first)) return null;
+                                      return <span className="mt-2 flex-shrink-0" title="Starts with a lowercase letter — capitalize the first word for a polished look"><PenNib weight="duotone" className="w-3 h-3 text-amber-500" aria-hidden="true" /></span>;
+                                    })()}
                                     <textarea
                                       value={bullet}
                                       onBlur={() => saveToHistory(id)}
