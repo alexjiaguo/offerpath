@@ -432,6 +432,12 @@ export default function ResumeEditorPage({
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(resume.title);
   const titleInputRef = useRef<HTMLInputElement | null>(null);
+  // R96: inline skill rename. Mirrors the R33 pattern — click the skill
+  // name to enter edit mode, Enter or blur saves, Escape cancels.
+  // editingSkillKey matches the key we hand to the skill chip so the
+  // string-form synthetic keys and object-form ids both work.
+  const [editingSkillKey, setEditingSkillKey] = useState<string | null>(null);
+  const [editingSkillDraft, setEditingSkillDraft] = useState("");
   // R61: brief "Saved" pulse. Tracks data identity; flips to true for
   // 1.6s whenever data changes, then back to false. The H1 renders a
   // small "Saved" badge while true. No fake timestamps; the effect
@@ -2012,7 +2018,53 @@ export default function ResumeEditorPage({
                             >
                               <Star weight={isHighlighted ? "fill" : "regular"} className={`w-3.5 h-3.5 ${isHighlighted ? "text-amber-500" : "text-zinc-500 dark:text-zinc-400"}`} />
                             </button>
-                            <span>{name}</span>
+                            {editingSkillKey === (typeof skill === "string" ? `skill-${index}-${skill}` : skill.id) ? (
+                              <input
+                                autoFocus
+                                value={editingSkillDraft}
+                                onChange={(e) => setEditingSkillDraft(e.target.value)}
+                                onBlur={() => {
+                                  const trimmed = editingSkillDraft.trim();
+                                  if (trimmed && trimmed !== name) {
+                                    saveToHistory(id);
+                                    const newSkills = [...(data.skills || [])];
+                                    if (typeof newSkills[index] === "string") {
+                                      newSkills[index] = { id: `s-${Date.now()}-${index}`, name: trimmed, isHighlighted: false };
+                                    } else {
+                                      // SkillItem.isHighlighted is required (not optional) on the
+                                      // type — spread keeps the existing boolean, so cast to
+                                      // { isHighlighted: boolean } to satisfy the assignment.
+                                      const prev = newSkills[index] as { id: string; name: string; isHighlighted: boolean };
+                                      newSkills[index] = { ...prev, name: trimmed };
+                                    }
+                                    updateResume(id, { data: { ...data, skills: newSkills } });
+                                  }
+                                  setEditingSkillKey(null);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.currentTarget.blur();
+                                  } else if (e.key === "Escape") {
+                                    setEditingSkillDraft(name);
+                                    setEditingSkillKey(null);
+                                  }
+                                }}
+                                className="bg-transparent border-b border-brand-500/60 focus:outline-none focus:border-brand-500 px-0 py-0 min-w-[80px] max-w-[200px] text-xs font-bold"
+                                aria-label="Edit skill name"
+                              />
+                            ) : (
+                              <span
+                                onClick={() => {
+                                  const key = typeof skill === "string" ? `skill-${index}-${skill}` : skill.id;
+                                  setEditingSkillDraft(name);
+                                  setEditingSkillKey(key);
+                                }}
+                                className="cursor-text hover:bg-zinc-200/60 dark:hover:bg-white/[0.08] rounded px-1 -mx-1 transition-colors"
+                                title="Click to rename"
+                              >
+                                {name}
+                              </span>
+                            )}
                             <button
                               type="button"
                               onClick={() => {
