@@ -2769,6 +2769,23 @@ export default function ResumeEditorPage({
                                 title="Click to rename"
                               >
                                 {name}
+                                {(() => {
+                                  // R113: per-skill bullet-mention count.
+                                  // Walks the role bullets once per chip;
+                                  // cheap because skills are short. Skips
+                                  // empty / 1-char names so the badge
+                                  // doesn't fire on noise.
+                                  const lc = (name || '').toLowerCase().trim();
+                                  if (!lc || lc.length < 2) return null;
+                                  let count = 0;
+                                  for (const exp of (data.experience || [])) {
+                                    for (const b of (exp.bullets || [])) {
+                                      if (typeof b === 'string' && b.toLowerCase().includes(lc)) count++;
+                                    }
+                                  }
+                                  if (count === 0) return null;
+                                  return <span onClick={(e) => e.stopPropagation()} className='ml-1 text-[10px] text-zinc-400 dark:text-zinc-600 tabular-nums' title={'Mentioned in ' + count + ' bullet(s)'}>×{count}</span>;
+                                })()}
                               </span>
                             )}
                             <button
