@@ -1696,6 +1696,23 @@ export default function ResumeEditorPage({
                                       <CaretDown weight="bold" className="w-3 h-3" />
                                     </button>
                                     <button
+                                      type="button"
+                                      onClick={async () => {
+                                        if (!bullet || !bullet.trim()) return;
+                                        try {
+                                          await navigator.clipboard.writeText(bullet);
+                                          toast.success("Bullet copied");
+                                        } catch {
+                                          toast.error("Couldn't access the clipboard");
+                                        }
+                                      }}
+                                      aria-label="Copy bullet"
+                                      title="Copy this bullet to clipboard"
+                                      className="mt-2 p-1 text-zinc-700 dark:text-zinc-400 hover:text-brand-500 transition-colors opacity-0 group-hover/bullet:opacity-100"
+                                    >
+                                      <Copy className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
                                       onClick={() => {
                                         saveToHistory(id);
                                         const newExps = [...(data.experience || [])];
