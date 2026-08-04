@@ -4,7 +4,7 @@ import { use, useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CalendarBlank, CheckCircle, CaretDown, CaretUp, Clock, Copy, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, Printer, User, Plus, Sparkle, Trash, Browser, Wrench, X, Target} from '@phosphor-icons/react';
+import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CalendarBlank, CheckCircle, CaretDown, CaretUp, Clock, Copy, Lightbulb, MagicWand, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, ListChecks, TextT, Sidebar, GraduationCap, PenNib, Printer, User, Plus, Sparkle, Trash, Browser, Wrench, X, Target, Ruler} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -174,15 +174,24 @@ export default function ResumeEditorPage({
     const exp = data.experience || [];
     let total = 0;
     let withMetrics = 0;
+    // R37: bucket each bullet by character length. <50 chars is too short to
+    // carry a result; 50-200 is the readable sweet spot; >200 is a wall of
+    // text recruiters will skip. Same walk as the R35 count + metrics check.
+    let shortCount = 0;
+    let goodCount = 0;
+    let longCount = 0;
     for (const e of exp) {
       for (const b of (e.bullets || [])) {
         if (typeof b === "string" && b.trim()) {
           total += 1;
           if (/\d/.test(b)) withMetrics += 1;
+          if (b.length < 50) shortCount += 1;
+          else if (b.length <= 200) goodCount += 1;
+          else longCount += 1;
         }
       }
     }
-    return { total, withMetrics };
+    return { total, withMetrics, short: shortCount, good: goodCount, long: longCount };
   })();
 
   // R33: inline title editing state. Click the H1 to enter edit mode,
@@ -1767,9 +1776,9 @@ export default function ResumeEditorPage({
             {bulletStats.total > 0 && (
               <>
                 <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-                <span title={`${bulletStats.total} experience bullets — ${bulletStats.withMetrics} include a numeric metric`}>
+                <span title={`${bulletStats.total} experience bullets — ${bulletStats.withMetrics} with a metric, length ${bulletStats.good} good / ${bulletStats.short} short / ${bulletStats.long} long`}>
                   <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mr-1">Bullets</span>
-                  {bulletStats.total} · {bulletStats.withMetrics} w/ metrics
+                  {bulletStats.total} · {bulletStats.withMetrics} w/ metrics · {bulletStats.good}g{bulletStats.short > 0 ? ` · ${bulletStats.short}s` : ""}{bulletStats.long > 0 ? ` · ${bulletStats.long}l` : ""}
                 </span>
               </>
             )}
