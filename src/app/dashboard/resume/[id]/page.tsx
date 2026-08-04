@@ -1660,7 +1660,7 @@ export default function ResumeEditorPage({
                                       rows={2}
                                       className="flex-1 px-3 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-100 dark:bg-white/[0.05] transition-all resize-none font-sans placeholder:text-zinc-400"
                                     />
-                                      <span className="mt-2 text-[10px] tabular-nums text-zinc-400 dark:text-zinc-500 select-none w-14 text-right" title={`${bullet.trim().split(/\s+/).filter(Boolean).length} words, ${bullet.length} characters`}>{bullet.length}c · {bullet.trim().split(/\s+/).filter(Boolean).length}w</span>
+                                      <span className="mt-2 flex flex-col items-end gap-0.5 text-[10px] tabular-nums text-zinc-400 dark:text-zinc-500 select-none" title={`${bullet.trim().split(/\s+/).filter(Boolean).length} words, ${bullet.length} characters`}><span className="text-zinc-500 dark:text-zinc-500">B{bi + 1}/{(exp.bullets || [""]).length}</span><span>{bullet.length}c · {bullet.trim().split(/\s+/).filter(Boolean).length}w</span></span>
                                     <button
                                       type="button"
                                       onClick={() => {
