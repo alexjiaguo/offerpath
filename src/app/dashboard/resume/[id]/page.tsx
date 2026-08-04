@@ -678,6 +678,20 @@ export default function ResumeEditorPage({
       if ((e.metaKey || e.ctrlKey) && (e.key === "s" || e.key === "S")) {
         e.preventDefault();
         handleSaveRef.current();
+        return;
+      }
+      // R109: Cmd/Ctrl+Z = undo, Cmd/Ctrl+Shift+Z = redo. Skip when
+      // the user is typing in a form field so we don't fight the
+      // browser's native input undo.
+      if ((e.metaKey || e.ctrlKey) && (e.key === "z" || e.key === "Z")) {
+        const t = e.target as HTMLElement | null;
+        if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+        e.preventDefault();
+        if (e.shiftKey) {
+          redo(id);
+        } else {
+          undo(id);
+        }
       }
     };
     document.addEventListener("keydown", handler);
