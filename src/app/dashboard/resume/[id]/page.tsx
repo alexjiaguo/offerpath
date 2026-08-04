@@ -571,12 +571,12 @@ export default function ResumeEditorPage({
     });
   };
 
-  const SECTIONS = [
-    { key: "personal", label: "Identity", icon: User },
-    { key: "summary", label: "Summary", icon: FileText },
-    { key: "experience", label: "Experience", icon: Briefcase },
-    { key: "education", label: "Education", icon: GraduationCap },
-    { key: "skills", label: "Skills", icon: Wrench },
+  const SECTIONS: Array<{ key: string; label: string; icon: typeof User; tip: string }> = [
+    { key: "personal",   label: "Identity",   icon: User,         tip: "Name, email, phone, location — recruiters filter on this in 6 seconds." },
+    { key: "summary",    label: "Summary",    icon: FileText,     tip: "Open with the role you want next. Quantify scope: team size, budget, ARR." },
+    { key: "experience", label: "Experience", icon: Briefcase,    tip: "Lead each bullet with a strong verb. Show the result, not the activity." },
+    { key: "education",  label: "Education",  icon: GraduationCap, tip: "Newest first. Honors/GPA only if recent (under 5 years) and impressive." },
+    { key: "skills",     label: "Skills",     icon: Wrench,       tip: "Group by category. Mirror the keywords in your target job description." },
   ];
 
   // Flowcv-style persona detection: if the resume was created from the
@@ -1492,6 +1492,7 @@ export default function ResumeEditorPage({
                       <div key={section.key} className="flex items-center gap-1 mb-1">
                         <button
                           onClick={() => setActiveSection(section.key)}
+                          title={section.tip}
                           className={cn(
                             "flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap",
                             activeSection === section.key
