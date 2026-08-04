@@ -102,6 +102,8 @@ export default function ResumeEditorPage({
 
   const [saved, setSaved] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("personal");
+  // R102: which section tab is being dragged for drop-reorder (null = idle).
+  const [draggedSection, setDraggedSection] = useState<string | null>(null);
   const [editorMode, setEditorMode] = useState<EditorMode>("form");
   const [showPreview, setShowPreview] = useState(true);
   const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
@@ -1338,6 +1340,23 @@ export default function ResumeEditorPage({
                       <div key={section.key} className="flex items-center gap-1 mb-1">
                         <button
                           onClick={() => setActiveSection(section.key)}
+                          onDragOver={(e) => {
+                            if (draggedSection && draggedSection !== section.key) e.preventDefault();
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            const src = draggedSection;
+                            if (!src || src === section.key) return;
+                            saveToHistory(id);
+                            const order = [...(resume.section_order || SECTIONS.map((s) => s.key as SectionKey))];
+                            const fromIdx = order.indexOf(src as SectionKey);
+                            const toIdx = order.indexOf(section.key as SectionKey);
+                            if (fromIdx < 0 || toIdx < 0) return;
+                            const [moved] = order.splice(fromIdx, 1);
+                            order.splice(toIdx, 0, moved);
+                            updateResume(id, { section_order: order });
+                            setDraggedSection(null);
+                          }}
                           title={section.tip}
                           aria-current={activeSection === section.key ? "page" : undefined}
                           className={cn(
@@ -1370,8 +1389,20 @@ export default function ResumeEditorPage({
                               <CaretDown className="w-3 h-3" />
                             </button>
                           </div>
-                          {/* R69: drag grip — visual cue only. */}
-                          <span className="p-0.5 text-zinc-300 dark:text-zinc-700 cursor-grab select-none" title="Section is reorderable — use the arrows above or wait for drag-and-drop" aria-hidden="true">
+                          {/* R102: real drag source. Drops handled on the section button above. */}
+                          <span
+                            draggable
+                            onDragStart={(e) => { setDraggedSection(section.key); e.dataTransfer.effectAllowed = "move"; }}
+                            onDragEnd={() => setDraggedSection(null)}
+                            className={
+                              "p-0.5 cursor-grab select-none transition-colors " +
+                              (draggedSection === section.key
+                                ? "text-indigo-500"
+                                : "text-zinc-300 dark:text-zinc-700 hover:text-zinc-500 dark:hover:text-zinc-500")
+                            }
+                            title="Drag to reorder, or use the arrows above"
+                            aria-label={"Reorder " + section.label}
+                          >
                             <DotsSixVertical weight="bold" className="w-3 h-3" />
                           </span>
                         </div>
