@@ -853,7 +853,7 @@ export default function ResumeEditorPage({
                       </p>
                       <button
                         type="button"
-                        onClick={() => toast.info("Re-tailor flow coming soon")}
+                        onClick={() => { setShowTailorDialog(true); setScoreOpen(false); }}
                         className="mt-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 transition-all"
                       >
                         <Target weight="duotone" className="w-3 h-3" />
