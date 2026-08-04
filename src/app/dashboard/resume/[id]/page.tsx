@@ -1150,25 +1150,48 @@ export default function ResumeEditorPage({
                     <div className="space-y-6">
                       <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Personal Details</h2>
                       <div className="space-y-4">
-                        {[
-                          { label: "Full Name", field: "name", value: data.personal?.name || "" },
-                          { label: "Email", field: "email", value: data.personal?.email || "" },
-                          { label: "Phone", field: "phone", value: data.personal?.phone || "" },
-                          { label: "Location", field: "location", value: data.personal?.location || "" },
-                          { label: "LinkedIn", field: "linkedin", value: data.personal?.linkedin || "" },
-                          { label: "Website", field: "website", value: data.personal?.website || "" },
-                        ].map((input) => (
-                          <div key={input.field} className="space-y-1.5">
-                            <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-widest ml-1">{input.label}</label>
-                            <input
-                              type="text"
-                              value={input.value as string}
-                              onBlur={() => saveToHistory(id)}
-                              onChange={(e) => updateField("personal", input.field, e.target.value)}
-                              className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-100 dark:bg-white/[0.05] transition-all font-sans"
-                            />
-                          </div>
-                        ))}
+                        {(() => {
+                          // R49: per-field format validation. Email and URL
+                          // fields show a red border + warning when the
+                          // value doesn't match a basic format. Other fields
+                          // are unchanged.
+                          const fields: Array<{ label: string; field: string; value: string; validate?: (v: string) => string | null }> = [
+                            { label: "Full Name", field: "name", value: data.personal?.name || "" },
+                            {
+                              label: "Email", field: "email", value: data.personal?.email || "",
+                              validate: (v) => v && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) ? "Doesn't look like an email address" : null,
+                            },
+                            { label: "Phone", field: "phone", value: data.personal?.phone || "" },
+                            { label: "Location", field: "location", value: data.personal?.location || "" },
+                            {
+                              label: "LinkedIn", field: "linkedin", value: data.personal?.linkedin || "",
+                              validate: (v) => v && !/^https?:\/\//.test(v) && !v.includes("linkedin.com") ? "Add https:// or a linkedin.com URL" : null,
+                            },
+                            {
+                              label: "Website", field: "website", value: data.personal?.website || "",
+                              validate: (v) => v && !/^https?:\/\//.test(v) && !/\.[a-z]{2,}/i.test(v) ? "Add https:// or a domain like example.com" : null,
+                            },
+                          ];
+                          return fields.map((input) => {
+                            const err = input.validate ? input.validate(input.value) : null;
+                            return (
+                              <div key={input.field} className="space-y-1.5">
+                                <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-widest ml-1">{input.label}</label>
+                                <input
+                                  type="text"
+                                  value={input.value}
+                                  onBlur={() => saveToHistory(id)}
+                                  onChange={(e) => updateField("personal", input.field, e.target.value)}
+                                  aria-invalid={err ? "true" : undefined}
+                                  className={`w-full px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 focus:bg-zinc-100 dark:bg-white/[0.05] transition-all font-sans ${err ? "border-red-400 dark:border-red-500/50" : "border-zinc-200 dark:border-white/[0.06]"}`}
+                                />
+                                {err && (
+                                  <p className="text-[10px] text-red-500 dark:text-red-400 pl-1 font-medium">{err}</p>
+                                )}
+                              </div>
+                            );
+                          });
+                        })()}
                       </div>
                     </div>
                   )}
