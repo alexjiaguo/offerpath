@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import {ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, Copy, IdentificationCard, ListChecks, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler, SquaresFour, Clock} from '@phosphor-icons/react';
+import {Info, ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, Copy, IdentificationCard, ListChecks, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler, SquaresFour, Clock} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -1665,7 +1665,13 @@ export default function ResumeEditorPage({
                   {/* Summary */}
                   {activeSection === "summary" && (
                     <div className="space-y-6">
-                      <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Professional Summary</h2>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Professional Summary</h2>
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-600 dark:text-zinc-400" title={SECTIONS.find((s) => s.key === "summary")?.tip ?? ""}>
+                          <Info weight="fill" className="w-3 h-3 text-zinc-500 flex-shrink-0" />
+                          <span className="max-w-xs truncate">{SECTIONS.find((s) => s.key === "summary")?.tip ?? ""}</span>
+                        </span>
+                      </div>
                       <textarea
                         value={data.summary || ""}
                         onBlur={() => saveToHistory(id)}
