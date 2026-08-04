@@ -1811,6 +1811,21 @@ export default function ResumeEditorPage({
                         {(data.experience || []).map((exp, index) => (
                           <div key={`exp-${exp.company}-${exp.title}-${exp.start_date}-${index}`} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
                             <button
+                              type="button"
+                              onClick={() => {
+                                saveToHistory(id);
+                                const newExps = [...(data.experience || [])];
+                                const cloned = JSON.parse(JSON.stringify(exp));
+                                newExps.splice(index + 1, 0, cloned);
+                                updateResume(id, { data: { ...data, experience: newExps } });
+                                toast.success("Duplicated. Edit the copy below.");
+                              }}
+                              className="absolute top-4 right-12 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 hover:text-brand-500 dark:hover:text-brand-400 opacity-0 group-hover/item:opacity-100 transition-all"
+                              title="Duplicate this experience entry \u2014 a deep copy appears below"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                            <button
                               onClick={() => {
                                 saveToHistory(id);
                                 const newExps = [...(data.experience || [])];
