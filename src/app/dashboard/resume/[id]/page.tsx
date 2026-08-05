@@ -1954,6 +1954,15 @@ export default function ResumeEditorPage({
                                     const upper = letters.replace(/[^A-Z]/g, '').length;
                                     if (upper / letters.length < 0.8) return null;
                                     return <span className='text-amber-600 dark:text-amber-400 normal-case tracking-normal' title='Recruiters read ALL-CAPS as shouting. Mixed case reads more polished.'>all caps</span>;
+                                  })()}
+                                  {(() => {
+                                    // R129: long-bullet comma hint. Long
+                                    // run-on bullets are hard to scan; a
+                                    // comma usually signals a natural place
+                                    // to split into a shorter sentence.
+                                    const b = (bullet || '').trim();
+                                    if (!b || b.length < 150 || b.includes(',')) return null;
+                                    return <span className='text-amber-600 dark:text-amber-400 normal-case tracking-normal' title='This bullet is 150+ chars with no comma. Add a comma or split it into two shorter bullets.'>break long sentence</span>;
                                   })()}</span>
                                     <button
                                       type="button"
@@ -2214,6 +2223,13 @@ export default function ResumeEditorPage({
                               {(() => {
                                 if (!(edu.institution || '').trim() || (edu.degree || '').trim()) return null;
                                 return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="Institution is filled but the degree is missing. Add the degree to make the entry useful.">add degree - institution is filled</p>;
+                              })()}
+                              {(() => {
+                                // R130: missing-school hint. The inverse of
+                                // the missing-degree hint above: a degree
+                                // without an institution is not credible.
+                                if (!(edu.degree || '').trim() || (edu.institution || '').trim()) return null;
+                                return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="Degree is filled but the institution is missing. Add the school to make the entry credible.">add school - degree is filled</p>;
                               })()}
 
                               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-200 dark:border-white/[0.05]">
