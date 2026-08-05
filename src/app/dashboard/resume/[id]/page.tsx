@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import {Info, ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, Check, CheckCircle, CaretDown, CaretUp, Copy, IdentificationCard, ListChecks, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler, SquaresFour, Clock, DotsSixVertical, ArrowRight, Star} from '@phosphor-icons/react';
+import {Info, ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsLeftRight, ArrowsOut, Briefcase, ChartBar, Check, CheckCircle, CaretDown, CaretUp, Copy, DotsThree, IdentificationCard, ListChecks, Printer, Target, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X, Ruler, SquaresFour, Clock, DotsSixVertical, ArrowRight, Star} from '@phosphor-icons/react';
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -149,6 +149,33 @@ export default function ResumeEditorPage({
       window.addEventListener("mousedown", handler);
       return () => window.removeEventListener("mousedown", handler);
     }, [wordsOpen]);
+    // Stats summary popover — consolidates secondary badges (word count,
+    // bullets, sections, read time, skills, years exp) into one tidy pill.
+    const [statsOpen, setStatsOpen] = useState(false);
+    const statsRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+      if (!statsOpen) return;
+      const handler = (e: MouseEvent) => {
+        if (statsRef.current && !statsRef.current.contains(e.target as Node)) {
+          setStatsOpen(false);
+        }
+      };
+      window.addEventListener("mousedown", handler);
+      return () => window.removeEventListener("mousedown", handler);
+    }, [statsOpen]);
+    // More actions dropdown for the toolbar.
+    const [moreOpen, setMoreOpen] = useState(false);
+    const moreRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+      if (!moreOpen) return;
+      const handler = (e: MouseEvent) => {
+        if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+          setMoreOpen(false);
+        }
+      };
+      window.addEventListener("mousedown", handler);
+      return () => window.removeEventListener("mousedown", handler);
+    }, [moreOpen]);
   const [editorMode, setEditorMode] = useState<EditorMode>("form");
   const [compactMode, setCompactMode] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
@@ -1168,8 +1195,9 @@ export default function ResumeEditorPage({
             </Link>
           </div>
           <div>
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <div className="flex items-center gap-2">
+            {/* Streamlined label row: type + quality score + stats popover */}
+            <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
               </div>
@@ -1256,273 +1284,8 @@ export default function ResumeEditorPage({
                 )}
               </div>
             </div>
-            {/* R25+R26: live word count - R25 added the pill, R26 made it
-                click-to-expand so the per-section breakdown is one tap away.
-                Same outside-click pattern as the Quality Score popover. */}
-            <div className="relative" ref={wordsRef}>
-              <button
-                type="button"
-                onClick={() => setWordsOpen((o) => !o)}
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/70 dark:hover:bg-white/[0.08] transition-colors"
-                title="Click for per-section word breakdown"
-                aria-expanded={wordsOpen}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
-                <span className="text-[10px] font-bold uppercase tracking-widest">{wordCount.toLocaleString()} words</span>
-              </button>
-              {wordsOpen && (
-                <div className="absolute left-0 top-full mt-2 w-72 z-30 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.08] shadow-2xl p-4 animate-fade-in">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Word count by section</span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">{wordCount.toLocaleString()} total</span>
-                  </div>
-                  <div className="space-y-1.5">
-                    {wordBreakdown.filter((row) => row.key !== "personal").map((row) => {
-                      const hasContent = row.parts > 0;
-                      return (
-                        <button
-                          key={row.key}
-                          type="button"
-                          onClick={() => { setActiveSection(row.key); setWordsOpen(false); }}
-                          disabled={!hasContent}
-                          className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors ${hasContent ? "hover:bg-zinc-100 dark:hover:bg-white/[0.04]" : "opacity-50 cursor-not-allowed"}`}
-                          title={hasContent ? `Jump to ${row.label}` : `${row.label} is empty`}
-                        >
-                          <span className={`w-4 h-4 rounded-md flex items-center justify-center flex-shrink-0 border ${hasContent ? "bg-brand-500/10 border-brand-500/30" : "bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/10"}`}>
-                            {hasContent ? <span className="w-1.5 h-1.5 rounded-full bg-brand-500" /> : <span className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />}
-                          </span>
-                          <span className={`text-[11px] flex-1 ${hasContent ? "text-zinc-900 dark:text-white font-semibold" : "text-zinc-500"}`}>{row.label}</span>
-                          <span className={`text-[10px] font-mono ${hasContent ? "text-zinc-700 dark:text-zinc-300" : "text-zinc-400"}`}>
-                            {row.words.toLocaleString()}{row.parts > 0 ? ` · ${row.parts}` : ""}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <p className="mt-3 pt-3 border-t border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-500 leading-relaxed">
-                    Counts summary, experience bullets, education, and skills. Identity (name/email) is excluded since it isn&apos;t body prose.
-                  </p>
-                </div>
-              )}
-            </div>
-            {/* R29: Sample persona chip - small, persistent indicator that
-                this title row belongs to a sample persona. Mirrors the
-                "Working from sample" banner below but stays in the title
-                row so users always know which template's data they're
-                looking at, even after dismissing the banner. */}
-            {personaSample && (
-              <span
-                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest border bg-indigo-500/10 border-indigo-500/30 text-indigo-600 dark:text-indigo-300"
-                title={`Sample persona: ${personaSample.name}${personaSample.role ? ` — ${personaSample.role}` : ""}`}
-              >
-                <IdentificationCard weight="duotone" className="w-2.5 h-2.5" />
-                Sample · {personaSample.template}
-              </span>
-            )}
-            {/* R30: Profile-sync chip. Sits in the title row next to the
-                Quality Score badge and the R29 persona chip. Renders only when
-                data.lastSyncedAt is set, so resumes that were never linked to
-                the profile stay clean. */}
-            {syncedAt && (
-              <span
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-sky-500/10 border-sky-500/30"
-                title={`Last synced from profile ${formatSyncedAgo(syncedAt)}`}
-              >
-                <ArrowsClockwise weight="duotone" className="w-2.5 h-2.5 text-sky-600 dark:text-sky-300" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-sky-700 dark:text-sky-300">
-                  Synced {formatSyncedAgo(syncedAt)}
-                </span>
-              </span>
-            )}
-            {/* R92: 'Last export' pill — appears once the user has
-                exported the resume at least once. Sits in the title row
-                right after the Synced chip. Brand-tinted to read as an
-                'action taken' indicator rather than a status warning. */}
-            {((data as { lastExportedAt?: string }).lastExportedAt) && (
-              <span
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-brand-500/10 border-brand-500/30"
-                title={`Last export: ${((data as { lastExportFormat?: "pdf" | "docx" | "txt" }).lastExportFormat ?? "file").toUpperCase()}`}
-              >
-                <FileText weight="duotone" className="w-2.5 h-2.5 text-brand-600 dark:text-brand-300" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-brand-700 dark:text-brand-300">
-                  Exported {((data as { lastExportFormat?: "pdf" | "docx" | "txt" }).lastExportFormat ?? "file").toUpperCase()} {formatLastExported((data as { lastExportedAt?: string }).lastExportedAt!)}
-                </span>
-              </span>
-            )}
-            {/* R31: "Tailored for [Job]" chip. Renders only when this resume
-                has tailoredFor meta (i.e. it was AI-tailored for a specific
-                role). Hidden on the base resume. Amber tone so it's clearly
-                distinct from the sky-blue "Synced" chip. */}
-            {tailoredFor && (
-              <div className="relative" ref={tailoredRef}>
-                <button
-                  type="button"
-                  onClick={() => setTailoredOpen((o) => !o)}
-                  aria-expanded={tailoredOpen}
-                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20 transition-colors"
-                >
-                  <Target weight="duotone" className="w-2.5 h-2.5 text-amber-600 dark:text-amber-300" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">
-                    Tailored for {tailoredFor.jobTitle} · {tailoredFor.score}/100
-                  </span>
-                  <CaretDown weight="bold" className={`w-2 h-2 transition-transform ${tailoredOpen ? "rotate-180" : ""}`} />
-                </button>
-                {tailoredOpen && (
-                  <div className="absolute left-0 top-full mt-2 w-72 z-30 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.08] shadow-2xl p-4 animate-fade-in">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Tailoring details</span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">{tailoredFor.score}/100</span>
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between gap-2 text-[11px]">
-                        <span className="text-zinc-500">Role</span>
-                        <span className="font-semibold text-zinc-900 dark:text-white truncate ml-2 text-right">{tailoredFor.jobTitle}</span>
-                      </div>
-                      <div className="flex items-center justify-between gap-2 text-[11px]">
-                        <span className="text-zinc-500">Company</span>
-                        <span className="font-semibold text-zinc-900 dark:text-white truncate ml-2 text-right">{tailoredFor.companyName}</span>
-                      </div>
-                      <div className="flex items-center justify-between gap-2 text-[11px]">
-                        <span className="text-zinc-500">Applied</span>
-                        <span className="font-mono text-zinc-700 dark:text-zinc-300">{formatViewedAgo(tailoredFor.appliedAt)}</span>
-                      </div>
-                    </div>
-                    <p className="mt-3 pt-3 border-t border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-500 leading-relaxed">
-                      Score is the same heuristic that powers the flowcv quality breakdown. Re-tailor to recompute against a new job description.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => { setShowTailorDialog(true); setScoreOpen(false); }}
-                      className="mt-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 transition-all"
-                    >
-                      <Target weight="duotone" className="w-3 h-3" />
-                      Re-tailor for a different role
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-            {/* R33: Inline editable title. Click the H1 to edit in place;
-                Enter or blur saves via updateResume, Escape cancels. Uses the
-                real resume.title field — no separate draft title. */}
-            {bulletStats.total > 0 && (
-              <span
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
-                title={`${bulletStats.total} experience bullets — ${bulletStats.withMetrics} include a numeric metric`}
-              >
-                <ListChecks weight="duotone" className="w-2.5 h-2.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">
-                  {bulletStats.total} {bulletStats.total === 1 ? "bullet" : "bullets"}
-                </span>
-                {bulletStats.withMetrics > 0 && (
-                  <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 border-l border-zinc-300/60 dark:border-white/10 pl-1.5">
-                    {bulletStats.withMetrics} w/ metrics
-                  </span>
-                )}
-                {bulletStats.strong > 0 && (
-                  <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 border-l border-zinc-300/60 dark:border-white/10 pl-1.5" title={`${bulletStats.strong} bullets start with a strong action verb`}>
-                    {bulletStats.strong} strong
-                  </span>
-                )}
-                {bulletStats.total >= 3 && (
-                  <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 border-l border-zinc-300/60 dark:border-white/10 pl-1.5" title={`${bulletStats.verbDiversity} unique first-words across ${bulletStats.total} bullets`}>
-                    {bulletStats.verbDiversity} verbs
-                  </span>
-                )}
-              </span>
-            )}
-            {/* R37: bullet length distribution chip. Only renders when at least one
-                bullet is outside the 50-200 char "good" range, so the title row
-                stays clean on a fully-tuned resume. */}
-            {bulletStats.total > 0 && (bulletStats.short + bulletStats.long > 0) && (
-              <span
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
-                title={`Length buckets — short (<50 chars): ${bulletStats.short}, good (50-200): ${bulletStats.good}, long (>200): ${bulletStats.long}`}
-              >
-                <Ruler weight="duotone" className="w-2.5 h-2.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">
-                  Length
-                </span>
-                <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 border-l border-zinc-300/60 dark:border-white/10 pl-1.5">
-                  {bulletStats.good}g{bulletStats.short > 0 ? ` · ${bulletStats.short}s` : ""}{bulletStats.long > 0 ? ` · ${bulletStats.long}l` : ""}
-                </span>
-              </span>
-            )}
-            {/* R38: section completion counter. Renders only when not at 5/5
-                so a fully-tuned resume doesn't get noise in the title row. */}
-            {sectionStats.complete < sectionStats.total && (
-              <span
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
-                title={`${sectionStats.complete} of ${sectionStats.total} base sections filled: personal, summary, experience, education, skills`}
-              >
-                <SquaresFour weight="duotone" className="w-2.5 h-2.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">
-                  {sectionStats.complete}/{sectionStats.total} sections
-                </span>
-              </span>
-            )}
-            {/* R42: active section chip. Shows which section the user is
-                currently editing, so the title row mirrors the right-rail tabs. */}
-            <span
-              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
-              title={`Currently editing: ${SECTIONS.find((s) => s.key === activeSection)?.label ?? activeSection}`}
-            >
-              <PenNib weight="duotone" className="w-2.5 h-2.5" />
-              <span className="text-[10px] font-bold uppercase tracking-widest">
-                Editing {SECTIONS.find((s) => s.key === activeSection)?.label ?? activeSection}
-              </span>
-            </span>
-            {nextIncompleteSection && nextIncompleteSection !== activeSection && (
-              <button
-                onClick={() => setActiveSection(nextIncompleteSection)}
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-amber-100 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-500/20 transition-colors"
-                title={`Jump to the next incomplete section: ${SECTIONS.find((s) => s.key === nextIncompleteSection)?.label ?? nextIncompleteSection}`}
-              >
-                <SquaresFour weight="duotone" className="w-2.5 h-2.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">
-                  Next: {SECTIONS.find((s) => s.key === nextIncompleteSection)?.label ?? nextIncompleteSection}
-                </span>
-              </button>
-            )}
-            <span
-              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
-              title={`${yearsOfExperience.toFixed(1)} years of experience across ${((data as { experience?: unknown[] }).experience || []).length} role(s)`}
-            >
-              <Briefcase weight="duotone" className="w-2.5 h-2.5" />
-              <span className="text-[10px] font-bold uppercase tracking-widest">
-                {yearsOfExperience >= 1 ? `${yearsOfExperience.toFixed(1)} yrs` : `${Math.round(yearsOfExperience * 12)} mo`} experience
-              </span>
-            </span>
-            <span
-              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
-              title={`${totalChars.toLocaleString()} characters across all sections`}
-            >
-              <FileText weight="duotone" className="w-2.5 h-2.5" />
-              <span className="text-[10px] font-bold uppercase tracking-widest">
-                {pageEstimate}
-              </span>
-            </span>
-            <span
-              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"
-              title={`${totalWords.toLocaleString()} words across all sections (~200 wpm)`}
-            >
-              <Clock weight="duotone" className="w-2.5 h-2.5" />
-              <span className="text-[10px] font-bold uppercase tracking-widest">
-                {readTime}
-              </span>
-            </span>
-            {skillsCount.total > 0 && (
-              /* R79: warn at 20+, R84: warn at <8. ATS sweet spot is 8-15. */
-              <span
-                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${skillsCount.total > 20 || skillsCount.total < 8 ? "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400" : "bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.06] text-zinc-600 dark:text-zinc-400"}`}
-                title={skillsCount.total > 20 ? `${skillsCount.total} skills is a lot — ATS sweet spot is 8-15. Trim to your target JD.` : skillsCount.total < 8 ? `Only ${skillsCount.total} skill${skillsCount.total === 1 ? "" : "s"} — ATS sweet spot is 8-15. Add a few more.` : `${skillsCount.total} skills total, ${skillsCount.highlighted} marked as highlighted`}
-              >
-                <Wrench weight="duotone" className="w-2.5 h-2.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">
-                  {skillsCount.total} skill{skillsCount.total === 1 ? "" : "s"}{skillsCount.highlighted > 0 ? ` · ${skillsCount.highlighted}★` : ""}{skillsCount.total > 20 ? " · trim" : skillsCount.total < 8 ? " · add more" : ""}
-                </span>
-              </span>
-            )}
+
+            {/* Title */}
             {editingTitle ? (
               <input
                 ref={titleInputRef}
@@ -1561,14 +1324,9 @@ export default function ResumeEditorPage({
               </h1>
             )}
             {sectionStats.complete === sectionStats.total && sectionStats.total > 0 && (
-              <div
-                role="status"
-                aria-live="polite"
-                className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-widest"
-                title="All 5 base sections have content"
-              >
+              <div role="status" aria-live="polite" className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
                 <CheckCircle weight="duotone" className="w-3 h-3" />
-                All 5 sections complete — ready to export
+                All sections complete
               </div>
             )}
             <p className="text-[11px] text-zinc-500 mt-0.5">
@@ -1578,38 +1336,35 @@ export default function ResumeEditorPage({
           </div>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Collapse Editor Toggle */}
+        <div className="flex items-center gap-2">
+          {/* Layout toggles */}
           <button
             onClick={() => setIsEditorCollapsed(!isEditorCollapsed)}
             className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
             title={isEditorCollapsed ? "Open Editor" : "Collapse Editor"}
           >
-            {isEditorCollapsed ? <Sidebar className="w-5 h-5" /> : <Sidebar className="w-5 h-5" />}
+            <Sidebar className="w-4.5 h-4.5" />
           </button>
-
-          {/* Collapse Sidebar Toggle */}
           {showPreview && (
             <button
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
               className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
               title={isSidebarCollapsed ? "Open Intelligence Sidebar" : "Collapse Intelligence Sidebar"}
             >
-              {isSidebarCollapsed ? (
-                <Sidebar className="w-5 h-5 rotate-180" />
-              ) : (
-                <Sidebar className="w-5 h-5 rotate-180" />
-              )}
+              <Sidebar className="w-4.5 h-4.5 rotate-180" />
             </button>
           )}
 
-          <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1 gap-1 mr-2">
+          <div className="w-px h-6 bg-zinc-200 dark:bg-white/[0.06] mx-0.5" />
+
+          {/* Undo / Redo */}
+          <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1 gap-0.5">
             <button
               onClick={() => undo(id)}
               disabled={!canUndo}
               className={cn(
                 "p-2 rounded-lg transition-all",
-                canUndo ? "text-zinc-300 hover:bg-zinc-100 dark:bg-white/5" : "text-zinc-400 dark:text-zinc-700 cursor-not-allowed"
+                canUndo ? "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/5 hover:text-zinc-900" : "text-zinc-300 dark:text-zinc-700 cursor-not-allowed"
               )}
               title="Undo"
             >
@@ -1620,7 +1375,7 @@ export default function ResumeEditorPage({
               disabled={!canRedo}
               className={cn(
                 "p-2 rounded-lg transition-all",
-                canRedo ? "text-zinc-300 hover:bg-zinc-100 dark:bg-white/5" : "text-zinc-400 dark:text-zinc-700 cursor-not-allowed"
+                canRedo ? "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/5 hover:text-zinc-900" : "text-zinc-300 dark:text-zinc-700 cursor-not-allowed"
               )}
               title="Redo"
             >
@@ -1628,138 +1383,144 @@ export default function ResumeEditorPage({
             </button>
           </div>
 
-          <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1">
+          {/* Editor mode switcher */}
+          <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1 gap-0.5">
             <button
               onClick={() => setEditorMode("form")}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all",
+                "flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all",
                 editorMode === "form"
                   ? "bg-zinc-200 dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
               )}
             >
               <TextT className="w-3.5 h-3.5" />
-              Form View
+              <span className="hidden md:inline">Form</span>
             </button>
             <button
               onClick={() => setEditorMode("richtext")}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all",
+                "flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all",
                 editorMode === "richtext"
                   ? "bg-zinc-200 dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm"
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
               )}
             >
               <PenNib className="w-3.5 h-3.5" />
-              Visual Editor
+              <span className="hidden md:inline">Visual</span>
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setCompactMode(!compactMode)}
-            className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border",
-              compactMode
-                ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-500"
-                : "bg-white dark:bg-white/[0.03] border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
-            )}
-            title={compactMode ? "Show full editor guidance" : "Hide progress bars and role stats for a denser editor"}
-          >
-            <SquaresFour className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Compact</span>
-          </button>
+          <div className="w-px h-6 bg-zinc-200 dark:bg-white/[0.06] mx-0.5" />
 
-          <div className="w-px h-8 bg-zinc-100 dark:bg-white/[0.05] mx-1" />
-
+          {/* Preview toggle */}
           <button
             onClick={() => setShowPreview(!showPreview)}
             className={cn(
-              "flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-all border",
+              "flex items-center gap-2 px-3 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all border",
               showPreview
-                ? "bg-brand-500/10 border-brand-500/20 text-brand-400"
-                : "bg-white dark:bg-white/[0.03] border-zinc-200 dark:border-white/[0.05] text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:bg-white/[0.05]"
+                ? "bg-brand-500/10 border-brand-500/20 text-brand-500"
+                : "bg-white dark:bg-white/[0.03] border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
             )}
+            title={showPreview ? "Hide preview" : "Show preview"}
           >
-            {showPreview ? (
-              <EyeSlash className="w-4.5 h-4.5" />
-            ) : (
-              <Eye className="w-4.5 h-4.5" />
-            )}
-            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Preview</span>
+            {showPreview ? <EyeSlash className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <span className="hidden sm:inline">Preview</span>
           </button>
 
+          {/* Export */}
           <ExportButtons resumeData={data} resumeTitle={resume.title} onExport={(fmt) => updateResume(id, { data: { ...data, lastExportedAt: new Date().toISOString(), lastExportFormat: fmt } })} />
 
-          {/* R27: Print button - one-tap browser print dialog. PDF/DOCX
-              still route through ExportButtons; this is for users who just
-              want a quick print without re-rendering. */}
-          <button
-            onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-white/[0.12] transition-all"
-            title="Print this resume"
-          >
-            <Printer className="w-4 h-4" />
-            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Print</span>
-          </button>
-          {/* R32: Copy as plain text - one-tap clipboard write of the
-              same content Print/PDF would render, as plain text. */}
-          <button
-            type="button"
-            onClick={handleCopyAsText}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-white/[0.12] transition-all"
-            title="Copy this resume as plain text to your clipboard"
-          >
-            <Copy className="w-4 h-4" />
-            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Copy</span>
-          </button>
+          {/* More actions dropdown */}
+          <div className="relative" ref={moreRef}>
+            <button
+              type="button"
+              onClick={() => setMoreOpen((o) => !o)}
+              className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
+              title="More actions"
+              aria-expanded={moreOpen}
+            >
+              <DotsThree weight="bold" className="w-4.5 h-4.5" />
+            </button>
+            {moreOpen && (
+              <div className="absolute right-0 top-full mt-2 w-52 z-30 liquid-glass rounded-2xl border border-zinc-200 dark:border-white/[0.08] shadow-2xl py-1.5 animate-fade-in">
+                <button
+                  type="button"
+                  onClick={() => { setCompactMode(!compactMode); setMoreOpen(false); }}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left text-[11px] font-bold uppercase tracking-widest transition-colors",
+                    compactMode ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-600 dark:text-zinc-400"
+                  )}
+                >
+                  <SquaresFour className="w-3.5 h-3.5" />
+                  {compactMode ? "Exit compact mode" : "Compact mode"}
+                </button>
+                <div className="h-px bg-zinc-100 dark:bg-white/[0.05] mx-3 my-1" />
+                <button
+                  type="button"
+                  onClick={() => { window.print(); setMoreOpen(false); }}
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left text-[11px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-white/[0.04] transition-colors"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  Print
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { handleCopyAsText(); setMoreOpen(false); }}
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left text-[11px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-white/[0.04] transition-colors"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  Copy as plain text
+                </button>
+                <div className="h-px bg-zinc-100 dark:bg-white/[0.05] mx-3 my-1" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newId = duplicateResume(id);
+                    if (newId) {
+                      toast.success("Duplicated. Editing the copy now.");
+                      router.push(`/dashboard/resume/${newId}`);
+                    } else {
+                      toast.error("Could not duplicate this resume.");
+                    }
+                    setMoreOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left text-[11px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-white/[0.04] transition-colors"
+                >
+                  <ArrowsLeftRight className="w-3.5 h-3.5" />
+                  Duplicate
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm("Reset this resume to the original sample data? Your current edits will be lost.")) {
+                      saveToHistory(id);
+                      resetToSample(id);
+                      toast.success("Reset to the original sample data.");
+                    }
+                    setMoreOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left text-[11px] font-bold uppercase tracking-widest text-red-500/80 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors rounded-b-2xl"
+                >
+                  <ArrowCounterClockwise className="w-3.5 h-3.5" />
+                  Reset to sample
+                </button>
+              </div>
+            )}
+          </div>
 
-          {/* R28: Duplicate button - one-tap copy of this resume. Uses the
-              existing duplicateResume from the store, then navigates to the
-              new copy. */}
-          <button
-            onClick={() => {
-              const newId = duplicateResume(id);
-              if (newId) {
-                toast.success("Duplicated. Editing the copy now.");
-                router.push(`/dashboard/resume/${newId}`);
-              } else {
-                toast.error("Could not duplicate this resume.");
-              }
-            }}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-white/[0.12] transition-all"
-            title="Create an editable copy of this resume"
-          >
-            <ArrowsLeftRight className="w-4 h-4" />
-            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Duplicate</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              if (confirm("Reset this resume to the original sample data? Your current edits will be lost.")) {
-                saveToHistory(id);
-                resetToSample(id);
-                toast.success("Reset to the original sample data.");
-              }
-            }}
-            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-white/[0.12] transition-all"
-            title="Restore the original sample data \u2014 your current changes will be lost"
-          >
-            <ArrowCounterClockwise className="w-4 h-4" />
-            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Reset</span>
-          </button>
+          {/* Save */}
           <button
             onClick={handleSave}
             className={cn(
-              "flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-xl",
+              "flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all shadow-lg",
               saved
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                ? "bg-emerald-500/20 text-emerald-500 border border-emerald-500/30"
                 : "bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
             )}
           >
-            <FloppyDisk className="w-4.5 h-4.5" />
-            <span className="uppercase tracking-widest text-[11px]">{saved ? "Saved" : "Save"}</span>
+            <FloppyDisk className="w-4 h-4" />
+            {saved ? "Saved" : "Save"}
           </button>
         </div>
       </div>
@@ -2063,7 +1824,7 @@ export default function ResumeEditorPage({
                         if (!s) return null;
                         const first = s.split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, '') || '';
                         if (!/^(i|my|me)$/.test(first)) return null;
-                        return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="Summaries read stronger without personal pronouns. Open with your role or the value you deliver.">avoid "I/My" in the first sentence - lead with your role</p>;
+                        return <p className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-[#FBF3DB] text-[#956400] border border-[#956400]/20 font-mono text-[10px] font-medium" title="Summaries read stronger without personal pronouns. Open with your role or the value you deliver.">avoid "I/My" in the first sentence - lead with your role</p>;
                       })()}
                     </div>
                   )}
@@ -2210,11 +1971,11 @@ export default function ResumeEditorPage({
                                   if (!company) return null;
                                   const repeated = (data.experience || []).some((other, oi) => oi !== index && !!other && typeof other === 'object' && (other.company || '').trim().toLowerCase() === company);
                                   if (!repeated) return null;
-                                  return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 font-medium" title="Company appears in another role. Consider grouping these roles under one company heading.">same company in another role - consider grouping</p>;
+                                  return <p className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-[#FBF3DB] text-[#956400] border border-[#956400]/20 font-mono text-[10px] font-medium" title="Company appears in another role. Consider grouping these roles under one company heading.">same company in another role - consider grouping</p>;
                                 })()}
                                 {(() => {
                                   if (!(exp.title || '').trim() || (exp.company || '').trim()) return null;
-                                  return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 font-medium" title="Title is filled but the company is missing. Add the employer to make the role useful.">add company - title is filled</p>;
+                                  return <p className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-[#FBF3DB] text-[#956400] border border-[#956400]/20 font-mono text-[10px] font-medium" title="Title is filled but the company is missing. Add the employer to make the role useful.">add company - title is filled</p>;
                                 })()}
                               </div>
 
@@ -2281,7 +2042,7 @@ export default function ResumeEditorPage({
                                   return os <= oe2 && oe >= os2;
                                 });
                                 if (!overlaps) return null;
-                                return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="This role's dates overlap another role. Check whether they should be grouped or clarified.">dates overlap another role - check grouping</p>;
+                                return <p className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-[#FBF3DB] text-[#956400] border border-[#956400]/20 font-mono text-[10px] font-medium" title="This role's dates overlap another role. Check whether they should be grouped or clarified.">dates overlap another role - check grouping</p>;
                               })()}
                               {(() => {
                                 // R58: date sanity check. Only fires when
@@ -2736,13 +2497,13 @@ export default function ResumeEditorPage({
                                 // common education gap once school + degree
                                 // are present.
                                 if (!(edu.institution || '').trim() || !(edu.degree || '').trim() || (edu.field || '').trim()) return null;
-                                return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="School and degree are filled but the field of study is missing. Add it when it adds context.">add field - school and degree are filled</p>;
+                                return <p className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-[#FBF3DB] text-[#956400] border border-[#956400]/20 font-mono text-[10px] font-medium" title="School and degree are filled but the field of study is missing. Add it when it adds context.">add field - school and degree are filled</p>;
                               })()}
                               {(() => {
                                 // R136: graduation-date hint. Education
                                 // without a date reads as stale.
                                 if (!(edu.institution || '').trim() || (edu.end_date || edu.start_date || '').trim()) return null;
-                                return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="Institution is filled but the graduation date is missing. Add it so recruiters can judge recency.">add graduation date - institution is filled</p>;
+                                return <p className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm bg-[#FBF3DB] text-[#956400] border border-[#956400]/20 font-mono text-[10px] font-medium" title="Institution is filled but the graduation date is missing. Add it so recruiters can judge recency.">add graduation date - institution is filled</p>;
                               })()}
 
                               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-200 dark:border-white/[0.05]">
@@ -3102,7 +2863,7 @@ export default function ResumeEditorPage({
                 isSidebarCollapsed ? "grid-cols-1" : "lg:grid-cols-[1fr_320px]"
               )}
             >
-              <div className="bg-zinc-50 dark:bg-zinc-900/30 rounded-[40px] p-4 sm:p-8 lg:p-12 border border-zinc-200 dark:border-white/[0.03] shadow-inner overflow-hidden min-h-[800px] flex justify-center">
+              <div className="bg-surface-50 rounded-lg p-4 sm:p-8 lg:p-12 border border-surface-200 shadow-none overflow-hidden min-h-[800px] flex justify-center">
                 <AutoScaledPreview>
                   <ResumePreview
                     data={data}
@@ -3110,7 +2871,7 @@ export default function ResumeEditorPage({
                     themeColor={themeColor}
                     sectionOrder={sectionOrder as SectionKey[]}
                     sectionVisibility={resume.section_visibility?.[selectedTemplate]}
-                    className="w-full shadow-2xl"
+                    className="w-full shadow-none border border-surface-200 bg-surface-0"
                     fullScale
                   />
                 </AutoScaledPreview>

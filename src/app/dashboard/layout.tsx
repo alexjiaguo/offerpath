@@ -26,8 +26,8 @@ export default function DashboardLayout({
       <div className="md:ml-[260px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] h-[100dvh] flex flex-col p-4 md:p-6 gap-4 md:gap-6 overflow-hidden">
         <Topbar />
         <GuestBanner />
-        <main className="flex-1 doppel-shell min-h-0 relative z-10 w-full flex flex-col">
-          <div className="doppel-core flex-1 overflow-y-auto relative w-full !p-6 md:!p-8 bg-surface-50/50">
+        <main className="flex-1 min-h-0 relative z-10 w-full flex flex-col bg-surface-0 border border-surface-200 rounded-lg overflow-hidden shadow-none">
+          <div className="flex-1 overflow-y-auto relative w-full p-4 md:p-6 bg-surface-0">
             {children}
           </div>
         </main>

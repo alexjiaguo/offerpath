@@ -36,54 +36,55 @@ export default function Topbar() {
   }, []);
 
   return (
-    <header className="h-14 flex items-center justify-between px-6 bg-white/80 backdrop-blur-2xl border border-surface-200/50 rounded-full shadow-[0_8px_32px_-8px_rgba(0,0,0,0.05)] relative z-30 flex-shrink-0">
+    <header className="h-14 flex items-center justify-between px-5 bg-surface-0 border border-surface-200 rounded-lg shadow-none relative z-30 flex-shrink-0">
       {/* Mobile Nav + Search */}
-      <div className="flex items-center gap-6 flex-1">
+      <div className="flex items-center gap-4 flex-1">
         <div className="md:hidden">
           <MobileNav />
         </div>
 
         <div className="relative w-full max-w-lg group">
-          <MagnifyingGlass weight="light" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-300 group-focus-within:text-brand-900 transition-colors" />
+          <MagnifyingGlass weight="light" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400 group-focus-within:text-brand-900 transition-colors" />
           <input
             id="global-search-input"
             type="text"
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full pl-9 pr-12 py-1.5 rounded-full bg-surface-50 border border-transparent hover:border-surface-200/50 text-sm text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-300 focus:bg-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] font-sans tracking-tight"
+            className="w-full pl-9 pr-12 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 placeholder:text-surface-400 focus:outline-none focus:border-surface-400 focus:bg-surface-0 transition-colors font-sans tracking-tight"
           />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 px-1.5 py-0.5 rounded-full border border-surface-200 bg-surface-0 pointer-events-none shadow-sm">
-            <Command weight="light" className="w-3 h-3 text-surface-300" />
-            <span className="text-[9px] font-bold text-surface-300 uppercase tracking-widest">K</span>
+          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 px-1.5 py-0.5 rounded border border-surface-200 bg-surface-0 pointer-events-none shadow-none">
+            <Command weight="light" className="w-3 h-3 text-surface-400" />
+            <span className="text-[9px] font-mono font-medium text-surface-400 uppercase tracking-widest">K</span>
           </div>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-4 ml-8">
+      <div className="flex items-center gap-3 ml-6">
         {/* Quick Add */}
         <motion.button
           onClick={() => setAddJobDialogOpen(true)}
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-900 text-white shadow-sm hover:bg-brand-600 transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group"
+          className="flex items-center justify-center w-8 h-8 rounded-md bg-brand-900 text-white shadow-none hover:bg-brand-800 transition-colors group"
+          title="Add Job"
         >
           <Plus weight="light" className="w-4 h-4 group-active:scale-95 transition-transform" />
         </motion.button>
 
         {/* Notifications */}
-        <button className="relative w-8 h-8 flex items-center justify-center rounded-full border border-surface-200 bg-surface-0 text-surface-300 hover:text-brand-900 shadow-sm transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]" aria-label="Notifications">
+        <button className="relative w-8 h-8 flex items-center justify-center rounded-md border border-surface-200 bg-surface-0 text-surface-400 hover:text-brand-900 hover:bg-surface-100 shadow-none transition-colors" aria-label="Notifications">
           <Bell weight="light" className="w-4 h-4" />
         </button>
 
-        <div className="w-px h-6 bg-surface-200/50 mx-2" />
+        <div className="w-px h-5 bg-surface-200 mx-1" />
 
         {/* Profile */}
-        <Link href="/dashboard/settings" className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-surface-200 bg-surface-0 hover:bg-surface-50 shadow-sm transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]" aria-label="Profile settings">
-          <div className="w-6 h-6 rounded-full bg-brand-900 flex items-center justify-center text-[9px] font-bold text-white uppercase tracking-widest">
+        <Link href="/dashboard/settings" className="flex items-center gap-2 px-2 py-1 rounded-md border border-surface-200 bg-surface-0 hover:bg-surface-100 shadow-none transition-colors" aria-label="Profile settings">
+          <div className="w-6 h-6 rounded-md bg-brand-900 flex items-center justify-center text-[9px] font-mono font-semibold text-white uppercase tracking-widest">
             DU
           </div>
           <div className="hidden lg:block text-left">
-            <div className="text-[10px] font-semibold tracking-widest uppercase text-surface-400 leading-none">Demo User</div>
+            <div className="text-[10px] font-mono font-medium tracking-wider uppercase text-surface-400 leading-none">Demo User</div>
           </div>
         </Link>
       </div>
