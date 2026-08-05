@@ -1383,6 +1383,7 @@ export default function ResumeEditorPage({
                         >
                           <section.icon className="w-3.5 h-3.5" />
                           {section.label}
+                          {activeSection === section.key && <span className="w-1 h-1 rounded-full bg-indigo-500 animate-pulse" aria-hidden="true" />}
                           {/* R57: 1px progress bar under the label. */}
                           <span
                             className="absolute left-0 right-0 -bottom-0.5 h-0.5 bg-zinc-200 dark:bg-white/[0.06] overflow-hidden rounded-full"
