@@ -2802,7 +2802,7 @@ export default function ResumeEditorPage({
                     <div className="space-y-6" role="region" aria-labelledby="sec-skills">
                       <div className="flex items-center gap-3 flex-wrap">
                         <h2 id="sec-skills" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Skills</h2>
-                        {skillsUsage && (
+                        {!compactMode && skillsUsage && (
                           <span
                             className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-600 dark:text-zinc-400"
                             title={`${skillsUsage.used} of ${skillsUsage.total} skills appear in at least one experience bullet`}
@@ -2822,7 +2822,7 @@ export default function ResumeEditorPage({
                         </button>
                       </div>
                       
-                      {suggestedSkills.length > 0 && (
+                      {!compactMode && suggestedSkills.length > 0 && (
                         <div className="p-3 rounded-2xl border border-amber-500/20 bg-amber-500/5 space-y-2">
                           <div className="flex items-center gap-2">
                             <Sparkle weight="fill" className="w-3.5 h-3.5 text-amber-500" />
