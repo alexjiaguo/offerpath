@@ -8,7 +8,7 @@ This session covered the OfferPath resume studio redesign work across three sepa
 - `worktrees/resume-resumecom` -> `codex/resume-studio-resumecom` -> Resume.com-inspired redesign
 - `worktrees/resume-resumeio` -> `codex/resume-studio-resumeio` -> Resume.io-inspired redesign
 
-All three branches contain the full R1-R118 polish history. The most recent shared work is R102-R118: section drag-and-drop, per-bullet quality dots, education GPA/date checks, per-experience role/duration/quality labels, keyboard undo/redo, per-section visibility toggles, per-bullet warnings, per-skill badge counts/duplicates, and phone validation.
+All three branches contain the full R1-R128 polish history. The most recent shared work is R119-R128: per-bullet personal-pronoun warning, per-bullet punctuation hint, same-company grouping hint, overlapping-dates hint, active-section pulse dot, compact mode toggle, missing-degree hint, missing-company hint, long-skill-name warning, and skill-category suggestion.
 
 Dev servers were started and verified on ports 3001/3002/3003, then stopped for the handoff. The parent repo also picked up pre-existing snapshot artifacts from a prior resume-pro task; those were committed separately.
 
@@ -24,9 +24,9 @@ Dev servers were started and verified on ports 3001/3002/3003, then stopped for 
 
 | Worktree | Branch | HEAD | Status |
 |---|---|---|---|
-| `worktrees/resume-flowcv` | `codex/resume-studio-flowcv` | `7173bb9` | Clean |
-| `worktrees/resume-resumecom` | `codex/resume-studio-resumecom` | `dcd36bf` | Clean (untracked `node_modules` symlink only) |
-| `worktrees/resume-resumeio` | `codex/resume-studio-resumeio` | `7f4bf1d` | Clean (untracked `node_modules` symlink only) |
+| `worktrees/resume-flowcv` | `codex/resume-studio-flowcv` | `a8983b6` | Clean |
+| `worktrees/resume-resumecom` | `codex/resume-studio-resumecom` | `a8d80de` | Clean (untracked `node_modules` symlink only) |
+| `worktrees/resume-resumeio` | `codex/resume-studio-resumeio` | `f45a4a7` | Clean (untracked `node_modules` symlink only) |
 
 No stashes exist in the parent or worktrees.
 
@@ -41,7 +41,7 @@ No stashes exist in the parent or worktrees.
 ## In Progress / Incomplete
 
 - No uncommitted resume studio work remains in the three branches.
-- R119 (per-bullet personal-pronoun warning for `I`/`My`/`Me`) was planned but not implemented. The branch heads are all at R118.
+- R119-R128 are implemented and committed on all three branches.
 
 ## Next Steps
 
@@ -49,7 +49,7 @@ No stashes exist in the parent or worktrees.
    - `cd worktrees/resume-flowcv && ulimit -n 65536 && exec env PORT=3001 npx next dev --turbopack`
    - `cd worktrees/resume-resumecom && ulimit -n 65536 && exec env PORT=3002 npx next dev --turbopack`
    - `cd worktrees/resume-resumeio && ulimit -n 65536 && exec env PORT=3003 npx next dev --turbopack`
-2. Continue R119+ polish in all three branches using the established one-feature-per-round pattern.
+2. Continue R129+ polish in all three branches using the established one-feature-per-round pattern.
 3. Typecheck each affected worktree with `npx tsc --noEmit -p worktrees/<name>/tsconfig.json` before committing.
 
 ## Dead Ends and Ruled-Out Approaches
