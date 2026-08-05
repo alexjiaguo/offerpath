@@ -77,7 +77,7 @@ export default function KanbanColumn({ config, jobs, onAddClick }: KanbanColumnP
           ref={setNodeRef}
           className={cn(
             "flex-1 rounded-xl p-2 space-y-2 min-h-[200px] transition-all duration-200 overflow-y-auto scrollbar-hide border border-surface-200 bg-surface-50/50",
-            isOver ? "bg-surface-100 border-brand-500" : ""
+            isOver ? "bg-surface-100 border-surface-400" : ""
           )}
         >
           {jobs.length === 0 ? (
@@ -85,16 +85,16 @@ export default function KanbanColumn({ config, jobs, onAddClick }: KanbanColumnP
               <div className="w-12 h-12 rounded-lg border border-dashed border-surface-300 flex items-center justify-center mb-4 opacity-50 bg-surface-0">
                 <config.icon weight="duotone" className="w-6 h-6 text-surface-300" />
               </div>
-              <p className="text-[11px] font-bold text-surface-300 uppercase tracking-widest mb-1">Column Empty</p>
+              <p className="text-[11px] font-mono font-bold text-surface-300 uppercase tracking-widest mb-1">Column Empty</p>
               {config.id === "new" && onAddClick ? (
                 <button
                   onClick={onAddClick}
-                  className="text-[10px] font-bold text-brand-500 hover:text-brand-600 transition-colors mt-2 uppercase tracking-widest"
+                  className="text-[10px] font-mono font-bold text-surface-400 hover:text-black transition-colors mt-2 uppercase tracking-widest"
                 >
                   + Add New Job
                 </button>
               ) : (
-                <p className="text-[10px] text-surface-300 font-medium italic">Drag jobs here...</p>
+                <p className="text-[10px] text-surface-300 font-medium italic font-mono">Drag jobs here...</p>
               )}
             </div>
           ) : (

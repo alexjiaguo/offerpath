@@ -83,58 +83,58 @@ export default function DashboardPage() {
   ], [stats]);
 
   return (
-    <div className="w-full space-y-12 pb-20">
+    <div className="w-full space-y-8 pb-12">
       {/* Welcome header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-surface-200">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <div className="flex items-center gap-2 mb-2 text-brand-400">
-            <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">System Status: Active</span>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-2 h-2 rounded-full bg-surface-400" />
+            <span className="eyebrow-tag text-surface-300">System Status: Active</span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">Dashboard</h1>
-          <p className="text-zinc-500 text-base mt-2 font-light">
-            Welcome back. Your job hunt is progressing well.
+          <h1 className="text-3xl font-display font-bold tracking-tight text-surface-400">Dashboard</h1>
+          <p className="text-surface-300 text-xs mt-1">
+            Welcome back. Your job hunt overview and active metrics.
           </p>
         </motion.div>
         
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
         >
           <Link
             href="/dashboard/pipeline/add"
-            className="group flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-white text-black text-sm font-bold hover:bg-zinc-100 transition-all shadow-xl shadow-white/5"
+            className="btn-editorial-primary inline-flex items-center gap-2"
           >
-            <Plus className="w-5 h-5" />
-            Add New Job
+            <Plus weight="bold" className="w-3.5 h-3.5" />
+            <span>Add New Job</span>
           </Link>
         </motion.div>
       </div>
 
       {/* Quick Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {QUICK_STATS.map((stat, i) => (
           <motion.div
             key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: i * 0.1 }}
-            className="liquid-glass rounded-3xl p-6 flex flex-col gap-4 group cursor-default"
+            transition={{ duration: 0.3, delay: i * 0.05 }}
+            className="card-editorial flex flex-col justify-between gap-3"
           >
             <div className="flex items-center justify-between">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/20 transition-colors">
-                <stat.icon className="w-5 h-5 text-zinc-500 group-hover:text-brand-400 transition-colors" />
+              <div className="w-8 h-8 rounded-md bg-surface-100 border border-surface-200 flex items-center justify-center text-surface-400">
+                <stat.icon weight="regular" className="w-4 h-4" />
               </div>
-              <div className="h-1.5 w-1.5 rounded-full bg-zinc-700 group-hover:bg-brand-500 group-hover:animate-pulse transition-colors" />
+              <span className="w-1.5 h-1.5 rounded-full bg-surface-300" />
             </div>
             <div>
-              <p className="text-3xl font-light text-zinc-900 dark:text-white font-display tabular-nums tracking-tight">{stat.value}</p>
-              <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1 group-hover:text-zinc-700 dark:group-hover:text-zinc-900 dark:hover:text-zinc-400 transition-colors">
+              <p className="text-2xl font-display font-semibold text-surface-400 tabular-nums">{stat.value}</p>
+              <p className="text-[10px] font-mono font-medium text-surface-300 uppercase tracking-widest mt-0.5">
                 {stat.label}
               </p>
             </div>
@@ -143,70 +143,67 @@ export default function DashboardPage() {
       </div>
 
       {/* Primary Modules */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-3 gap-4">
         {MODULE_CARDS.map((mod, i) => (
           <motion.div
             key={mod.title}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 + (i * 0.1) }}
-            className="glass-card rounded-[32px] p-8 flex flex-col group"
+            transition={{ duration: 0.3, delay: 0.2 + (i * 0.05) }}
+            className="card-editorial flex flex-col justify-between space-y-4 group"
           >
-            <div className="flex items-start justify-between mb-8">
-              <div 
-                className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
-                style={{ background: 'linear-gradient(135deg, var(--color-brand-400), var(--color-brand-600))' }}
-              >
-                <mod.icon className="w-6 h-6 text-white" />
+            <div className="flex items-start justify-between">
+              <div className="w-9 h-9 rounded-md bg-surface-400 text-surface-0 flex items-center justify-center">
+                <mod.icon weight="regular" className="w-4.5 h-4.5" />
               </div>
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="px-2.5 py-1 rounded-full bg-white/5 border border-zinc-200 dark:border-white/10 text-[9px] font-bold text-zinc-700 dark:text-zinc-400 uppercase tracking-widest">
-                  Live Update
-                </div>
-              </div>
+              <span className="eyebrow-tag border border-surface-200 bg-surface-50 text-surface-400">
+                LIVE
+              </span>
             </div>
 
-            <h3 className="text-xl font-bold mb-2 font-display text-zinc-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-              {mod.title}
-            </h3>
-            <p className="text-sm text-zinc-500 mb-8 font-light leading-relaxed">{mod.desc}</p>
+            <div>
+              <h3 className="text-base font-display font-bold text-surface-400 group-hover:text-black">
+                {mod.title}
+              </h3>
+              <p className="text-xs text-surface-300 mt-1 leading-normal">{mod.desc}</p>
+            </div>
 
-            <div className="flex gap-10 mb-8">
+            <div className="flex gap-6 pt-3 border-t border-surface-200">
               {mod.stats.map((s) => (
                 <div key={s.label}>
-                  <p className="text-2xl font-light text-zinc-900 dark:text-white font-display">{s.value}</p>
-                  <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-600 uppercase tracking-widest mt-1">{s.label}</p>
+                  <p className="text-lg font-display font-semibold text-surface-400">{s.value}</p>
+                  <p className="text-[10px] font-mono font-medium text-surface-300 uppercase tracking-widest">{s.label}</p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-auto">
+            <div className="pt-2">
               <Link
                 href={mod.href}
-                className="group/btn flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-300 uppercase tracking-widest hover:text-zinc-900 dark:hover:text-white transition-all"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-surface-400 uppercase tracking-wider hover:text-black transition-colors"
               >
                 {mod.cta}
-                <CaretRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                <CaretRight weight="bold" className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>
           </motion.div>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8">
+      <div className="grid lg:grid-cols-12 gap-6">
         {/* Needs Tailoring Widget */}
-        <div className="lg:col-span-7">
+        <div className="lg:col-span-6">
           <NeedsTailoringWidget />
         </div>
 
         {/* System Onboarding & Weekly Goals */}
-        <div className="lg:col-span-5 flex flex-col gap-8">
+        <div className="lg:col-span-6 flex flex-col gap-6">
           {/* Circular Onboarding Checklist */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="liquid-glass rounded-[32px] p-8"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+            className="card-editorial space-y-4"
           >
             {/* Compute checklist */}
             {(() => {
@@ -246,80 +243,50 @@ export default function DashboardPage() {
 
               return (
                 <>
-                  <div className="flex flex-col sm:flex-row items-center gap-6 mb-8 pb-6 border-b border-zinc-200/50 dark:border-white/[0.05]">
-                    {/* SVG Progress Dial */}
-                    <div className="relative w-20 h-20 flex-shrink-0">
-                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                        <circle
-                          className="text-zinc-100 dark:text-white/[0.03] stroke-current"
-                          strokeWidth="8"
-                          cx="50"
-                          cy="50"
-                          r="40"
-                          fill="transparent"
-                        />
-                        <motion.circle
-                          className="text-brand-500 stroke-current"
-                          strokeWidth="8"
-                          strokeLinecap="round"
-                          cx="50"
-                          cy="50"
-                          r="40"
-                          fill="transparent"
-                          initial={{ strokeDasharray: "251.2", strokeDashoffset: "251.2" }}
-                          animate={{ strokeDashoffset: String(251.2 - (251.2 * percent) / 100) }}
-                          transition={{ duration: 1, ease: "easeOut" }}
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white font-display leading-none">
-                          {percent}%
-                        </span>
-                        <span className="text-[7px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">
-                          Strength
-                        </span>
+                  <div className="flex items-center justify-between pb-3 border-b border-surface-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-md bg-surface-100 border border-surface-200 flex flex-col items-center justify-center font-mono">
+                        <span className="text-xs font-bold text-surface-400">{percent}%</span>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-surface-400 font-sans">Setup Progress</h3>
+                        <p className="text-xs text-surface-300">
+                          {doneCount === onboardingSteps.length
+                            ? "Profile fully configured!"
+                            : `${onboardingSteps.length - doneCount} steps remaining`}
+                        </p>
                       </div>
                     </div>
-
-                    <div className="text-center sm:text-left">
-                      <div className="flex items-center justify-center sm:justify-start gap-1.5 px-2 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-[9px] font-bold text-brand-500 dark:text-brand-400 uppercase tracking-widest w-fit">
-                        <Trophy className="w-2.5 h-2.5" />
-                        {badgeTitle}
-                      </div>
-                      <p className="text-xs text-zinc-500 mt-2 font-light leading-snug">
-                        {doneCount === onboardingSteps.length
-                          ? "Your profile is fully configured to land dream offers!"
-                          : `Complete ${onboardingSteps.length - doneCount} more steps to level up.`}
-                      </p>
-                    </div>
+                    <span className="eyebrow-tag border border-surface-200 bg-surface-100 text-surface-400">
+                      <Trophy weight="bold" className="w-3 h-3 text-surface-400" />
+                      {badgeTitle}
+                    </span>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-1.5">
                     {onboardingSteps.map((item) => (
                       <Link
                         key={item.step}
                         href={item.href}
-                        className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-zinc-200 dark:border-white/[0.05] hover:bg-zinc-100 dark:hover:bg-white/[0.04] hover:border-zinc-300 dark:hover:border-white/[0.08] transition-all group"
+                        className="flex items-center gap-3 p-2.5 rounded-md border border-surface-200 bg-surface-0 hover:bg-surface-100 transition-all group"
                       >
                         <div className={cn(
-                          "w-6 h-6 rounded-full flex items-center justify-center transition-all duration-500",
+                          "w-5 h-5 rounded flex items-center justify-center transition-all",
                           item.done 
-                            ? "bg-brand-500 shadow-[0_0_12px_rgba(99,102,241,0.4)]" 
-                            : "border-2 border-zinc-300 dark:border-zinc-700 group-hover:border-zinc-500"
+                            ? "bg-surface-400 text-surface-0" 
+                            : "border border-surface-300 text-transparent"
                         )}>
-                          {item.done && <CheckCircle className="w-4 h-4 text-white dark:text-zinc-900"  weight="fill" />}
+                          {item.done && <CheckCircle className="w-3.5 h-3.5 text-surface-0" weight="bold" />}
                         </div>
                         <span
                           className={cn(
-                            "text-sm font-medium tracking-tight transition-all duration-500",
-                            item.done ? "text-zinc-400 line-through dark:text-zinc-600" : "text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-950 dark:group-hover:text-white"
+                            "text-xs font-medium tracking-tight flex-1",
+                            item.done ? "text-surface-300 line-through" : "text-surface-400 group-hover:text-black"
                           )}
                         >
                           {item.step}
                         </span>
-                        <div className="ml-auto w-8 h-8 rounded-lg bg-zinc-100 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <ArrowRight className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-surface-300 group-hover:text-surface-400 group-hover:translate-x-0.5 transition-all" />
                       </Link>
                     ))}
                   </div>
@@ -330,27 +297,29 @@ export default function DashboardPage() {
 
           {/* Weekly Application Goals Widget */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-            className="liquid-glass rounded-[32px] p-8"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.35 }}
+            className="card-editorial space-y-4"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <Target className="w-6 h-6 text-brand-500 dark:text-brand-400" />
-              <h2 className="text-xl font-bold font-display text-zinc-900 dark:text-white">Weekly Goal</h2>
-              <div className="ml-auto flex items-center gap-2">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-gray-500 uppercase tracking-wider">Target:</span>
+            <div className="flex items-center justify-between pb-3 border-b border-surface-200">
+              <div className="flex items-center gap-2">
+                <Target weight="bold" className="w-4 h-4 text-surface-400" />
+                <h2 className="text-sm font-semibold text-surface-400 font-sans">Weekly Goal</h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-surface-300">Target:</span>
                 <div className="flex items-center gap-1">
                   <button 
                     onClick={() => setWeeklyGoalCount(Math.max(1, weeklyGoalCount - 1))}
-                    className="w-5 h-5 rounded bg-zinc-100 dark:bg-white/5 flex items-center justify-center text-xs hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors"
+                    className="w-5 h-5 rounded border border-surface-200 bg-surface-0 flex items-center justify-center font-mono text-xs text-surface-400 hover:bg-surface-100 transition-colors"
                   >
                     -
                   </button>
-                  <span className="text-sm font-bold text-zinc-900 dark:text-white px-1.5 min-w-[20px] text-center">{weeklyGoalCount}</span>
+                  <span className="text-xs font-mono font-bold text-surface-400 min-w-[16px] text-center">{weeklyGoalCount}</span>
                   <button 
                     onClick={() => setWeeklyGoalCount(weeklyGoalCount + 1)}
-                    className="w-5 h-5 rounded bg-zinc-100 dark:bg-white/5 flex items-center justify-center text-xs hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors"
+                    className="w-5 h-5 rounded border border-surface-200 bg-surface-0 flex items-center justify-center font-mono text-xs text-surface-400 hover:bg-surface-100 transition-colors"
                   >
                     +
                   </button>
@@ -364,29 +333,29 @@ export default function DashboardPage() {
               const goalPercent = Math.min(100, Math.round((currentGoalProgress / weeklyGoalCount) * 100));
 
               return (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div className="flex items-baseline justify-between">
                     <div>
-                      <span className="text-3xl font-light font-display text-zinc-900 dark:text-white">{currentGoalProgress}</span>
-                      <span className="text-zinc-500 text-sm font-medium ml-1">/ {weeklyGoalCount} applied</span>
+                      <span className="text-2xl font-display font-semibold text-surface-400">{currentGoalProgress}</span>
+                      <span className="text-surface-300 text-xs font-medium ml-1.5">/ {weeklyGoalCount} applied</span>
                     </div>
-                    <span className="text-sm font-bold text-brand-500 dark:text-brand-400">{goalPercent}%</span>
+                    <span className="text-xs font-mono font-bold text-surface-400">{goalPercent}%</span>
                   </div>
 
                   {/* Goal Progress bar */}
-                  <div className="h-2 w-full bg-zinc-100 dark:bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full bg-surface-100 rounded-full overflow-hidden border border-surface-200">
                     <motion.div
-                      className="h-full gradient-futuristic"
+                      className="h-full bg-surface-400"
                       initial={{ width: 0 }}
                       animate={{ width: `${goalPercent}%` }}
-                      transition={{ duration: 1, ease: "easeOut" }}
+                      transition={{ duration: 0.6, ease: "easeOut" }}
                     />
                   </div>
 
-                  <p className="text-xs text-zinc-500 leading-normal font-light">
+                  <p className="text-[12px] text-surface-300 font-sans">
                     {currentGoalProgress >= weeklyGoalCount 
-                      ? "🎉 Stellar job! You have reached your weekly job application target." 
-                      : `Keep going! Apply to ${weeklyGoalCount - currentGoalProgress} more roles to reach your goal.`}
+                      ? "Target reached for this week!" 
+                      : `Apply to ${weeklyGoalCount - currentGoalProgress} more roles to reach your goal.`}
                   </p>
                 </div>
               );

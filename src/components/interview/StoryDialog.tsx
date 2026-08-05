@@ -99,28 +99,28 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-xs" onClick={onClose} />
 
       {/* Dialog */}
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-surface-50 border border-white/[0.08] rounded-2xl shadow-2xl animate-scale-in">
+      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-surface-0 border border-surface-200 rounded-lg shadow-xl animate-scale-in">
         {/* Header */}
-        <div className="sticky top-0 bg-surface-50 border-b border-white/[0.04] px-6 py-4 flex items-center justify-between z-10">
-          <h2 className="text-lg font-semibold">
+        <div className="sticky top-0 bg-surface-0 border-b border-surface-200 px-6 py-4 flex items-center justify-between z-10">
+          <h2 className="text-base font-display font-bold text-surface-400">
             {editingStoryId ? "Edit Story" : "Add New Story"}
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 hover:bg-white/[0.04] transition-all"
+            className="p-1 rounded-md text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Form */}
-        <div className="px-6 py-5 space-y-5">
+        <div className="px-6 py-5 space-y-4">
           {/* Title */}
           <div>
-            <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
+            <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
               Story Title *
             </label>
             <input
@@ -128,13 +128,13 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Led ad platform revenue growth 3x"
-              className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+              className="w-full px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-400 font-sans"
             />
           </div>
 
           {/* Competency */}
           <div>
-            <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
+            <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
               Competency
             </label>
             <div className="flex flex-wrap gap-1.5">
@@ -143,10 +143,10 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
                   key={c}
                   onClick={() => setCompetency(c)}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all",
+                    "px-2.5 py-1 rounded-md text-[11px] font-mono font-medium capitalize border transition-all",
                     competency === c
-                      ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                      : "bg-surface-200 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300 border border-transparent"
+                      ? "bg-surface-400 text-surface-0 border-surface-400"
+                      : "bg-surface-50 border-surface-200 text-surface-300 hover:text-surface-400 hover:bg-surface-100"
                   )}
                 >
                   {c.replace("-", " ")}
@@ -158,13 +158,13 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
           {/* STAR Fields */}
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              { label: "Situation", value: situation, setter: setSituation, color: "border-blue-500/20", placeholder: "Set the context — what was the challenge or opportunity?" },
-              { label: "Task", value: task, setter: setTask, color: "border-amber-500/20", placeholder: "What was your specific responsibility?" },
-              { label: "Action", value: action, setter: setAction, color: "border-emerald-500/20", placeholder: "What steps did you take? Be specific." },
-              { label: "Result", value: result, setter: setResult, color: "border-purple-500/20", placeholder: "What was the outcome? Include numbers." },
+              { label: "Situation", value: situation, setter: setSituation, placeholder: "Set the context — what was the challenge or opportunity?" },
+              { label: "Task", value: task, setter: setTask, placeholder: "What was your specific responsibility?" },
+              { label: "Action", value: action, setter: setAction, placeholder: "What steps did you take? Be specific." },
+              { label: "Result", value: result, setter: setResult, placeholder: "What was the outcome? Include numbers." },
             ].map((field) => (
               <div key={field.label}>
-                <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
+                <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
                   {field.label}
                 </label>
                 <textarea
@@ -172,10 +172,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
                   onChange={(e) => field.setter(e.target.value)}
                   placeholder={field.placeholder}
                   rows={4}
-                  className={cn(
-                    "w-full px-3 py-2.5 rounded-xl bg-surface-100 border text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none",
-                    field.color
-                  )}
+                  className="w-full px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-400 font-sans resize-none"
                 />
               </div>
             ))}
@@ -183,7 +180,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
 
           {/* Metrics */}
           <div>
-            <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
+            <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
               Key Metrics
             </label>
             <input
@@ -191,13 +188,13 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
               value={metrics}
               onChange={(e) => setMetrics(e.target.value)}
               placeholder="e.g., 3x revenue growth, 40% CTR improvement"
-              className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+              className="w-full px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-400 font-sans"
             />
           </div>
 
           {/* Tags */}
           <div>
-            <label className="block text-xs font-medium text-zinc-600 dark:text-gray-400 mb-1.5">
+            <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
               Tags (comma-separated)
             </label>
             <input
@@ -205,23 +202,23 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
               placeholder="e.g., revenue, growth, ad-tech"
-              className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+              className="w-full px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-400 font-sans"
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-surface-50 border-t border-white/[0.04] px-6 py-4 flex items-center justify-end gap-3">
+        <div className="sticky bottom-0 bg-surface-0 border-t border-surface-200 px-6 py-4 flex items-center justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2.5 rounded-xl bg-surface-200 text-zinc-700 dark:text-gray-300 text-sm font-medium hover:text-zinc-900 dark:hover:text-white hover:bg-surface-300 transition-all"
+            className="btn-editorial-secondary"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={!title.trim()}
-            className="px-5 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
+            className="btn-editorial-primary disabled:opacity-40"
           >
             {editingStoryId ? "Save" : "Add Story"}
           </button>

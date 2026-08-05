@@ -18,18 +18,18 @@ export default function DashboardLayout({
   useSupabaseSync();
 
   return (
-    <div className="min-h-[100dvh] bg-surface-50 selection:bg-black/10">
+    <div className="min-h-[100dvh] bg-surface-50 flex flex-col md:flex-row selection:bg-surface-400/10">
       {/* Sidebar — hidden on mobile, visible on md+ */}
       <div className="hidden md:block">
         <Sidebar />
       </div>
-      <div className="md:ml-[260px] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] h-[100dvh] flex flex-col p-4 md:p-6 gap-4 md:gap-6 overflow-hidden">
+      
+      {/* Main Content Shell */}
+      <div className="flex-1 md:pl-[240px] flex flex-col min-h-[100dvh] min-w-0">
         <Topbar />
         <GuestBanner />
-        <main className="flex-1 doppel-shell min-h-0 relative z-10 w-full flex flex-col">
-          <div className="doppel-core flex-1 overflow-y-auto relative w-full !p-6 md:!p-8 bg-surface-50/50">
-            {children}
-          </div>
+        <main className="flex-1 min-h-0 relative w-full flex flex-col overflow-y-auto p-4 md:p-6 lg:p-8 bg-surface-50">
+          {children}
         </main>
       </div>
       <Suspense fallback={null}><AddJobDialog /></Suspense>

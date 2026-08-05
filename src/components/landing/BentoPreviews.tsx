@@ -385,7 +385,7 @@ function toneClasses(tone: "brand" | "indigo" | "ember") {
 
 export function HeroVisual() {
   return (
-    <div className="w-full max-w-lg aspect-[4/5] doppel-shell relative overflow-hidden hidden md:block group">
+    <div className="card-editorial w-full max-w-lg aspect-[4/5] relative overflow-hidden hidden md:block group p-6 flex flex-col">
       <motion.div
         aria-hidden
         className="absolute inset-0 opacity-50"
@@ -401,8 +401,7 @@ export function HeroVisual() {
         transition={{ duration: 14, ease: "linear", repeat: Infinity }}
       />
 
-      <div className="doppel-core w-full h-full flex flex-col p-6 relative overflow-hidden bg-gradient-to-b from-white to-surface-50/50 backdrop-blur-3xl">
-        <div className="flex items-center justify-between pb-4 border-b border-surface-200/60 relative z-10">
+      <div className="flex items-center justify-between pb-4 border-b border-surface-200/60 relative z-10">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-full bg-ember-500 flex items-center justify-center text-white shadow-sm">
               <Sparkle weight="fill" className="w-3.5 h-3.5" />
@@ -517,7 +516,6 @@ export function HeroVisual() {
             <CheckCircle weight="fill" className="w-4 h-4 text-ember-500" />
           </div>
         </div>
-      </div>
     </div>
   );
 }

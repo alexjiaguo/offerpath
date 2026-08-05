@@ -81,25 +81,25 @@ const JobCard = React.memo(function JobCard({ job, overlay }: JobCardProps) {
         "group rounded-lg border border-surface-200 bg-surface-0 p-4 cursor-grab active:cursor-grabbing relative overflow-hidden",
         "hover:shadow-sm hover:-translate-y-[1px] hover:border-surface-300 transition-all duration-200 ease-out",
         isDragging && "opacity-50 z-50",
-        overlay && "shadow-xl ring-1 ring-brand-500 rotate-2 bg-surface-0"
+        overlay && "shadow-xl ring-1 ring-surface-400 rotate-2 bg-surface-0"
       )}
     >
       {/* Header */}
-      <div className="flex items-start gap-3 mb-4">
+      <div className="flex items-start gap-3 mb-3">
         <CompanyLogo name={job.company?.name || "?"} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] font-bold text-surface-300 uppercase tracking-widest truncate">
+            <span className="text-[10px] font-mono font-semibold text-surface-300 uppercase tracking-widest truncate">
               {job.company?.name}
             </span>
-            <span className="text-[10px] font-bold text-surface-300 tabular-nums">
+            <span className="text-[10px] font-mono text-surface-300 tabular-nums">
               {timeAgo(job.created_at)}
             </span>
           </div>
           <Link
             href={`/dashboard/pipeline/${job.id}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-sm font-semibold text-surface-400 group-hover:text-brand-500 transition-colors line-clamp-2 leading-tight mt-0.5 font-display"
+            className="text-sm font-semibold text-surface-400 group-hover:text-black transition-colors line-clamp-2 leading-tight mt-0.5 font-display"
           >
             {job.title}
           </Link>

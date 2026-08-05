@@ -374,30 +374,28 @@ export default function LandingPage() {
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 variants={revealVariants}
-                className={`doppel-shell flex flex-col ${mod.colSpan} ${mod.rowSpan} w-full scroll-mt-32`}
+                className={`card-editorial flex flex-col p-8 md:p-10 relative group ${mod.colSpan} ${mod.rowSpan} w-full scroll-mt-32`}
               >
-                <div className="doppel-core flex-1 flex flex-col p-8 md:p-10 relative group">
-                  <div className="flex items-start gap-5 mb-6">
-                    <div className="w-14 h-14 shrink-0 rounded-full bg-ember-50 border border-ember-100 flex items-center justify-center">
-                      <mod.icon weight="light" className="w-7 h-7 text-ember-600" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-2xl md:text-3xl font-display tracking-tight mb-2">{mod.title}</h3>
-                      <p className="text-surface-300 text-sm md:text-base leading-relaxed font-light">
-                        {mod.desc}
-                      </p>
-                    </div>
+                <div className="flex items-start gap-5 mb-6">
+                  <div className="w-14 h-14 shrink-0 rounded-full bg-ember-50 border border-ember-100 flex items-center justify-center">
+                    <mod.icon weight="light" className="w-7 h-7 text-ember-600" />
                   </div>
-                  {mod.preview && (
-                    <div className="flex-1 min-h-0 mb-4">{mod.preview}</div>
-                  )}
-                  <div className="flex flex-wrap gap-2">
-                    {mod.features.map(f => (
-                      <span key={f} className="px-3 py-1 rounded-full bg-surface-50 border border-surface-200/50 text-[10px] font-medium tracking-widest uppercase text-surface-400">
-                        {f}
-                      </span>
-                    ))}
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-2xl md:text-3xl font-display tracking-tight mb-2">{mod.title}</h3>
+                    <p className="text-surface-300 text-sm md:text-base leading-relaxed font-light">
+                      {mod.desc}
+                    </p>
                   </div>
+                </div>
+                {mod.preview && (
+                  <div className="flex-1 min-h-0 mb-4">{mod.preview}</div>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {mod.features.map(f => (
+                    <span key={f} className="px-3 py-1 rounded-full bg-surface-50 border border-surface-200/50 text-[10px] font-medium tracking-widest uppercase text-surface-400">
+                      {f}
+                    </span>
+                  ))}
                 </div>
               </motion.div>
             ))}

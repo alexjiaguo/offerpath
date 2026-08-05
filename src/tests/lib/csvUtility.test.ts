@@ -35,6 +35,7 @@ describe("csvUtility", () => {
           id: "1",
           user_id: "demo",
           title: "Senior Engineer",
+          kanban_order: 0,
           company: {
             id: "c1",
             user_id: "demo",
@@ -67,9 +68,9 @@ Junior Developer,Startup Inc,New York,https://startup.example.com,interviewing,7
 `;
       const imported = importJobsFromCSV(testCSV);
       expect(imported).toHaveLength(1);
-      expect(imported[0].title).toBe("Junior Developer");
-      expect(imported[0].company.name).toBe("Startup Inc");
-      expect(imported[0].status).toBe("interviewing");
+      expect(imported[0]!.title).toBe("Junior Developer");
+      expect(imported[0]!.company?.name).toBe("Startup Inc");
+      expect(imported[0]!.status).toBe("interviewing");
     });
   });
 });

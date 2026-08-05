@@ -40,21 +40,21 @@ export default function InterviewPage() {
       : 0;
 
   return (
-    <div className="w-full animate-fade-in">
+    <div className="w-full space-y-8 pb-12">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-surface-200">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-3 mb-1">
-            <Cpu className="w-7 h-7 text-brand-400" />
+          <h1 className="text-3xl font-display font-bold tracking-tight text-surface-400 flex items-center gap-3">
+            <Cpu className="w-7 h-7 text-surface-400" />
             Interview Prep
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-gray-500">
+          <p className="text-xs text-surface-300 mt-1 font-sans">
             Prepare for interviews with AI-powered research, question banks, and mock sessions.
           </p>
         </div>
         <Link
           href="/dashboard/interview/stories"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-200 text-zinc-700 dark:text-gray-300 text-sm font-medium hover:text-zinc-900 dark:hover:text-white hover:bg-surface-300 transition-all"
+          className="btn-editorial-secondary inline-flex items-center gap-2"
         >
           <Cards className="w-4 h-4" />
           Story Bank ({stories.length})
@@ -62,48 +62,51 @@ export default function InterviewPage() {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           {
             label: "Active Preps",
             value: jobsWithPrep.length,
             icon: Book,
-            color: "text-blue-400",
           },
           {
             label: "STAR Stories",
             value: stories.length,
             icon: Cards,
-            color: "text-purple-400",
           },
           {
             label: "Mock Sessions",
             value: mockSessions.length,
             icon: ChatCircleText,
-            color: "text-emerald-400",
           },
           {
             label: "Avg Score",
             value: avgScore > 0 ? avgScore.toFixed(1) : "—",
             icon: Trophy,
-            color: "text-amber-400",
           },
         ].map((stat) => (
-          <div key={stat.label} className="liquid-glass rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <stat.icon className={cn("w-4 h-4", stat.color)} />
-              <span className="text-xs text-zinc-500 dark:text-gray-500">{stat.label}</span>
+          <div key={stat.label} className="card-editorial flex flex-col justify-between gap-3">
+            <div className="flex items-center justify-between">
+              <div className="w-8 h-8 rounded-md bg-surface-100 border border-surface-200 flex items-center justify-center text-surface-400">
+                <stat.icon weight="regular" className="w-4 h-4" />
+              </div>
+              <span className="w-1.5 h-1.5 rounded-full bg-surface-300" />
             </div>
-            <p className="text-2xl font-bold">{stat.value}</p>
+            <div>
+              <p className="text-2xl font-display font-semibold text-surface-400 tabular-nums">{stat.value}</p>
+              <p className="text-[10px] font-mono font-medium text-surface-300 uppercase tracking-widest mt-0.5">
+                {stat.label}
+              </p>
+            </div>
           </div>
         ))}
       </div>
 
       {/* Needs Prep Section */}
       {jobsNeedPrep.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-            <Sparkle className="w-4 h-4 text-amber-400" />
+        <div className="space-y-3">
+          <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400 flex items-center gap-2">
+            <Sparkle className="w-4 h-4 text-pastel-yellow-fg" weight="bold" />
             Needs Prep ({jobsNeedPrep.length})
           </h2>
           <div className="space-y-2">
@@ -111,24 +114,24 @@ export default function InterviewPage() {
               <Link
                 key={job.id}
                 href={`/dashboard/interview/${job.id}`}
-                className="flex items-center justify-between p-4 glass-card rounded-xl group"
+                className="flex items-center justify-between p-3.5 card-editorial group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                    <Sparkle className="w-5 h-5 text-amber-400" />
+                  <div className="w-9 h-9 rounded-md bg-pastel-yellow-bg border border-pastel-yellow-fg/20 flex items-center justify-center text-pastel-yellow-fg">
+                    <Sparkle weight="bold" className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold group-hover:text-brand-300 transition-colors">
+                    <p className="text-xs font-semibold text-surface-400 group-hover:text-black transition-colors font-sans">
                       {job.title}
                     </p>
-                    <p className="text-xs text-zinc-500 dark:text-gray-500">
+                    <p className="text-[11px] font-mono text-surface-300">
                       {job.company?.name} · {job.status}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-brand-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-xs font-medium">Generate Prep</span>
-                  <ArrowRight className="w-4 h-4" />
+                <div className="flex items-center gap-1.5 text-xs font-mono font-semibold text-surface-400 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span>Generate Prep</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </div>
               </Link>
             ))}
@@ -137,26 +140,26 @@ export default function InterviewPage() {
       )}
 
       {/* Active Preps */}
-      <div className="mb-8">
-        <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-          <Book className="w-4 h-4 text-blue-400" />
+      <div className="space-y-3">
+        <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400 flex items-center gap-2">
+          <Book className="w-4 h-4 text-surface-400" weight="bold" />
           Active Prep Packages
         </h2>
         {jobsWithPrep.length === 0 ? (
-          <div className="liquid-glass rounded-2xl p-8 text-center">
-            <Cpu className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-zinc-500 dark:text-gray-500 text-sm mb-4">
+          <div className="card-editorial p-8 text-center">
+            <Cpu className="w-8 h-8 text-surface-300 mx-auto mb-2" />
+            <p className="text-surface-300 text-xs mb-3 font-sans">
               No prep packages yet. Move jobs to &quot;Applied&quot; or &quot;Interviewing&quot; and generate a prep package.
             </p>
             <Link
               href="/dashboard/pipeline"
-              className="text-sm text-brand-400 hover:text-brand-300"
+              className="text-xs font-mono font-semibold text-surface-400 hover:text-black uppercase tracking-wider inline-flex items-center gap-1"
             >
-              Go to Pipeline →
+              Go to Pipeline <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-3">
+          <div className="grid md:grid-cols-2 gap-4">
             {jobsWithPrep.map((job) => {
               const prep = getPrepByJobId(job.id);
               const jobMocks = mockSessions.filter((m) => m.job_id === job.id);
@@ -168,24 +171,24 @@ export default function InterviewPage() {
                 <Link
                   key={job.id}
                   href={`/dashboard/interview/${job.id}`}
-                  className="glass-card rounded-xl p-5 group"
+                  className="card-editorial group space-y-3"
                 >
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-400 flex items-center justify-center text-sm font-bold text-zinc-900 dark:text-white">
+                      <div className="w-9 h-9 rounded-md bg-surface-400 flex items-center justify-center text-xs font-mono font-bold text-surface-0 border border-surface-400">
                         {(job.company?.name || "?").charAt(0)}
                       </div>
                       <div>
-                        <p className="text-sm font-semibold group-hover:text-brand-300 transition-colors">
+                        <p className="text-xs font-display font-bold text-surface-400 group-hover:text-black transition-colors">
                           {job.title}
                         </p>
-                        <p className="text-xs text-zinc-500 dark:text-gray-500">{job.company?.name}</p>
+                        <p className="text-[11px] font-mono text-surface-300">{job.company?.name}</p>
                       </div>
                     </div>
-                    <CaretRight className="w-4 h-4 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 group-hover:text-brand-400 transition-colors" />
+                    <CaretRight className="w-4 h-4 text-surface-300 group-hover:text-surface-400 transition-colors" />
                   </div>
 
-                  <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-gray-500">
+                  <div className="flex items-center gap-3 text-[11px] font-mono text-surface-300 pt-2 border-t border-surface-200">
                     {prep && (
                       <span className="flex items-center gap-1">
                         <Cpu className="w-3 h-3" />
@@ -197,7 +200,7 @@ export default function InterviewPage() {
                       {jobMocks.length} mocks
                     </span>
                     {bestScore && (
-                      <span className="flex items-center gap-1 text-emerald-400">
+                      <span className="eyebrow-tag bg-pastel-green-bg text-pastel-green-fg border border-pastel-green-fg/20 ml-auto">
                         <Star className="w-3 h-3" />
                         Best: {bestScore.toFixed(1)}
                       </span>
@@ -212,9 +215,9 @@ export default function InterviewPage() {
 
       {/* Recent Mock Sessions */}
       {recentMocks.length > 0 && (
-        <div>
-          <h2 className="text-base font-semibold mb-3 flex items-center gap-2">
-            <ChatCircleText className="w-4 h-4 text-emerald-400" />
+        <div className="space-y-3">
+          <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400 flex items-center gap-2">
+            <ChatCircleText className="w-4 h-4 text-surface-400" weight="bold" />
             Recent Mock Sessions
           </h2>
           <div className="space-y-2">
@@ -224,24 +227,21 @@ export default function InterviewPage() {
                 <Link
                   key={mock.id}
                   href={mockJob ? `/dashboard/interview/${mockJob.id}/mock?session=${mock.id}` : "#"}
-                  className="flex items-center justify-between p-4 glass-card rounded-xl group"
+                  className="flex items-center justify-between p-3.5 card-editorial group"
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      "w-10 h-10 rounded-lg flex items-center justify-center",
-                      mock.feedback ? "bg-emerald-500/10" : "bg-amber-500/10"
+                      "w-9 h-9 rounded-md flex items-center justify-center border",
+                      mock.feedback ? "bg-pastel-green-bg text-pastel-green-fg border-pastel-green-fg/20" : "bg-pastel-yellow-bg text-pastel-yellow-fg border-pastel-yellow-fg/20"
                     )}>
-                      <Trophy className={cn(
-                        "w-5 h-5",
-                        mock.feedback ? "text-emerald-400" : "text-amber-400"
-                      )} />
+                      <Trophy className="w-4 h-4" weight="bold" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">
+                      <p className="text-xs font-semibold text-surface-400 font-sans">
                         {mockJob ? mockJob.title : "Mock Interview"}
                         {mockJob?.company?.name && ` · ${mockJob.company.name}`}
                       </p>
-                      <p className="text-xs text-zinc-500 dark:text-gray-500">
+                      <p className="text-[11px] font-mono text-surface-300">
                         {new Date(mock.created_at).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
@@ -253,10 +253,10 @@ export default function InterviewPage() {
                   </div>
                   {mock.score !== undefined && (
                     <div className="text-right">
-                      <p className="text-lg font-bold text-brand-400">
+                      <p className="text-base font-display font-bold text-surface-400 tabular-nums">
                         {mock.score.toFixed(1)}
                       </p>
-                      <p className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">score</p>
+                      <p className="text-[9px] font-mono uppercase tracking-wider text-surface-300">Score</p>
                     </div>
                   )}
                 </Link>

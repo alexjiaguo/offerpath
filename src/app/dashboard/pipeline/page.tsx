@@ -109,9 +109,9 @@ export default function PipelinePage() {
       {/* Header Row */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Kanban weight="bold" className="w-6 h-6 text-brand-500" />
-          <h1 className="text-2xl font-bold font-display">Pipeline Tracker</h1>
-          <span className="text-sm font-semibold text-surface-300">
+          <Kanban weight="bold" className="w-6 h-6 text-surface-400" />
+          <h1 className="text-2xl font-bold font-display text-surface-400">Pipeline Tracker</h1>
+          <span className="text-xs font-mono font-semibold text-surface-300">
             {stats.total} {stats.total === 1 ? "job" : "jobs"}
           </span>
         </div>
@@ -119,10 +119,10 @@ export default function PipelinePage() {
         {/* Add Job */}
         <button
           onClick={() => setAddJobDialogOpen(true)}
-          className="btn-primary flex items-center gap-2"
+          className="btn-editorial-primary flex items-center gap-2"
         >
           <Plus weight="bold" className="w-4 h-4" />
-          Add Job
+          <span>Add Job</span>
         </button>
       </div>
 
@@ -141,7 +141,7 @@ export default function PipelinePage() {
                 useDiscoveryStore.getState().setSearchQuery(e.target.value);
               }}
               placeholder="Search pipeline..."
-              className="pl-9 pr-8 py-1.5 w-full rounded-md bg-surface-50 border border-surface-200 text-sm text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-300 transition-all"
+              className="pl-9 pr-8 py-1.5 w-full rounded-md bg-surface-50 border border-surface-200 text-sm text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-300 transition-all font-sans"
             />
             {filters.search && (
               <button
@@ -166,7 +166,7 @@ export default function PipelinePage() {
               className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm transition-all h-[34px]",
                 hasActiveFilters
-                  ? "bg-brand-100 border-brand-500 text-brand-500 font-bold"
+                  ? "bg-surface-400 text-surface-0 font-bold border-surface-400"
                   : "border-surface-200 bg-surface-50 text-surface-300 hover:text-surface-400 hover:bg-surface-100"
               )}
             >
@@ -178,11 +178,11 @@ export default function PipelinePage() {
             {showFilters && (
               <div className="absolute left-0 top-full mt-2 w-64 bg-surface-0 border border-surface-200 rounded-md shadow-lg p-4 z-20">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-bold">Filters</span>
+                  <span className="text-sm font-bold text-surface-400">Filters</span>
                   {hasActiveFilters && (
                     <button
                       onClick={clearFilters}
-                      className="text-xs font-bold text-brand-500 hover:text-brand-600"
+                      className="text-xs font-mono font-bold text-surface-400 hover:text-black"
                     >
                       Clear all
                     </button>
@@ -191,7 +191,7 @@ export default function PipelinePage() {
 
                 {/* Tier filter */}
                 <div className="mb-4">
-                  <p className="text-xs font-bold text-surface-300 uppercase tracking-widest mb-2">Tier</p>
+                  <p className="text-xs font-mono font-bold text-surface-300 uppercase tracking-widest mb-2">Tier</p>
                   <div className="flex gap-2">
                     {[1, 2, 3].map((t) => (
                       <button
@@ -203,9 +203,9 @@ export default function PipelinePage() {
                           setFilter({ tiers });
                         }}
                         className={cn(
-                          "px-3 py-1 rounded-md text-xs font-bold transition-all border",
+                          "px-3 py-1 rounded-md text-xs font-bold transition-all border font-mono",
                           filters.tiers.includes(t)
-                            ? "bg-brand-500 text-surface-0 border-brand-500"
+                            ? "bg-surface-400 text-surface-0 border-surface-400"
                             : "bg-surface-50 text-surface-300 border-surface-200 hover:bg-surface-100"
                         )}
                       >
@@ -217,16 +217,16 @@ export default function PipelinePage() {
 
                 {/* Score range */}
                 <div>
-                  <p className="text-xs font-bold text-surface-300 uppercase tracking-widest mb-2">Min Score</p>
+                  <p className="text-xs font-mono font-bold text-surface-300 uppercase tracking-widest mb-2">Min Score</p>
                   <div className="flex gap-2 flex-wrap">
                     {[null, 3.0, 3.5, 4.0, 4.5].map((s) => (
                       <button
                         key={s ?? "all"}
                         onClick={() => setFilter({ scoreMin: s })}
                         className={cn(
-                          "px-3 py-1 rounded-md text-xs font-bold transition-all border",
+                          "px-3 py-1 rounded-md text-xs font-bold transition-all border font-mono",
                           filters.scoreMin === s
-                            ? "bg-brand-500 text-surface-0 border-brand-500"
+                            ? "bg-surface-400 text-surface-0 border-surface-400"
                             : "bg-surface-50 text-surface-300 border-surface-200 hover:bg-surface-100"
                         )}
                       >
@@ -264,13 +264,13 @@ export default function PipelinePage() {
                     className={cn(
                       "w-full flex items-center justify-between px-3 py-2 text-sm transition-all",
                       sortField === opt.field
-                        ? "bg-brand-100 text-brand-500 font-bold"
+                        ? "bg-surface-100 text-surface-400 font-bold"
                         : "text-surface-300 hover:text-surface-400 hover:bg-surface-50"
                     )}
                   >
                     {opt.label}
                     {sortField === opt.field && (
-                      <span className="text-xs font-bold">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                      <span className="text-xs font-bold font-mono">{sortDirection === "asc" ? "↑" : "↓"}</span>
                     )}
                   </button>
                 ))}

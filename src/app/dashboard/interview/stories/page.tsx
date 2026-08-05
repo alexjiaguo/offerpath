@@ -16,18 +16,18 @@ import { extractStoriesFromFile } from "@/lib/aiService";
    ═══════════════════════════════════════════════════ */
 
 const COMPETENCY_COLORS: Record<string, string> = {
-  leadership: "text-amber-700 dark:text-amber-300 bg-amber-500/10",
-  "conflict-resolution": "text-rose-700 dark:text-rose-300 bg-rose-500/10",
-  technical: "text-blue-700 dark:text-blue-300 bg-blue-500/10",
-  analytical: "text-cyan-700 dark:text-cyan-300 bg-cyan-500/10",
-  culture: "text-purple-700 dark:text-purple-300 bg-purple-500/10",
-  communication: "text-emerald-700 dark:text-emerald-300 bg-emerald-500/10",
-  execution: "text-orange-700 dark:text-orange-300 bg-orange-500/10",
-  innovation: "text-pink-700 dark:text-pink-300 bg-pink-500/10",
+  leadership: "bg-pastel-yellow-bg text-pastel-yellow-fg border-pastel-yellow-fg/20",
+  "conflict-resolution": "bg-pastel-red-bg text-pastel-red-fg border-pastel-red-fg/20",
+  technical: "bg-pastel-blue-bg text-pastel-blue-fg border-pastel-blue-fg/20",
+  analytical: "bg-pastel-blue-bg text-pastel-blue-fg border-pastel-blue-fg/20",
+  culture: "bg-surface-100 text-surface-400 border-surface-200",
+  communication: "bg-pastel-green-bg text-pastel-green-fg border-pastel-green-fg/20",
+  execution: "bg-pastel-yellow-bg text-pastel-yellow-fg border-pastel-yellow-fg/20",
+  innovation: "bg-pastel-red-bg text-pastel-red-fg border-pastel-red-fg/20",
 };
 
 function getCompetencyStyle(competency: string) {
-  return COMPETENCY_COLORS[competency] || "text-zinc-700 dark:text-gray-300 bg-gray-500/10";
+  return COMPETENCY_COLORS[competency] || "bg-surface-100 text-surface-400 border-surface-200";
 }
 
 export default function StoriesPage() {
@@ -100,14 +100,14 @@ export default function StoriesPage() {
   };
 
   return (
-    <div className="w-full animate-fade-in">
+    <div className="w-full space-y-6 pb-12">
       {/* Error Banner */}
       {uploadError && (
-        <div className="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-300 flex items-center justify-between">
+        <div className="p-3 rounded-md bg-pastel-red-bg border border-pastel-red-fg/20 text-xs font-mono text-pastel-red-fg flex items-center justify-between">
           <span>{uploadError}</span>
           <button
             onClick={() => setUploadError(null)}
-            className="p-1 hover:bg-white/5 rounded"
+            className="p-1 hover:bg-surface-0 rounded"
           >
             <X className="w-4 h-4" />
           </button>
@@ -115,13 +115,17 @@ export default function StoriesPage() {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-surface-200">
         <div className="flex items-center gap-3">
-          <Cards className="w-6 h-6 text-brand-400" />
-          <h1 className="text-2xl font-bold">Story Bank</h1>
-          <span className="text-sm text-zinc-500 dark:text-gray-500">
-            {stories.length} {stories.length === 1 ? "story" : "stories"}
-          </span>
+          <div className="w-9 h-9 rounded-md bg-surface-400 text-surface-0 flex items-center justify-center">
+            <Cards weight="bold" className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-display font-bold tracking-tight text-surface-400">Story Bank</h1>
+            <p className="text-xs text-surface-300 mt-0.5 font-mono">
+              {stories.length} {stories.length === 1 ? "story" : "stories"} banked
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <input
@@ -134,40 +138,40 @@ export default function StoriesPage() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isExtracting}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-600 dark:text-zinc-300 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-white/[0.05] hover:text-zinc-900 dark:hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-editorial-secondary inline-flex items-center gap-2"
           >
             {isExtracting ? (
-              <ArrowsClockwise className="w-4 h-4 animate-spin" />
+              <ArrowsClockwise className="w-3.5 h-3.5 animate-spin" />
             ) : (
-              <FileArrowUp className="w-4 h-4" />
+              <FileArrowUp weight="bold" className="w-3.5 h-3.5" />
             )}
-            Import Document
+            Import Doc
           </button>
           <button
             onClick={handleNew}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
+            className="btn-editorial-primary inline-flex items-center gap-2"
           >
-            <Plus className="w-4 h-4" />
+            <Plus weight="bold" className="w-3.5 h-3.5" />
             Add Story
           </button>
         </div>
       </div>
 
       {/* Search + Filter Bar */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
+      <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px]">
-          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 dark:text-gray-500" />
+          <MagnifyingGlass weight="regular" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-300" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search stories…"
-            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-surface-100 border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-800 dark:text-gray-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+            className="w-full pl-9 pr-8 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-400 focus:bg-surface-0 transition-all font-sans"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-surface-300 hover:text-surface-400"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -179,10 +183,10 @@ export default function StoriesPage() {
           <button
             onClick={() => setFilterCompetency(null)}
             className={cn(
-              "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+              "px-2.5 py-1 rounded-md text-[11px] font-mono font-medium border transition-all",
               !filterCompetency
-                ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                : "bg-surface-200 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
+                ? "bg-surface-400 text-surface-0 border-surface-400"
+                : "bg-surface-50 border-surface-200 text-surface-300 hover:text-surface-400 hover:bg-surface-100"
             )}
           >
             All
@@ -192,10 +196,10 @@ export default function StoriesPage() {
               key={c}
               onClick={() => setFilterCompetency(filterCompetency === c ? null : c)}
               className={cn(
-                "px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all",
+                "px-2.5 py-1 rounded-md text-[11px] font-mono font-medium capitalize border transition-all",
                 filterCompetency === c
-                  ? "bg-brand-500/20 text-brand-300 border border-brand-500/30"
-                  : "bg-surface-200 text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-zinc-700 dark:hover:text-gray-300"
+                  ? "bg-surface-400 text-surface-0 border-surface-400"
+                  : "bg-surface-50 border-surface-200 text-surface-300 hover:text-surface-400 hover:bg-surface-100"
               )}
             >
               {(c || "").replace(/-/g, " ")}
@@ -206,12 +210,12 @@ export default function StoriesPage() {
 
       {/* Stories Grid */}
       {filteredStories.length === 0 ? (
-        <div className="liquid-glass rounded-2xl p-12 text-center">
-          <Cards className="w-10 h-10 text-zinc-700 dark:text-zinc-400 dark:text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">
+        <div className="card-editorial p-10 text-center">
+          <Cards className="w-8 h-8 text-surface-300 mx-auto mb-3" />
+          <h3 className="text-sm font-bold text-surface-400 mb-1 font-display">
             {stories.length === 0 ? "Build your story bank" : "No matching stories"}
           </h3>
-          <p className="text-sm text-zinc-500 dark:text-gray-500 mb-6 max-w-md mx-auto">
+          <p className="text-xs text-surface-300 mb-4 max-w-md mx-auto font-sans">
             {stories.length === 0
               ? "STAR stories are your secret weapon for behavioral interviews. Add your best accomplishments here and reuse them across multiple interviews."
               : "Try adjusting your search or filter criteria."}
@@ -219,9 +223,9 @@ export default function StoriesPage() {
           {stories.length === 0 && (
             <button
               onClick={handleNew}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity"
+              className="btn-editorial-primary inline-flex items-center gap-2"
             >
-              <Plus className="w-4 h-4" />
+              <Plus weight="bold" className="w-3.5 h-3.5" />
               Add Your First Story
             </button>
           )}
@@ -234,20 +238,20 @@ export default function StoriesPage() {
             return (
               <div
                 key={story.id}
-                className="glass-card rounded-xl overflow-hidden"
+                className="card-editorial overflow-hidden p-0"
               >
                 {/* Card Header */}
                 <div
-                  className="p-5 cursor-pointer"
+                  className="p-4 cursor-pointer hover:bg-surface-50 transition-colors"
                   onClick={() => setExpandedId(isExpanded ? null : story.id)}
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2.5 mb-2 flex-wrap">
-                        <h3 className="text-sm font-semibold">{story.title}</h3>
+                      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                        <h3 className="text-sm font-display font-bold text-surface-400">{story.title}</h3>
                         <span
                           className={cn(
-                            "text-[10px] px-2 py-0.5 rounded-md font-medium capitalize",
+                            "eyebrow-tag border capitalize",
                             getCompetencyStyle(story.competency)
                           )}
                         >
@@ -257,12 +261,12 @@ export default function StoriesPage() {
 
                       {/* Tags */}
                       {(story.tags || []).length > 0 && (
-                        <div className="flex items-center gap-1.5 mb-2">
-                          <Tag className="w-3 h-3 text-zinc-700 dark:text-zinc-400 dark:text-gray-600" />
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <Tag weight="bold" className="w-3 h-3 text-surface-300" />
                           {(story.tags || []).map((tag) => (
                             <span
                               key={tag}
-                              className="text-[10px] px-1.5 py-0.5 rounded bg-surface-200 text-zinc-500 dark:text-gray-500"
+                              className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-surface-100 text-surface-400 border border-surface-200"
                             >
                               {tag}
                             </span>
@@ -272,22 +276,22 @@ export default function StoriesPage() {
 
                       {/* Metrics preview */}
                       {story.metrics && (
-                        <p className="text-xs text-zinc-600 dark:text-gray-400 flex items-center gap-1.5">
-                          <ChartBar className="w-3 h-3 text-emerald-400"  weight="fill" />
+                        <p className="text-xs text-surface-300 flex items-center gap-1.5 font-mono">
+                          <ChartBar className="w-3.5 h-3.5 text-pastel-green-fg" weight="fill" />
                           {story.metrics}
                         </p>
                       )}
                     </div>
 
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <div className="text-center">
-                        <p className="text-base font-bold">{story.used_count}</p>
-                        <p className="text-[10px] text-zinc-700 dark:text-zinc-400 dark:text-gray-600">uses</p>
+                      <div className="text-center font-mono">
+                        <p className="text-sm font-bold text-surface-400 tabular-nums">{story.used_count}</p>
+                        <p className="text-[9px] text-surface-300 uppercase tracking-widest">uses</p>
                       </div>
                       {isExpanded ? (
-                        <CaretUp className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
+                        <CaretUp weight="bold" className="w-4 h-4 text-surface-300" />
                       ) : (
-                        <CaretDown className="w-4 h-4 text-zinc-500 dark:text-gray-500" />
+                        <CaretDown weight="bold" className="w-4 h-4 text-surface-300" />
                       )}
                     </div>
                   </div>
@@ -295,19 +299,19 @@ export default function StoriesPage() {
 
                 {/* Expanded STAR Detail */}
                 {isExpanded && (
-                  <div className="px-5 pb-5 border-t border-white/[0.04] pt-4 animate-fade-in">
-                    <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <div className="px-4 pb-4 border-t border-surface-200 pt-4 bg-surface-50/50 space-y-4">
+                    <div className="grid md:grid-cols-2 gap-3">
                       {[
-                        { label: "Situation", content: story.situation, color: "text-blue-400" },
-                        { label: "Task", content: story.task, color: "text-amber-400" },
-                        { label: "Action", content: story.action, color: "text-emerald-400" },
-                        { label: "Result", content: story.result, color: "text-purple-400" },
+                        { label: "Situation", content: story.situation },
+                        { label: "Task", content: story.task },
+                        { label: "Action", content: story.action },
+                        { label: "Result", content: story.result },
                       ].map((section) => (
-                        <div key={section.label} className="p-3 rounded-lg bg-surface-200/30">
-                          <h4 className={cn("text-xs font-semibold uppercase tracking-wider mb-1.5", section.color)}>
+                        <div key={section.label} className="p-3 rounded-md bg-surface-0 border border-surface-200">
+                          <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400 mb-1">
                             {section.label}
                           </h4>
-                          <p className="text-sm text-zinc-700 dark:text-gray-300 leading-relaxed">
+                          <p className="text-xs text-surface-400 leading-relaxed font-sans">
                             {section.content || "—"}
                           </p>
                         </div>
@@ -315,15 +319,15 @@ export default function StoriesPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-2 pt-2">
+                    <div className="flex items-center gap-2 pt-2 border-t border-surface-200">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEdit(story.id);
                         }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200/50 text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-zinc-800 dark:hover:text-gray-200 text-xs font-medium transition-all"
+                        className="btn-editorial-secondary inline-flex items-center gap-1.5"
                       >
-                        <PenNib className="w-3 h-3" />
+                        <PenNib weight="bold" className="w-3.5 h-3.5" />
                         Edit
                       </button>
                       <button
@@ -334,9 +338,9 @@ export default function StoriesPage() {
                             setExpandedId(null);
                           }
                         }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-200/50 text-red-400/70 hover:text-red-400 text-xs font-medium transition-all"
+                        className="px-3 py-1.5 rounded-md border border-pastel-red-fg/20 bg-pastel-red-bg text-pastel-red-fg text-xs font-mono font-semibold uppercase tracking-wider hover:bg-red-100 transition-all inline-flex items-center gap-1.5"
                       >
-                        <Trash className="w-3 h-3" />
+                        <Trash weight="bold" className="w-3.5 h-3.5" />
                         Delete
                       </button>
                     </div>
