@@ -8,7 +8,7 @@ This session covered the OfferPath resume studio redesign work across three sepa
 - `worktrees/resume-resumecom` -> `codex/resume-studio-resumecom` -> Resume.com-inspired redesign
 - `worktrees/resume-resumeio` -> `codex/resume-studio-resumeio` -> Resume.io-inspired redesign
 
-All three branches contain the full R1-R136 polish history. The most recent shared work is R119-R136: per-bullet personal-pronoun warning, per-bullet punctuation hint, same-company grouping hint, overlapping-dates hint, active-section pulse dot, compact mode toggle, missing-degree hint, missing-company hint, long-skill-name warning, skill-category suggestion, long-bullet comma hint, missing-school hint, skill category grouping action, education field hint, summary pronoun warning, experience grouping action, compact skill guidance, and graduation-date hint.
+All three branches contain the full R1-R137 polish history. The most recent shared work is R119-R137: per-bullet personal-pronoun warning, per-bullet punctuation hint, same-company grouping hint, overlapping-dates hint, active-section pulse dot, compact mode toggle, missing-degree hint, missing-company hint, long-skill-name warning, skill-category suggestion, long-bullet comma hint, missing-school hint, skill category grouping action, education field hint, summary pronoun warning, experience grouping action, compact skill guidance, graduation-date hint, and a role label rendering fix.
 
 Dev servers are running and verified on ports 3001/3002/3003. The parent repo also picked up pre-existing snapshot artifacts from a prior resume-pro task; those were committed separately.
 
@@ -24,15 +24,15 @@ Dev servers are running and verified on ports 3001/3002/3003. The parent repo al
 
 | Worktree | Branch | HEAD | Status |
 |---|---|---|---|
-| `worktrees/resume-flowcv` | `codex/resume-studio-flowcv` | `bf09e24` | Clean |
-| `worktrees/resume-resumecom` | `codex/resume-studio-resumecom` | `3cdf036` | Clean (untracked `node_modules` symlink only) |
-| `worktrees/resume-resumeio` | `codex/resume-studio-resumeio` | `ac96972` | Clean (untracked `node_modules` symlink only) |
+| `worktrees/resume-flowcv` | `codex/resume-studio-flowcv` | `266d1aa` | Clean |
+| `worktrees/resume-resumecom` | `codex/resume-studio-resumecom` | `629c153` | Clean (untracked `node_modules` symlink only) |
+| `worktrees/resume-resumeio` | `codex/resume-studio-resumeio` | `ae21dab` | Clean (untracked `node_modules` symlink only) |
 
 No stashes exist in the parent or worktrees.
 
 ## What Was Done
 
-- Verified all three worktree branches are committed through R136.
+- Verified all three worktree branches are committed through R137.
 - Confirmed all three worktree dev servers return `200` for `/`, `/dashboard`, and `/dashboard/resume`.
 - Fixed the earlier all-404 issue by starting the dev servers outside the sandbox with `ulimit -n 65536`.
 - Kept all three dev servers running for inspection.
@@ -41,7 +41,7 @@ No stashes exist in the parent or worktrees.
 ## In Progress / Incomplete
 
 - No uncommitted resume studio work remains in the three branches.
-- R135-R136 (compact skill guidance and graduation-date hint) are implemented and committed on all three branches.
+- R137 (role label and duration hints now render outside the title input) is fixed and committed on all three branches.
 
 ## Next Steps
 
@@ -49,7 +49,7 @@ No stashes exist in the parent or worktrees.
    - `cd worktrees/resume-flowcv && ulimit -n 65536 && exec env PORT=3001 npx next dev --turbopack`
    - `cd worktrees/resume-resumecom && ulimit -n 65536 && exec env PORT=3002 npx next dev --turbopack`
    - `cd worktrees/resume-resumeio && ulimit -n 65536 && exec env PORT=3003 npx next dev --turbopack`
-2. Continue R137+ polish in all three branches using the established one-feature-per-round pattern.
+2. Continue R138+ polish in all three branches using the established one-feature-per-round pattern.
 3. Typecheck each affected worktree with `npx tsc --noEmit -p worktrees/<name>/tsconfig.json` before committing.
 
 ## Dead Ends and Ruled-Out Approaches
