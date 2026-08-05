@@ -838,6 +838,24 @@ export default function ResumeEditorPage({
     });
     toast.success(`Added "${skill}" to skills`);
   };
+  const groupSkillsByCategory = () => {
+    const cats: Array<[string, RegExp]> = [
+      ['analytics', /amplitude|mixpanel|looker|tableau|sql|bigquery|ga4|google analytics|segment/],
+      ['ml/ai', /tensorflow|pytorch|scikit|sklearn|langchain|openai|huggingface|mlflow|rag|llm/],
+      ['product', /figma|sketch|adobe|miro|notion|jira|linear|confluence|productboard/],
+      ['cloud/infra', /aws|gcp|azure|docker|kubernetes|terraform|databricks|snowflake/],
+      ['adtech', /gam|dfp|programmatic|rtb|header bidding|google ads|meta ads|dv360|the trade desk/],
+    ];
+    const rank = (skill: string | { name: string }) => {
+      const n = (typeof skill === 'string' ? skill : skill.name || '').toLowerCase();
+      const idx = cats.findIndex(([, re]) => re.test(n));
+      return idx === -1 ? cats.length : idx;
+    };
+    const next = [...(data.skills || [])].sort((a, b) => rank(a) - rank(b));
+    saveToHistory(id);
+    updateResume(id, { data: { ...data, skills: next } });
+    toast.success("Skills grouped by category");
+  };
   const coachTips: { emoji: string; line: string; detail: string }[] = useMemo(() => {
     const tips: { emoji: string; line: string; detail: string }[] = [];
     if (!data.personal?.name) tips.push({ emoji: "✍️", line: "Add your name first", detail: "Recruiters filter by name. Without it, your resume is invisible." });
@@ -2231,6 +2249,13 @@ export default function ResumeEditorPage({
                                 if (!(edu.degree || '').trim() || (edu.institution || '').trim()) return null;
                                 return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="Degree is filled but the institution is missing. Add the school to make the entry credible.">add school - degree is filled</p>;
                               })()}
+                              {(() => {
+                                // R132: missing-field hint. Fills the last
+                                // common education gap once school + degree
+                                // are present.
+                                if (!(edu.institution || '').trim() || !(edu.degree || '').trim() || (edu.field || '').trim()) return null;
+                                return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="School and degree are filled but the field of study is missing. Add it when it adds context.">add field - school and degree are filled</p>;
+                              })()}
 
                               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-200 dark:border-white/[0.05]">
                                 <div>
@@ -2306,7 +2331,16 @@ export default function ResumeEditorPage({
                             <span className="font-bold">{skillsUsage.used}/{skillsUsage.total} used in bullets</span>
                           </span>
                         )}
-                      </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={groupSkillsByCategory}
+                          className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-zinc-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] text-[10px] text-zinc-600 dark:text-zinc-400 hover:text-brand-600 hover:border-brand-500/40 transition-colors"
+                          title="Reorder skills by inferred category: analytics, ML/AI, product, cloud/infra, adtech."
+                        >
+                          <SquaresFour weight="duotone" className="w-3 h-3" />
+                          Group
+                        </button>
                       </div>
                       {/* Auto-suggest strip — resume.io's "extract skills from your experience" affordance.
                           Scans the user's bullets and offers 1-click adds for any matches. */}
