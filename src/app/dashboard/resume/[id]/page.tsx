@@ -150,6 +150,7 @@ export default function ResumeEditorPage({
       return () => window.removeEventListener("mousedown", handler);
     }, [wordsOpen]);
   const [editorMode, setEditorMode] = useState<EditorMode>("form");
+  const [compactMode, setCompactMode] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
   const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
   const [isEditorCollapsed, setIsEditorCollapsed] = useState(false);
@@ -1630,6 +1631,21 @@ export default function ResumeEditorPage({
             </button>
           </div>
 
+          <button
+            type="button"
+            onClick={() => setCompactMode(!compactMode)}
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border",
+              compactMode
+                ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-500"
+                : "bg-white dark:bg-white/[0.03] border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+            )}
+            title={compactMode ? "Show full editor guidance" : "Hide progress bars and role stats for a denser editor"}
+          >
+            <SquaresFour className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Compact</span>
+          </button>
+
           <div className="w-px h-8 bg-zinc-100 dark:bg-white/[0.05] mx-1" />
 
           <button
@@ -1842,6 +1858,7 @@ export default function ResumeEditorPage({
                             <Check weight="bold" className="w-3 h-3 text-indigo-500" />
                           )}
                           {/* R57: 1px progress bar under the label. */}
+                          {!compactMode && (
                           <span
                             className="absolute left-0 right-0 -bottom-0.5 h-0.5 bg-zinc-200 dark:bg-white/[0.06] overflow-hidden rounded-full"
                             aria-hidden="true"
@@ -1851,6 +1868,7 @@ export default function ResumeEditorPage({
                               style={{ width: `${Math.round((sectionProgress[section.key] ?? 0) * 100)}%` }}
                             />
                           </span>
+                          )}
                         </button>
                         <div className="flex items-center gap-0.5">
                           <div className="flex flex-col gap-0.5">
@@ -2459,6 +2477,7 @@ export default function ResumeEditorPage({
                                   </div>
                                 ))}
                                 {(() => {
+                                  if (compactMode) return null;
                                   // R95: per-experience total stats line. Always
                                   // visible (not gated on 7+ like the R87
                                   // warning) so the user sees the aggregate of
