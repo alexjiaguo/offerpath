@@ -856,6 +856,12 @@ export default function ResumeEditorPage({
     updateResume(id, { data: { ...data, skills: next } });
     toast.success("Skills grouped by category");
   };
+  const groupExperienceByCompany = () => {
+    const next = [...(data.experience || [])].sort((a, b) => (a.company || '').trim().localeCompare((b.company || '').trim()));
+    saveToHistory(id);
+    updateResume(id, { data: { ...data, experience: next } });
+    toast.success("Roles grouped by company");
+  };
   const coachTips: { emoji: string; line: string; detail: string }[] = useMemo(() => {
     const tips: { emoji: string; line: string; detail: string }[] = [];
     if (!data.personal?.name) tips.push({ emoji: "✍️", line: "Add your name first", detail: "Recruiters filter by name. Without it, your resume is invisible." });
@@ -1610,6 +1616,14 @@ export default function ResumeEditorPage({
                     <div className="space-y-6" role="region" aria-labelledby="sec-experience">
                       <div className="flex items-center justify-between">
                         <h2 id="sec-experience" className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Work Experience</h2>{latestRole && (<span className="ml-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.06] text-[10px] text-zinc-600 dark:text-zinc-400 normal-case tracking-normal font-medium" title={`${latestRole.title} at ${latestRole.company} (${latestRole.start} - ${latestRole.end})`}> <ArrowRight weight="duotone" className="w-3 h-3" /> Latest: {latestRole.title} @ {latestRole.company} ({latestRole.start} - {latestRole.end}) </span>)}
+                        <button
+                          type="button"
+                          onClick={groupExperienceByCompany}
+                          className="p-2 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-all"
+                          title="Reorder roles so same-company entries sit together."
+                        >
+                          <ArrowsClockwise className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => {
                             saveToHistory(id);
