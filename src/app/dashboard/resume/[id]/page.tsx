@@ -2303,6 +2303,14 @@ export default function ResumeEditorPage({
                                       if (dupes <= 1) return null;
                                       return <span className="mt-2 flex-shrink-0" title={`${dupes} bullets in this role start with '${fw}' — vary the verbs (e.g. "Drove", "Built", "Shipped").`}><ArrowsClockwise weight="duotone" className="w-3 h-3 text-amber-500" aria-hidden="true" /></span>;
                                     })()}
+                                    {(() => {
+                                      const tp = (bullet || '').trimStart();
+                                      if (!tp) return null;
+                                      const fwp = tp.split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, '') || '';
+                                      if (!fwp) return null;
+                                      if (!/^(i|my|me)$/.test(fwp)) return null;
+                                      return <span className="mt-2 flex-shrink-0" title="Resumes read stronger without personal pronouns. Lead with the verb instead (e.g. Led instead of I led)."><WarningCircle weight="duotone" className="w-3 h-3 text-amber-500" aria-hidden="true" /></span>;
+                                    })()}
                                     <textarea
                                       value={bullet}
                                       onBlur={() => saveToHistory(id)}
