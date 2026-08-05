@@ -2925,6 +2925,11 @@ export default function ResumeEditorPage({
                                   }
                                   return null;
                                 })()}
+                                {(() => {
+                                  const n = (name || '').trim();
+                                  if (!n || n.length <= 40) return null;
+                                  return <span onClick={(e) => e.stopPropagation()} className='ml-1 text-[10px] text-amber-600 dark:text-amber-400 font-bold' title='Skills are usually short keywords. Split this phrase or use the most recognizable term.'>long</span>;
+                                })()}
                               </span>
                             )}
                             <button
