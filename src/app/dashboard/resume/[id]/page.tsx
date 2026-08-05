@@ -2437,6 +2437,19 @@ export default function ResumeEditorPage({
                                   if (!n || n.length <= 40) return null;
                                   return <span onClick={(e) => e.stopPropagation()} className='ml-1 text-[10px] text-amber-600 dark:text-amber-400 font-bold' title='Skills are usually short keywords. Split this phrase or use the most recognizable term.'>long</span>;
                                 })()}
+                                {(() => {
+                                  const n = (name || '').toLowerCase();
+                                  const cats: Array<[string, RegExp]> = [
+                                    ['analytics', /amplitude|mixpanel|looker|tableau|sql|bigquery|ga4|google analytics|segment/],
+                                    ['ml/ai', /tensorflow|pytorch|scikit|sklearn|langchain|openai|huggingface|mlflow|rag|llm/],
+                                    ['product', /figma|sketch|adobe|miro|notion|jira|linear|confluence|productboard/],
+                                    ['cloud/infra', /aws|gcp|azure|docker|kubernetes|terraform|databricks|snowflake/],
+                                    ['adtech', /gam|dfp|programmatic|rtb|header bidding|google ads|meta ads|dv360|the trade desk/],
+                                  ];
+                                  const hit = cats.find(([, re]) => re.test(n));
+                                  if (!hit) return null;
+                                  return <span onClick={(e) => e.stopPropagation()} className='ml-1 text-[10px] text-zinc-400 dark:text-zinc-600 tabular-nums' title={'Suggested category: ' + hit[0]}>{hit[0]}</span>;
+                                })()}
                               </span>
                             )}
                             <button
