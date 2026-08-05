@@ -2697,6 +2697,10 @@ export default function ResumeEditorPage({
                                 newEdus[index] = { ...newEdus[index], degree: e.target.value };
                                 updateResume(id, { data: { ...data, education: newEdus } });
                               }} placeholder="Degree (e.g. B.S. Computer Science)" className="w-full bg-transparent border-none p-0 text-sm text-zinc-600 dark:text-zinc-400 focus:ring-0 placeholder:text-zinc-400 dark:placeholder:text-zinc-700" />
+                              {(() => {
+                                if (!(edu.institution || '').trim() || (edu.degree || '').trim()) return null;
+                                return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="Institution is filled but the degree is missing. Add the degree to make the entry useful.">add degree - institution is filled</p>;
+                              })()}
 
                               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-200 dark:border-white/[0.05]">
                                 <div>
