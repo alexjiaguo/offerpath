@@ -2827,6 +2827,25 @@ export default function ResumeEditorPage({
                                   if (count === 0) return null;
                                   return <span onClick={(e) => e.stopPropagation()} className='ml-1 text-[10px] text-zinc-400 dark:text-zinc-600 tabular-nums' title={'Mentioned in ' + count + ' bullet(s)'}>×{count}</span>;
                                 })()}
+                                {(() => {
+                                  // R118: per-skill duplicate warning.
+                                  // Normalize (lowercase, strip /
+                                  // spaces + common punct) and compare
+                                  // against other skills. Skips self
+                                  // and any too-short names.
+                                  const norm = (s: string) => (s || '').toLowerCase().replace(/[\s.\-_/]/g, '');
+                                  const me = norm(name);
+                                  if (!me || me.length < 2) return null;
+                                  const all = (data.skills || []) as Array<string | { name: string }>;
+                                  for (let i = 0; i < all.length; i++) {
+                                    if (i === index) continue;
+                                    const sn = typeof all[i] === 'string' ? (all[i] as string) : (all[i] as { name: string }).name;
+                                    if (norm(sn) === me) {
+                                      return <span onClick={(e) => e.stopPropagation()} className='ml-1 text-[10px] text-amber-600 dark:text-amber-400 font-bold' title={'You already have ' + sn + ' in this list.'}>dup</span>;
+                                    }
+                                  }
+                                  return null;
+                                })()}
                               </span>
                             )}
                             <button
