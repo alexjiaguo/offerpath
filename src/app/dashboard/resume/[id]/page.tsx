@@ -1837,6 +1837,7 @@ export default function ResumeEditorPage({
                         >
                           <section.icon className="w-3.5 h-3.5" />
                           {section.label}
+                          {activeSection === section.key && <span className="w-1 h-1 rounded-full bg-indigo-500 animate-pulse" aria-hidden="true" />}
                           {sectionHasContent[section.key] && (
                             <Check weight="bold" className="w-3 h-3 text-indigo-500" />
                           )}
