@@ -1866,6 +1866,20 @@ export default function ResumeEditorPage({
                                     const score = (hasStrong ? 1 : 0) + (lenOK ? 1 : 0) + (hasMetric ? 1 : 0);
                                     if (score > 0) return null;
                                     return <span className='text-amber-600 dark:text-amber-400 normal-case tracking-normal' title='Lead with a strong verb, keep it 50-200 chars, add a number'>low — verb, length, or number</span>;
+                                  })()}
+                                  {(() => {
+                                    // R116: ALL-CAPS bullet. Counts letters
+                                    // only so digits / spaces / punctuation
+                                    // don't dilute the ratio. 6-letter
+                                    // minimum so short tokens like 'USA'
+                                    // or 'API' don't fire.
+                                    const b = (bullet || '').trim();
+                                    if (!b) return null;
+                                    const letters = b.replace(/[^A-Za-z]/g, '');
+                                    if (letters.length < 6) return null;
+                                    const upper = letters.replace(/[^A-Z]/g, '').length;
+                                    if (upper / letters.length < 0.8) return null;
+                                    return <span className='text-amber-600 dark:text-amber-400 normal-case tracking-normal' title='Recruiters read ALL-CAPS as shouting. Mixed case reads more polished.'>all caps</span>;
                                   })()}</span>
                                     <button
                                       type="button"
