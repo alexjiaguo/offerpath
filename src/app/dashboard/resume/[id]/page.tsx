@@ -1827,6 +1827,12 @@ export default function ResumeEditorPage({
                                       if (!/^(i|my|me)$/.test(fwp)) return null;
                                       return <span className="mt-2 flex-shrink-0" title="Resumes read stronger without personal pronouns. Lead with the verb instead (e.g. Led instead of I led)."><WarningCircle weight="duotone" className="w-3 h-3 text-amber-500" aria-hidden="true" /></span>;
                                     })()}
+                                    {(() => {
+                                      const tp = (bullet || '').trim();
+                                      if (!tp) return null;
+                                      if (/[.!?]$/.test(tp)) return null;
+                                      return <span className="mt-2 flex-shrink-0" title="End the bullet with a period, exclamation, or question mark so it reads as a complete sentence."><WarningCircle weight="duotone" className="w-3 h-3 text-amber-500" aria-hidden="true" /></span>;
+                                    })()}
                                     <textarea
                                       value={bullet}
                                       onBlur={() => saveToHistory(id)}
