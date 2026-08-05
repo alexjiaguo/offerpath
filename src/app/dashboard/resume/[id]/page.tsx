@@ -2215,6 +2215,36 @@ export default function ResumeEditorPage({
                                   </label>
                               </div>
                               {(() => {
+                                // R122: overlapping roles hint. Same
+                                // YYYY-MM parsing as R58. Flags when this
+                                // role's date range overlaps another role.
+                                const ovStart = /^(19|20)\d{2}-(0[1-9]|1[0-2])$/.exec(exp.start_date || '');
+                                if (!ovStart) return null;
+                                const os = Number(ovStart[1]) * 12 + Number(ovStart[2]);
+                                const now = new Date();
+                                let oe = now.getFullYear() * 12 + (now.getMonth() + 1);
+                                if (!exp.current) {
+                                  const ovEnd = /^(19|20)\d{2}-(0[1-9]|1[0-2])$/.exec(exp.end_date || '');
+                                  if (!ovEnd) return null;
+                                  oe = Number(ovEnd[1]) * 12 + Number(ovEnd[2]);
+                                }
+                                const overlaps = (data.experience || []).some((other, oi) => {
+                                  if (oi === index || !other || typeof other !== 'object') return false;
+                                  const oStart = /^(19|20)\d{2}-(0[1-9]|1[0-2])$/.exec(other.start_date || '');
+                                  if (!oStart) return false;
+                                  const os2 = Number(oStart[1]) * 12 + Number(oStart[2]);
+                                  let oe2 = now.getFullYear() * 12 + (now.getMonth() + 1);
+                                  if (!other.current) {
+                                    const oEnd = /^(19|20)\d{2}-(0[1-9]|1[0-2])$/.exec(other.end_date || '');
+                                    if (!oEnd) return false;
+                                    oe2 = Number(oEnd[1]) * 12 + Number(oEnd[2]);
+                                  }
+                                  return os <= oe2 && oe >= os2;
+                                });
+                                if (!overlaps) return null;
+                                return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="This role's dates overlap another role. Check whether they should be grouped or clarified.">dates overlap another role - check grouping</p>;
+                              })()}
+                              {(() => {
                                 // R58: date sanity check. Only fires when
                                 // both dates match the YYYY-MM pattern so
                                 // free-text inputs (e.g. "Present") are
