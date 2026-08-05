@@ -1592,6 +1592,16 @@ export default function ResumeEditorPage({
                           </div>
                         );
                       })()}
+                      {(() => {
+                        // R133: summary pronoun warning. Same first-word
+                        // check as the per-bullet warning, but for the
+                        // opening sentence of the summary.
+                        const s = (data.summary || '').trim();
+                        if (!s) return null;
+                        const first = s.split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, '') || '';
+                        if (!/^(i|my|me)$/.test(first)) return null;
+                        return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="Summaries read stronger without personal pronouns. Open with your role or the value you deliver.">avoid "I/My" in the first sentence - lead with your role</p>;
+                      })()}
                     </div>
                   )}
 
