@@ -367,6 +367,12 @@ export default function ResumeEditorPage({
     updateResume(id, { data: { ...data, skills: next } });
     toast.success("Skills grouped by category");
   };
+  const groupExperienceByCompany = () => {
+    const next = [...(data.experience || [])].sort((a, b) => (a.company || '').trim().localeCompare((b.company || '').trim()));
+    saveToHistory(id);
+    updateResume(id, { data: { ...data, experience: next } });
+    toast.success("Roles grouped by company");
+  };
 
   const bulletStats = (() => {
     const exp = data.experience || [];
@@ -2094,6 +2100,14 @@ export default function ResumeEditorPage({
                           <span>Lead each bullet with a strong verb. Show the result, not the activity.</span>
                         </div>
                       )}
+                        <button
+                          type="button"
+                          onClick={groupExperienceByCompany}
+                          className="p-2 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-all"
+                          title="Reorder roles so same-company entries sit together."
+                        >
+                          <ArrowsClockwise className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => {
                             saveToHistory(id);
