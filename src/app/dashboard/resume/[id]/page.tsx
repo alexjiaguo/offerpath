@@ -2196,6 +2196,10 @@ export default function ResumeEditorPage({
                                   if (!repeated) return null;
                                   return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 font-medium" title="Company appears in another role. Consider grouping these roles under one company heading.">same company in another role - consider grouping</p>;
                                 })()}
+                                {(() => {
+                                  if (!(exp.title || '').trim() || (exp.company || '').trim()) return null;
+                                  return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 font-medium" title="Title is filled but the company is missing. Add the employer to make the role useful.">add company - title is filled</p>;
+                                })()}
                               </div>
 
                               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-200 dark:border-white/[0.05]">
