@@ -2737,6 +2737,12 @@ export default function ResumeEditorPage({
                                 if (!(edu.institution || '').trim() || !(edu.degree || '').trim() || (edu.field || '').trim()) return null;
                                 return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="School and degree are filled but the field of study is missing. Add it when it adds context.">add field - school and degree are filled</p>;
                               })()}
+                              {(() => {
+                                // R136: graduation-date hint. Education
+                                // without a date reads as stale.
+                                if (!(edu.institution || '').trim() || (edu.end_date || edu.start_date || '').trim()) return null;
+                                return <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400 pl-1 font-medium" title="Institution is filled but the graduation date is missing. Add it so recruiters can judge recency.">add graduation date - institution is filled</p>;
+                              })()}
 
                               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-200 dark:border-white/[0.05]">
                                 <div>
