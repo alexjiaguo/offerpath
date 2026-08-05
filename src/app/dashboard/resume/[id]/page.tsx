@@ -1654,6 +1654,30 @@ export default function ResumeEditorPage({
                                     const mos = totalMonths % 12;
                                     return <span className='ml-2 text-zinc-400 dark:text-zinc-600 normal-case tracking-normal font-medium'>· {(yrs > 0 ? yrs + 'y ' : '') + mos + 'mo'}</span>;
                                   })()}
+                                  {(() => {
+                                    // R115: very-long-role hint. Recomputes
+                                    // the same totalMonths as R110 to avoid
+                                    // passing values through scope. 10y is a
+                                    // reasonable ceiling — anything longer is
+                                    // almost always multiple roles rolled
+                                    // into one.
+                                    const sm2 = /^(19|20)\d{2}-(0[1-9]|1[0-2])$/.exec(exp.start_date || '');
+                                    if (!sm2) return null;
+                                    let ey2 = 0, em2 = 0;
+                                    if (exp.current || !exp.end_date) {
+                                      const now = new Date();
+                                      ey2 = now.getFullYear();
+                                      em2 = now.getMonth() + 1;
+                                    } else {
+                                      const em3 = /^(19|20)\d{2}-(0[1-9]|1[0-2])$/.exec(exp.end_date || '');
+                                      if (!em3) return null;
+                                      ey2 = Number(em3[1]);
+                                      em2 = Number(em3[2]);
+                                    }
+                                    const months = (ey2 * 12 + em2) - (Number(sm2[1]) * 12 + Number(sm2[2]));
+                                    if (months <= 120) return null;
+                                    return <span className='ml-2 text-amber-600 dark:text-amber-400 normal-case tracking-normal font-medium' title='Roles over 10 years usually read better as separate entries.'>over 10y — consider splitting</span>;
+                                  })()}
                                 </div>
                                                                 }} placeholder="Job Title" className="w-full bg-transparent border-none p-0 text-base font-bold text-zinc-900 dark:text-white focus:ring-0 placeholder:text-zinc-400 dark:placeholder:text-zinc-700" />
                                 
