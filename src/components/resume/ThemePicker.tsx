@@ -100,7 +100,7 @@ export default function ThemePicker({ theme, onChange, preview }: ThemePickerPro
             <Palette className="w-4 h-4 text-brand-400" />
           </div>
           <div className="min-w-0">
-            <span className="block text-[11px] font-bold uppercase tracking-wide whitespace-nowrap text-zinc-900 dark:text-white">Visual DNA</span>
+            <span className="block text-[11px] font-bold uppercase tracking-wide truncate text-zinc-900 dark:text-white">Visual DNA</span>
             <span className="block text-[10px] text-zinc-500 mt-0.5 truncate">{subtitle}</span>
           </div>
         </div>

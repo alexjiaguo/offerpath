@@ -546,10 +546,13 @@ export default function ResumeEditorPage({
               />
             </div>
 
-            {/* Template Picker + Form/Rich Text toggle (same row) */}
+            {/* Template Picker + Form/Rich Text toggle. They sit on one row
+                when there's room; when the editor is narrow they wrap to two
+                rows and the toggle drops to the right (ml-auto). The select
+                shrinks to its natural width so both fit at more widths. */}
             <div className="flex items-center gap-2 flex-wrap">
               <Browser className="w-4 h-4 text-zinc-500 flex-shrink-0" />
-              <div className="relative w-full max-w-[200px]">
+              <div className="relative min-w-0 flex-1 max-w-[200px]">
                 <select
                   value={selectedTemplate}
                   onChange={(e) => {
@@ -570,7 +573,7 @@ export default function ResumeEditorPage({
                 </div>
               </div>
 
-              <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-lg p-0.5 ml-auto">
+              <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-lg p-0.5 ml-auto flex-shrink-0 whitespace-nowrap">
                 <button
                   onClick={() => setEditorMode("form")}
                   className={cn(
