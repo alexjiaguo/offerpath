@@ -444,7 +444,7 @@ export default function ResumeEditorPage({
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <div className="min-w-0 flex-1 max-sm:basis-full">
+        <div className="min-w-0 max-sm:basis-full">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
@@ -460,7 +460,7 @@ export default function ResumeEditorPage({
         {/* Action group — keeps all buttons on one line; only wraps internally
             on small screens. `max-sm:ml-0` drops the right-push so the group
             sits left-aligned when it wraps to its own row. */}
-        <div className="flex items-center gap-2 ml-auto max-sm:ml-0 max-sm:basis-full max-sm:flex-wrap whitespace-nowrap">
+        <div className="flex items-center gap-2 flex-wrap whitespace-nowrap">
           <button
             onClick={() => setIsEditorCollapsed(!isEditorCollapsed)}
             className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
@@ -551,7 +551,6 @@ export default function ResumeEditorPage({
                 rows and the toggle drops to the right (ml-auto). The select
                 shrinks to its natural width so both fit at more widths. */}
             <div className="flex items-center gap-2 flex-wrap">
-              <Browser className="w-4 h-4 text-zinc-500 flex-shrink-0" />
               <div className="relative min-w-0 flex-1 max-w-[200px]">
                 <select
                   value={selectedTemplate}
