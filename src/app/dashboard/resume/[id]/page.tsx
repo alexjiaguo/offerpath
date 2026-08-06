@@ -432,30 +432,35 @@ export default function ResumeEditorPage({
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-        <div className="flex items-center gap-3 flex-wrap">
-          <Link
-            href="/dashboard/resume"
-            className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
-              </div>
-              {resumeIsEmpty && (
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400/80">· Sample preview</span>
-              )}
+      {/* Header — back + title on the left, then a single action group that
+          wraps as a unit on narrow screens. AI Tailoring lives inside the
+          group so it stays on the same line as Save/Download; individual
+          buttons only wrap on small screens (max-sm:flex-wrap). */}
+      <div className="flex items-center gap-3 flex-wrap mb-5 max-sm:gap-2">
+        <Link
+          href="/dashboard/resume"
+          className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
+          aria-label="Back to resumes"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+        <div className="min-w-0 flex-1 max-sm:basis-full">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight leading-tight">{resume.title}</h1>
+            {resumeIsEmpty && (
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400/80">· Sample preview</span>
+            )}
           </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight leading-tight">{resume.title}</h1>
+        </div>
 
-          <div className="flex items-center gap-2 ml-4 pl-4 border-l border-zinc-200 dark:border-white/[0.06] max-sm:ml-[52px] max-sm:pl-0 max-sm:border-l-0">
-          {/* Collapse Editor Toggle */}
+        {/* Action group — keeps all buttons on one line; only wraps internally
+            on small screens. `max-sm:ml-0` drops the right-push so the group
+            sits left-aligned when it wraps to its own row. */}
+        <div className="flex items-center gap-2 ml-auto max-sm:ml-0 max-sm:basis-full max-sm:flex-wrap whitespace-nowrap">
           <button
             onClick={() => setIsEditorCollapsed(!isEditorCollapsed)}
             className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
@@ -464,7 +469,6 @@ export default function ResumeEditorPage({
             <SidebarSimple className="w-5 h-5" weight={isEditorCollapsed ? "fill" : "regular"} />
           </button>
 
-          {/* Undo/Redo grouped with Save; Download after; AI Tailoring sits in the top-right slot */}
           <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1 gap-0.5">
             <button
               onClick={() => undo(id)}
@@ -504,25 +508,22 @@ export default function ResumeEditorPage({
           </div>
 
           <ExportButtons resumeData={data} resumeTitle={resume.title} />
-          </div>
-        </div>
 
-        {/* AI Tailoring — sits in the top-right slot where Download+Save used to be */}
-        <button
-          onClick={() => setShowTailorDialog(true)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-500 text-white text-xs font-bold uppercase tracking-widest hover:bg-purple-400 transition-all shadow-lg shadow-purple-500/20"
-          title="Open AI tailoring"
-        >
-          <Sparkle weight="fill" className="w-3.5 h-3.5" />
-          AI Tailoring
-        </button>
+          <button
+            onClick={() => setShowTailorDialog(true)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-500 text-white text-xs font-bold uppercase tracking-widest hover:bg-purple-400 transition-all shadow-lg shadow-purple-500/20"
+            title="Open AI tailoring"
+          >
+            <Sparkle weight="fill" className="w-3.5 h-3.5" />
+            AI Tailoring
+          </button>
+        </div>
       </div>
 
       {/* Main Content — editor + preview (flex row; separator is not a grid column) */}
       <div
         className={cn(
-          "flex",
-          isResizing ? "" : "transition-[width] duration-300 ease-in-out",
+          "flex w-full",
           isEditorCollapsed || !showPreview ? "justify-center" : ""
         )}
       >
@@ -1130,12 +1131,17 @@ export default function ResumeEditorPage({
           </div>
         )}
 
-        {/* Drag handle — only when both panels are visible */}
+        {/* Drag handle — only when both panels are visible. Double-click resets
+            to the default 450px width; during drag a small badge shows the
+            current width so the user can see the value they are committing. */}
         {!isEditorCollapsed && showPreview && (
           <div
             role="separator"
             aria-orientation="vertical"
-            aria-label="Resize editor panel"
+            aria-label="Resize editor panel (double-click to reset)"
+            aria-valuenow={editorWidth}
+            aria-valuemin={280}
+            aria-valuemax={Math.max(280, Math.floor(window.innerWidth * 0.65))}
             onPointerDown={(e) => {
               e.preventDefault();
               e.currentTarget.setPointerCapture(e.pointerId);
@@ -1144,10 +1150,16 @@ export default function ResumeEditorPage({
               document.body.style.cursor = "col-resize";
               document.body.style.userSelect = "none";
             }}
-            className="flex w-3 mx-1 self-stretch items-center justify-center cursor-col-resize group touch-none"
-            title="Drag to resize"
+            onDoubleClick={() => setEditorWidth(450)}
+            className="relative flex w-3 mx-1 self-stretch items-center justify-center cursor-col-resize group touch-none"
+            title="Drag to resize · double-click to reset"
           >
             <div className={cn("w-1 h-full rounded-full transition-colors", isResizing ? "bg-brand-500" : "bg-zinc-200 dark:bg-white/[0.06] group-hover:bg-brand-500/60")} />
+            {isResizing && (
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 px-1.5 py-0.5 rounded-md bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[10px] font-bold tabular-nums pointer-events-none shadow-lg">
+                {editorWidth}px
+              </div>
+            )}
           </div>
         )}
 
