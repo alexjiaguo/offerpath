@@ -80,3 +80,80 @@ Worktrees have no stashes. The parent has one pre-existing `stash@{0}` from `mai
 ## Agent Config Sync
 
 - No project-level agent config files were modified in this session, so no sync was needed.
+
+---
+
+# Session Addendum — M2 + Resume Studio Polish (2026-08-06)
+
+## Session Summary
+
+Picked up the M2 minimalist editorial UI overhaul (`ad68d80`) and shipped the long-tail of small UX fixes the user requested in the dashboard. The work also repaired a broken `computeATSScore` that had been left half-finished in the store by a previous worker (missing closing brace and the `return 45 + (seed % 44);` line, with `PLACEHOLDER_RESUME_DATA` accidentally inserted inside the broken function).
+
+## Git State (verified)
+
+- Branch: `codex/login-redesign`
+- HEAD: `38cac4c fix(resume): repair store, add delete + headshot + empty preview, compact UI`
+- Working tree: clean after the commit. Only untracked items are the `worktrees/` directory (intentional, each worktree is its own git repo) and `.agents/.../` scratch artifacts from earlier remediation runs.
+- Stashes: none from this session. The pre-existing `stash@{0}` from the prior session is still in place — do not pop.
+
+## What Was Shipped
+
+### 1. Store repair (`src/store/resumeStore.ts`)
+
+- Reconstructed `computeATSScore` so the function actually closes and returns the deterministic mock score.
+- Promoted the placeholder to a real module-scope export: `export const PLACEHOLDER_RESUME_DATA: ResumeData = MOCK_RESUMES[0].data;` (was previously wedged inside the broken function).
+- Carried the section-management history guard from the M2 commit into the same file: `moveSection` only pushes a history snapshot on a real re-order, not on a no-op click at the boundary or with an invalid key.
+
+### 2. Career Asset Studio — Delete button (`src/app/dashboard/resume/page.tsx`)
+
+- Each resume card now has a Trash icon button next to the Edit / Preview actions.
+- Tapping the trash opens a confirm dialog (`card-editorial` with the resume title quoted in monospace) before calling `deleteResume(id)`. The dialog respects `card-editorial` styling so it matches the rest of the asset studio, not the editor's `liquid-glass` look.
+- `deleteResume` is wired through the existing store action, which also syncs to the backend via `deleteResumeAction` (already in place from earlier work).
+
+### 3. Empty-preview placeholder (`src/app/dashboard/resume/[id]/page.tsx`)
+
+- New module-scope `isResumeEmpty(data: ResumeData): boolean` helper: true when personal name, summary, and experience are all missing/empty.
+- `effectiveData` swaps in `PLACEHOLDER_RESUME_DATA` whenever the resume is empty. Used by all three `<ResumePreview>` call sites (regular, ThemePicker modal, fullscreen) **and** the print-only `.print-resume` block so PDF export of an empty resume produces a real template, not a blank page.
+- A subtle `· Sample preview` pill appears next to the Base/Tailored label when the placeholder is active, so the state is visible without being loud.
+
+### 4. Template select compaction (`src/app/dashboard/resume/[id]/page.tsx`)
+
+- `<select>` capped at `max-w-[200px]` (down from `max-w-xs` ≈ 320px), padding `px-3 py-2`, text `text-xs uppercase tracking-wider`, with a smaller leading `<Browser>` icon and `right-2.5` chevron. Reads as a compact control next to the section tabs.
+
+### 5. Headshot upload for photo templates (`src/app/dashboard/resume/[id]/page.tsx`)
+
+- Added a circular avatar preview + Upload button to the Identity tab.
+- File input is gated to `image/*`, capped at 2 MB (toast on overflow), read as a data URL via `FileReader`, and stored on `data.personal.photo_url`.
+- A Remove button clears the photo and saves history before the mutation. The existing `PremiumHeadshot` and `PhotoHeader` templates already read `data.personal?.photo_url`, so no template changes were needed.
+
+## Tests
+
+- `src/tests/stores/resumeStore.test.ts` was added in the same commit and covers the `moveSection` history guard: no-op on invalid key, no-op at boundary, real change pushes history and reorders, `toggleVisibility` flips a per-template flag.
+- 4/4 store tests green. Full vitest run: 7 files, 27/27 tests green.
+
+## Verification
+
+- `npx tsc --noEmit` — clean.
+- `npm run build` — 27 routes, clean.
+- `npx vitest run` — 7 files, 27/27 tests.
+- `npx next lint` — 2 unrelated pre-existing warnings (one unused import in `NeedsTailoringWidget.tsx`, one untyped placeholder JSX in `BentoPreviews.tsx`). No new warnings from this commit.
+
+## Outstanding / Known Limitations
+
+- The `<img>` element used for the headshot preview is a data URL so `next/image` would not be able to optimize it; the warning is suppressed inline. If a future agent wants to switch to `next/image`, route the upload through a server action that returns a CDN URL.
+- The empty-state preview uses `MOCK_RESUMES[0]` as the placeholder. If the user wants a different sample (e.g. blank with `Your Name` and `Your Title` placeholders), the constant can be swapped without touching call sites.
+- The headshot upload stores a data URL directly in the resume state, which bloats `localStorage` for users on the persist middleware. The 2 MB cap keeps it bounded, but the long-term path is to upload to a CDN. The `deleteResumeAction` / `saveResumeAction` server actions would also need to be updated to handle binary photo data.
+- The dev server inside the sandbox hits `EMFILE: too many open files` from Watchpack. Build, typecheck, and tests do not have that problem. To run a dev server locally, use `ulimit -n 65536` outside the sandbox.
+
+## Environment
+
+- Node: 25.6.0
+- Next.js: 15.5.15
+- Branch: `codex/login-redesign`
+- HEAD: `38cac4c`
+
+## Next Steps for the Resuming Agent
+
+- None required: the user-requested polish pass is complete and committed.
+- If a follow-up session wants to remove the `<img>` warning for the headshot preview, switch the upload to a server action that returns a URL (the existing `saveResumeAction` is the right place to host the new endpoint).
+- The user previously asked for visual work to continue on `codex/login-redesign`. Any new feature requests can be branched off `38cac4c` and merged back into this branch.
