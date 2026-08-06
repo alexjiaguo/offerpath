@@ -205,6 +205,12 @@ export default function ResumeEditorPage({
   // Editor column width in px; user can drag the resize handle to change it.
   const [editorWidth, setEditorWidth] = useState(450);
   const dragStateRef = useRef<{ startX: number; startWidth: number } | null>(null);
+  // @dnd-kit uses a module-level counter for `aria-describedby` IDs that
+  // drifts between server and client renders. Gate the sortable tabs on a
+  // post-mount flag so SSR + first client render both skip the DnD output
+  // and avoid the hydration mismatch.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   // Pointer-based resize: capture pointer on the handle, then track movement.
   useEffect(() => {
@@ -602,31 +608,75 @@ export default function ResumeEditorPage({
               />
             ) : (
               <>
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSectionDragEnd}>
-                  <SortableContext items={tabItems} strategy={rectSortingStrategy}>
-                    <div className="flex flex-wrap gap-1 bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1">
-                      {tabItems.map((tabId) => {
-                        const meta = metaFor(tabId);
-                        const isVisible = (resume.section_visibility?.[selectedTemplate]?.[tabId as SectionKey]) ?? true;
-                        const isPersonal = tabId === "personal";
-                        return (
-                          <SortableSectionTab
-                            key={tabId}
-                            tabId={tabId}
-                            label={meta.label}
-                            Icon={meta.icon}
-                            isActive={activeSection === tabId}
-                            isVisible={isVisible}
-                            canToggle={!isPersonal}
-                            disabled={isPersonal}
-                            onClick={() => setActiveSection(tabId)}
-                            onToggleVisibility={() => toggleVisibility(id, selectedTemplate, tabId as SectionKey)}
-                          />
-                        );
-                      })}
-                    </div>
-                  </SortableContext>
-                </DndContext>
+                {mounted ? (
+                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSectionDragEnd}>
+                    <SortableContext items={tabItems} strategy={rectSortingStrategy}>
+                      <div className="flex flex-wrap gap-1 bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1">
+                        {tabItems.map((tabId) => {
+                          const meta = metaFor(tabId);
+                          const isVisible = (resume.section_visibility?.[selectedTemplate]?.[tabId as SectionKey]) ?? true;
+                          const isPersonal = tabId === "personal";
+                          return (
+                            <SortableSectionTab
+                              key={tabId}
+                              tabId={tabId}
+                              label={meta.label}
+                              Icon={meta.icon}
+                              isActive={activeSection === tabId}
+                              isVisible={isVisible}
+                              canToggle={!isPersonal}
+                              disabled={isPersonal}
+                              onClick={() => setActiveSection(tabId)}
+                              onToggleVisibility={() => toggleVisibility(id, selectedTemplate, tabId as SectionKey)}
+                            />
+                          );
+                        })}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                ) : (
+                  <div className="flex flex-wrap gap-1 bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1">
+                    {tabItems.map((tabId) => {
+                      const meta = metaFor(tabId);
+                      const isVisible = (resume.section_visibility?.[selectedTemplate]?.[tabId as SectionKey]) ?? true;
+                      const isPersonal = tabId === "personal";
+                      return (
+                        <div
+                          key={tabId}
+                          role="tab"
+                          aria-selected={activeSection === tabId}
+                          onClick={() => setActiveSection(tabId)}
+                          className={cn(
+                            "group flex items-center gap-1.5 pl-2.5 pr-1.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap select-none",
+                            activeSection === tabId
+                              ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-sm"
+                              : "text-zinc-600 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/[0.06] hover:text-zinc-900 dark:hover:text-zinc-200",
+                            !isVisible && "opacity-45"
+                          )}
+                        >
+                          <meta.icon className="w-3.5 h-3.5" />
+                          {meta.label}
+                          {!isPersonal && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleVisibility(id, selectedTemplate, tabId as SectionKey); }}
+                              onPointerDown={(e) => e.stopPropagation()}
+                              title={isVisible ? "Hide section" : "Show section"}
+                              className={cn(
+                                "p-0.5 rounded transition-opacity",
+                                activeSection === tabId
+                                  ? "text-white/60 hover:text-white dark:text-zinc-500 dark:hover:text-zinc-900"
+                                  : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300",
+                                isVisible ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+                              )}
+                            >
+                              {isVisible ? <Eye className="w-3 h-3" /> : <EyeSlash className="w-3 h-3" />}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
                 <div className="liquid-glass rounded-2xl p-5 animate-fade-in min-h-[500px]">
                   {/* Personal Info */}
