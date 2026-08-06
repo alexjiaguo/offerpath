@@ -518,7 +518,7 @@ export default function ResumeEditorPage({
           isEditorCollapsed
             ? "grid-cols-1"
             : showPreview
-              ? `lg:grid-cols-[${editorWidth}px_minmax(0,1fr)]`
+              ? `grid-cols-[${editorWidth}px_minmax(0,1fr)]`
               : "grid-cols-1 max-w-5xl mx-auto"
         )}
       >
@@ -1091,7 +1091,7 @@ export default function ResumeEditorPage({
               document.body.style.cursor = "col-resize";
               document.body.style.userSelect = "none";
             }}
-            className="hidden lg:flex w-1.5 -mx-2.5 self-stretch items-center justify-center cursor-col-resize group"
+            className="hidden md:flex w-1.5 -mx-2.5 self-stretch items-center justify-center cursor-col-resize group"
             title="Drag to resize"
           >
             <div className="w-px h-full bg-zinc-200 dark:bg-white/[0.05] group-hover:bg-brand-500/60 transition-colors" />
