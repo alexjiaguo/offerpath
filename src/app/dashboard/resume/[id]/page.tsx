@@ -1,14 +1,14 @@
 "use client";
 
-import { use, useState, useMemo, useRef, useEffect } from "react";
+import { use, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, CheckCircle, CaretDown, CaretUp, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, Sidebar, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, X } from '@phosphor-icons/react';
-import { useResumeStore } from "@/store/resumeStore";
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowsClockwise, ArrowsIn, ArrowsOut, Briefcase, Camera, CheckCircle, CaretDown, WarningCircle, Eye, EyeSlash, FileText, FloppyDisk, TextT, SidebarSimple, GraduationCap, PenNib, User, Plus, Sparkle, Trash, Browser, Wrench, Cpu, Translate, Certificate, FolderOpen, X } from '@phosphor-icons/react';
+import { useResumeStore, PLACEHOLDER_RESUME_DATA } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
-import type { ExperienceEntry, EducationEntry, ResumeTheme, SectionKey, ResumeData } from "@/types";
+import type { ExperienceEntry, EducationEntry, ResumeTheme, SectionKey, ResumeData, ProjectEntry, TechnicalSkillCategory } from "@/types";
 import ExportButtons from "@/components/resume/ExportButtons";
 import ResumePreview, {
   TEMPLATE_CONFIGS,
@@ -18,6 +18,9 @@ import ATSCheckerPanel from "@/components/resume/ATSCheckerPanel";
 import { tailorResume, type TailorResult } from "@/lib/aiService";
 import { saveResumeAction } from "@/app/actions/resume";
 import { motion, AnimatePresence } from "framer-motion";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { SortableContext, rectSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 // Dynamic import for TipTap to avoid SSR issues
 const RichTextEditor = dynamic(
@@ -31,6 +34,103 @@ const RichTextEditor = dynamic(
     ),
   }
 );
+
+// Debounce a value so the heavy ResumePreview only re-renders after typing pauses.
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(t);
+  }, [value, delayMs]);
+  return debounced;
+}
+
+type SectionMeta = { key: string; label: string; icon: React.ComponentType<{ className?: string }> };
+
+const SECTION_META: SectionMeta[] = [
+  { key: "personal", label: "Identity", icon: User },
+  { key: "summary", label: "Summary", icon: FileText },
+  { key: "experience", label: "Experience", icon: Briefcase },
+  { key: "education", label: "Education", icon: GraduationCap },
+  { key: "skills", label: "Skills", icon: Wrench },
+  { key: "technicalSkills", label: "Tech Skills", icon: Cpu },
+  { key: "languages", label: "Languages", icon: Translate },
+  { key: "certifications", label: "Certs", icon: Certificate },
+  { key: "projects", label: "Projects", icon: FolderOpen },
+];
+
+function metaFor(key: string): SectionMeta {
+  return SECTION_META.find((m) => m.key === key) ?? SECTION_META[0];
+}
+
+// Resume is "empty" when the user has not entered anything substantial. We still
+// show a rich preview by swapping in placeholder mock data so the user can
+// compare templates before typing.
+function isResumeEmpty(data: ResumeData): boolean {
+  const noName = !data.personal?.name?.trim();
+  const noSummary = !data.summary?.trim();
+  const noExperience = !data.experience || data.experience.length === 0;
+  return noName && noSummary && noExperience;
+}
+
+function SortableSectionTab({
+  tabId, label, Icon, isActive, isVisible, canToggle, onClick, onToggleVisibility, disabled,
+}: {
+  tabId: string;
+  label: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  isActive: boolean;
+  isVisible: boolean;
+  canToggle: boolean;
+  onClick: () => void;
+  onToggleVisibility: () => void;
+  disabled?: boolean;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tabId, disabled });
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onClick={onClick}
+      role="tab"
+      aria-selected={isActive}
+      className={cn(
+        "group flex items-center gap-1.5 pl-2.5 pr-1.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-grab active:cursor-grabbing select-none",
+        isActive
+          ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-sm"
+          : "text-zinc-600 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-white/[0.06] hover:text-zinc-900 dark:hover:text-zinc-200",
+        !isVisible && "opacity-45"
+      )}
+    >
+      <Icon className="w-3.5 h-3.5" />
+      {label}
+      {canToggle && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleVisibility(); }}
+          onPointerDown={(e) => e.stopPropagation()}
+          title={isVisible ? "Hide section" : "Show section"}
+          className={cn(
+            "p-0.5 rounded transition-opacity",
+            isActive
+              ? "text-white/60 hover:text-white dark:text-zinc-500 dark:hover:text-zinc-900"
+              : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300",
+            isVisible ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+          )}
+        >
+          {isVisible ? <Eye className="w-3 h-3" /> : <EyeSlash className="w-3 h-3" />}
+        </button>
+      )}
+    </div>
+  );
+}
+
 
 /* ═══════════════════════════════════════════════════
    Resume Editor v3 — High Fidelity Construction
@@ -91,7 +191,7 @@ export default function ResumeEditorPage({
     canUndo, 
     canRedo,
     saveToHistory,
-    moveSection,
+    toggleVisibility,
   } = useResumeStore();
   const { getProfileSummary } = useProfileStore();
   const resume = getResumeById(id);
@@ -102,7 +202,6 @@ export default function ResumeEditorPage({
   const [showPreview, setShowPreview] = useState(true);
   const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
   const [isEditorCollapsed, setIsEditorCollapsed] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string>(
     resume?.template || "classic-minimal"
   );
@@ -115,34 +214,32 @@ export default function ResumeEditorPage({
   const [tailoring, setTailoring] = useState(false);
   const [draftResult, setDraftResult] = useState<TailorResult | null>(null);
 
-  // Convert resume data to HTML for the rich text editor
-  const resumeData = resume?.data;
-  const resumeHtml = useMemo(() => {
-    const d = resumeData;
-    if (!d) return "";
-    const parts: string[] = [];
-    if (d.personal?.name) parts.push(`<h1>${d.personal.name}</h1>`);
-    if (d.summary) parts.push(`<h2>Professional Summary</h2><p>${d.summary}</p>`);
-    if (d.experience?.length) {
-      parts.push("<h2>Experience</h2>");
-      for (const exp of d.experience) {
-        parts.push(`<h3>${exp.title} — ${exp.company}</h3>`);
-        if (exp.bullets?.length) {
-          parts.push("<ul>" + exp.bullets.filter(b => b.trim()).map(b => `<li>${b}</li>`).join("") + "</ul>");
-        }
-      }
-    }
-    if (d.education?.length) {
-      parts.push("<h2>Education</h2>");
-      for (const edu of d.education) {
-        parts.push(`<h3>${edu.degree} — ${edu.institution}</h3>`);
-      }
-    }
-    if (d.skills?.length) {
-      parts.push("<h2>Skills</h2><p>" + d.skills.map((s) => typeof s === "string" ? s : s.name).join(", ") + "</p>");
-    }
-    return parts.join("\n");
-  }, [resumeData]);
+  // Pending destructive deletion (experience / education) awaiting confirmation.
+  const [confirmDelete, setConfirmDelete] = useState<null | { type: "experience" | "education"; index: number }>(null);
+
+  // Debounced snapshot so the heavy ResumePreview only re-renders after typing pauses.
+  const previewData = useDebouncedValue(resume?.data, 200);
+
+  // Fullscreen preview: ESC to close + lock body scroll.
+  useEffect(() => {
+    if (!isFullscreenPreview) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setIsFullscreenPreview(false); };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
+  }, [isFullscreenPreview]);
+
+  // Tailor modal: ESC to close + lock body scroll.
+  useEffect(() => {
+    if (!showTailorDialog) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setShowTailorDialog(false); setDraftResult(null); } };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
+  }, [showTailorDialog]);
+
+  // Drag sensors for section reordering (5px movement distinguishes drag from click).
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const themeColor = resume?.theme?.primaryColor || undefined;
 
@@ -164,6 +261,10 @@ export default function ResumeEditorPage({
   }
 
   const data = resume.data;
+  const resumeIsEmpty = isResumeEmpty(data);
+  // For an empty resume we show the placeholder in the preview so the user
+  // can see what each template looks like before filling in their details.
+  const effectiveData: ResumeData = resumeIsEmpty ? PLACEHOLDER_RESUME_DATA : data;
 
   const handleSave = async () => {
     updateResume(id, { template: selectedTemplate });
@@ -230,17 +331,26 @@ export default function ResumeEditorPage({
     });
   };
 
-  const SECTIONS = [
-    { key: "personal", label: "Identity", icon: User },
-    { key: "summary", label: "Summary", icon: FileText },
-    { key: "experience", label: "Experience", icon: Briefcase },
-    { key: "education", label: "Education", icon: GraduationCap },
-    { key: "skills", label: "Skills", icon: Wrench },
-  ];
+  // Section tabs are derived from sectionOrder + SECTION_META (module scope).
 
   const sectionOrder = resume.section_order || [
     "summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects"
   ];
+
+  // Tabs = personal (fixed, non-draggable) + editable sections in their current order.
+  const editableOrder: string[] = sectionOrder.filter((k): boolean => SECTION_META.some((m) => m.key === k));
+  const tabItems = ["personal", ...editableOrder];
+
+  const handleSectionDragEnd = (event: { active: { id: string | number }; over: { id: string | number } | null }) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = editableOrder.indexOf(String(active.id));
+    const newIndex = editableOrder.indexOf(String(over.id));
+    if (oldIndex < 0 || newIndex < 0) return;
+    const newOrder = arrayMove(editableOrder, oldIndex, newIndex);
+    saveToHistory(id);
+    updateResume(id, { section_order: newOrder as SectionKey[] });
+  };
 
   return (
     <div className="animate-fade-in pb-20 w-full">
@@ -278,7 +388,7 @@ export default function ResumeEditorPage({
             <div className="flex-1 overflow-auto bg-zinc-900/50 p-12 flex justify-center">
               <div className="w-full max-w-5xl shadow-[0_0_80px_rgba(0,0,0,0.5)] h-fit">
                 <ResumePreview
-                  data={data}
+                  data={previewData ?? effectiveData}
                   template={selectedTemplate}
                   themeColor={themeColor}
                   sectionOrder={sectionOrder as SectionKey[]}
@@ -293,8 +403,8 @@ export default function ResumeEditorPage({
       </AnimatePresence>
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 flex-wrap gap-4 px-2">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <Link
             href="/dashboard/resume"
             className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
@@ -302,46 +412,35 @@ export default function ResumeEditorPage({
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{resume.is_base ? "Base Resume" : "Tailored Resume"}</span>
+              </div>
+              {resumeIsEmpty && (
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400/80">· Sample preview</span>
+              )}
             </div>
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight">{resume.title}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white font-display tracking-tight leading-tight">{resume.title}</h1>
           </div>
-        </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 ml-4 pl-4 border-l border-zinc-200 dark:border-white/[0.06] max-sm:ml-[52px] max-sm:pl-0 max-sm:border-l-0">
           {/* Collapse Editor Toggle */}
           <button
             onClick={() => setIsEditorCollapsed(!isEditorCollapsed)}
             className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
             title={isEditorCollapsed ? "Open Editor" : "Collapse Editor"}
           >
-            {isEditorCollapsed ? <Sidebar className="w-5 h-5" /> : <Sidebar className="w-5 h-5" />}
+            <SidebarSimple className="w-5 h-5" weight={isEditorCollapsed ? "fill" : "regular"} />
           </button>
 
-          {/* Collapse Sidebar Toggle */}
-          {showPreview && (
-            <button
-              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-all"
-              title={isSidebarCollapsed ? "Open Intelligence Sidebar" : "Collapse Intelligence Sidebar"}
-            >
-              {isSidebarCollapsed ? (
-                <Sidebar className="w-5 h-5 rotate-180" />
-              ) : (
-                <Sidebar className="w-5 h-5 rotate-180" />
-              )}
-            </button>
-          )}
-
-          <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1 gap-1 mr-2">
+          <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1 gap-1">
             <button
               onClick={() => undo(id)}
               disabled={!canUndo}
               className={cn(
                 "p-2 rounded-lg transition-all",
-                canUndo ? "text-zinc-300 hover:bg-zinc-100 dark:bg-white/5" : "text-zinc-400 dark:text-zinc-700 cursor-not-allowed"
+                canUndo ? "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10" : "text-zinc-300 dark:text-zinc-700 cursor-not-allowed"
               )}
               title="Undo"
             >
@@ -352,14 +451,17 @@ export default function ResumeEditorPage({
               disabled={!canRedo}
               className={cn(
                 "p-2 rounded-lg transition-all",
-                canRedo ? "text-zinc-300 hover:bg-zinc-100 dark:bg-white/5" : "text-zinc-400 dark:text-zinc-700 cursor-not-allowed"
+                canRedo ? "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10" : "text-zinc-300 dark:text-zinc-700 cursor-not-allowed"
               )}
               title="Redo"
             >
               <ArrowClockwise className="w-4 h-4" />
             </button>
           </div>
+          </div>
+        </div>
 
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1">
             <button
               onClick={() => setEditorMode("form")}
@@ -371,7 +473,7 @@ export default function ResumeEditorPage({
               )}
             >
               <TextT className="w-3.5 h-3.5" />
-              Form View
+              Form
             </button>
             <button
               onClick={() => setEditorMode("richtext")}
@@ -383,7 +485,7 @@ export default function ResumeEditorPage({
               )}
             >
               <PenNib className="w-3.5 h-3.5" />
-              Visual Editor
+              Rich Summary
             </button>
           </div>
 
@@ -426,24 +528,24 @@ export default function ResumeEditorPage({
       {/* Main Content — editor + preview */}
       <div
         className={cn(
-          "grid gap-8 transition-all duration-500 ease-in-out px-2",
-          isEditorCollapsed ? "grid-cols-1" : (showPreview ? "lg:grid-cols-[450px_1fr]" : "grid-cols-1 max-w-5xl mx-auto")
+          "grid gap-5 transition-all duration-500 ease-in-out",
+          isEditorCollapsed ? "grid-cols-1" : (showPreview ? "lg:grid-cols-[450px_minmax(0,1fr)]" : "grid-cols-1 max-w-5xl mx-auto")
         )}
       >
         {/* Left: Editor (now fixed width when split) */}
         {!isEditorCollapsed && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* AI Tailoring Callout */}
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="liquid-glass rounded-3xl p-6 border border-purple-500/20 group relative overflow-hidden"
+              className="liquid-glass rounded-2xl p-3.5 border border-purple-500/20 group relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-3xl rounded-full" />
               <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                    <Sparkle className="w-6 h-6 text-purple-400" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                    <Sparkle className="w-5 h-5 text-purple-400" />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-widest">AI Tailoring</h3>
@@ -459,10 +561,23 @@ export default function ResumeEditorPage({
               </div>
             </motion.div>
 
+            {/* Intelligence Panels — grouped with AI Tailoring */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <ATSCheckerPanel resumeData={data} />
+              <ThemePicker
+                theme={resume.theme}
+                onChange={(updates) => {
+                  saveToHistory(id);
+                  updateResume(id, { theme: { ...resume.theme, ...updates } as ResumeTheme });
+                }}
+                preview={<ResumePreview data={previewData ?? effectiveData} template={selectedTemplate} themeColor={themeColor} sectionOrder={sectionOrder as SectionKey[]} sectionVisibility={resume.section_visibility?.[selectedTemplate]} />}
+              />
+            </div>
+
             {/* Template Picker */}
-            <div className="flex items-center gap-3 pb-4">
-              <Browser className="w-5 h-5 text-zinc-600 flex-shrink-0" />
-              <div className="relative w-full max-w-xs">
+            <div className="flex items-center gap-2">
+              <Browser className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+              <div className="relative w-full max-w-[200px]">
                 <select
                   value={selectedTemplate}
                   onChange={(e) => {
@@ -470,7 +585,7 @@ export default function ResumeEditorPage({
                     setSelectedTemplate(e.target.value);
                     updateResume(id, { template: e.target.value });
                   }}
-                  className="w-full appearance-none bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-white/[0.05] text-zinc-900 dark:text-white px-4 py-3 rounded-xl text-sm font-semibold cursor-pointer focus:outline-none focus:border-brand-500/50 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all"
+                  className="w-full appearance-none bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-white/[0.05] text-zinc-900 dark:text-white px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider cursor-pointer focus:outline-none focus:border-brand-500/50 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all truncate"
                 >
                   {TEMPLATE_CONFIGS.map((tmpl) => (
                     <option key={tmpl.id} value={tmpl.id}>
@@ -478,64 +593,106 @@ export default function ResumeEditorPage({
                     </option>
                   ))}
                 </select>
-                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-zinc-500">
-                  <CaretDown className="w-4 h-4" />
+                <div className="absolute inset-y-0 right-2.5 flex items-center pointer-events-none text-zinc-500">
+                  <CaretDown className="w-3.5 h-3.5" />
                 </div>
               </div>
             </div>
 
             {editorMode === "richtext" ? (
               <RichTextEditor
-                content={resumeHtml}
+                content={data.summary ? `<p>${data.summary}</p>` : "<p></p>"}
                 onChange={(html) => {
-                  // Extract plain text summary from the first paragraph after the "Professional Summary" heading
-                  const summaryMatch = html.match(/Professional Summary<\/h\d>\s*<p>([\s\S]*?)<\/p>/i);
-                  if (summaryMatch && summaryMatch[1]) {
-                    const plainText = summaryMatch[1].replace(/<[^>]*>/g, '').trim();
-                    if (plainText !== (data.summary || '')) {
-                      updateResume(id, { data: { ...data, summary: plainText } });
-                    }
+                  const plainText = html.replace(/<[^>]*>/g, "").trim();
+                  if (plainText !== (data.summary || "")) {
+                    updateResume(id, { data: { ...data, summary: plainText } });
                   }
                 }}
               />
             ) : (
               <>
-                <div className="flex flex-wrap gap-1.5 bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] rounded-2xl p-1.5">
-                  {SECTIONS.map((section) => {
-                    const isVisible = (resume.section_visibility?.[selectedTemplate]?.[section.key as SectionKey]) ?? true;
-                    return (
-                      <div key={section.key} className="flex items-center gap-1 mb-1">
-                        <button
-                          onClick={() => setActiveSection(section.key)}
-                          className={cn(
-                            "flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap",
-                            activeSection === section.key
-                              ? "bg-zinc-100 dark:bg-white/[0.05] text-zinc-900 dark:text-white shadow-lg shadow-black/20"
-                              : "text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300",
-                            !isVisible && "opacity-40 grayscale"
-                          )}
-                        >
-                          <section.icon className="w-3.5 h-3.5" />
-                          {section.label}
-                        </button>
-                        <div className="flex flex-col gap-0.5">
-                          <button onClick={() => moveSection(id, section.key as SectionKey, "up")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
-                            <CaretUp className="w-3 h-3" />
-                          </button>
-                          <button onClick={() => moveSection(id, section.key as SectionKey, "down")} className="p-0.5 hover:bg-zinc-200 dark:hover:bg-white/5 rounded text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-300">
-                            <CaretDown className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSectionDragEnd}>
+                  <SortableContext items={tabItems} strategy={rectSortingStrategy}>
+                    <div className="flex flex-wrap gap-1 bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1">
+                      {tabItems.map((tabId) => {
+                        const meta = metaFor(tabId);
+                        const isVisible = (resume.section_visibility?.[selectedTemplate]?.[tabId as SectionKey]) ?? true;
+                        const isPersonal = tabId === "personal";
+                        return (
+                          <SortableSectionTab
+                            key={tabId}
+                            tabId={tabId}
+                            label={meta.label}
+                            Icon={meta.icon}
+                            isActive={activeSection === tabId}
+                            isVisible={isVisible}
+                            canToggle={!isPersonal}
+                            disabled={isPersonal}
+                            onClick={() => setActiveSection(tabId)}
+                            onToggleVisibility={() => toggleVisibility(id, selectedTemplate, tabId as SectionKey)}
+                          />
+                        );
+                      })}
+                    </div>
+                  </SortableContext>
+                </DndContext>
 
-                <div className="liquid-glass rounded-[32px] p-6 animate-fade-in min-h-[500px]">
+                <div className="liquid-glass rounded-2xl p-5 animate-fade-in min-h-[500px]">
                   {/* Personal Info */}
                   {activeSection === "personal" && (
                     <div className="space-y-6">
                       <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Personal Details</h2>
+
+                      {/* Headshot — used by photo-based templates (Premium Headshot, Photo Header, etc.) */}
+                      <div className="flex items-center gap-4">
+                        <div className="relative w-20 h-20 rounded-full overflow-hidden bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.08] flex-shrink-0">
+                          {data.personal?.photo_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element -- data URLs cannot be optimized by next/image
+                            <img src={data.personal.photo_url} alt="Headshot" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                              <User className="w-7 h-7" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Headshot <span className="text-zinc-400 normal-case font-medium">· used by photo templates</span></p>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.08] text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 cursor-pointer transition-all">
+                              <Camera className="w-3.5 h-3.5" />
+                              Upload
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  if (file.size > 2 * 1024 * 1024) {
+                                    toast.error("Image must be under 2MB");
+                                    return;
+                                  }
+                                  const reader = new FileReader();
+                                  reader.onload = () => {
+                                    saveToHistory(id);
+                                    updateField("personal", "photo_url", String(reader.result || ""));
+                                  };
+                                  reader.readAsDataURL(file);
+                                }}
+                              />
+                            </label>
+                            {data.personal?.photo_url && (
+                              <button
+                                onClick={() => { saveToHistory(id); updateField("personal", "photo_url", ""); }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-red-500 transition-all"
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="space-y-4">
                         {[
                           { label: "Full Name", field: "name", value: data.personal?.name || "" },
@@ -593,15 +750,10 @@ export default function ResumeEditorPage({
                       </div>
                       <div className="space-y-4">
                         {(data.experience || []).map((exp, index) => (
-                          <div key={`exp-${exp.company}-${exp.title}-${exp.start_date}-${index}`} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
+                          <div key={`exp-${index}`} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
                             <button
-                              onClick={() => {
-                                saveToHistory(id);
-                                const newExps = [...(data.experience || [])];
-                                newExps.splice(index, 1);
-                                updateResume(id, { data: { ...data, experience: newExps } });
-                              }}
-                              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-all"
+                              onClick={() => setConfirmDelete({ type: "experience", index })}
+                              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-70 group-hover/item:opacity-100 transition-all"
                             >
                               <Trash className="w-4 h-4" />
                             </button>
@@ -641,7 +793,7 @@ export default function ResumeEditorPage({
                               <div className="pt-2">
                                 <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-1 mb-2">Bullet Points</label>
                                 {(exp.bullets || [""]).map((bullet, bi) => (
-                                  <div key={`bullet-${index}-${bi}-${bullet.slice(0,20)}`} className="flex items-start gap-2 mb-2 group/bullet">
+                                  <div key={`bullet-${index}-${bi}`} className="flex items-start gap-2 mb-2 group/bullet">
                                     <div className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600 mt-2 flex-shrink-0" />
                                     <textarea
                                       value={bullet}
@@ -665,8 +817,9 @@ export default function ResumeEditorPage({
                                         newBullets.splice(bi, 1);
                                         newExps[index] = { ...newExps[index], bullets: newBullets };
                                         updateResume(id, { data: { ...data, experience: newExps } });
+                                        toast("Bullet removed", { action: { label: "Undo", onClick: () => undo(id) } });
                                       }}
-                                      className="mt-2 p-1 text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover/bullet:opacity-100"
+                                      className="mt-2 p-1 text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-70 group-hover/bullet:opacity-100"
                                     >
                                       <X className="w-3.5 h-3.5" />
                                     </button>
@@ -710,15 +863,10 @@ export default function ResumeEditorPage({
 
                       <div className="space-y-4">
                         {(data.education || []).map((edu, index) => (
-                          <div key={`edu-${edu.institution}-${edu.degree}-${index}`} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
+                          <div key={`edu-${index}`} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
                             <button
-                              onClick={() => {
-                                saveToHistory(id);
-                                const newEdus = [...(data.education || [])];
-                                newEdus.splice(index, 1);
-                                updateResume(id, { data: { ...data, education: newEdus } });
-                              }}
-                              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-all"
+                              onClick={() => setConfirmDelete({ type: "education", index })}
+                              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 opacity-70 group-hover/item:opacity-100 transition-all"
                             >
                               <Trash className="w-4 h-4" />
                             </button>
@@ -768,7 +916,7 @@ export default function ResumeEditorPage({
                       <div className="flex flex-wrap gap-2">
                         {(data.skills || []).map((skill, index) => (
                           <div
-                            key={typeof skill === 'string' ? `skill-${index}-${skill}` : skill.id}
+                            key={`skill-${index}`}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.05] text-xs font-bold text-zinc-700 dark:text-zinc-300 group transition-all"
                           >
                             <span>{typeof skill === 'string' ? skill : skill.name}</span>
@@ -778,8 +926,9 @@ export default function ResumeEditorPage({
                                 const newSkills = [...(data.skills || [])];
                                 newSkills.splice(index, 1);
                                 updateResume(id, { data: { ...data, skills: newSkills } });
+                                toast("Skill removed", { action: { label: "Undo", onClick: () => undo(id) } });
                               }}
-                              className="text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 -mr-1"
+                              className="text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-70 group-hover:opacity-100 -mr-1"
                             >
                               <X className="w-3.5 h-3.5" />
                             </button>
@@ -816,6 +965,123 @@ export default function ResumeEditorPage({
                       </div>
                     </div>
                   )}
+                  {/* Languages */}
+                  {activeSection === "languages" && (
+                    <div className="space-y-6">
+                      <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Languages</h2>
+                      <div className="flex flex-wrap gap-2">
+                        {(data.languages || []).map((lang, index) => (
+                          <div key={`lang-${index}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.05] text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                            <span>{lang}</span>
+                            <button
+                              onClick={() => { saveToHistory(id); const next = [...(data.languages || [])]; next.splice(index, 1); updateResume(id, { data: { ...data, languages: next } }); toast("Language removed", { action: { label: "Undo", onClick: () => undo(id) } }); }}
+                              className="text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-70"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Type a language and press enter..."
+                        onKeyDown={(e) => { if (e.key === "Enter" && (e.target as HTMLInputElement).value.trim()) { saveToHistory(id); const val = (e.target as HTMLInputElement).value.trim(); updateResume(id, { data: { ...data, languages: [...(data.languages || []), val] } }); (e.target as HTMLInputElement).value = ""; } }}
+                        className="w-full px-4 py-3 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 transition-all font-sans placeholder:text-zinc-400"
+                      />
+                    </div>
+                  )}
+
+                  {/* Certifications */}
+                  {activeSection === "certifications" && (
+                    <div className="space-y-6">
+                      <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Certifications</h2>
+                      <div className="flex flex-wrap gap-2">
+                        {(data.certifications || []).map((cert, index) => (
+                          <div key={`cert-${index}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-white/[0.05] border border-zinc-200 dark:border-white/[0.05] text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                            <span>{cert}</span>
+                            <button
+                              onClick={() => { saveToHistory(id); const next = [...(data.certifications || [])]; next.splice(index, 1); updateResume(id, { data: { ...data, certifications: next } }); toast("Certification removed", { action: { label: "Undo", onClick: () => undo(id) } }); }}
+                              className="text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-colors opacity-70"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Type a certification and press enter..."
+                        onKeyDown={(e) => { if (e.key === "Enter" && (e.target as HTMLInputElement).value.trim()) { saveToHistory(id); const val = (e.target as HTMLInputElement).value.trim(); updateResume(id, { data: { ...data, certifications: [...(data.certifications || []), val] } }); (e.target as HTMLInputElement).value = ""; } }}
+                        className="w-full px-4 py-3 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 transition-all font-sans placeholder:text-zinc-400"
+                      />
+                    </div>
+                  )}
+
+                  {/* Projects */}
+                  {activeSection === "projects" && (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Projects</h2>
+                        <button
+                          onClick={() => { saveToHistory(id); const newProj: ProjectEntry = { name: "", description: "" }; updateResume(id, { data: { ...data, projects: [...(data.projects || []), newProj] } }); }}
+                          className="p-2 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-all"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="space-y-4">
+                        {(data.projects || []).map((proj, index) => (
+                          <div key={`proj-${index}`} className="p-4 sm:p-6 rounded-[24px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
+                            <button
+                              onClick={() => { saveToHistory(id); const next = [...(data.projects || [])]; next.splice(index, 1); updateResume(id, { data: { ...data, projects: next } }); toast("Project removed", { action: { label: "Undo", onClick: () => undo(id) } }); }}
+                              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-all opacity-70 group-hover/item:opacity-100"
+                            >
+                              <Trash className="w-4 h-4" />
+                            </button>
+                            <div className="space-y-4 pr-8">
+                              <input type="text" value={proj.name} onBlur={() => saveToHistory(id)} onChange={(e) => { const next = [...(data.projects || [])]; next[index] = { ...next[index], name: e.target.value }; updateResume(id, { data: { ...data, projects: next } }); }} placeholder="Project Name" className="w-full bg-transparent border-none p-0 text-base font-bold text-zinc-900 dark:text-white focus:ring-0 placeholder:text-zinc-400" />
+                              <textarea value={proj.description} onBlur={() => saveToHistory(id)} onChange={(e) => { const next = [...(data.projects || [])]; next[index] = { ...next[index], description: e.target.value }; updateResume(id, { data: { ...data, projects: next } }); }} placeholder="Short description..." rows={2} className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 transition-all resize-none font-sans placeholder:text-zinc-400" />
+                              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-200 dark:border-white/[0.05]">
+                                <input type="text" value={proj.url || ""} onBlur={() => saveToHistory(id)} onChange={(e) => { const next = [...(data.projects || [])]; next[index] = { ...next[index], url: e.target.value }; updateResume(id, { data: { ...data, projects: next } }); }} placeholder="URL (optional)" className="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 transition-all font-sans placeholder:text-zinc-400" />
+                                <input type="text" value={(proj.tech || []).join(", ")} onBlur={() => saveToHistory(id)} onChange={(e) => { const next = [...(data.projects || [])]; next[index] = { ...next[index], tech: e.target.value.split(",").map((t) => t.trim()).filter(Boolean) }; updateResume(id, { data: { ...data, projects: next } }); }} placeholder="Tech (comma separated)" className="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 transition-all font-sans placeholder:text-zinc-400" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Technical Skills */}
+                  {activeSection === "technicalSkills" && (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-sm font-bold font-display text-zinc-900 dark:text-white uppercase tracking-widest">Technical Skills</h2>
+                        <button
+                          onClick={() => { saveToHistory(id); const newCat: TechnicalSkillCategory = { id: `ts-${Date.now()}`, category: "", skills: "" }; updateResume(id, { data: { ...data, technicalSkills: [...(data.technicalSkills || []), newCat] } }); }}
+                          className="p-2 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-all"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="space-y-3">
+                        {(data.technicalSkills || []).map((cat, index) => (
+                          <div key={cat.id || `ts-${index}`} className="p-4 rounded-2xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/[0.05] group/item relative">
+                            <button
+                              onClick={() => { saveToHistory(id); const next = [...(data.technicalSkills || [])]; next.splice(index, 1); updateResume(id, { data: { ...data, technicalSkills: next } }); toast("Category removed", { action: { label: "Undo", onClick: () => undo(id) } }); }}
+                              className="absolute top-3 right-3 p-1.5 rounded-lg text-zinc-700 dark:text-zinc-400 hover:text-red-500 transition-all opacity-70 group-hover/item:opacity-100"
+                            >
+                              <Trash className="w-4 h-4" />
+                            </button>
+                            <div className="grid grid-cols-[1fr_2fr] gap-3 pr-8">
+                              <input type="text" value={cat.category} onBlur={() => saveToHistory(id)} onChange={(e) => { const next = [...(data.technicalSkills || [])]; next[index] = { ...next[index], category: e.target.value }; updateResume(id, { data: { ...data, technicalSkills: next } }); }} placeholder="Category" className="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm font-bold text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 transition-all font-sans placeholder:text-zinc-400" />
+                              <input type="text" value={cat.skills} onBlur={() => saveToHistory(id)} onChange={(e) => { const next = [...(data.technicalSkills || [])]; next[index] = { ...next[index], skills: e.target.value }; updateResume(id, { data: { ...data, technicalSkills: next } }); }} placeholder="Skills (comma separated)" className="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-brand-500/40 transition-all font-sans placeholder:text-zinc-400" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -824,33 +1090,18 @@ export default function ResumeEditorPage({
 
         {/* Right: Preview (Larger focus) */}
         {showPreview && (
-          <div className="flex-1 space-y-6">
-            <div className="flex items-center justify-between px-2">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
-                <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Real-time Visualization</h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => setIsFullscreenPreview(true)}
-                  className="p-2 rounded-lg bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:bg-white/10 dark:hover:text-white transition-all group"
-                  title="Fullscreen Preview"
-                >
-                  <ArrowsOut className="w-4 h-4 group-hover:scale-110" />
-                </button>
-              </div>
-            </div>
-            
-            <div
-              className={cn(
-                "grid gap-8 items-start transition-all duration-500",
-                isSidebarCollapsed ? "grid-cols-1" : "lg:grid-cols-[1fr_320px]"
-              )}
-            >
-              <div className="bg-zinc-50 dark:bg-zinc-900/30 rounded-[40px] p-4 sm:p-8 lg:p-12 border border-zinc-200 dark:border-white/[0.03] shadow-inner overflow-hidden min-h-[800px] flex justify-center">
+          <div className="flex-1 min-w-0">
+            <div className="relative bg-zinc-50 dark:bg-zinc-900/30 rounded-2xl p-3 sm:p-5 border border-zinc-200 dark:border-white/[0.03] shadow-inner overflow-hidden min-h-[600px] flex justify-center">
+              <button
+                onClick={() => setIsFullscreenPreview(true)}
+                className="absolute top-3 right-3 z-10 p-2 rounded-lg bg-white/80 dark:bg-zinc-900/80 backdrop-blur border border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all group"
+                title="Fullscreen Preview"
+              >
+                <ArrowsOut className="w-4 h-4 group-hover:scale-110" />
+              </button>
                 <AutoScaledPreview>
                   <ResumePreview
-                    data={data}
+                    data={previewData ?? effectiveData}
                     template={selectedTemplate}
                     themeColor={themeColor}
                     sectionOrder={sectionOrder as SectionKey[]}
@@ -861,28 +1112,74 @@ export default function ResumeEditorPage({
                 </AutoScaledPreview>
               </div>
 
-              {/* Intelligence Panels Sidebar */}
-              {!isSidebarCollapsed && (
-                <div className="space-y-6 animate-slide-up">
-                  <ATSCheckerPanel resumeData={data} />
-                  <ThemePicker
-                    theme={resume.theme}
-                    onChange={(updates) => {
-                      saveToHistory(id);
-                      updateResume(id, { theme: { ...resume.theme, ...updates } as ResumeTheme });
-                    }}
-                  />
-                </div>
-              )}
-            </div>
           </div>
         )}
       </div>
 
       {/* Tailor Modal */}
+      {/* Print-only full-scale preview for faithful PDF export */}
+      <div className="print-resume hidden print:block">
+        <ResumePreview
+          data={effectiveData}
+          template={selectedTemplate}
+          themeColor={themeColor}
+          sectionOrder={sectionOrder as SectionKey[]}
+          sectionVisibility={resume.section_visibility?.[selectedTemplate]}
+          fullScale
+        />
+      </div>
+
+      {/* Delete confirmation */}
+      {confirmDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4"
+          onClick={() => setConfirmDelete(null)}
+        >
+          <div
+            className="bg-surface-50 border border-white/[0.08] rounded-[32px] w-full max-w-sm p-8 shadow-2xl animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-2">Delete this entry?</h3>
+            <p className="text-sm text-zinc-500 mb-6">This can be undone with the undo button.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 py-3 rounded-xl text-sm font-bold text-zinc-500 bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/5 hover:bg-zinc-200 dark:hover:bg-white/10 transition-all uppercase tracking-widest"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  saveToHistory(id);
+                  if (confirmDelete.type === "experience") {
+                    const next = [...(data.experience || [])];
+                    next.splice(confirmDelete.index, 1);
+                    updateResume(id, { data: { ...data, experience: next } });
+                  } else {
+                    const next = [...(data.education || [])];
+                    next.splice(confirmDelete.index, 1);
+                    updateResume(id, { data: { ...data, education: next } });
+                  }
+                  setConfirmDelete(null);
+                }}
+                className="flex-1 py-3 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 transition-all uppercase tracking-widest"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showTailorDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-surface-50 border border-white/[0.08] rounded-[32px] w-full max-w-2xl mx-4 p-8 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in"
+          onClick={() => { setShowTailorDialog(false); setDraftResult(null); }}
+        >
+          <div
+            className="bg-surface-50 border border-white/[0.08] rounded-[32px] w-full max-w-2xl mx-4 p-8 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
@@ -931,6 +1228,30 @@ export default function ResumeEditorPage({
                   <div className="space-y-2">
                     <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">New Summary</h4>
                     <div className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-zinc-300 leading-relaxed font-sans">{draftResult.summary}</div>
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">Experience Changes</h4>
+                    <div className="space-y-3">
+                      {draftResult.experience.map((exp, i) => {
+                        const old = data.experience?.[i];
+                        return (
+                          <div key={i} className="grid grid-cols-2 gap-3">
+                            <div className="p-3 rounded-xl bg-red-500/5 border border-red-500/10">
+                              <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1 truncate">{old?.title || old?.company || `Entry ${i + 1}`} · Before</p>
+                              <ul className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-relaxed list-disc pl-4 space-y-0.5">
+                                {(old?.bullets || []).map((b, bi) => <li key={bi}>{b.replace(/<[^>]*>/g, "")}</li>)}
+                              </ul>
+                            </div>
+                            <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+                              <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1 truncate">{exp.title || exp.company || `Entry ${i + 1}`} · After</p>
+                              <ul className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-relaxed list-disc pl-4 space-y-0.5">
+                                {(exp.bullets || []).map((b, bi) => <li key={bi}>{b.replace(/<[^>]*>/g, "")}</li>)}
+                              </ul>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">Tailoring Notes</h4>

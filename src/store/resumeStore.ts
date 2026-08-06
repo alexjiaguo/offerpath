@@ -16,6 +16,8 @@ export interface HistorySnapshot {
   data: ResumeData;
   template: string;
   theme: ResumeTheme;
+  section_order: SectionKey[];
+  section_visibility: Record<string, Record<SectionKey, boolean>>;
 }
 
 export interface ResumeState {
@@ -82,6 +84,7 @@ const DEFAULT_SECTION_ORDER: SectionKey[] = [
 ];
 
 // ── Mock Resumes ────────────────────────────────────
+
 
 const MOCK_RESUMES: Resume[] = [
   {
@@ -355,6 +358,10 @@ function computeATSScore(resumeId: string, jobId: string): number {
   return 45 + (seed % 44);
 }
 
+// Placeholder content shown in the live preview when a resume is still empty,
+// so users can compare templates before entering their own data.
+export const PLACEHOLDER_RESUME_DATA: ResumeData = MOCK_RESUMES[0].data;
+
 // ── Store ───────────────────────────────────────────
 
 export const useResumeStore = create<ResumeState>()(
@@ -381,6 +388,8 @@ export const useResumeStore = create<ResumeState>()(
       data: JSON.parse(JSON.stringify(resume.data)),
       template: resume.template,
       theme: { ...resume.theme },
+      section_order: resume.section_order ? [...resume.section_order] : [],
+      section_visibility: JSON.parse(JSON.stringify(resume.section_visibility)),
     };
 
     set((state) => ({
@@ -406,6 +415,8 @@ export const useResumeStore = create<ResumeState>()(
       data: JSON.parse(JSON.stringify(resume.data)),
       template: resume.template,
       theme: { ...resume.theme },
+      section_order: resume.section_order ? [...resume.section_order] : [],
+      section_visibility: JSON.parse(JSON.stringify(resume.section_visibility)),
     };
 
     const previous = past[past.length - 1];
@@ -436,6 +447,8 @@ export const useResumeStore = create<ResumeState>()(
       data: JSON.parse(JSON.stringify(resume.data)),
       template: resume.template,
       theme: { ...resume.theme },
+      section_order: resume.section_order ? [...resume.section_order] : [],
+      section_visibility: JSON.parse(JSON.stringify(resume.section_visibility)),
     };
 
     const next = future[0];
@@ -518,14 +531,15 @@ export const useResumeStore = create<ResumeState>()(
     const resume = get().resumes.find((r) => r.id === id);
     if (!resume) return;
 
-    get().saveToHistory(id);
-
     const order = [...(resume.section_order || DEFAULT_SECTION_ORDER)];
     const idx = order.indexOf(sectionKey);
     if (idx < 0) return;
 
     const swapIdx = direction === "up" ? idx - 1 : idx + 1;
     if (swapIdx < 0 || swapIdx >= order.length) return;
+
+    // Save history only for an actual change; no-op clicks must not pollute undo.
+    get().saveToHistory(id);
 
     [order[idx], order[swapIdx]] = [order[swapIdx], order[idx]];
 

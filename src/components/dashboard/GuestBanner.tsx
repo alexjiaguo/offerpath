@@ -38,9 +38,9 @@ export default function GuestBanner() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-brand-50 border border-brand-200/40 text-xs text-brand-700 shadow-sm"
+          className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-brand-50 border border-brand-200/40 text-[11px] text-brand-700 shadow-sm"
         >
-          <Sparkle weight="fill" className="w-4 h-4 text-brand-500 flex-shrink-0" />
+          <Sparkle weight="fill" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0" />
           <span className="flex-1">
             You&apos;re exploring OfferPath as a guest.{" "}
             <Link

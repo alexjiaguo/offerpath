@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowsClockwise, Check, File, FileText } from '@phosphor-icons/react';
+import { ArrowsClockwise, CaretDown, Check, DownloadSimple, File, FileText } from '@phosphor-icons/react';
 import type { ResumeData } from "@/types";
 
 /* ═══════════════════════════════════════════════════
@@ -24,58 +24,19 @@ export default function ExportButtons({
   const [exportError, setExportError] = useState<string | null>(null);
 
   const handlePdfExport = async () => {
+    // Print-to-PDF: the @media print rules in globals.css isolate the full-scale
+    // .print-resume preview so the browser produces a faithful A4 PDF of just the
+    // resume. No CDN script, no server round-trip, works offline.
     setExportingPdf(true);
     setExportError(null);
     try {
-      // Find the element to export
-      const element = document.getElementById("resume-preview-content");
-      if (!element) throw new Error("Preview element not found");
-      
-      // We'll wrap the inner HTML with the necessary styling to preserve the look
-      // Since it uses Tailwind classes, we'll need to fetch the compiled CSS or approximate it
-      // For a robust implementation, passing the HTML is required.
-      const html = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="UTF-8">
-            <script src="https://cdn.tailwindcss.com"></script>
-            <style>
-              body { margin: 0; padding: 0; background: white; }
-              @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
-            </style>
-          </head>
-          <body>
-            ${element.outerHTML}
-          </body>
-        </html>
-      `;
-
-      const response = await fetch("/api/resume/export", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ html, title: resumeTitle }),
-      });
-
-      if (!response.ok) {
-        throw new Error("PDF generation failed");
-      }
-
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `${resumeTitle || "resume"}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
+      window.print();
       setExportedPdf(true);
       setTimeout(() => setExportedPdf(false), 2000);
     } catch (err) {
       console.error("PDF export failed:", err);
-      // Fallback to client-side print
-      window.print();
+      setExportError("Print failed. Please try again.");
+      setTimeout(() => setExportError(null), 4000);
     } finally {
       setExportingPdf(false);
     }
@@ -98,47 +59,79 @@ export default function ExportButtons({
     }
   };
 
+  const [open, setOpen] = useState(false);
+  const busy = exportingPdf || exportingDocx;
+
+  const items = [
+    {
+      key: "pdf",
+      label: "PDF",
+      hint: "Print-ready A4",
+      icon: FileText,
+      loading: exportingPdf,
+      done: exportedPdf,
+      action: handlePdfExport,
+    },
+    {
+      key: "docx",
+      label: "Word (.docx)",
+      hint: "Editable document",
+      icon: File,
+      loading: exportingDocx,
+      done: exportedDocx,
+      action: handleDocxExport,
+    },
+  ];
+
   return (
-    <div className="flex items-center gap-2">
-      {/* PDF Export */}
+    <div className="relative">
       <button
-        onClick={handlePdfExport}
-        disabled={exportingPdf}
+        onClick={() => setOpen((v) => !v)}
+        disabled={busy}
+        aria-haspopup="menu"
+        aria-expanded={open}
         className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface-200 text-surface-400 font-semibold text-sm hover:text-brand-600 hover:bg-surface-100 transition-all disabled:opacity-50"
-        title="Export as PDF"
+        title="Download resume"
       >
-        {exportingPdf ? (
+        {busy ? (
           <ArrowsClockwise className="w-4 h-4 animate-spin text-surface-400" />
-        ) : exportedPdf ? (
-          <Check className="w-4 h-4 text-emerald-500" />
         ) : (
-          <FileText className="w-4 h-4 text-surface-400" />
+          <DownloadSimple className="w-4 h-4 text-surface-400" />
         )}
-        <span className="hidden sm:inline">
-          {exportedPdf ? "Downloaded!" : "Download PDF"}
-        </span>
+        <span className="hidden sm:inline">Download</span>
+        <CaretDown className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
-      {/* DOCX Export */}
-      <button
-        onClick={handleDocxExport}
-        disabled={exportingDocx}
-        className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface-200 text-surface-400 font-semibold text-sm hover:text-brand-600 hover:bg-surface-100 transition-all disabled:opacity-50"
-        title="Export as DOCX"
-      >
-        {exportingDocx ? (
-          <ArrowsClockwise className="w-4 h-4 animate-spin text-surface-400" />
-        ) : exportedDocx ? (
-          <Check className="w-4 h-4 text-emerald-500" />
-        ) : (
-          <File className="w-4 h-4 text-surface-400" />
-        )}
-        <span className="hidden sm:inline">
-          {exportedDocx ? "Downloaded!" : "Download Word"}
-        </span>
-      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div role="menu" className="absolute right-0 top-full mt-1.5 z-50 w-52 rounded-xl border border-zinc-200 dark:border-white/[0.08] bg-white dark:bg-zinc-900 shadow-xl p-1.5 animate-fade-in">
+            {items.map((item) => (
+              <button
+                key={item.key}
+                role="menuitem"
+                onClick={() => { setOpen(false); item.action(); }}
+                disabled={item.loading}
+                className="w-full flex items-center gap-3 px-2.5 py-2 rounded-lg text-left hover:bg-zinc-100 dark:hover:bg-white/5 transition-all disabled:opacity-50"
+              >
+                {item.loading ? (
+                  <ArrowsClockwise className="w-4 h-4 animate-spin text-surface-400" />
+                ) : item.done ? (
+                  <Check className="w-4 h-4 text-emerald-500" />
+                ) : (
+                  <item.icon className="w-4 h-4 text-surface-400" />
+                )}
+                <span className="flex-1">
+                  <span className="block text-sm font-semibold text-surface-400">{item.done ? "Downloaded!" : item.label}</span>
+                  <span className="block text-[11px] text-surface-300">{item.hint}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
       {exportError && (
-        <span className="text-xs text-red-500">{exportError}</span>
+        <span className="absolute right-0 top-full mt-1.5 text-xs text-red-500 whitespace-nowrap">{exportError}</span>
       )}
     </div>
   );

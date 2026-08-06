@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { CaretLeft, CaretRight, SignOut } from '@phosphor-icons/react';
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useUIStore } from "@/store/uiStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_ITEMS } from "@/lib/navConfig";
 import { signOut } from "@/lib/auth";
@@ -13,7 +13,8 @@ import { signOut } from "@/lib/auth";
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [collapsed, setCollapsed] = useState(false);
+  const collapsed = useUIStore((s) => s.sidebarCollapsed);
+  const toggleSidebar = useUIStore((s) => s.toggleSidebar);
 
   const handleSignOut = async () => {
     await signOut();
@@ -130,7 +131,7 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="p-3 border-t border-surface-200 relative z-10 space-y-1.5 bg-surface-0">
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={toggleSidebar}
           className="flex items-center justify-center w-full py-2 rounded-md border border-surface-200 bg-surface-0 text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all duration-150 group"
         >
           {collapsed ? (

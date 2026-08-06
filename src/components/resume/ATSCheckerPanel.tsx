@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowsClockwise, Target, CheckCircle, CaretDown, CaretUp, Warning, Sparkle, XCircle } from '@phosphor-icons/react';
+import React, { useState, useEffect } from "react";
+import { ArrowsClockwise, Target, CheckCircle, CaretRight, Warning, Sparkle, XCircle, X } from '@phosphor-icons/react';
 import type { ResumeData } from "@/types";
 import { cn } from "@/lib/utils";
 import { evaluateATS } from "@/lib/aiService";
@@ -23,7 +22,21 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
   const [result, setResult] = useState<ATSResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+
+  // ESC to close + lock body scroll while the modal is open.
+  useEffect(() => {
+    if (!showModal) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowModal(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [showModal]);
 
   const handleCheck = async () => {
     if (!jobDescription.trim()) {
@@ -58,29 +71,51 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
   };
 
   return (
-    <div className="liquid-glass rounded-3xl border border-zinc-200 dark:border-white/[0.05] overflow-hidden">
+    <>
+      {/* Slim card - always visible, opens the modal */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-5 hover:bg-zinc-100 dark:hover:bg-white/5 transition-all"
+        onClick={() => setShowModal(true)}
+        className="group w-full flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 dark:border-white/[0.05] bg-surface-0 dark:bg-white/[0.03] p-2.5 text-left transition-all hover:border-brand-500/30 hover:bg-zinc-100/60 dark:hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-            <Target className="w-4.5 h-4.5 text-brand-400" />
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-7 h-7 rounded-lg bg-brand-500/10 border border-brand-500/20 flex items-center justify-center flex-shrink-0">
+            <Target className="w-4 h-4 text-brand-400" />
           </div>
-          <span className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white">ATS Intelligence</span>
+          <div className="min-w-0">
+            <span className="block text-[11px] font-bold uppercase tracking-wide whitespace-nowrap text-zinc-900 dark:text-white">ATS Intelligence</span>
+            <span className="block text-[10px] text-zinc-500 mt-0.5 truncate">
+              {result ? `${result.score} · ${result.matchedKeywords.length} matched` : "Match resume against a target JD."}
+            </span>
+          </div>
         </div>
-        {isExpanded ? <CaretUp className="w-4 h-4 text-zinc-500" /> : <CaretDown className="w-4 h-4 text-zinc-500" />}
+        <CaretRight className="w-4 h-4 text-zinc-400 group-hover:text-brand-400 transition-colors flex-shrink-0" />
       </button>
 
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
+      {showModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[32px] border border-white/[0.08] bg-surface-50 shadow-2xl animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-5 pt-0 space-y-4">
+            <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-white/[0.05] sticky top-0 bg-surface-50 z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-brand-400" />
+                </div>
+                <h2 className="text-base font-bold text-zinc-900 dark:text-white uppercase tracking-widest">ATS Intelligence</h2>
+              </div>
+              <button
+                onClick={() => setShowModal(false)}
+                className="p-2 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
               {!result && (
                 <>
                   <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest leading-relaxed">
@@ -156,7 +191,7 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
-                        <CheckCircle className="w-3.5 h-3.5"  weight="fill" /> Matched
+                        <CheckCircle className="w-3.5 h-3.5" weight="fill" /> Matched
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {result.matchedKeywords.map((kw, i) => (
@@ -208,9 +243,9 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
                 </div>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

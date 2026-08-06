@@ -104,7 +104,6 @@ const FOOTER_LINKS = [
     title: "Resources",
     links: [
       { label: "Smart Feed", href: "#features" },
-      { label: "Templates", href: "#features" },
       { label: "Mock Sessions", href: "#features" },
       { label: "Pricing", href: "/register" },
     ],
@@ -140,7 +139,6 @@ const revealVariants = {
 const NAV_ITEMS = [
   { label: "Product", href: "#features" },
   { label: "How it works", href: "#how-it-works" },
-  { label: "Templates", href: "#features" },
   { label: "Stories", href: "#testimonials" },
 ];
 
@@ -313,25 +311,6 @@ export default function LandingPage() {
             <PasteDemo />
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] text-surface-300"
-          >
-            <span className="inline-flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-ember-500" />
-              BYOK, your model
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-ember-500" />
-              No data retention
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-ember-500" />
-              9 ATS-tested templates
-            </span>
-          </motion.div>
         </div>
       </section>
 

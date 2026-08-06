@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, Briefcase, CaretRight, Clock, Copy, FileText, MapPin, Plus, Star, Sparkle, UploadSimple } from '@phosphor-icons/react';
+import { ArrowLeft, Briefcase, CaretRight, Clock, Copy, FileText, MapPin, Plus, Star, Sparkle, Trash, UploadSimple } from '@phosphor-icons/react';
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
 import { useResumeStore } from "@/store/resumeStore";
 import { cn } from "@/lib/utils";
 import { ATSScoreInline } from "@/components/pipeline/ATSScoreBadge";
 import { TEMPLATE_CONFIGS } from "@/components/resume/templates/config";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { motion } from "framer-motion";
 
 /* ═══════════════════════════════════════════════════
@@ -38,7 +38,7 @@ function ResumePageContent() {
 
   const { getJobById: getPipelineJob } = usePipelineStore();
   const { getJobById: getDiscoveryJob } = useDiscoveryStore();
-  const { resumes, getATSScore, duplicateResume } = useResumeStore();
+  const { resumes, getATSScore, duplicateResume, deleteResume } = useResumeStore();
   const searchQuery = usePipelineStore((s) => s.filters.search);
 
   const filteredResumes = resumes.filter(
@@ -68,6 +68,15 @@ function ResumePageContent() {
     if (!tailorForJobId || !tailorJob) return;
     const newTitle = `Tailored — ${tailorJob.company?.name || ""} ${tailorJob.title}`.trim();
     duplicateResume(resumeId, newTitle);
+  };
+
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const targetResume = confirmDeleteId ? resumes.find((r) => r.id === confirmDeleteId) : null;
+  const handleConfirmDelete = () => {
+    if (confirmDeleteId) {
+      deleteResume(confirmDeleteId);
+      setConfirmDeleteId(null);
+    }
   };
 
   return (
@@ -210,6 +219,14 @@ function ResumePageContent() {
                         >
                           Preview
                         </Link>
+                        <button
+                          onClick={() => setConfirmDeleteId(resume.id)}
+                          className="p-2 rounded-md text-surface-300 hover:text-red-600 hover:bg-red-50 transition-all"
+                          title="Delete resume"
+                          aria-label="Delete resume"
+                        >
+                          <Trash weight="bold" className="w-4 h-4" />
+                        </button>
                       </>
                     )}
                   </div>
@@ -298,6 +315,44 @@ function ResumePageContent() {
           </div>
         </div>
       )}
+
+      {/* Delete confirmation */}
+      {confirmDeleteId && targetResume && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={() => setConfirmDeleteId(null)}
+        >
+          <div
+            className="card-editorial w-full max-w-sm p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-md bg-red-50 border border-red-200 flex items-center justify-center flex-shrink-0">
+                <Trash weight="bold" className="w-5 h-5 text-red-600" />
+              </div>
+              <h3 className="text-base font-display font-bold text-surface-400">Delete this resume?</h3>
+            </div>
+            <p className="text-xs text-surface-300 mb-5 leading-relaxed">
+              <span className="font-mono font-bold text-surface-400">&ldquo;{targetResume.title}&rdquo;</span> will be removed from your Career Asset Studio. This action cannot be undone.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="btn-editorial-secondary flex-1"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="flex-1 py-2.5 px-4 rounded-md text-sm font-bold uppercase tracking-wider bg-red-600 text-white hover:bg-red-700 transition-all"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

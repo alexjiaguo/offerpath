@@ -62,10 +62,7 @@ export function HowItWorks() {
               transition={{ duration: 0.6, delay: i * 0.1, ease: [0.32, 0.72, 0, 1] }}
               className="relative card-cream flex flex-col"
             >
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-[11px] font-mono font-semibold tracking-widest text-ember-700">
-                  STEP {s.number}
-                </span>
+              <div className="flex justify-end mb-6">
                 <div className="w-10 h-10 rounded-full bg-ember-50 border border-ember-100 flex items-center justify-center">
                   <s.icon weight="light" className="w-5 h-5 text-ember-600" />
                 </div>

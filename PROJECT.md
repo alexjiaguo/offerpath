@@ -33,11 +33,11 @@
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
 | 1 | M1: Foundation — Type Integrity & Design Tokens | Fix test mocks, tsconfig, and unify `globals.css` design tokens across main repo + 3 worktrees | None | DONE |
-| 2 | M2: Core Application UI Overhaul | Redesign main app layout, sidebar, topbar, dashboard, kanban, job detail, and resume tools | M1 | PLANNED |
-| 3 | M3: FlowCV Resume Studio Overhaul | Redesign `worktrees/resume-flowcv` UI, categories, FAQ, hints, and preview container | M1 | PLANNED |
-| 4 | M4: Resume.com Studio & Cover Letters | Redesign `worktrees/resume-resumecom` UI, Cover Letter Studio, samples loader, and status pills | M1 | PLANNED |
-| 5 | M5: Resume.io Studio & ScoreRing Gauge | Redesign `worktrees/resume-resumeio` UI, circular `ScoreRing`, bullet quality engine, and skills auto-suggest | M1 | PLANNED |
-| 6 | M6: QA & Minimalist Editorial Rubric Audit | Comprehensive build/test verification and independent Agent-as-Judge UI Rubric evaluation | M2, M3, M4, M5 | PLANNED |
+| 2 | M2: Core Application UI Overhaul | Redesign main app layout, sidebar, topbar, dashboard, kanban, job detail, and resume tools | M1 | DONE |
+| 3 | M3: FlowCV Resume Studio Overhaul | Redesign `worktrees/resume-flowcv` UI, categories, FAQ, hints, and preview container | M1 | DONE |
+| 4 | M4: Resume.com Studio & Cover Letters | Redesign `worktrees/resume-resumecom` UI, Cover Letter Studio, samples loader, and status pills | M1 | DONE |
+| 5 | M5: Resume.io Studio & ScoreRing Gauge | Redesign `worktrees/resume-resumeio` UI, circular `ScoreRing`, bullet quality engine, and skills auto-suggest | M1 | DONE |
+| 6 | M6: QA & Minimalist Editorial Rubric Audit | Comprehensive build/test verification and independent Agent-as-Judge UI Rubric evaluation | M2, M3, M4, M5 | DONE |
 
 ## Interface Contracts
 ### Main App ↔ Resume Studio Worktrees

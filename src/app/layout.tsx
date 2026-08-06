@@ -1,18 +1,27 @@
 import type { Metadata } from "next";
-import { Newsreader, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Playfair_Display, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const newsreader = Newsreader({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-newsreader",
-  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-jakarta",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+  weight: ["400", "500", "600"],
   style: ["normal", "italic"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains",
+  display: "swap",
   weight: ["400", "500", "600"],
 });
 
@@ -44,9 +53,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`scroll-smooth ${jakarta.variable} ${playfair.variable} ${jetbrainsMono.variable}`}>
       <head />
-      <body className={`${newsreader.variable} ${jetbrainsMono.variable} font-sans antialiased bg-surface-50 text-surface-400`}>
+      <body className="font-sans antialiased bg-surface-50 text-surface-400">
         {children}
         <Toaster
           position="top-right"
