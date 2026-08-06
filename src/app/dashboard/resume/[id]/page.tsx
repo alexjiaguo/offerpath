@@ -520,7 +520,7 @@ export default function ResumeEditorPage({
       {/* Main Content — editor + preview */}
       <div
         className={cn(
-          "grid gap-5 transition-all duration-500 ease-in-out",
+          "grid gap-1 transition-all duration-500 ease-in-out",
           isEditorCollapsed
             ? "grid-cols-1"
             : showPreview
@@ -1146,10 +1146,10 @@ export default function ResumeEditorPage({
               document.body.style.cursor = "col-resize";
               document.body.style.userSelect = "none";
             }}
-            className="hidden md:flex w-1.5 -mx-2.5 self-stretch items-center justify-center cursor-col-resize group"
+            className="flex w-3 -mx-2.5 self-stretch items-center justify-center cursor-col-resize group"
             title="Drag to resize"
           >
-            <div className="w-px h-full bg-zinc-200 dark:bg-white/[0.05] group-hover:bg-brand-500/60 transition-colors" />
+            <div className="w-1 h-full bg-zinc-200 dark:bg-white/[0.06] group-hover:bg-brand-500/60 transition-colors" />
           </div>
         )}
 
