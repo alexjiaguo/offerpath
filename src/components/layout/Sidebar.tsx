@@ -72,7 +72,8 @@ export default function Sidebar() {
                     <Link
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all duration-150 group relative overflow-hidden",
+                        "flex items-center gap-3 py-2 rounded-md text-xs font-medium transition-all duration-150 group relative overflow-hidden",
+                        collapsed ? "justify-center px-0" : "px-3",
                         isActive
                           ? "bg-surface-400 text-surface-0 font-semibold"
                           : "text-surface-400 hover:bg-surface-100 hover:text-surface-400"

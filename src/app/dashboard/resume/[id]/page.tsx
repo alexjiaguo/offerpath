@@ -202,6 +202,29 @@ export default function ResumeEditorPage({
   const [showPreview, setShowPreview] = useState(true);
   const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
   const [isEditorCollapsed, setIsEditorCollapsed] = useState(false);
+  // Editor column width in px; user can drag the resize handle to change it.
+  const [editorWidth, setEditorWidth] = useState(450);
+  const dragStateRef = useRef<{ startX: number; startWidth: number } | null>(null);
+
+  // Pointer-based resize: capture pointer on the handle, then track movement.
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      if (!dragStateRef.current) return;
+      const delta = e.clientX - dragStateRef.current.startX;
+      // Clamp between 280px and 65% of viewport so the preview always has room.
+      const max = Math.max(280, Math.floor(window.innerWidth * 0.65));
+      setEditorWidth(Math.min(max, Math.max(280, dragStateRef.current.startWidth + delta)));
+    };
+    const onUp = () => { dragStateRef.current = null; document.body.style.cursor = ""; document.body.style.userSelect = ""; };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
+  }, []);
   const [selectedTemplate, setSelectedTemplate] = useState<string>(
     resume?.template || "classic-minimal"
   );
@@ -434,7 +457,8 @@ export default function ResumeEditorPage({
             <SidebarSimple className="w-5 h-5" weight={isEditorCollapsed ? "fill" : "regular"} />
           </button>
 
-          <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1 gap-1">
+          {/* Undo/Redo grouped with Save; Download after; AI Tailoring sits in the top-right slot */}
+          <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1 gap-0.5">
             <button
               onClick={() => undo(id)}
               disabled={!canUndo}
@@ -457,111 +481,51 @@ export default function ResumeEditorPage({
             >
               <ArrowClockwise className="w-4 h-4" />
             </button>
-          </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-xl p-1">
+            <div className="w-px h-5 bg-zinc-200 dark:bg-white/[0.08] mx-0.5" />
             <button
-              onClick={() => setEditorMode("form")}
+              onClick={handleSave}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all",
-                editorMode === "form"
-                  ? "bg-zinc-200 dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+                "flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all",
+                saved
+                  ? "bg-emerald-500/15 text-emerald-400"
+                  : "bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
               )}
             >
-              <TextT className="w-3.5 h-3.5" />
-              Form
-            </button>
-            <button
-              onClick={() => setEditorMode("richtext")}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all",
-                editorMode === "richtext"
-                  ? "bg-zinc-200 dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
-              )}
-            >
-              <PenNib className="w-3.5 h-3.5" />
-              Rich Summary
+              <FloppyDisk className="w-3.5 h-3.5" />
+              {saved ? "Saved" : "Save"}
             </button>
           </div>
-
-          <div className="w-px h-8 bg-zinc-100 dark:bg-white/[0.05] mx-1" />
-
-          <button
-            onClick={() => setShowPreview(!showPreview)}
-            className={cn(
-              "flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-all border",
-              showPreview
-                ? "bg-brand-500/10 border-brand-500/20 text-brand-400"
-                : "bg-white dark:bg-white/[0.03] border-zinc-200 dark:border-white/[0.05] text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:bg-white/[0.05]"
-            )}
-          >
-            {showPreview ? (
-              <EyeSlash className="w-4.5 h-4.5" />
-            ) : (
-              <Eye className="w-4.5 h-4.5" />
-            )}
-            <span className="hidden sm:inline uppercase tracking-widest text-[11px]">Preview</span>
-          </button>
 
           <ExportButtons resumeData={data} resumeTitle={resume.title} />
-
-          <button
-            onClick={handleSave}
-            className={cn(
-              "flex items-center gap-2.5 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-xl",
-              saved
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                : "bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
-            )}
-          >
-            <FloppyDisk className="w-4.5 h-4.5" />
-            <span className="uppercase tracking-widest text-[11px]">{saved ? "Saved" : "Save"}</span>
-          </button>
+          </div>
         </div>
+
+        {/* AI Tailoring — sits in the top-right slot where Download+Save used to be */}
+        <button
+          onClick={() => setShowTailorDialog(true)}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-500 text-white text-xs font-bold uppercase tracking-widest hover:bg-purple-400 transition-all shadow-lg shadow-purple-500/20"
+          title="Open AI tailoring"
+        >
+          <Sparkle weight="fill" className="w-3.5 h-3.5" />
+          AI Tailoring
+        </button>
       </div>
 
       {/* Main Content — editor + preview */}
       <div
         className={cn(
           "grid gap-5 transition-all duration-500 ease-in-out",
-          isEditorCollapsed ? "grid-cols-1" : (showPreview ? "lg:grid-cols-[450px_minmax(0,1fr)]" : "grid-cols-1 max-w-5xl mx-auto")
+          isEditorCollapsed
+            ? "grid-cols-1"
+            : showPreview
+              ? `lg:grid-cols-[${editorWidth}px_minmax(0,1fr)]`
+              : "grid-cols-1 max-w-5xl mx-auto"
         )}
       >
         {/* Left: Editor (now fixed width when split) */}
         {!isEditorCollapsed && (
           <div className="space-y-4">
-            {/* AI Tailoring Callout */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="liquid-glass rounded-2xl p-3.5 border border-purple-500/20 group relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-3xl rounded-full" />
-              <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                    <Sparkle className="w-5 h-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-widest">AI Tailoring</h3>
-                    <p className="text-xs text-zinc-500 mt-1">Optimize for a specific job description.</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowTailorDialog(true)}
-                  className="px-5 py-2 rounded-xl bg-purple-500 text-zinc-900 dark:text-white text-xs font-bold uppercase tracking-widest hover:bg-purple-400 transition-all shadow-lg shadow-purple-500/20"
-                >
-                  Start
-                </button>
-              </div>
-            </motion.div>
-
-            {/* Intelligence Panels — grouped with AI Tailoring */}
+            {/* Intelligence Panels (ATS + Theme) — grouped compact */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <ATSCheckerPanel resumeData={data} />
               <ThemePicker
@@ -574,8 +538,8 @@ export default function ResumeEditorPage({
               />
             </div>
 
-            {/* Template Picker */}
-            <div className="flex items-center gap-2">
+            {/* Template Picker + Form/Rich Text toggle (same row) */}
+            <div className="flex items-center gap-2 flex-wrap">
               <Browser className="w-4 h-4 text-zinc-500 flex-shrink-0" />
               <div className="relative w-full max-w-[200px]">
                 <select
@@ -596,6 +560,33 @@ export default function ResumeEditorPage({
                 <div className="absolute inset-y-0 right-2.5 flex items-center pointer-events-none text-zinc-500">
                   <CaretDown className="w-3.5 h-3.5" />
                 </div>
+              </div>
+
+              <div className="flex items-center bg-white dark:bg-white/[0.03] border border-zinc-200 dark:border-white/[0.05] rounded-lg p-0.5 ml-auto">
+                <button
+                  onClick={() => setEditorMode("form")}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all",
+                    editorMode === "form"
+                      ? "bg-zinc-200 dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+                  )}
+                >
+                  <TextT className="w-3 h-3" />
+                  Form
+                </button>
+                <button
+                  onClick={() => setEditorMode("richtext")}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all",
+                    editorMode === "richtext"
+                      ? "bg-zinc-200 dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+                  )}
+                >
+                  <PenNib className="w-3 h-3" />
+                  Rich Text
+                </button>
               </div>
             </div>
 
@@ -1085,6 +1076,25 @@ export default function ResumeEditorPage({
                 </div>
               </>
             )}
+          </div>
+        )}
+
+        {/* Drag handle — only when both panels are visible */}
+        {!isEditorCollapsed && showPreview && (
+          <div
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Resize editor panel"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              dragStateRef.current = { startX: e.clientX, startWidth: editorWidth };
+              document.body.style.cursor = "col-resize";
+              document.body.style.userSelect = "none";
+            }}
+            className="hidden lg:flex w-1.5 -mx-2.5 self-stretch items-center justify-center cursor-col-resize group"
+            title="Drag to resize"
+          >
+            <div className="w-px h-full bg-zinc-200 dark:bg-white/[0.05] group-hover:bg-brand-500/60 transition-colors" />
           </div>
         )}
 
