@@ -138,6 +138,14 @@
   .doppel-core { @apply bg-surface-0 rounded-lg border border-surface-200 p-6; }
   .glass-card { @apply bg-surface-0 border border-surface-200 rounded-lg p-5 transition-all duration-150 ease-out hover:border-surface-300 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]; }
   .liquid-glass { @apply bg-surface-0 border border-surface-200 rounded-lg p-5 transition-all duration-150 ease-out hover:border-surface-300 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]; }
+
+  /* Primary CTA gradient — was referenced by 30+ components but never
+     defined, so the button rendered as transparent white text on a light
+     page and was effectively invisible. Use the brand charcoal with a
+     subtle warm-to-cool shift. */
+  .gradient-brand {
+    background-image: linear-gradient(135deg, #111111 0%, #2A2A2A 50%, #1A1A1A 100%);
+  }
 }
 
 
