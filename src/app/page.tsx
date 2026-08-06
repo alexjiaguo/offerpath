@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ChatCircleText, Compass, FileText, MagnifyingGlass, Sparkle } from "@phosphor-icons/react";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase";
+import { setGuestSession } from "@/lib/auth";
 import { IconProps } from "@phosphor-icons/react";
 import { JobDiscoveryPreview, JobTrackerPreview, ResumeBuilderPreview, InterviewPackPreview } from "@/components/landing/BentoPreviews";
 import { AnnouncementBar } from "@/components/landing/AnnouncementBar";
@@ -169,6 +170,11 @@ export default function LandingPage() {
     checkAuth();
   }, [router]);
 
+  const tryAsGuest = () => {
+    setGuestSession();
+    router.push("/dashboard");
+  };
+
   if (checkingAuth) {
     return (
       <div className="min-h-[100dvh] bg-surface-50 flex items-center justify-center">
@@ -216,6 +222,13 @@ export default function LandingPage() {
             <Link href="/login" className="text-sm font-medium text-surface-400 hover:text-brand-900 transition-colors px-3 py-2">
               Log In
             </Link>
+            <button
+              type="button"
+              onClick={tryAsGuest}
+              className="text-sm font-medium text-surface-400 hover:text-brand-900 transition-colors px-3 py-2 rounded-full border border-surface-200 hover:border-surface-300 hover:bg-surface-50"
+            >
+              Try for free
+            </button>
             <Link href="/register" className="btn-ember flex items-center gap-2 py-2.5 pl-5 pr-2 text-sm">
               <span>Sign Up</span>
               <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
@@ -275,6 +288,7 @@ export default function LandingPage() {
               className="flex flex-col gap-4 mt-8 w-64"
             >
               <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="btn-secondary w-full text-center">Log In</Link>
+              <button type="button" onClick={() => { setMobileMenuOpen(false); tryAsGuest(); }} className="btn-secondary w-full">Try for free</button>
               <Link href="/register" onClick={() => setMobileMenuOpen(false)} className="btn-ember w-full text-center">Sign Up</Link>
             </motion.div>
           </motion.div>
@@ -442,12 +456,21 @@ export default function LandingPage() {
                 Ready to land <br />
                 <span className="font-display italic font-medium">your next role?</span>
               </h2>
-              <Link href="/register" className="btn-ember inline-flex items-center gap-3 pl-7 pr-2 py-2 text-base">
-                <span>Get Started</span>
-                <span className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
-                  <ArrowRight weight="bold" className="w-4 h-4 text-white" />
-                </span>
-              </Link>
+              <div className="flex flex-wrap items-center gap-4">
+                <Link href="/register" className="btn-ember inline-flex items-center gap-3 pl-7 pr-2 py-2 text-base">
+                  <span>Get Started</span>
+                  <span className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
+                    <ArrowRight weight="bold" className="w-4 h-4 text-white" />
+                  </span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={tryAsGuest}
+                  className="text-sm font-medium text-surface-400 hover:text-brand-900 transition-colors px-4 py-2 rounded-full border border-surface-200 hover:border-surface-300 hover:bg-surface-50"
+                >
+                  Try for free
+                </button>
+              </div>
             </motion.div>
 
             <motion.div

@@ -21,7 +21,9 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-hashes'",
+              process.env.NODE_ENV === "development"
+              ? "script-src 'self' 'unsafe-inline' 'unsafe-hashes' 'unsafe-eval'"
+              : "script-src 'self' 'unsafe-inline' 'unsafe-hashes'",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https://images.unsplash.com",
               "font-src 'self'",

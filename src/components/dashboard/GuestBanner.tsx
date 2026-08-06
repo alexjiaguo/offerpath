@@ -42,14 +42,17 @@ export default function GuestBanner() {
         >
           <Sparkle weight="fill" className="w-3.5 h-3.5 text-brand-500 flex-shrink-0" />
           <span className="flex-1">
-            You&apos;re exploring OfferPath as a guest.{" "}
+            <strong className="font-semibold text-brand-700">Heads up:</strong>{" "}
+            You entered OfferPath without signing in. Your work will be{" "}
+            <strong className="font-semibold text-brand-700">lost</strong>{" "}
+            when you leave.{" "}
             <Link
               href="/login"
               className="font-semibold text-brand-600 hover:text-brand-700 underline-offset-2 hover:underline"
             >
               Sign in
             </Link>{" "}
-            to save your work.
+            to keep it.
           </span>
           <button
             type="button"

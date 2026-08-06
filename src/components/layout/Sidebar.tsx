@@ -59,10 +59,28 @@ export default function Sidebar() {
               </p>
             )}
             <ul className="space-y-1">
-              {section.items.map((item) => {
+              {(() => {
+                // Find the most specific matching item in this section.
+                // An item "matches" if its href is a prefix of the pathname
+                // (with a / boundary so /dashboard/settings doesn't swallow
+                // /dashboard/settings/api-keys). The longest match wins so
+                // /dashboard/settings only highlights when the user is on
+                // the settings page itself, not on a sub-route.
+                const matches = section.items
+                  .map((it) => {
+                    const isPrefix =
+                      pathname === it.href ||
+                      (it.href !== "/dashboard" && pathname.startsWith(it.href + "/"));
+                    return { item: it, isPrefix, len: it.href.length };
+                  })
+                  .filter((m) => m.isPrefix);
+                const longest = matches.reduce(
+                  (acc, m) => (m.len > acc ? m.len : acc),
+                  0,
+                );
+                return section.items.map((item) => {
                 const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/dashboard" && pathname.startsWith(item.href));
+                  matches.some((m) => m.item === item && m.len === longest);
 
                 const showSubItems =
                   !collapsed && isActive && item.subItems && item.subItems.length > 0;
@@ -123,7 +141,8 @@ export default function Sidebar() {
                     </AnimatePresence>
                   </li>
                 );
-              })}
+                });
+              })()}
             </ul>
           </div>
         ))}
