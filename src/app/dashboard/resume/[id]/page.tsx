@@ -524,9 +524,14 @@ export default function ResumeEditorPage({
           isEditorCollapsed
             ? "grid-cols-1"
             : showPreview
-              ? `grid-cols-[${editorWidth}px_minmax(0,1fr)]`
+              ? ""
               : "grid-cols-1 max-w-5xl mx-auto"
         )}
+        style={
+          !isEditorCollapsed && showPreview
+            ? { gridTemplateColumns: `${editorWidth}px minmax(0, 1fr)` }
+            : undefined
+        }
       >
         {/* Left: Editor (now fixed width when split) */}
         {!isEditorCollapsed && (
