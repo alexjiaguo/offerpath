@@ -205,6 +205,7 @@ export default function ResumeEditorPage({
   // Editor column width in px; user can drag the resize handle to change it.
   const [editorWidth, setEditorWidth] = useState(450);
   const dragStateRef = useRef<{ startX: number; startWidth: number } | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
   // @dnd-kit uses a module-level counter for `aria-describedby` IDs that
   // drifts between server and client renders. Gate the sortable tabs on a
   // post-mount flag so SSR + first client render both skip the DnD output
@@ -221,7 +222,7 @@ export default function ResumeEditorPage({
       const max = Math.max(280, Math.floor(window.innerWidth * 0.65));
       setEditorWidth(Math.min(max, Math.max(280, dragStateRef.current.startWidth + delta)));
     };
-    const onUp = () => { dragStateRef.current = null; document.body.style.cursor = ""; document.body.style.userSelect = ""; };
+    const onUp = () => { dragStateRef.current = null; setIsResizing(false); document.body.style.cursor = ""; document.body.style.userSelect = ""; };
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
@@ -517,25 +518,20 @@ export default function ResumeEditorPage({
         </button>
       </div>
 
-      {/* Main Content — editor + preview */}
+      {/* Main Content — editor + preview (flex row; separator is not a grid column) */}
       <div
         className={cn(
-          "grid gap-1 transition-all duration-500 ease-in-out",
-          isEditorCollapsed
-            ? "grid-cols-1"
-            : showPreview
-              ? ""
-              : "grid-cols-1 max-w-5xl mx-auto"
+          "flex",
+          isResizing ? "" : "transition-[width] duration-300 ease-in-out",
+          isEditorCollapsed || !showPreview ? "justify-center" : ""
         )}
-        style={
-          !isEditorCollapsed && showPreview
-            ? { gridTemplateColumns: `${editorWidth}px minmax(0, 1fr)` }
-            : undefined
-        }
       >
-        {/* Left: Editor (now fixed width when split) */}
+        {/* Left: Editor (fixed width, resizable) */}
         {!isEditorCollapsed && (
-          <div className="space-y-4">
+          <div
+            className={cn("space-y-4 shrink-0 min-w-0", showPreview ? "" : "w-full max-w-5xl")}
+            style={showPreview ? { width: editorWidth } : undefined}
+          >
             {/* Intelligence Panels (ATS + Theme) — grouped compact */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <ATSCheckerPanel resumeData={data} />
@@ -1142,14 +1138,16 @@ export default function ResumeEditorPage({
             aria-label="Resize editor panel"
             onPointerDown={(e) => {
               e.preventDefault();
+              e.currentTarget.setPointerCapture(e.pointerId);
               dragStateRef.current = { startX: e.clientX, startWidth: editorWidth };
+              setIsResizing(true);
               document.body.style.cursor = "col-resize";
               document.body.style.userSelect = "none";
             }}
-            className="flex w-3 -mx-2.5 self-stretch items-center justify-center cursor-col-resize group"
+            className="flex w-3 mx-1 self-stretch items-center justify-center cursor-col-resize group touch-none"
             title="Drag to resize"
           >
-            <div className="w-1 h-full bg-zinc-200 dark:bg-white/[0.06] group-hover:bg-brand-500/60 transition-colors" />
+            <div className={cn("w-1 h-full rounded-full transition-colors", isResizing ? "bg-brand-500" : "bg-zinc-200 dark:bg-white/[0.06] group-hover:bg-brand-500/60")} />
           </div>
         )}
 
