@@ -10,183 +10,183 @@ import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "@/lib/navConfig";
 
 /* ═══════════════════════════════════════════════════
-   MobileNav — Hamburger drawer for small screens.
-   The backdrop + drawer are portaled to document.body
-   to escape the Topbar's `backdrop-blur` containing block
-   (backdrop-filter creates a new containing block for
-   position:fixed descendants, which would otherwise trap
-   the drawer inside the small pill-shaped header).
-   ═══════════════════════════════════════════════════ */
+ MobileNav — Hamburger drawer for small screens.
+ The backdrop + drawer are portaled to document.body
+ to escape the Topbar's `backdrop-blur` containing block
+ (backdrop-filter creates a new containing block for
+ position:fixed descendants, which would otherwise trap
+ the drawer inside the small pill-shaped header).
+ ═══════════════════════════════════════════════════ */
 
 export default function MobileNav() {
-  const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+ const pathname = usePathname();
+ const [isOpen, setIsOpen] = useState(false);
+ const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+ useEffect(() => { setMounted(true); }, []);
 
-  // Close drawer on route change
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+ // Close drawer on route change
+ useEffect(() => {
+ setIsOpen(false);
+ }, [pathname]);
 
-  // Prevent body scroll when drawer open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+ // Prevent body scroll when drawer open
+ useEffect(() => {
+ if (isOpen) {
+ document.body.style.overflow = "hidden";
+ } else {
+ document.body.style.overflow = "";
+ }
+ return () => {
+ document.body.style.overflow = "";
+ };
+ }, [isOpen]);
 
-  const drawer = (
-    <>
-      {/* Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden animate-fade-in"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+ const drawer = (
+ <>
+ {/* Backdrop */}
+ {isOpen && (
+ <div
+ className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden animate-fade-in"
+ onClick={() => setIsOpen(false)}
+ />
+ )}
 
-      {/* Drawer */}
-      <aside
-        className={cn(
-          "fixed top-0 left-0 h-full w-[280px] z-50 bg-surface-50 border-r border-white/[0.06] flex flex-col md:hidden transition-transform duration-300 ease-out",
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
-        {/* Header */}
-        <div className="h-16 flex items-center justify-between px-5 border-b border-white/[0.04]">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2.5"
-            onClick={() => setIsOpen(false)}
-          >
-            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-              <Image
-                src="/logo-infinity.svg"
-                alt="OfferPath Logo"
-                width={32}
-                height={32}
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <span className="text-base font-bold tracking-tight text-surface-400">
-              Offer<span className="text-gradient-futuristic">Path</span>
-            </span>
-          </Link>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-700 hover:bg-white/[0.04] transition-all"
-            aria-label="Close navigation menu"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+ {/* Drawer */}
+ <aside
+ className={cn(
+ "fixed top-0 left-0 h-full w-[280px] z-50 bg-surface-0 border-r border-surface-200 flex flex-col md:hidden transition-transform duration-300 ease-out",
+ isOpen ? "translate-x-0" : "-translate-x-full"
+ )}
+ >
+ {/* Header */}
+ <div className="h-16 flex items-center justify-between px-5 border-b border-surface-200">
+ <Link
+ href="/dashboard"
+ className="flex items-center gap-2.5"
+ onClick={() => setIsOpen(false)}
+ >
+ <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+ <Image
+ src="/logo-infinity.svg"
+ alt="OfferPath Logo"
+ width={32}
+ height={32}
+ className="w-full h-full object-contain"
+ />
+ </div>
+ <span className="text-base font-bold tracking-tight text-surface-400">
+ Offer<span className="text-ember-600">Path</span>
+ </span>
+ </Link>
+ <button
+ onClick={() => setIsOpen(false)}
+ className="p-1.5 rounded-md text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all"
+ aria-label="Close navigation menu"
+ >
+ <X className="w-5 h-5" />
+ </button>
+ </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-4 space-y-6">
-          {NAV_ITEMS.map((section) => (
-            <div key={section.section}>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-gray-500 px-3 mb-2">
-                {section.section}
-              </p>
-              <ul className="space-y-0.5">
-                {section.items.map((item) => {
-                  const isActive =
-                    pathname === item.href ||
-                    (item.href !== "/dashboard" &&
-                      pathname.startsWith(item.href));
+ {/* Navigation */}
+ <nav className="flex-1 overflow-y-auto py-4 px-4 space-y-6">
+ {NAV_ITEMS.map((section) => (
+ <div key={section.section}>
+ <p className="text-[10px] font-semibold uppercase tracking-wider text-surface-300 px-3 mb-2">
+ {section.section}
+ </p>
+ <ul className="space-y-0.5">
+ {section.items.map((item) => {
+ const isActive =
+ pathname === item.href ||
+ (item.href !== "/dashboard" &&
+ pathname.startsWith(item.href));
 
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        onClick={() => setIsOpen(false)}
-                        className={cn(
-                          "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all",
-                          isActive
-                            ? "bg-brand-500/10 text-brand-300"
-                            : "text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-200 hover:bg-white/[0.04]"
-                        )}
-                      >
-                        <item.icon
-                          className={cn(
-                            "w-[18px] h-[18px] flex-shrink-0",
-                            isActive ? "text-brand-400" : "text-zinc-500 dark:text-gray-500"
-                          )}
-                        />
-                        <span>{item.label}</span>
-                      </Link>
+ return (
+ <li key={item.href}>
+ <Link
+ href={item.href}
+ onClick={() => setIsOpen(false)}
+ className={cn(
+ "flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium transition-all",
+ isActive
+ ? "bg-surface-400 text-surface-0 font-semibold"
+ : "text-surface-300 hover:text-surface-400 hover:bg-surface-100"
+ )}
+ >
+ <item.icon
+ className={cn(
+ "w-[18px] h-[18px] flex-shrink-0",
+ isActive ? "text-surface-0" : "text-surface-300"
+ )}
+ />
+ <span>{item.label}</span>
+ </Link>
 
-                      {/* Sub-navigation */}
-                      {isActive && item.subItems && (
-                        <ul className="ml-[30px] mt-1 space-y-0.5 border-l border-zinc-200 dark:border-white/[0.06] pl-3">
-                          {item.subItems.map((sub) => {
-                            const subActive = pathname === sub.href;
-                            return (
-                              <li key={sub.href}>
-                                <Link
-                                  href={sub.href}
-                                  onClick={() => setIsOpen(false)}
-                                  className={cn(
-                                    "flex items-center gap-2 px-2 py-2 rounded-md text-xs font-medium transition-all",
-                                    subActive
-                                      ? "text-brand-300"
-                                      : "text-zinc-500 dark:text-gray-500 hover:text-zinc-700 dark:hover:text-gray-300"
-                                  )}
-                                >
-                                  {sub.icon && <sub.icon className="w-3 h-3" />}
-                                  {sub.label}
-                                </Link>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </nav>
+ {/* Sub-navigation */}
+ {isActive && item.subItems && (
+ <ul className="ml-[30px] mt-1 space-y-0.5 border-l border-surface-200 pl-3">
+ {item.subItems.map((sub) => {
+ const subActive = pathname === sub.href;
+ return (
+ <li key={sub.href}>
+ <Link
+ href={sub.href}
+ onClick={() => setIsOpen(false)}
+ className={cn(
+ "flex items-center gap-2 px-2 py-2 rounded-md text-xs font-medium transition-all",
+ subActive
+ ? "text-surface-400 font-semibold"
+ : "text-surface-300 hover:text-surface-400"
+ )}
+ >
+ {sub.icon && <sub.icon className="w-3 h-3" />}
+ {sub.label}
+ </Link>
+ </li>
+ );
+ })}
+ </ul>
+ )}
+ </li>
+ );
+ })}
+ </ul>
+ </div>
+ ))}
+ </nav>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-white/[0.04]">
-          <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center text-xs font-bold text-white">
-              U
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">Demo User</p>
-              <p className="text-[10px] text-zinc-500 dark:text-gray-500 truncate">
-                user@offerpath.io
-              </p>
-            </div>
-          </div>
-        </div>
-      </aside>
-    </>
-  );
+ {/* Footer */}
+ <div className="p-4 border-t border-surface-200">
+ <div className="flex items-center gap-3 px-3 py-2">
+ <div className="w-8 h-8 rounded-md bg-surface-400 flex items-center justify-center text-xs font-bold text-white">
+ U
+ </div>
+ <div className="flex-1 min-w-0">
+ <p className="text-sm font-medium truncate">Demo User</p>
+ <p className="text-[10px] text-surface-300 truncate">
+ user@offerpath.io
+ </p>
+ </div>
+ </div>
+ </div>
+ </aside>
+ </>
+ );
 
-  return (
-    <>
-      {/* Hamburger Button — stays in place inside the Topbar */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="md:hidden p-2 rounded-lg text-zinc-600 hover:text-zinc-800 hover:bg-white/[0.04] transition-all"
-        aria-label="Open navigation menu"
-      >
-        <List className="w-5 h-5" />
-      </button>
+ return (
+ <>
+ {/* Hamburger Button — stays in place inside the Topbar */}
+ <button
+ onClick={() => setIsOpen(true)}
+ className="md:hidden p-2 rounded-md text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all"
+ aria-label="Open navigation menu"
+ >
+ <List className="w-5 h-5" />
+ </button>
 
-      {/* Backdrop + Drawer — portaled to escape the Topbar's backdrop-blur containing block */}
-      {mounted && createPortal(drawer, document.body)}
-    </>
-  );
+ {/* Backdrop + Drawer — portaled to escape the Topbar's backdrop-blur containing block */}
+ {mounted && createPortal(drawer, document.body)}
+ </>
+ );
 }

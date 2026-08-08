@@ -1,11 +1,15 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 
+export const metadata: Metadata = {
+  title: "Sign In",
+  description: "Sign in to OfferPath to track your job pipeline, build tailored resumes, and ace interviews.",
+};
+
 /* ═══════════════════════════════════════════════════
-   Auth Layout — centered card (Minimalist)
-   ═══════════════════════════════════════════════════ */
+ Auth Layout - centered card (Minimalist)
+ ═══════════════════════════════════════════════════ */
 
 export default function AuthLayout({
   children,
@@ -14,15 +18,11 @@ export default function AuthLayout({
 }) {
   return (
     <div className="min-h-screen bg-surface-50 flex flex-col items-center justify-center p-6">
-      
       <div className="w-full max-w-sm">
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center justify-center gap-2 mb-10 group"
-        >
+        <Link href="/" className="flex items-center justify-center gap-2 mb-10 group">
           <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-             <Image src="/logo-infinity.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-contain" />
+            <Image src="/logo-infinity.svg" alt="OfferPath Logo" width={32} height={32} className="w-full h-full object-contain" />
           </div>
           <span className="text-xl font-medium tracking-tight font-display">
             OfferPath
@@ -30,10 +30,10 @@ export default function AuthLayout({
         </Link>
 
         {/* Card */}
-        <div className="glass-card bg-surface-0 rounded-lg p-8">
+        <div className="card-editorial bg-surface-0 rounded-lg p-8">
           {children}
         </div>
-        
+
         {/* Footer */}
         <div className="mt-8 text-center text-xs text-surface-300">
           By continuing, you agree to our Terms and Privacy Policy.

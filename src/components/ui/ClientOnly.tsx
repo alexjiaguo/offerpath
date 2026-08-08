@@ -8,8 +8,8 @@ import { useEffect, useState, ReactNode } from "react";
  * client-only state (localStorage, Zustand persist, etc.).
  */
 export function ClientOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-  if (!mounted) return <>{fallback}</>;
-  return <>{children}</>;
+ const [mounted, setMounted] = useState(false);
+ useEffect(() => { setMounted(true); }, []);
+ if (!mounted) return <>{fallback}</>;
+ return <>{children}</>;
 }

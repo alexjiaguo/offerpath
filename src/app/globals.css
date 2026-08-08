@@ -16,16 +16,17 @@
   --color-surface-200: #EAEAEA;
   --color-surface-300: #888888;
   --color-surface-400: #111111;
+  --color-surface-400-hover: #2A2A2A;
 
   --color-brand-50: #F5F5F5;
   --color-brand-100: #EAEAEA;
   --color-brand-300: #666666;
   --color-brand-400: #333333;
   --color-brand-500: #111111;
-  --color-brand-600: #111111;
-  --color-brand-700: #111111;
-  --color-brand-800: #111111;
-  --color-brand-900: #111111;
+  --color-brand-600: #0D0D0D;
+  --color-brand-700: #0A0A0A;
+  --color-brand-800: #050505;
+  --color-brand-900: #000000;
 
   /* Ember Accent (Terracotta spot accent) */
   --color-ember-50:  #FEF3EC;
@@ -90,7 +91,7 @@
 @layer utilities {
   /* Minimalist Editorial Utility Classes */
   .btn-editorial-primary {
-    @apply bg-surface-400 text-surface-0 border border-surface-400 rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-150 ease-out active:scale-[0.98] hover:bg-[#2A2A2A];
+    @apply bg-surface-400 text-surface-0 border border-surface-400 rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-150 ease-out active:scale-[0.98] hover:bg-surface-400-hover;
   }
 
   .btn-editorial-secondary {
@@ -122,29 +123,22 @@
   }
 
   /* Spot Pastel Tags for Status Badges */
-  .tag-blue { background-color: #E1F3FE; color: #1F6C9F; @apply px-2 py-0.5 rounded-sm text-[10px] uppercase tracking-wider font-mono font-semibold border border-[#1F6C9F]/20; }
-  .tag-red { background-color: #FDEBEC; color: #9F2F2D; @apply px-2 py-0.5 rounded-sm text-[10px] uppercase tracking-wider font-mono font-semibold border border-[#9F2F2D]/20; }
-  .tag-green { background-color: #EDF3EC; color: #346538; @apply px-2 py-0.5 rounded-sm text-[10px] uppercase tracking-wider font-mono font-semibold border border-[#346538]/20; }
-  .tag-yellow { background-color: #FBF3DB; color: #956400; @apply px-2 py-0.5 rounded-sm text-[10px] uppercase tracking-wider font-mono font-semibold border border-[#956400]/20; }
-  .tag-ember { background-color: #FEF3EC; color: #C2410C; @apply px-2 py-0.5 rounded-sm text-[10px] uppercase tracking-wider font-mono font-semibold border border-[#C2410C]/20; }
+  .tag-blue { background-color: var(--color-pastel-blue-bg); color: var(--color-pastel-blue-fg); @apply px-2 py-0.5 rounded-sm text-[10px] uppercase tracking-wider font-mono font-semibold border; border-color: color-mix(in srgb, var(--color-pastel-blue-fg) 20%, transparent); }
+  .tag-red { background-color: var(--color-pastel-red-bg); color: var(--color-pastel-red-fg); @apply px-2 py-0.5 rounded-sm text-[10px] uppercase tracking-wider font-mono font-semibold border; border-color: color-mix(in srgb, var(--color-pastel-red-fg) 20%, transparent); }
+  .tag-green { background-color: var(--color-pastel-green-bg); color: var(--color-pastel-green-fg); @apply px-2 py-0.5 rounded-sm text-[10px] uppercase tracking-wider font-mono font-semibold border; border-color: color-mix(in srgb, var(--color-pastel-green-fg) 20%, transparent); }
+  .tag-yellow { background-color: var(--color-pastel-yellow-bg); color: var(--color-pastel-yellow-fg); @apply px-2 py-0.5 rounded-sm text-[10px] uppercase tracking-wider font-mono font-semibold border; border-color: color-mix(in srgb, var(--color-pastel-yellow-fg) 20%, transparent); }
+  .tag-ember { background-color: var(--color-ember-50); color: var(--color-ember-600); @apply px-2 py-0.5 rounded-sm text-[10px] uppercase tracking-wider font-mono font-semibold border; border-color: color-mix(in srgb, var(--color-ember-600) 20%, transparent); }
 
   /* Mappings to support existing component classnames cleanly */
-  .btn-primary { @apply bg-surface-400 text-surface-0 border border-surface-400 rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-150 ease-out active:scale-[0.98] hover:bg-[#2A2A2A]; }
+  .btn-primary { @apply bg-surface-400 text-surface-0 border border-surface-400 rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-150 ease-out active:scale-[0.98] hover:bg-surface-400-hover; }
   .btn-secondary { @apply bg-surface-0 text-surface-400 border border-surface-200 rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-150 ease-out active:scale-[0.98] hover:bg-surface-100 hover:border-surface-300; }
-  .btn-ember { @apply bg-ember-600 text-white border border-ember-600 rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-150 ease-out active:scale-[0.98] hover:bg-[#9A330A]; }
+  .btn-ember { @apply bg-ember-600 text-white border border-ember-600 rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-150 ease-out active:scale-[0.98] hover:bg-ember-700; }
   .card-cream { @apply bg-surface-0 border border-surface-200 rounded-lg p-5 transition-all duration-150 ease-out hover:border-surface-300 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]; }
   .card-clay { @apply bg-surface-50 border border-surface-200 rounded-lg p-5; }
-  .doppel-shell { @apply bg-surface-100 rounded-xl p-1.5 border border-surface-200; }
-  .doppel-core { @apply bg-surface-0 rounded-lg border border-surface-200 p-6; }
-  .glass-card { @apply bg-surface-0 border border-surface-200 rounded-lg p-5 transition-all duration-150 ease-out hover:border-surface-300 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]; }
-  .liquid-glass { @apply bg-surface-0 border border-surface-200 rounded-lg p-5 transition-all duration-150 ease-out hover:border-surface-300 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]; }
-
-  /* Primary CTA gradient — was referenced by 30+ components but never
-     defined, so the button rendered as transparent white text on a light
-     page and was effectively invisible. Use the brand charcoal with a
-     subtle warm-to-cool shift. */
+  /* Primary CTA - solid charcoal (gradient removed per minimalist protocol).
+     Kept as a named class because 25+ components reference it. */
   .gradient-brand {
-    background-image: linear-gradient(135deg, #111111 0%, #2A2A2A 50%, #1A1A1A 100%);
+    background-color: var(--color-surface-400);
   }
 }
 
