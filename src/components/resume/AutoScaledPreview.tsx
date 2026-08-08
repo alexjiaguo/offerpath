@@ -40,7 +40,7 @@ export function AutoScaledPreview({ children }: { children: React.ReactNode }) {
     if (contentRef.current) observer.observe(contentRef.current);
 
     return () => observer.disconnect();
-  }, []);
+  }, [contentHeight]);
 
   return (
     <div ref={containerRef} className="w-full flex justify-center origin-top">

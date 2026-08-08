@@ -3,7 +3,7 @@
 import { use, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowsIn, ArrowsOut, CaretDown, WarningCircle, Eye, EyeSlash, FloppyDisk } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowsIn, ArrowsOut, WarningCircle, Eye, EyeSlash, FloppyDisk } from '@phosphor-icons/react';
 import { useResumeStore, PLACEHOLDER_RESUME_DATA } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
@@ -48,7 +48,6 @@ export default function ResumeEditorPage({
 
  const [saved, setSaved] = useState(false);
  const [activeSection, setActiveSection] = useState<string>("personal");
- const [showPreview, setShowPreview] = useState(true);
  const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
  const [editorWidth, setEditorWidth] = useState(450);
  const dragStateRef = useRef<{ startX: number; startWidth: number } | null>(null);
