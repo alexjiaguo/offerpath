@@ -13,6 +13,7 @@ import ResumePreview, {
  TEMPLATE_CONFIGS,
 } from "@/components/resume/ResumePreview";
 import ThemePicker from "@/components/resume/ThemePicker";
+import TemplateDropdownPicker from "@/components/resume/TemplateDropdownPicker";
 import AITailoringCard from "@/components/resume/AITailoringCard";
 import ValidationPanel from "@/components/resume/ValidationPanel";
 import PageFitIndicator from "@/components/resume/PageFitIndicator";
@@ -91,6 +92,14 @@ export default function ResumeEditorPage({
  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
  const themeColor = resume?.theme?.primaryColor || undefined;
+
+ if (!mounted) {
+ return (
+ <div className="w-full h-screen flex items-center justify-center">
+ <div className="animate-pulse w-8 h-8 rounded-full border-2 border-brand-500 border-t-transparent animate-spin"></div>
+ </div>
+ );
+ }
 
  if (!resume) {
  return (
@@ -196,34 +205,29 @@ export default function ResumeEditorPage({
  <div className="flex w-full">
  {/* Left: Editor (fixed width, resizable) */}
  <div className="space-y-3 shrink-0 min-w-0" style={{ width: editorWidth }}>
- {/* Row 1: Template picker + Visual DNA (same height) */}
- <div className="flex items-center gap-2">
- <div className="relative flex-1 min-w-[100px]">
- <select value={selectedTemplate} onChange={(e) => { saveToHistory(id); setSelectedTemplate(e.target.value); updateResume(id, { template: e.target.value }); }} className="w-full appearance-none bg-surface-50 border border-surface-200 text-surface-400 px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider cursor-pointer focus:outline-none focus:border-brand-500/50 hover:bg-surface-100 transition-all truncate">
- {TEMPLATE_CONFIGS.map((tmpl) => (<option key={tmpl.id} value={tmpl.id}>{tmpl.name}</option>))}
- </select>
- <div className="absolute inset-y-0 right-2.5 flex items-center pointer-events-none text-surface-300"><CaretDown className="w-3.5 h-3.5" /></div>
- </div>
- <ThemePicker theme={resume.theme} onChange={(updates) => { saveToHistory(id); updateResume(id, { theme: { ...resume.theme, ...updates } as ResumeTheme }); }} preview={<ResumePreview data={previewData ?? effectiveData} template={selectedTemplate} themeColor={themeColor} sectionOrder={sectionOrder as SectionKey[]} sectionVisibility={resume.section_visibility?.[selectedTemplate]} />} />
- </div>
-
- {/* Row 2: AI Tailoring (prominent, full-width) */}
+ {/* Row 1: AI Tailoring (prominent, full-width) */}
  <AITailoringCard resumeData={data} resumeId={id} profileSummary={getProfileSummary()} onApply={handleApplyTailor} saveToHistory={saveToHistory} />
 
-  {/* Row 3: Status Indicators (left) + Save & Export (right) */}
-  <div className="flex flex-wrap items-center justify-between gap-2">
-  <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-  <ValidationPanel data={data} />
-  <PageFitIndicator />
+  {/* Row 2: Template selection + Visual DNA */}
+  <div className="flex items-center gap-2">
+  <TemplateDropdownPicker selectedTemplate={selectedTemplate} onSelect={(tmplId) => { saveToHistory(id); setSelectedTemplate(tmplId); updateResume(id, { template: tmplId }); }} />
+  <ThemePicker theme={resume.theme} onChange={(updates) => { saveToHistory(id); updateResume(id, { theme: { ...resume.theme, ...updates } as ResumeTheme }); }} preview={<ResumePreview data={previewData ?? effectiveData} template={selectedTemplate} themeColor={themeColor} sectionOrder={sectionOrder as SectionKey[]} sectionVisibility={resume.section_visibility?.[selectedTemplate]} />} />
   </div>
-  <div className="ml-auto flex items-center gap-1.5 flex-shrink-0">
-  <button onClick={handleSave} className={cn("flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all", saved ? "bg-emerald-500/15 text-emerald-400" : "bg-surface-400 text-white hover:bg-surface-400")}>
-  <FloppyDisk className="w-3 h-3" />
-  {saved ? "Saved" : "Save"}
-  </button>
-  <ExportButtons resumeData={data} resumeTitle={resume.title} />
-  </div>
-  </div>
+
+ {/* Row 3: Status Indicators (left) + Save & Export (right) */}
+ <div className="flex flex-wrap items-center justify-between gap-2">
+ <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+ <ValidationPanel data={data} />
+ <PageFitIndicator />
+ </div>
+ <div className="ml-auto flex items-center gap-1.5 flex-shrink-0">
+ <button onClick={handleSave} className={cn("btn-editorial-primary flex items-center gap-1.5 !px-2.5 !py-1.5 !rounded-lg", saved && "!bg-emerald-500 !border-emerald-500 !text-white")}>
+ <FloppyDisk className="w-3.5 h-3.5" />
+ {saved ? "Saved" : "Save"}
+ </button>
+ <ExportButtons resumeData={data} resumeTitle={resume.title} />
+ </div>
+ </div>
 
 
  {mounted ? (

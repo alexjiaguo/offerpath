@@ -91,15 +91,14 @@ export default function ExportButtons({
  disabled={busy}
  aria-haspopup="menu"
  aria-expanded={open}
- className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface-200 text-surface-400 font-semibold text-sm hover:text-brand-600 hover:bg-surface-100 transition-all disabled:opacity-50"
+ className="btn-editorial-secondary flex items-center gap-1.5 !px-2.5 !py-1.5 disabled:opacity-50 !rounded-lg"
  title="Download resume"
  >
  {busy ? (
- <ArrowsClockwise className="w-4 h-4 animate-spin text-surface-400" />
+ <ArrowsClockwise className="w-4 h-4 animate-spin" />
  ) : (
- <DownloadSimple className="w-4 h-4 text-surface-400" />
+ <DownloadSimple className="w-4 h-4" />
  )}
- <span className="hidden sm:inline">Download</span>
  <CaretDown className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} />
  </button>
 
