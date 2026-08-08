@@ -22,17 +22,17 @@ import { ArrowUpRight, Briefcase, Target, TrendUp, Percent, Star } from '@phosph
  ═══════════════════════════════════════════════════ */
 
 const STATUS_COLORS: Record<string, string> = {
- new: "#818cf8",
- evaluated: "#3b82f6",
- applied: "#10b981",
- interviewing: "#f59e0b",
- offered: "#a855f7",
- rejected: "#ef4444",
- discarded: "#6b7280",
- archived: "#4b5563",
+ new: "#1F6C9F", // pastel-blue-fg
+ evaluated: "#346538", // pastel-green-fg
+ applied: "#956400", // pastel-yellow-fg
+ interviewing: "#C2410C", // ember-500
+ offered: "#111111", // surface-400
+ rejected: "#9F2F2D", // pastel-red-fg
+ discarded: "#888888", // surface-300
+ archived: "#EAEAEA", // surface-200
 };
 
-const SCORE_COLORS = ["#ef4444", "#f59e0b", "#3b82f6", "#10b981"];
+const SCORE_COLORS = ["#9F2F2D", "#956400", "#346538", "#111111"];
 
 // Custom tooltip style
 const CustomTooltip = ({
@@ -46,10 +46,10 @@ const CustomTooltip = ({
 }) => {
  if (!active || !payload?.length) return null;
  return (
- <div className="bg-surface-100 border border-white/[0.1] rounded-lg px-3 py-2 shadow-xl">
- <p className="text-xs font-medium text-surface-400">{label}</p>
- <p className="text-sm font-bold text-surface-400">{payload[0].value}</p>
- </div>
+  <div className="bg-surface-0 border border-surface-200 rounded-lg px-3 py-2 shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+  <p className="text-[10px] uppercase tracking-wider font-mono text-surface-300 mb-0.5">{label}</p>
+  <p className="text-sm font-semibold text-surface-400">{payload[0].value}</p>
+  </div>
  );
 };
 
@@ -86,33 +86,33 @@ export default function AnalyticsCharts() {
  .sort((a, b) => b.count - a.count),
  [jobs, archetypes]);
 
- const tierData = useMemo(() => [
- { name: "Tier 1", value: jobs.filter((j) => j.tier === 1).length, color: "#fbbf24" },
- { name: "Tier 2", value: jobs.filter((j) => j.tier === 2).length, color: "#9ca3af" },
- { name: "Tier 3", value: jobs.filter((j) => j.tier === 3).length, color: "#b45309" },
+  const tierData = useMemo(() => [
+  { name: "Tier 1", value: jobs.filter((j) => j.tier === 1).length, color: "#111111" },
+  { name: "Tier 2", value: jobs.filter((j) => j.tier === 2).length, color: "#888888" },
+  { name: "Tier 3", value: jobs.filter((j) => j.tier === 3).length, color: "#EAEAEA" },
  ].filter((d) => d.value > 0), [jobs]);
 
- return (
- <div className="space-y-6 animate-fade-in">
+  return (
+  <div className="space-y-6 animate-stagger-in">
  {/* Summary Cards */}
  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
- <StatCard
- icon={<Briefcase className="w-5 h-5 text-brand-400" />}
- label="Total Jobs"
- value={stats.total.toString()}
- />
- <StatCard
- icon={<Star className="w-5 h-5 text-amber-400" />}
- label="Avg Score"
- value={stats.avgScore > 0 ? stats.avgScore.toFixed(1) : "—"}
- />
- <StatCard
- icon={<ArrowUpRight className="w-5 h-5 text-emerald-400" />}
- label="Interview Rate"
- value={stats.interviewRate > 0 ? `${Math.round(stats.interviewRate)}%` : "—"}
- />
- <StatCard
- icon={<Percent className="w-5 h-5 text-purple-400" />}
+  <StatCard
+  icon={<Briefcase className="w-5 h-5 text-surface-400" />}
+  label="Total Jobs"
+  value={stats.total.toString()}
+  />
+  <StatCard
+  icon={<Star className="w-5 h-5 text-surface-400" />}
+  label="Avg Score"
+  value={stats.avgScore > 0 ? stats.avgScore.toFixed(1) : "—"}
+  />
+  <StatCard
+  icon={<ArrowUpRight className="w-5 h-5 text-surface-400" />}
+  label="Interview Rate"
+  value={stats.interviewRate > 0 ? `${Math.round(stats.interviewRate)}%` : "—"}
+  />
+  <StatCard
+  icon={<Percent className="w-5 h-5 text-surface-400" />}
  label="Offer Rate"
  value={stats.offerRate > 0 ? `${Math.round(stats.offerRate)}%` : "—"}
  />
@@ -120,21 +120,23 @@ export default function AnalyticsCharts() {
 
  {/* Charts Grid */}
  <div className="grid lg:grid-cols-2 gap-6">
- {/* Pipeline Funnel */}
- <div className="card-editorial rounded-2xl p-6">
- <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
- <Target className="w-4 h-4 text-brand-400" />
- Pipeline Funnel
- </h3>
- <ResponsiveContainer width="100%" height={240}>
- <BarChart data={funnelData} layout="vertical" barCategoryGap="20%">
- <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
- <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 11 }} allowDecimals={false} />
- <YAxis
- type="category"
- dataKey="name"
- tick={{ fill: "#9ca3af", fontSize: 12 }}
- width={85}
+  {/* Pipeline Funnel */}
+  <div className="card-editorial rounded-2xl p-6">
+  <h3 className="text-[11px] uppercase tracking-[0.15em] font-mono font-semibold text-surface-400 mb-6 flex items-center gap-2">
+  <Target className="w-4 h-4" />
+  Pipeline Funnel
+  </h3>
+  <ResponsiveContainer width="100%" height={240}>
+  <BarChart data={funnelData} layout="vertical" barCategoryGap="20%">
+  <CartesianGrid strokeDasharray="3 3" stroke="#EAEAEA" horizontal={false} />
+  <XAxis type="number" tick={{ fill: "#888888", fontSize: 11, fontFamily: "var(--font-mono)" }} allowDecimals={false} axisLine={false} tickLine={false} />
+  <YAxis
+  type="category"
+  dataKey="name"
+  tick={{ fill: "#111111", fontSize: 11, fontFamily: "var(--font-mono)" }}
+  axisLine={false}
+  tickLine={false}
+  width={85}
  />
  <Tooltip content={<CustomTooltip />} />
  <Bar dataKey="count" radius={[0, 6, 6, 0]} maxBarSize={28}>
@@ -146,17 +148,17 @@ export default function AnalyticsCharts() {
  </ResponsiveContainer>
  </div>
 
- {/* Score Distribution */}
- <div className="card-editorial rounded-2xl p-6">
- <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
- <Star className="w-4 h-4 text-amber-400" />
- Score Distribution
- </h3>
- <ResponsiveContainer width="100%" height={240}>
- <BarChart data={scoreDistribution} barCategoryGap="25%">
- <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
- <XAxis dataKey="range" tick={{ fill: "#9ca3af", fontSize: 11 }} />
- <YAxis tick={{ fill: "#6b7280", fontSize: 11 }} allowDecimals={false} />
+  {/* Score Distribution */}
+  <div className="card-editorial rounded-2xl p-6">
+  <h3 className="text-[11px] uppercase tracking-[0.15em] font-mono font-semibold text-surface-400 mb-6 flex items-center gap-2">
+  <Star className="w-4 h-4" />
+  Score Distribution
+  </h3>
+  <ResponsiveContainer width="100%" height={240}>
+  <BarChart data={scoreDistribution} barCategoryGap="25%">
+  <CartesianGrid strokeDasharray="3 3" stroke="#EAEAEA" vertical={false} />
+  <XAxis dataKey="range" tick={{ fill: "#111111", fontSize: 11, fontFamily: "var(--font-mono)" }} axisLine={false} tickLine={false} />
+  <YAxis tick={{ fill: "#888888", fontSize: 11, fontFamily: "var(--font-mono)" }} allowDecimals={false} axisLine={false} tickLine={false} />
  <Tooltip content={<CustomTooltip />} />
  <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={40}>
  {scoreDistribution.map((entry, i) => (
@@ -167,34 +169,36 @@ export default function AnalyticsCharts() {
  </ResponsiveContainer>
  </div>
 
- {/* Archetype Breakdown */}
- <div className="card-editorial rounded-2xl p-6">
- <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
- <Briefcase className="w-4 h-4 text-blue-400" />
- By Archetype
- </h3>
- <ResponsiveContainer width="100%" height={240}>
- <BarChart data={archetypeData} layout="vertical" barCategoryGap="20%">
- <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
- <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 11 }} allowDecimals={false} />
- <YAxis
- type="category"
- dataKey="name"
- tick={{ fill: "#9ca3af", fontSize: 12 }}
- width={120}
- />
- <Tooltip content={<CustomTooltip />} />
- <Bar dataKey="count" fill="#818cf8" radius={[0, 6, 6, 0]} maxBarSize={24} />
+  {/* Archetype Breakdown */}
+  <div className="card-editorial rounded-2xl p-6">
+  <h3 className="text-[11px] uppercase tracking-[0.15em] font-mono font-semibold text-surface-400 mb-6 flex items-center gap-2">
+  <Briefcase className="w-4 h-4" />
+  By Archetype
+  </h3>
+  <ResponsiveContainer width="100%" height={240}>
+  <BarChart data={archetypeData} layout="vertical" barCategoryGap="20%">
+  <CartesianGrid strokeDasharray="3 3" stroke="#EAEAEA" horizontal={false} />
+  <XAxis type="number" tick={{ fill: "#888888", fontSize: 11, fontFamily: "var(--font-mono)" }} allowDecimals={false} axisLine={false} tickLine={false} />
+  <YAxis
+  type="category"
+  dataKey="name"
+  tick={{ fill: "#111111", fontSize: 11, fontFamily: "var(--font-mono)" }}
+  axisLine={false}
+  tickLine={false}
+  width={120}
+  />
+  <Tooltip content={<CustomTooltip />} />
+  <Bar dataKey="count" fill="#111111" radius={[0, 6, 6, 0]} maxBarSize={24} />
  </BarChart>
  </ResponsiveContainer>
  </div>
 
- {/* Tier Distribution */}
- <div className="card-editorial rounded-2xl p-6">
- <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
- <TrendUp className="w-4 h-4 text-emerald-400" />
- Tier Breakdown
- </h3>
+  {/* Tier Distribution */}
+  <div className="card-editorial rounded-2xl p-6">
+  <h3 className="text-[11px] uppercase tracking-[0.15em] font-mono font-semibold text-surface-400 mb-6 flex items-center gap-2">
+  <TrendUp className="w-4 h-4" />
+  Tier Breakdown
+  </h3>
  <div className="flex items-center gap-8">
  <ResponsiveContainer width="50%" height={200}>
  <PieChart>
@@ -244,13 +248,13 @@ function StatCard({
  value: string;
 }) {
  return (
- <div className="card-editorial rounded-xl p-4 flex items-center gap-4 hover:bg-surface-100/80 transition-all">
- <div className="w-10 h-10 rounded-lg bg-surface-200/50 flex items-center justify-center">
+ <div className="card-editorial rounded-xl p-4 flex items-center gap-4 group hover:bg-surface-50 transition-all">
+ <div className="w-10 h-10 rounded-lg bg-surface-100 flex items-center justify-center border border-surface-200 group-hover:bg-surface-0 transition-colors">
  {icon}
  </div>
  <div>
- <p className="text-lg font-bold">{value}</p>
- <p className="text-xs text-surface-300">{label}</p>
+ <p className="text-lg font-bold font-display tracking-tight text-surface-400">{value}</p>
+ <p className="text-[10px] uppercase tracking-wider font-mono text-surface-300">{label}</p>
  </div>
  </div>
  );
