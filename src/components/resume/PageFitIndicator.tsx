@@ -50,7 +50,6 @@ export default function PageFitIndicator({ selector = ".resume-paper" }: PageFit
 
   const isOverflow = fillPct > 105;
   const isUnderflow = fillPct < 96 && fillPct > 0;
-  const isGoodFit = !isOverflow && !isUnderflow;
 
   const statusColor = isOverflow
     ? "bg-red-50 border-red-200 text-red-600"

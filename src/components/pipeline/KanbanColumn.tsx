@@ -44,7 +44,7 @@ export default function KanbanColumn({ config, jobs, onAddClick }: KanbanColumnP
  const jobIds = jobs.map((j) => j.id);
 
  return (
- <div className="flex-shrink-0 w-[320px] flex flex-col h-full kanban-column-area">
+ <div className="flex-shrink-0 w-[280px] sm:w-[320px] min-w-[280px] flex flex-col h-full kanban-column-area snap-center">
  {/* Column Header */}
  <div className="flex items-center justify-between mb-3 px-1">
  <div className="flex items-center gap-3">

@@ -86,8 +86,6 @@ export default function ThemePicker({ theme, onChange, preview }: ThemePickerPro
  setShowCustom(false);
  };
 
- const subtitle = activePreset ? `${activePreset.name} active` : "Tune colors, fonts, and density.";
-
  return (
  <>
  {/* Compact card - matches template select height */}

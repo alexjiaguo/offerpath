@@ -69,7 +69,16 @@
   html {
     @apply antialiased scroll-smooth;
     -webkit-tap-highlight-color: transparent;
-    color-scheme: light !important;
+  }
+  .dark {
+    color-scheme: dark;
+    --color-surface-0: #121212;
+    --color-surface-50: #18181B;
+    --color-surface-100: #27272A;
+    --color-surface-200: #3F3F46;
+    --color-surface-300: #A1A1AA;
+    --color-surface-400: #F4F4F5;
+    --color-surface-400-hover: #E4E4E7;
   }
   body {
     @apply bg-surface-50 text-surface-400 font-sans leading-relaxed;

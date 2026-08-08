@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sparkle, ArrowsClockwise, CheckCircle, X, Target, Check, Warning } from "@phosphor-icons/react";
+import { Sparkle, ArrowsClockwise, CheckCircle, X, Target, Warning } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { ResumeData } from "@/types";

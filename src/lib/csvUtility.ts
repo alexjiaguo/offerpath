@@ -109,9 +109,9 @@ export function importJobsFromCSV(csvText: string): Omit<Job, "id" | "user_id" |
  statusVal = "offered";
  }
 
- const scoreVal = parseFloat(row[headerIndices["score"]] || row[5] || "") || undefined;
+ const scoreVal = parseFloat(row[headerIndices["score"]] || row[headerIndices["match score"]] || row[5] || "") || undefined;
  const tierVal = parseInt(row[headerIndices["tier"]] || row[6] || "") || undefined;
- const salaryVal = row[headerIndices["salary range"]] || row[7] || "";
+ const salaryVal = row[headerIndices["salary range"]] || row[headerIndices["salary_range"]] || row[headerIndices["salary"]] || row[7] || "";
  const notesVal = row[headerIndices["notes"]] || row[8] || "";
 
  parsedJobs.push({

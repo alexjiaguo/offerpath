@@ -6,106 +6,116 @@ import { revalidatePath } from "next/cache";
 import type { Job } from "@/types";
 
 export async function createJobAction(jobData: Partial<Job>) {
- const supabase = await createServerClient();
- if (!supabase) return { success: false, error: "Supabase not configured" };
+  const supabase = await createServerClient();
+  if (!supabase) return { success: false, error: "Supabase not configured" };
 
- const { data: { user } } = await supabase.auth.getUser();
- if (!user) return { success: false, error: "Not authenticated" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Not authenticated" };
 
- const newJob = {
- ...jobData,
- user_id: user.id,
- created_at: new Date().toISOString(),
- history: [{
- action: "Created job",
- date: new Date().toISOString(),
- details: `Added ${jobData.title ?? "(no title)"} at ${typeof jobData.company === "string" ? jobData.company : jobData.company?.name ?? "Company"}`
- }]
- };
+  const newJob = {
+    ...jobData,
+    user_id: user.id,
+    created_at: new Date().toISOString(),
+    history: [{
+      action: "Created job",
+      date: new Date().toISOString(),
+      details: `Added ${jobData.title ?? "(no title)"} at ${typeof jobData.company === "string" ? jobData.company : jobData.company?.name ?? "Company"}`
+    }]
+  };
 
- const { data, error } = await supabase
- .from("jobs")
- .insert(newJob)
- .select()
- .single();
+  const { data, error } = await supabase
+    .from("jobs")
+    .insert(newJob)
+    .select()
+    .single();
 
- if (error) {
- logger.error("Failed to create job:", error);
- return { success: false, error: error.message };
- }
+  if (error) {
+    logger.error("Failed to create job:", error);
+    return { success: false, error: error.message };
+  }
 
- revalidatePath("/dashboard/pipeline");
- return { success: true, data };
+  revalidatePath("/dashboard/pipeline");
+  return { success: true, data };
 }
 
 export async function updateJobStatusAction(jobId: string, newStatus: string) {
- const supabase = await createServerClient();
- if (!supabase) return { success: false, error: "Supabase not configured" };
+  const supabase = await createServerClient();
+  if (!supabase) return { success: false, error: "Supabase not configured" };
 
- // Fetch current to append history
- const { data: currentJob } = await supabase
- .from("jobs")
- .select("*")
- .eq("id", jobId)
- .single();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Not authenticated" };
 
- if (!currentJob) return { success: false, error: "Job not found" };
+  // Fetch current job scoped to user to append history
+  const { data: currentJob } = await supabase
+    .from("jobs")
+    .select("*")
+    .eq("id", jobId)
+    .eq("user_id", user.id)
+    .single();
 
- const newHistoryEntry = {
- action: "Status Update",
- date: new Date().toISOString(),
- details: `Moved to ${newStatus}`
- };
+  if (!currentJob) return { success: false, error: "Job not found or access denied" };
 
- const history = [...(currentJob.history || []), newHistoryEntry];
+  const newHistoryEntry = {
+    action: "Status Update",
+    date: new Date().toISOString(),
+    details: `Moved to ${newStatus}`
+  };
 
- const { error } = await supabase
- .from("jobs")
- .update({ 
- status: newStatus, 
- updated_at: new Date().toISOString(),
- history 
- })
- .eq("id", jobId);
+  const history = [...(currentJob.history || []), newHistoryEntry];
 
- if (error) return { success: false, error: error.message };
+  const { error } = await supabase
+    .from("jobs")
+    .update({ 
+      status: newStatus, 
+      updated_at: new Date().toISOString(),
+      history 
+    })
+    .eq("id", jobId)
+    .eq("user_id", user.id);
 
- revalidatePath("/dashboard/pipeline");
- return { success: true };
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/dashboard/pipeline");
+  return { success: true };
 }
 
 export async function addJobNoteAction(jobId: string, note: string) {
- const supabase = await createServerClient();
- if (!supabase) return { success: false, error: "Supabase not configured" };
+  const supabase = await createServerClient();
+  if (!supabase) return { success: false, error: "Supabase not configured" };
 
- const { data: currentJob } = await supabase
- .from("jobs")
- .select("*")
- .eq("id", jobId)
- .single();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Not authenticated" };
 
- if (!currentJob) return { success: false, error: "Job not found" };
+  const { data: currentJob } = await supabase
+    .from("jobs")
+    .select("*")
+    .eq("id", jobId)
+    .eq("user_id", user.id)
+    .single();
 
- const newHistoryEntry = {
- action: "Added Note",
- date: new Date().toISOString(),
- details: note
- };
+  if (!currentJob) return { success: false, error: "Job not found or access denied" };
 
- const history = [...(currentJob.history || []), newHistoryEntry];
- const notes = currentJob.notes ? `${currentJob.notes}\n\n${note}` : note;
+  const newHistoryEntry = {
+    action: "Added Note",
+    date: new Date().toISOString(),
+    details: note
+  };
 
- const { error } = await supabase
- .from("jobs")
- .update({ 
- notes, 
- updated_at: new Date().toISOString(),
- history 
- })
- .eq("id", jobId);
+  const history = [...(currentJob.history || []), newHistoryEntry];
+  const notes = currentJob.notes ? `${currentJob.notes}\n\n${note}` : note;
 
- if (error) return { success: false, error: error.message };
+  const { error } = await supabase
+    .from("jobs")
+    .update({ 
+      notes, 
+      updated_at: new Date().toISOString(),
+      history 
+    })
+    .eq("id", jobId)
+    .eq("user_id", user.id);
 
- revalidatePath("/dashboard/pipeline");
- return { success: true };
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/dashboard/pipeline");
+  return { success: true };
 }

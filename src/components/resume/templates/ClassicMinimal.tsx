@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { TemplateProps, vis, formatDates, getSkills, getTechSkills, getCustomFields, getContactItems, paperStyle, sanitizeHtml } from './shared';
+import { TemplateProps, vis, formatDates, getSkills, getTechSkills, getContactItems, paperStyle, sanitizeHtml } from './shared';
 
 const ClassicMinimal: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sectionVisibility }) => {
  const skills = getSkills(data);

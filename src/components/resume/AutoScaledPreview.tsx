@@ -10,9 +10,9 @@ export function AutoScaledPreview({ children }: { children: React.ReactNode }) {
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const containerWidth = entry.contentRect.width;
-        const availableWidth = containerWidth - 4;
+        const availableWidth = Math.max(containerWidth - 16, 240);
         const computedScale = availableWidth / 794;
-        setScale(Math.min(computedScale, 1.4));
+        setScale(Math.max(0.3, Math.min(computedScale, 1.4)));
       }
     });
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Camera, Plus, Trash, User, X, TextT, PenNib } from "@phosphor-icons/react";
 import Image from "next/image";
 import { toast } from "sonner";
-import type { ResumeData, ExperienceEntry, EducationEntry, ProjectEntry, TechnicalSkillCategory, CustomField } from "@/types";
+import type { ResumeData, ExperienceEntry, EducationEntry, ProjectEntry, TechnicalSkillCategory } from "@/types";
 import dynamic from "next/dynamic";
 import type { EditorMode } from "@/components/resume/editor-helpers";
 import { cn } from "@/lib/utils";

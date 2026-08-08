@@ -1,11 +1,8 @@
 import type {
   ResumeData,
-  PersonalInfo,
   ExperienceEntry,
   EducationEntry,
   ProjectEntry,
-  TechnicalSkillCategory,
-  SkillItem,
 } from "@/types";
 
 /* ═══════════════════════════════════════════════════
