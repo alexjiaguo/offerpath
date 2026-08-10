@@ -13,8 +13,7 @@ function checkIsConfigured(): boolean {
  supabaseUrl.includes("example.supabase.co") ||
  supabaseAnonKey.includes("placeholder") ||
  supabaseAnonKey.includes("your-anon-key") ||
- supabaseAnonKey.startsWith("sb_publishable_") ||
- !(supabaseAnonKey.startsWith("eyJ") || supabaseAnonKey.startsWith("sbp_"))
+ !(supabaseAnonKey.startsWith("eyJ") || supabaseAnonKey.startsWith("sb_publishable_") || supabaseAnonKey.startsWith("sbp_"))
  ) {
  return false;
  }
@@ -33,4 +32,3 @@ export function createClient() {
 export function isSupabaseConfigured(): boolean {
  return isConfigured;
 }
-
