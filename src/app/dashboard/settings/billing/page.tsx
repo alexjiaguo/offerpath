@@ -43,9 +43,9 @@ const PLANS = [
  ],
  },
  {
- name: "Team",
+ name: "Ultra",
  price: "$29",
- period: "/seat/mo",
+ period: "/month",
  highlight: false,
  features: [
  "Everything in Pro",
@@ -54,6 +54,8 @@ const PLANS = [
  "Team analytics view",
  "Managed key pool",
  "Priority support",
+ "CLI and MCP support",
+ "API rate boost",
  ],
  },
 ];

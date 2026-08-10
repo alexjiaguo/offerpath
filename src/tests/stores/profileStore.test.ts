@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { useProfileStore } from "@/store/profileStore";
+import { useProfileStore, createEmptyProfile } from "@/store/profileStore";
 
 describe("profileStore", () => {
  beforeEach(() => {
@@ -82,4 +82,18 @@ describe("profileStore", () => {
  expect(active?.key).toBe("sk-test");
  expect(getActiveApiKey("anthropic")).toBeUndefined();
  });
+
+  it("createEmptyProfile returns a blank profile with only name and email", () => {
+    const empty = createEmptyProfile("Jane Doe", "jane@example.com");
+    expect(empty.fullName).toBe("Jane Doe");
+    expect(empty.email).toBe("jane@example.com");
+    expect(empty.phone).toBe("");
+    expect(empty.keySkills).toEqual([]);
+    expect(empty.workExperience).toEqual([]);
+    expect(empty.education).toEqual([]);
+    expect(empty.currentCompany).toBe("");
+    expect(empty.disclosures.requiresSponsorship).toBe(false);
+    expect(empty.disclosures.locationPreference).toBe("hybrid");
+  });
+
 });

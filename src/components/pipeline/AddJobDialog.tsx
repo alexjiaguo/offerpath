@@ -199,8 +199,8 @@ export default function AddJobDialog() {
  className={cn(
  "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
  mode === "url"
- ? "bg-surface-100 text-white shadow-sm"
- : "text-surface-300 hover:text-surface-400"
+ ? "bg-surface-100 text-black shadow-sm"
+ : "text-black hover:text-black"
  )}
  >
  <Link className="w-3.5 h-3.5" />
@@ -211,8 +211,8 @@ export default function AddJobDialog() {
  className={cn(
  "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
  mode === "text"
- ? "bg-surface-100 text-white shadow-sm"
- : "text-surface-300 hover:text-surface-400"
+ ? "bg-surface-100 text-black shadow-sm"
+ : "text-black hover:text-black"
  )}
  >
  <FileText className="w-3.5 h-3.5" />

@@ -52,6 +52,7 @@ export default function ResumeEditorPage({
  const [editorWidth, setEditorWidth] = useState(450);
  const dragStateRef = useRef<{ startX: number; startWidth: number } | null>(null);
  const [isResizing, setIsResizing] = useState(false);
+ const [showPreview] = useState(true);
  const [mounted, setMounted] = useState(false);
  useEffect(() => { setMounted(true); }, []);
 
@@ -269,7 +270,7 @@ export default function ResumeEditorPage({
  </div>
 
  {/* Drag handle */}
- {showPreview && (
+ {(
  <div role="separator" aria-orientation="vertical" aria-label="Resize editor panel (double-click to reset)" aria-valuenow={editorWidth} aria-valuemin={280} aria-valuemax={Math.max(280, Math.floor(window.innerWidth * 0.65))} onPointerDown={(e) => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); dragStateRef.current = { startX: e.clientX, startWidth: editorWidth }; setIsResizing(true); document.body.style.cursor = "col-resize"; document.body.style.userSelect = "none"; }} onDoubleClick={() => setEditorWidth(450)} className="relative flex w-3 mx-1 self-stretch items-center justify-center cursor-col-resize group touch-none" title="Drag to resize - double-click to reset">
  <div className={cn("w-1 h-full rounded-full transition-colors", isResizing ? "bg-brand-500" : "bg-surface-200 group-hover:bg-brand-500/60")} />
  {isResizing && (
@@ -279,7 +280,7 @@ export default function ResumeEditorPage({
  )}
 
  {/* Right: Preview */}
- {showPreview && (
+ {(
  <div className="flex-1 min-w-0">
  <div className="relative bg-surface-50 rounded-2xl p-3 sm:p-5 border border-surface-200 shadow-inner overflow-hidden min-h-[600px] flex justify-center">
  <button onClick={() => setIsFullscreenPreview(true)} className="absolute top-3 right-3 z-10 p-2 rounded-lg bg-surface-0/80 backdrop-blur border border-surface-200 text-surface-300 hover:text-surface-400 transition-all group" title="Fullscreen Preview">

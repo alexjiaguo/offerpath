@@ -158,6 +158,44 @@ const DEFAULT_PROFILE: UserProfile = {
  }
 };
 
+/**
+ * Returns a blank profile for new users (signup).
+ * Replaces the demo DEFAULT_PROFILE so new accounts don't
+ * inherit placeholder data like "Brouard Madan".
+ */
+export function createEmptyProfile(fullName: string, email: string): UserProfile {
+  return {
+    fullName,
+    email,
+    phone: "",
+    location: "",
+    linkedin: "",
+    website: "",
+    avatarUrl: "",
+    headline: "",
+    yearsOfExperience: "",
+    targetRoleSummary: "",
+    currentCompany: "",
+    currentTitle: "",
+    keySkills: [],
+    careerGoals: "",
+    preferredIndustries: [],
+    preferredLocations: [],
+    salaryExpectation: "",
+    workAuthorization: "",
+    workExperience: [],
+    education: [],
+    disclosures: {
+      requiresSponsorship: false,
+      locationPreference: "hybrid",
+      gender: "",
+      race: "",
+      disabilityStatus: "",
+      veteranStatus: "",
+    },
+  };
+}
+
 export const useProfileStore = create<ProfileState>()(
  persist(
  (set, get) => ({

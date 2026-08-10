@@ -26,12 +26,20 @@ export async function loadFromSupabase(
  try {
  switch (storeName) {
  case "profile": {
- const { data } = await supabase
- .from("profiles")
- .select("*")
- .eq("id", user.id)
- .single();
- return data ?? null;
+  const { data } = await supabase
+  	.from("profiles")
+  	.select("*")
+  	.eq("id", user.id)
+  	.single();
+  if (data) return data;
+  // No profile row yet (e.g. trigger hasn't fired or
+  // email confirmation pending): fall back to auth
+  // user info so the store doesn't keep placeholder data.
+  return {
+  	full_name: (user.user_metadata?.full_name as string) ?? "",
+  	email: user.email ?? "",
+  	avatar_url: "",
+  };
  }
 
  case "resume": {
