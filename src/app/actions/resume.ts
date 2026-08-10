@@ -25,6 +25,8 @@ export async function saveResumeAction(resumeId: string, resumeData: Partial<Res
  template: resumeData.template ?? "classic",
  theme: resumeData.theme ?? {},
  is_base: resumeData.is_base ?? false,
+ section_order: resumeData.section_order ?? [],
+ section_visibility: resumeData.section_visibility ?? {},
  updated_at: new Date().toISOString(),
  };
 

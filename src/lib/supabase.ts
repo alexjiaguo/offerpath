@@ -8,7 +8,6 @@ function checkIsConfigured(): boolean {
  return false;
  }
  if (
- supabaseUrl.includes("ubkywtxwzrudstqvpafh.supabase.co") ||
  supabaseUrl.includes("placeholder") ||
  supabaseUrl.includes("your-supabase-url") ||
  supabaseUrl.includes("example.supabase.co") ||

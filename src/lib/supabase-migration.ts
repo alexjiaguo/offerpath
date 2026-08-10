@@ -11,6 +11,7 @@ const STORAGE_KEYS: Record<StoreName, string> = {
  resume: "offerpath-resume",
  profile: "offerpath-profile",
  discovery: "offerpath-discovery",
+ interview: "offerpath-interview",
 };
 
 type AnyRecord = Record<string, unknown>;
@@ -77,6 +78,15 @@ export async function migrateGuestDataToSupabase(): Promise<boolean> {
  readStoreState(STORAGE_KEYS.discovery) ?? {},
  "state"
  ),
+ interview: (() => {
+ const raw = readStoreState(STORAGE_KEYS.interview) ?? {};
+ const inner = extractSlice(raw, "state");
+ return {
+ stories: (inner as Record<string, unknown>)?.stories ?? [],
+ preps: (inner as Record<string, unknown>)?.preps ?? [],
+ mockSessions: (inner as Record<string, unknown>)?.mockSessions ?? [],
+ };
+ })(),
  };
 
  // If no store has any data, mark migrated and bail — there's nothing to push.
@@ -97,6 +107,7 @@ export async function migrateGuestDataToSupabase(): Promise<boolean> {
  await syncStoreToSupabase("resume", slices.resume);
  await syncStoreToSupabase("profile", slices.profile);
  await syncStoreToSupabase("discovery", slices.discovery);
+		await syncStoreToSupabase("interview", slices.interview);
  } catch (err) {
  logger.error("[supabase-migration] migration failed:", err);
  return false;

@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS resumes (
   template TEXT DEFAULT 'classic',
   theme JSONB DEFAULT '{}',
   is_base BOOLEAN DEFAULT FALSE,
+  section_order JSONB DEFAULT '[]',
+  section_visibility JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -75,6 +77,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   salary_range TEXT,
   comp_details JSONB DEFAULT '{}',
   kanban_order INTEGER DEFAULT 0,
+  history JSONB DEFAULT '[]',
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -138,6 +141,8 @@ ALTER TABLE stories ENABLE ROW LEVEL SECURITY;
 -- Profiles
 CREATE POLICY "profiles_select" ON profiles
   FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "profiles_insert" ON profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "profiles_update" ON profiles
   FOR UPDATE USING (auth.uid() = id);
 

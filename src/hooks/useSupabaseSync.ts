@@ -19,8 +19,11 @@ import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
+import { useInterviewStore } from "@/store/interviewStore";
 import type { Job, Company, Resume } from "@/types";
+import type { UserProfile } from "@/store/profileStore";
 import type { DiscoveredCompany, DiscoveredJob } from "@/store/discoveryStore";
+import type { Story, InterviewPrep, MockSession } from "@/types";
 import { migrateGuestDataToSupabase } from "@/lib/supabase-migration";
 
 const DEBOUNCE_MS = 500;
@@ -179,6 +182,7 @@ export function useSupabaseSync(): SyncState {
  if (cancelled) break;
  if (data) {
  const adapter = getStoreAdapter(name);
+ if (!adapter) continue;
  adapter.hydrate(data);
  }
  } catch (err) {
@@ -200,6 +204,7 @@ export function useSupabaseSync(): SyncState {
  unsubscribers.push(
  ...storeNames.map((name) => {
  const adapter = getStoreAdapter(name);
+ if (!adapter) return () => {};
  return adapter.subscribe(() => {
  const snapshot = adapter.getSnapshot();
  scheduleSync(name, snapshot);

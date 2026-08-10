@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger";
 
 import { createClient, isSupabaseConfigured } from "./supabase";
 
-export type StoreName = "pipeline" | "resume" | "profile" | "discovery";
+export type StoreName = "pipeline" | "resume" | "profile" | "discovery" | "interview";
 
 // ── Load: fetch from Supabase and return data for store hydration ──
 
@@ -70,6 +70,19 @@ export async function loadFromSupabase(
  jobs: jobsRes.data ?? [],
  };
  }
+
+ case "interview": {
+ const [storiesRes, prepsRes, mocksRes] = await Promise.all([
+ supabase.from("stories").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }),
+ supabase.from("interview_preps").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }),
+ supabase.from("mock_sessions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+ ]);
+ return {
+ stories: storiesRes.data ?? [],
+ preps: prepsRes.data ?? [],
+ mockSessions: mocksRes.data ?? [],
+ };
+ }
  }
  } catch (err) {
  logger.error(
@@ -110,7 +123,21 @@ export async function syncStoreToSupabase(
  ai_uses_this_week: profile.aiUsesThisWeek ?? 0,
  week_reset_at: profile.weekResetAt ?? new Date().toISOString(),
  onboarding_completed: profile.onboardingCompleted ?? false,
- preferences: profile.preferences ?? {},
+ preferences: (() => {
+ const prefs: Record<string, unknown> = {};
+ const packedFields = [
+ "phone", "location", "linkedin", "website", "avatarUrl",
+ "headline", "yearsOfExperience", "targetRoleSummary",
+ "currentCompany", "currentTitle", "keySkills",
+ "careerGoals", "preferredIndustries", "preferredLocations",
+ "salaryExpectation", "workAuthorization",
+ "workExperience", "education", "disclosures",
+ ];
+ for (const field of packedFields) {
+ if (profile[field] !== undefined) prefs[field] = profile[field];
+ }
+ return prefs;
+ })(),
  };
  await supabase.from("profiles").upsert(row, { onConflict: "id" });
  break;
@@ -142,6 +169,8 @@ export async function syncStoreToSupabase(
  template: resume.template ?? "classic",
  theme: resume.theme ?? {},
  is_base: resume.is_base ?? false,
+ section_order: resume.section_order ?? [],
+ section_visibility: resume.section_visibility ?? {},
  };
  await supabase
  .from("resumes")
@@ -190,6 +219,7 @@ export async function syncStoreToSupabase(
  comp_details: job.comp_details ?? {},
  kanban_order: job.kanban_order ?? 0,
  notes: job.notes ?? null,
+ history: job.history ?? [],
  };
  await supabase.from("jobs").upsert(row, { onConflict: "id" });
  }
@@ -232,6 +262,62 @@ export async function syncStoreToSupabase(
  await supabase
  .from("companies")
  .upsert(row, { onConflict: "id" });
+ }
+ break;
+ break;
+ }
+
+ case "interview": {
+ const payload = data as {
+ stories?: Record<string, unknown>[];
+ preps?: Record<string, unknown>[];
+ mockSessions?: Record<string, unknown>[];
+ };
+ const stories = payload.stories ?? [];
+ const preps = payload.preps ?? [];
+ const mockSessions = payload.mockSessions ?? [];
+
+ // Stories: active deletion + upsert
+ const { data: dbStories } = await supabase.from("stories").select("id").eq("user_id", user.id);
+ if (dbStories) {
+ const toDelete = dbStories.map((s) => s.id).filter((id) => !stories.some((s) => s.id === id));
+ if (toDelete.length > 0) await supabase.from("stories").delete().in("id", toDelete);
+ }
+ for (const story of stories) {
+ await supabase.from("stories").upsert({
+ id: story.id, user_id: user.id, title: story.title, competency: story.competency,
+ situation: story.situation ?? null, task: story.task ?? null,
+ action: story.action ?? null, result: story.result ?? null,
+ metrics: story.metrics ?? null, tags: story.tags ?? [], used_count: story.used_count ?? 0,
+ }, { onConflict: "id" });
+ }
+
+ // Interview preps: active deletion + upsert
+ const { data: dbPreps } = await supabase.from("interview_preps").select("id").eq("user_id", user.id);
+ if (dbPreps) {
+ const toDelete = dbPreps.map((p) => p.id).filter((id) => !preps.some((p) => p.id === id));
+ if (toDelete.length > 0) await supabase.from("interview_preps").delete().in("id", toDelete);
+ }
+ for (const prep of preps) {
+ await supabase.from("interview_preps").upsert({
+ id: prep.id, user_id: user.id, job_id: prep.job_id,
+ company_research: prep.company_research ?? null, role_analysis: prep.role_analysis ?? null,
+ questions: prep.questions ?? [],
+ }, { onConflict: "id" });
+ }
+
+ // Mock sessions: active deletion + upsert
+ const { data: dbMocks } = await supabase.from("mock_sessions").select("id").eq("user_id", user.id);
+ if (dbMocks) {
+ const toDelete = dbMocks.map((m) => m.id).filter((id) => !mockSessions.some((m) => m.id === id));
+ if (toDelete.length > 0) await supabase.from("mock_sessions").delete().in("id", toDelete);
+ }
+ for (const session of mockSessions) {
+ await supabase.from("mock_sessions").upsert({
+ id: session.id, user_id: user.id, job_id: session.job_id ?? null,
+ transcript: session.transcript ?? [], score: session.score ?? null,
+ feedback: session.feedback ?? {}, duration_seconds: session.duration_seconds ?? null,
+ }, { onConflict: "id" });
  }
  break;
  }
