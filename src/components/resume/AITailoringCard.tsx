@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { ResumeData } from "@/types";
 import { tailorResume, evaluateATS, type TailorResult, type ATSResult } from "@/lib/aiService";
+import { useTranslation } from "@/i18n";
 
 interface AITailoringCardProps {
   resumeData: ResumeData;
@@ -22,6 +23,7 @@ export default function AITailoringCard({
   onApply,
   saveToHistory,
 }: AITailoringCardProps) {
+  const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
   const [tailorJD, setTailorJD] = useState("");
   const [tailorJobTitle, setTailorJobTitle] = useState("");
@@ -48,7 +50,7 @@ export default function AITailoringCard({
         tailorResume({
           baseResume: resumeData,
           jobDescription: tailorJD,
-          jobTitle: tailorJobTitle || "Target Role",
+          jobTitle: tailorJobTitle || "Job title",
           companyName: tailorCompany || "Target Company",
           profileSummary,
         }),
@@ -57,7 +59,7 @@ export default function AITailoringCard({
       setDraftResult(tailorRes);
       setAtsResult(atsRes);
     } catch {
-      toast.error("Analysis failed. Please try again.");
+      toast.error(t("resumeStudio.aiActions.enhanceBulletError") || "Analysis failed. Please try again.");
     } finally {
       setProcessing(false);
     }
@@ -91,26 +93,31 @@ export default function AITailoringCard({
     <>
       {/* Prominent card - full width, gradient accent */}
       <button
+        type="button"
         onClick={() => setShowModal(true)}
-        className="group w-full flex items-center gap-4 rounded-2xl border border-brand-500/20 bg-gradient-to-r from-brand-500/10 to-brand-500/5 p-3.5 text-left transition-all hover:border-brand-500/40 hover:from-brand-500/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
+        className="group w-full flex items-center gap-3 rounded-2xl border border-brand-500/20 bg-gradient-to-r from-brand-500/10 to-brand-500/5 p-3 text-left transition-all hover:border-brand-500/40 hover:from-brand-500/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 min-w-0"
       >
-        <div className="w-10 h-10 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center flex-shrink-0">
-          <Sparkle className="w-5 h-5 text-brand-400" weight="fill" />
+        <div className="w-9 h-9 rounded-xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center flex-shrink-0">
+          <Sparkle className="w-4.5 h-4.5 text-brand-400" weight="fill" />
         </div>
         <div className="min-w-0 flex-1">
-          <span className="block text-sm font-bold text-surface-400">AI Tailoring</span>
-          <span className="block text-[11px] text-surface-300 mt-0.5">
-            {hasResult ? "Draft ready - click to review" : "Tailor your resume and get an instant match score"}
+          <span className="block text-xs sm:text-sm font-bold text-surface-400 truncate">
+            {t("resumeStudio.aiActions.tailorToJob") || "Tailor to a job"}
+          </span>
+          <span className="block text-[10px] sm:text-[11px] text-surface-300 mt-0.5 truncate">
+            {hasResult
+              ? (t("resumeStudio.aiActions.draftReady") || "Draft ready — click to review")
+              : (t("resumeStudio.aiActions.tailorDesc") || "Rewrite your resume to match a job description")}
           </span>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           {atsResult && (
-            <span className={cn("px-2.5 py-1 rounded-lg text-xs font-bold border", scoreBg(atsResult.score), scoreColor(atsResult.score))}>
+            <span className={cn("px-2 py-0.5 rounded-lg text-xs font-bold border", scoreBg(atsResult.score), scoreColor(atsResult.score))}>
               {atsResult.score}
             </span>
           )}
-          <span className="px-3 py-1.5 rounded-lg bg-brand-500 text-white text-[10px] font-bold uppercase tracking-widest group-hover:bg-brand-400 transition-colors">
-            Open
+          <span className="px-2.5 py-1 rounded-lg bg-brand-500 text-white text-[10px] font-bold uppercase tracking-widest group-hover:bg-brand-400 transition-colors">
+            {t("resumeStudio.aiActions.start") || "Start"}
           </span>
         </div>
       </button>
@@ -130,8 +137,12 @@ export default function AITailoringCard({
                   <Sparkle className="w-6 h-6 text-brand-400" weight="fill" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold font-display text-surface-400">AI Resume Tailoring</h2>
-                  <p className="text-[10px] text-surface-300 uppercase tracking-widest mt-0.5">Tailored resume + ATS match score</p>
+                  <h2 className="text-xl font-bold font-display text-surface-400">
+                    {t("resumeStudio.aiActions.tailorToJob") || "Tailor to a job"}
+                  </h2>
+                  <p className="text-[10px] text-surface-300 uppercase tracking-widest mt-0.5">
+                    {t("resumeStudio.aiActions.tailorDesc") || "Updated resume and match score"}
+                  </p>
                 </div>
               </div>
               <button onClick={() => { setShowModal(false); setDraftResult(null); setAtsResult(null); }} className="p-2 rounded-xl text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all">
@@ -143,22 +154,30 @@ export default function AITailoringCard({
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">Target Job Title</label>
+                    <label className="block text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">
+                      {t("resumeStudio.fields.jobTitle") || "Job title"}
+                    </label>
                     <input type="text" value={tailorJobTitle} onChange={(e) => setTailorJobTitle(e.target.value)} placeholder="e.g. Senior PM" className="w-full px-4 py-3 rounded-xl bg-white border border-surface-200 text-sm text-surface-400 focus:outline-none focus:border-brand-500/40 transition-all font-sans" />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">Company</label>
+                    <label className="block text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">
+                      {t("resumeStudio.fields.company") || "Company"}
+                    </label>
                     <input type="text" value={tailorCompany} onChange={(e) => setTailorCompany(e.target.value)} placeholder="e.g. Google" className="w-full px-4 py-3 rounded-xl bg-white border border-surface-200 text-sm text-surface-400 focus:outline-none focus:border-brand-500/40 transition-all font-sans" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">Job Description</label>
-                  <textarea value={tailorJD} onChange={(e) => setTailorJD(e.target.value)} rows={8} placeholder="Paste the job description here..." className="w-full px-5 py-4 rounded-2xl bg-white border border-surface-200 text-sm text-surface-400 focus:outline-none focus:border-brand-500/40 transition-all resize-none font-sans" />
+                  <label className="block text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">
+                    {t("resumeStudio.aiActions.jobDescription") || "Job Description"}
+                  </label>
+                  <textarea value={tailorJD} onChange={(e) => setTailorJD(e.target.value)} rows={8} placeholder={t("resumeStudio.aiActions.pasteJdPlaceholder") || "Paste the job description here..."} className="w-full px-5 py-4 rounded-2xl bg-white border border-surface-200 text-sm text-surface-400 focus:outline-none focus:border-brand-500/40 transition-all resize-none font-sans" />
                 </div>
                 <div className="flex gap-4">
-                  <button onClick={() => setShowModal(false)} className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-surface-300 bg-surface-100 border border-surface-200 hover:bg-surface-200 transition-all uppercase tracking-widest">Cancel</button>
+                  <button onClick={() => setShowModal(false)} className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-surface-300 bg-surface-100 border border-surface-200 hover:bg-surface-200 transition-all uppercase tracking-widest">
+                    {t("resumeStudio.dialogs.cancel") || "Cancel"}
+                  </button>
                   <button onClick={handleTailor} disabled={processing || !tailorJD.trim()} className={cn("flex-[2] flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl text-sm font-bold transition-all shadow-lg", processing || !tailorJD.trim() ? "bg-surface-400 text-surface-300 cursor-not-allowed" : "bg-brand-500 text-white hover:bg-brand-400 shadow-brand-500/20")}>
-                    {processing ? <><ArrowsClockwise className="w-5 h-5 animate-spin" /> Analyzing...</> : <><Sparkle className="w-5 h-5" /> Tailor & Score</>}
+                    {processing ? <><ArrowsClockwise className="w-5 h-5 animate-spin" /> {t("resumeStudio.aiActions.tailoring") || "Tailoring…"}</> : <><Sparkle className="w-5 h-5" /> {t("resumeStudio.aiActions.tailorResume") || "Tailor resume"}</>}
                   </button>
                 </div>
               </div>
@@ -177,7 +196,7 @@ export default function AITailoringCard({
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <Target className="w-4 h-4 text-surface-300" />
-                        <span className="text-sm font-bold text-surface-400 uppercase tracking-widest">ATS Match Score</span>
+                        <span className="text-sm font-bold text-surface-400 uppercase tracking-widest">{t("resumeStudio.aiActions.atsScore") || "ATS Match Score"}</span>
                       </div>
                       <div className="text-[10px] font-bold text-surface-300 uppercase tracking-widest mb-2">
                         {atsResult.matchedKeywords.length} Matched - {atsResult.missingKeywords.length} Missing
@@ -198,7 +217,7 @@ export default function AITailoringCard({
                 {atsResult && atsResult.feedback.length > 0 && (
                   <div className="space-y-2">
                     <div className="text-[10px] font-bold text-surface-300 uppercase tracking-widest flex items-center gap-2">
-                      <Warning className="w-3.5 h-3.5" /> Suggestions
+                      <Warning className="w-3.5 h-3.5" /> {t("resumeStudio.aiActions.suggestions") || "Suggestions"}
                     </div>
                     {atsResult.feedback.map((fb, i) => (
                       <div key={i} className={cn("p-2.5 rounded-lg border-l-2 text-[11px] font-medium leading-relaxed", fb.severity === "high" ? "bg-red-500/5 border-red-500/40 text-red-600" : fb.severity === "medium" ? "bg-amber-500/5 border-amber-500/40 text-amber-600" : "bg-blue-500/5 border-blue-500/40 text-blue-600")}>
@@ -213,8 +232,8 @@ export default function AITailoringCard({
                   <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
                     <CheckCircle className="w-6 h-6 text-emerald-400 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-emerald-600 font-bold uppercase tracking-widest">Tailoring Complete</p>
-                      <p className="text-[10px] text-emerald-500/70 font-medium uppercase tracking-widest mt-0.5">Review and commit changes.</p>
+                      <p className="text-sm text-emerald-600 font-bold uppercase tracking-widest">{t("resumeStudio.aiActions.draftReady") || "Draft ready"}</p>
+                      <p className="text-[10px] text-emerald-500/70 font-medium uppercase tracking-widest mt-0.5">{t("resumeStudio.aiActions.draftReadyDesc") || "Review the changes, then apply them."}</p>
                     </div>
                   </div>
                 )}
@@ -222,7 +241,7 @@ export default function AITailoringCard({
                 {/* New Summary */}
                 {draftResult && (
                   <div className="space-y-2">
-                    <h4 className="text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">New Summary</h4>
+                    <h4 className="text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">{t("resumeStudio.aiActions.newSummary") || "New Summary"}</h4>
                     <div className="p-5 rounded-2xl bg-white border border-surface-200 text-sm text-surface-400 leading-relaxed font-sans">{draftResult.summary}</div>
                   </div>
                 )}
@@ -230,7 +249,7 @@ export default function AITailoringCard({
                 {/* Experience Changes */}
                 {draftResult && (
                   <div className="space-y-2">
-                    <h4 className="text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">Experience Changes</h4>
+                    <h4 className="text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">{t("resumeStudio.aiActions.experienceChanges") || "Experience Changes"}</h4>
                     <div className="space-y-3">
                       {draftResult.experience.map((exp, i) => {
                         const old = resumeData.experience?.[i];
@@ -258,14 +277,18 @@ export default function AITailoringCard({
                 {/* Tailoring Notes */}
                 {draftResult && (
                   <div className="space-y-2">
-                    <h4 className="text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">Tailoring Notes</h4>
+                    <h4 className="text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">{t("resumeStudio.aiActions.tailoringNotes") || "Tailoring Notes"}</h4>
                     <div className="p-5 rounded-2xl bg-brand-500/5 border border-brand-500/10 text-xs text-surface-400 leading-relaxed whitespace-pre-wrap font-sans">{draftResult.tailoringNotes}</div>
                   </div>
                 )}
 
                 <div className="flex gap-4">
-                  <button onClick={() => { setDraftResult(null); setAtsResult(null); }} className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-surface-300 bg-surface-100 border border-surface-200 hover:bg-surface-200 transition-all uppercase tracking-widest">Discard</button>
-                  <button onClick={applyDraft} disabled={!draftResult} className={cn("flex-[2] px-6 py-3.5 rounded-2xl text-sm font-bold transition-all shadow-xl uppercase tracking-widest", draftResult ? "bg-surface-400 text-white hover:bg-surface-400 shadow-white/5" : "bg-surface-200 text-surface-300 cursor-not-allowed")}>Apply to Resume</button>
+                  <button onClick={() => { setDraftResult(null); setAtsResult(null); }} className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-surface-300 bg-surface-100 border border-surface-200 hover:bg-surface-200 transition-all uppercase tracking-widest">
+                    {t("resumeStudio.aiActions.discard") || "Discard"}
+                  </button>
+                  <button onClick={applyDraft} disabled={!draftResult} className={cn("flex-[2] px-6 py-3.5 rounded-2xl text-sm font-bold transition-all shadow-xl uppercase tracking-widest", draftResult ? "bg-surface-400 text-white hover:bg-surface-400 shadow-white/5" : "bg-surface-200 text-surface-300 cursor-not-allowed")}>
+                    {t("resumeStudio.aiActions.applyChanges") || "Apply changes"}
+                  </button>
                 </div>
               </div>
             )}

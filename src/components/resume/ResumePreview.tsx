@@ -51,6 +51,7 @@ const DEFAULT_THEME: ResumeTheme = {
  pagePadding: 30,
  sectionSpacing: 12,
  itemSpacing: 6,
+ bulletSpacing: 4,
 };
 
 const DEFAULT_SECTION_ORDER: SectionKey[] = [
@@ -131,34 +132,6 @@ export default function ResumePreview({
  />
  </div>
  </div>
-
- {/* Print styles */}
- <style jsx global>{`
- @media print {
- body * {
- visibility: hidden;
- }
- .print-preview,
- .print-preview * {
- visibility: visible;
- }
- .print-preview {
- position: absolute;
- left: 0;
- top: 0;
- width: 100%;
- }
- .print-preview > div {
- box-shadow: none !important;
- border-radius: 0 !important;
- }
- .print-preview > div > div {
- transform: none !important;
- width: 100% !important;
- height: auto !important;
- }
- }
- `}</style>
  </div>
  );
 }

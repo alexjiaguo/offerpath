@@ -70,6 +70,7 @@ export interface PipelineStats {
  interviewRate: number;
  offerRate: number;
  addedThisWeek: number;
+ appliedThisWeek: number;
 }
 
 // ── Default Filters ─────────────────────────────────
@@ -85,7 +86,7 @@ const DEFAULT_FILTERS: PipelineFilters = {
 
 // ── Mock Companies ──────────────────────────────────
 
-const MOCK_COMPANIES: Company[] = [
+export const MOCK_COMPANIES: Company[] = [
  {
  id: "c1",
  user_id: "demo",
@@ -162,7 +163,7 @@ const MOCK_COMPANIES: Company[] = [
 
 // ── Mock Jobs ───────────────────────────────────────
 
-const MOCK_JOBS: Job[] = [
+export const MOCK_JOBS: Job[] = [
  {
  id: "j1",
  user_id: "demo",
@@ -457,8 +458,8 @@ const MOCK_JOBS: Job[] = [
 export const usePipelineStore = create<PipelineState>()(
  persist(
  (set, get) => ({
- jobs: MOCK_JOBS,
- companies: MOCK_COMPANIES,
+ jobs: [],
+ companies: [],
  filters: DEFAULT_FILTERS,
  sortField: "created_at",
  sortDirection: "desc",
@@ -727,8 +728,11 @@ export const usePipelineStore = create<PipelineState>()(
  const addedThisWeek = jobs.filter(
  (j) => new Date(j.created_at) >= weekAgo
  ).length;
+ const appliedThisWeek = jobs.filter(
+ (j) => j.status === "applied" && new Date(j.updated_at) >= weekAgo
+ ).length;
 
- return { total, byStatus, avgScore, interviewRate, offerRate, addedThisWeek };
+ return { total, byStatus, avgScore, interviewRate, offerRate, addedThisWeek, appliedThisWeek };
  },
 
  getUniqueArchetypes: () => {
@@ -748,6 +752,7 @@ export const usePipelineStore = create<PipelineState>()(
  }),
  {
  name: "offerpath-pipeline",
+ skipHydration: true,
  partialize: (state) => ({
  jobs: state.jobs,
  companies: state.companies,

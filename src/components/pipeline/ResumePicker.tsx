@@ -172,7 +172,7 @@ export default function ResumePicker() {
  : "text-brand-300 bg-brand-500/10"
  )}
  >
- {resume.is_base ? "Base" : "Tailored"}
+ {resume.is_base ? "Master" : "Version"}
  </span>
  <span className="text-[10px] text-surface-400">
  Updated{" "}
@@ -202,10 +202,10 @@ export default function ResumePicker() {
  </div>
  <div className="flex-1">
  <p className="text-sm font-medium text-surface-400 group-hover:text-surface-400 transition-colors">
- Create Tailored Resume
+ Create a version for this job
  </p>
  <p className="text-[10px] text-surface-400">
- Start from a base resume, optimized for this role
+ Start from a master resume, tailored for this role
  </p>
  </div>
  <CaretRight className="w-4 h-4 text-surface-400 group-hover:text-brand-400 transition-colors" />

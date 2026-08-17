@@ -8,8 +8,6 @@ import { persist } from "zustand/middleware";
 import {
  MOCK_COMPANIES,
  MOCK_DISCOVERED_JOBS,
- DEFAULT_PROFILE,
- MOCK_SCAN_RUNS,
 } from "./mockDiscoveryData";
 
 // ── Types ───────────────────────────────────────────
@@ -126,10 +124,23 @@ export interface DiscoveryState {
 export const useDiscoveryStore = create<DiscoveryState>()(
  persist(
  (set, get) => ({
- companies: MOCK_COMPANIES,
- jobs: MOCK_DISCOVERED_JOBS,
- profile: DEFAULT_PROFILE,
- scanRuns: MOCK_SCAN_RUNS,
+ companies: [],
+ jobs: [],
+ profile: {
+ id: "",
+ title: "",
+ target_roles: [],
+ industries: [],
+ locations: [],
+ min_match_score: 0,
+ keywords: [],
+ experience_years: "",
+ auto_scan_enabled: false,
+ auto_scan_interval: "weekly",
+ created_at: "",
+ updated_at: "",
+ },
+ scanRuns: [],
 
  // UI State
  activeTab: "all",
@@ -182,6 +193,10 @@ export const useDiscoveryStore = create<DiscoveryState>()(
  },
 
  startScan: () => {
+ const existing = new Set(get().jobs.map((j) => `${j.company_name}|${j.title}`));
+ const candidates = MOCK_DISCOVERED_JOBS.filter(
+ (j) => !existing.has(`${j.company_name}|${j.title}`)
+ ).slice(0, 5);
  const newRun: ScanRun = {
  id: `sr-${Date.now()}`,
  profile_id: get().profile.id,
@@ -194,23 +209,30 @@ export const useDiscoveryStore = create<DiscoveryState>()(
  };
  set((state) => ({ scanRuns: [newRun, ...state.scanRuns] }));
 
- // Simulate completion after 3 seconds
- setTimeout(() => {
+ window.setTimeout(() => {
+ const added = candidates.map((j, i) => ({
+ ...j,
+ id: `scan-${Date.now()}-${i}`,
+ posted_date: new Date().toISOString().slice(0, 10),
+ saved: false,
+ dismissed: false,
+ }));
  set((state) => ({
+ jobs: [...added, ...state.jobs],
  scanRuns: state.scanRuns.map((sr) =>
  sr.id === newRun.id
  ? {
  ...sr,
  status: "completed" as const,
  completed_at: new Date().toISOString(),
- companies_scanned: 30,
- new_jobs_found: Math.floor(Math.random() * 5) + 2,
- total_matches: 30,
+ companies_scanned: get().companies.length || MOCK_COMPANIES.length,
+ new_jobs_found: added.length,
+ total_matches: state.jobs.length + added.length,
  }
  : sr
  ),
  }));
- }, 3000);
+ }, 1200);
  },
 
  // Computed
@@ -306,6 +328,7 @@ export const useDiscoveryStore = create<DiscoveryState>()(
  }),
  {
  name: "offerpath-discovery",
+ skipHydration: true,
  partialize: (state) => ({
  companies: state.companies,
  jobs: state.jobs,

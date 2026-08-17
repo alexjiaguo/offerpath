@@ -98,70 +98,9 @@ export interface ProfileState {
  updateDisclosures: (updates: Partial<EmploymentDisclosures>) => void;
 }
 
-const DEFAULT_PROFILE: UserProfile = {
- fullName: "Brouard Madan",
- email: "brouard.madan@email.com",
- phone: "+1 650 555 0199",
- location: "Los Angeles, CA",
- linkedin: "linkedin.com/in/brouardmadan",
- website: "brouard.dev",
- avatarUrl: "",
- headline: "AI Product Manager | LLM & Monetization Platforms",
- yearsOfExperience: "5+",
- targetRoleSummary: "Seeking Lead/Senior PM roles owning P&L for AI platforms, LLM/RAG integrations, or SaaS marketplaces at tier-1 tech companies.",
- currentCompany: "Tripalink",
- currentTitle: "AI Product Manager",
- keySkills: ["LLM", "RAG", "Agile", "Python", "SQL", "Product Strategy", "Revenue Optimization", "A/B Testing"],
- careerGoals: "Transition into a Director-level role leading AI platform monetization and product strategy at a global scale.",
- preferredIndustries: ["Technology", "AI/SaaS", "E-Commerce", "PropTech"],
- preferredLocations: ["San Francisco, CA", "Los Angeles, CA", "Remote (US)"],
- salaryExpectation: "USD 180K–240K",
- workAuthorization: "US Citizen",
- workExperience: [
- {
- id: "w1",
- company: "Tripalink",
- role: "AI Product Manager",
- location: "Los Angeles, CA",
- startDate: "2024-03",
- endDate: "",
- isCurrent: true,
- description: "Spearheaded AI onboarding flows that increased candidate funnel activation by 35%. Automated SaaS contract redlines using LLMs, cutting legal review latency by 60%."
- },
- {
- id: "w2",
- company: "SaaSify",
- role: "Associate Product Manager",
- location: "San Jose, CA",
- startDate: "2022-06",
- endDate: "2024-02",
- isCurrent: false,
- description: "Owned product development for a marketplace billing hub. Increased self-serve checkout conversions by 15% through smart defaults."
- }
- ],
- education: [
- {
- id: "e1",
- school: "Xi'an Jiaotong University",
- degree: "Master of Science",
- major: "Electrical Engineering",
- graduationDate: "2022-05"
- }
- ],
- disclosures: {
- requiresSponsorship: false,
- locationPreference: "hybrid",
- gender: "male",
- race: "asian",
- disabilityStatus: "no",
- veteranStatus: "no"
- }
-};
-
 /**
  * Returns a blank profile for new users (signup).
- * Replaces the demo DEFAULT_PROFILE so new accounts don't
- * inherit placeholder data like "Brouard Madan".
+ * First paint must not inherit placeholder data like "Brouard Madan".
  */
 export function createEmptyProfile(fullName: string, email: string): UserProfile {
   return {
@@ -199,7 +138,7 @@ export function createEmptyProfile(fullName: string, email: string): UserProfile
 export const useProfileStore = create<ProfileState>()(
  persist(
  (set, get) => ({
- profile: DEFAULT_PROFILE,
+ profile: createEmptyProfile("", ""),
  uploadedResume: null,
  apiKeys: [],
  updateProfile: (updates) => {
@@ -215,16 +154,79 @@ export const useProfileStore = create<ProfileState>()(
  set((state) => ({ profile: { ...state.profile, keySkills: state.profile.keySkills.filter((s) => s !== skill) } }));
  },
  uploadResume: async (file: File) => {
+ const { parseUploadedResume } = await import("@/lib/resumeUploadPipeline");
+ const result = await parseUploadedResume(file);
+ if (!result.ok) {
+ throw new Error(result.error);
+ }
  const fileType = file.name.endsWith(".pdf") ? "pdf" : file.name.endsWith(".docx") ? "docx" : "txt";
- const mockParsedText = `BROUARD MADAN\nAI Product Manager\nLos Angeles · brouard.madan@email.com`;
+ const parsedText = [
+ result.data.personal?.name,
+ result.data.personal?.title,
+ result.data.personal?.email,
+ result.data.summary,
+ ].filter(Boolean).join("\n");
  const uploaded: UploadedResume = {
  fileName: file.name,
  fileSize: file.size,
  uploadedAt: new Date().toISOString(),
- parsedText: mockParsedText,
+ parsedText,
  fileType: fileType as "pdf" | "docx" | "txt",
  };
- set({ uploadedResume: uploaded });
+
+ const currentProfile = get().profile;
+ const profileUpdates: Partial<UserProfile> = {};
+
+ if (result.data.personal?.name) profileUpdates.fullName = result.data.personal.name;
+ if (result.data.personal?.email) profileUpdates.email = result.data.personal.email;
+ if (result.data.personal?.phone) profileUpdates.phone = result.data.personal.phone;
+ if (result.data.personal?.location) profileUpdates.location = result.data.personal.location;
+ if (result.data.personal?.linkedin) profileUpdates.linkedin = result.data.personal.linkedin;
+ if (result.data.personal?.website) profileUpdates.website = result.data.personal.website;
+ if (result.data.personal?.title) {
+   profileUpdates.currentTitle = result.data.personal.title;
+   profileUpdates.headline = result.data.personal.title;
+ }
+ if (result.data.summary) {
+   profileUpdates.targetRoleSummary = result.data.summary;
+ }
+ if (result.data.experience && result.data.experience.length > 0) {
+   if (!profileUpdates.currentCompany && result.data.experience[0].company) {
+     profileUpdates.currentCompany = result.data.experience[0].company;
+   }
+   profileUpdates.workExperience = result.data.experience.map((exp, i) => ({
+     id: `exp-${Date.now()}-${i}`,
+     company: exp.company || "",
+     role: exp.title || "",
+     location: exp.location || "",
+     startDate: exp.start_date || "",
+     endDate: exp.end_date || "",
+     isCurrent: !!exp.current,
+     description: (exp.bullets || []).join("\n"),
+   }));
+ }
+ if (result.data.education && result.data.education.length > 0) {
+   profileUpdates.education = result.data.education.map((edu, i) => ({
+     id: `edu-${Date.now()}-${i}`,
+     school: edu.institution || "",
+     degree: edu.degree || "",
+     major: edu.field || "",
+     graduationDate: edu.end_date || "",
+   }));
+ }
+ if (result.data.skills && result.data.skills.length > 0) {
+   const extractedSkills = result.data.skills
+     .map((s) => (typeof s === "string" ? s : s.name))
+     .filter(Boolean);
+   profileUpdates.keySkills = Array.from(
+     new Set([...currentProfile.keySkills, ...extractedSkills])
+   );
+ }
+
+ set({
+   uploadedResume: uploaded,
+   profile: { ...currentProfile, ...profileUpdates },
+ });
  },
  clearResume: () => {
  set({ uploadedResume: null });
@@ -296,6 +298,6 @@ export const useProfileStore = create<ProfileState>()(
  }));
  },
  }),
- { name: "offerpath-profile" }
+ { name: "offerpath-profile", skipHydration: true }
  )
 );

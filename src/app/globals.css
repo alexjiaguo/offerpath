@@ -151,6 +151,17 @@
   }
 }
 
+:focus-visible {
+  outline: 2px solid var(--color-ember-500);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .kbd-key {
+    display: none;
+  }
+}
+
 
 /* ═══════════════════════════════════════════════════
    Print isolation - only the full-scale resume prints.

@@ -12,6 +12,6 @@ export const useUIStore = create<UIState>()(
       sidebarCollapsed: false,
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
     }),
-    { name: "offerpath-ui" }
+    { name: "offerpath-ui", skipHydration: true }
   )
 );

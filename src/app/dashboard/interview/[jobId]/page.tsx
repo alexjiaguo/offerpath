@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowsClockwise, Book, Briefcase, ChatCircleText, CheckCircl
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useInterviewStore } from "@/store/interviewStore";
 import { useProfileStore } from "@/store/profileStore";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 
@@ -79,6 +80,8 @@ export default function JobPrepPage({
  job.description || "",
  getProfileSummary()
  );
+ } catch (err) {
+ toast.error(err instanceof Error ? err.message : "Could not generate prep.");
  } finally {
  setGenerating(false);
  }

@@ -182,12 +182,13 @@ export async function generateDocx(data: ResumeData, title: string) {
  children.push(sectionHeading("Education"));
 
  for (const edu of data.education) {
+ const degreeText = [edu.degree, edu.field].filter(Boolean).join(" in ") || edu.degree || "Degree";
  children.push(
  new Paragraph({
- spacing: { before: 80, after: 40 },
+ spacing: { before: 120, after: 40 },
  children: [
  new TextRun({
- text: `${edu.degree} in ${edu.field}`,
+ text: degreeText,
  bold: true,
  size: 22,
  font: "Calibri",
@@ -196,10 +197,11 @@ export async function generateDocx(data: ResumeData, title: string) {
  ],
  })
  );
- const eduDetails: string[] = [edu.institution];
+ const eduDetails: string[] = [edu.institution].filter(Boolean);
  if (edu.end_date) eduDetails.push(edu.end_date);
  if (edu.gpa) eduDetails.push(`GPA: ${edu.gpa}`);
 
+ if (eduDetails.length > 0) {
  children.push(
  new Paragraph({
  spacing: { after: 80 },
@@ -215,16 +217,134 @@ export async function generateDocx(data: ResumeData, title: string) {
  );
  }
  }
+ }
+
+ // ── Technical Skills ──
+ if (data.technicalSkills && data.technicalSkills.length > 0) {
+ children.push(sectionHeading("Technical Skills"));
+ for (const cat of data.technicalSkills) {
+ children.push(
+ new Paragraph({
+ spacing: { after: 60 },
+ children: [
+ new TextRun({
+ text: `${cat.category}: `,
+ bold: true,
+ size: 20,
+ font: "Calibri",
+ color: "111827",
+ }),
+ new TextRun({
+ text: cat.skills,
+ size: 20,
+ font: "Calibri",
+ color: "374151",
+ }),
+ ],
+ })
+ );
+ }
+ }
 
  // ── Skills ──
  if (data.skills && data.skills.length > 0) {
+ const skillNames = data.skills
+ .map((s) => (typeof s === "string" ? s : s.name))
+ .filter(Boolean);
+
+ if (skillNames.length > 0) {
  children.push(sectionHeading("Skills"));
  children.push(
  new Paragraph({
  spacing: { after: 120 },
  children: [
  new TextRun({
- text: data.skills.join(" • "),
+ text: skillNames.join(" • "),
+ size: 20,
+ font: "Calibri",
+ color: "374151",
+ }),
+ ],
+ })
+ );
+ }
+ }
+
+ // ── Projects ──
+ if (data.projects && data.projects.length > 0) {
+ children.push(sectionHeading("Projects"));
+ for (const proj of data.projects) {
+ const headerRuns: TextRun[] = [
+ new TextRun({
+ text: proj.name,
+ bold: true,
+ size: 22,
+ font: "Calibri",
+ color: "111827",
+ }),
+ ];
+ if (proj.url) {
+ headerRuns.push(
+ new TextRun({
+ text: ` | ${proj.url}`,
+ size: 18,
+ font: "Calibri",
+ color: "6b7280",
+ })
+ );
+ }
+ children.push(
+ new Paragraph({
+ spacing: { before: 120, after: 40 },
+ children: headerRuns,
+ })
+ );
+
+ if (proj.description) {
+ children.push(
+ new Paragraph({
+ spacing: { after: 60 },
+ children: [
+ new TextRun({
+ text: proj.description,
+ size: 20,
+ font: "Calibri",
+ color: "374151",
+ }),
+ ],
+ })
+ );
+ }
+ }
+ }
+
+ // ── Languages ──
+ if (data.languages && data.languages.length > 0) {
+ children.push(sectionHeading("Languages"));
+ children.push(
+ new Paragraph({
+ spacing: { after: 120 },
+ children: [
+ new TextRun({
+ text: data.languages.join(" • "),
+ size: 20,
+ font: "Calibri",
+ color: "374151",
+ }),
+ ],
+ })
+ );
+ }
+
+ // ── Certifications ──
+ if (data.certifications && data.certifications.length > 0) {
+ children.push(sectionHeading("Certifications"));
+ children.push(
+ new Paragraph({
+ spacing: { after: 120 },
+ children: [
+ new TextRun({
+ text: data.certifications.join(" • "),
  size: 20,
  font: "Calibri",
  color: "374151",

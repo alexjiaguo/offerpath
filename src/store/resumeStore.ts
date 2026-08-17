@@ -69,6 +69,7 @@ const DEFAULT_THEME: ResumeTheme = {
  pagePadding: 36,
  sectionSpacing: 12,
  itemSpacing: 6,
+ bulletSpacing: 4,
 };
 
 // ── Default Section Order ──────────────────────────
@@ -87,11 +88,11 @@ const DEFAULT_SECTION_ORDER: SectionKey[] = [
 // ── Mock Resumes ────────────────────────────────────
 
 
-const MOCK_RESUMES: Resume[] = [
+export const MOCK_RESUMES: Resume[] = [
  {
  id: "r1",
  user_id: "demo",
- title: "Base Resume — Product Leader",
+ title: "Master resume — Product Leader",
  data: {
  personal: {
  name: "Alex Chen",
@@ -291,6 +292,7 @@ const MOCK_RESUMES: Resume[] = [
  location: "Singapore",
  linkedin: "linkedin.com/in/alexchen",
  visa_status: "Singapore PR",
+ photo_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
  },
  summary:
  "Seasoned Ad Tech & Super-App Product Leader with 8+ years building monetization platforms across SEA markets. Deep expertise in ad serving, ML-based targeting, and multi-product ecosystem monetization.",
@@ -323,7 +325,7 @@ const MOCK_RESUMES: Resume[] = [
  theme: { ...DEFAULT_THEME, primaryColor: "#00b14f", accentColor: "#34d399" },
  section_order: DEFAULT_SECTION_ORDER,
  section_visibility: {
- "elegant-two-column": { ...DEFAULT_SECTION_VISIBILITY, photo: false },
+ "elegant-two-column": { ...DEFAULT_SECTION_VISIBILITY },
  },
  is_base: false,
  created_at: "2026-04-01T10:00:00Z",
@@ -368,7 +370,7 @@ export const PLACEHOLDER_RESUME_DATA: ResumeData = MOCK_RESUMES[0].data;
 export const useResumeStore = create<ResumeState>()(
  persist(
  (set, get) => ({
- resumes: MOCK_RESUMES,
+ resumes: [],
  history: { resumeId: null, past: [], future: [] },
  canUndo: false,
  canRedo: false,
@@ -574,6 +576,7 @@ export const useResumeStore = create<ResumeState>()(
  }),
  {
  name: "offerpath-resume",
+ skipHydration: true,
  partialize: (state) => ({
  resumes: state.resumes,
  }),

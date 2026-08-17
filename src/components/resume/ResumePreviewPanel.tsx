@@ -3,6 +3,7 @@
 import type { ResumeData } from "@/types";
 import { getSkills, formatDates } from "./templates/shared";
 import type { SectionKey } from "@/types";
+import { useTranslation } from "@/i18n";
 
 interface ResumePreviewPanelProps {
   data: ResumeData;
@@ -14,6 +15,7 @@ interface ResumePreviewPanelProps {
    the user can review what they wrote without form chrome. */
 
 export default function ResumePreviewPanel({ data, sectionOrder }: ResumePreviewPanelProps) {
+  const { t } = useTranslation();
   const skills = getSkills(data);
   const p = data.personal;
 
@@ -45,7 +47,7 @@ export default function ResumePreviewPanel({ data, sectionOrder }: ResumePreview
           case "summary":
             return data.summary ? (
               <div key="summary">
-                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-2">Summary</h2>
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-2">{t("resumeStudio.sections.summary") || "Summary"}</h2>
                 <p className="text-sm text-surface-400 leading-relaxed whitespace-pre-wrap">{data.summary}</p>
               </div>
             ) : null;
@@ -53,7 +55,7 @@ export default function ResumePreviewPanel({ data, sectionOrder }: ResumePreview
           case "experience":
             return data.experience?.length ? (
               <div key="experience">
-                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-3">Experience</h2>
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-3">{t("resumeStudio.sections.experience") || "Experience"}</h2>
                 <div className="space-y-4">
                   {data.experience.map((exp, i) => (
                     <div key={i}>
@@ -86,7 +88,7 @@ export default function ResumePreviewPanel({ data, sectionOrder }: ResumePreview
           case "education":
             return data.education?.length ? (
               <div key="education">
-                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-3">Education</h2>
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-3">{t("resumeStudio.sections.education") || "Education"}</h2>
                 <div className="space-y-2">
                   {data.education.map((edu, i) => (
                     <div key={i}>
@@ -110,7 +112,7 @@ export default function ResumePreviewPanel({ data, sectionOrder }: ResumePreview
           case "skills":
             return skills.length > 0 ? (
               <div key="skills">
-                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-2">Skills</h2>
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-2">{t("resumeStudio.sections.skills") || "Skills"}</h2>
                 <div className="flex flex-wrap gap-1.5">
                   {skills.map((s) => (
                     <span key={s.id} className="px-2 py-0.5 rounded-md bg-surface-100 text-[12px] font-medium text-surface-400">
@@ -124,7 +126,7 @@ export default function ResumePreviewPanel({ data, sectionOrder }: ResumePreview
           case "technicalSkills":
             return data.technicalSkills?.length ? (
               <div key="technicalSkills">
-                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-2">Technical Skills</h2>
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-2">{t("resumeStudio.sections.technicalSkills") || "Technical Skills"}</h2>
                 <div className="space-y-1">
                   {data.technicalSkills.map((cat) => (
                     <div key={cat.id} className="text-[13px]">
@@ -139,7 +141,7 @@ export default function ResumePreviewPanel({ data, sectionOrder }: ResumePreview
           case "languages":
             return data.languages?.length ? (
               <div key="languages">
-                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-2">Languages</h2>
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-2">{t("resumeStudio.sections.languages") || "Languages"}</h2>
                 <p className="text-[13px] text-surface-400">{data.languages.join(" · ")}</p>
               </div>
             ) : null;
@@ -147,7 +149,7 @@ export default function ResumePreviewPanel({ data, sectionOrder }: ResumePreview
           case "certifications":
             return data.certifications?.length ? (
               <div key="certifications">
-                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-2">Certifications</h2>
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-2">{t("resumeStudio.sections.certifications") || "Certifications"}</h2>
                 <p className="text-[13px] text-surface-400">{data.certifications.join(" · ")}</p>
               </div>
             ) : null;
@@ -155,7 +157,7 @@ export default function ResumePreviewPanel({ data, sectionOrder }: ResumePreview
           case "projects":
             return data.projects?.length ? (
               <div key="projects">
-                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-3">Projects</h2>
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-surface-300 mb-3">{t("resumeStudio.sections.projects") || "Projects"}</h2>
                 <div className="space-y-3">
                   {data.projects.map((proj, i) => (
                     <div key={i}>
@@ -181,7 +183,7 @@ export default function ResumePreviewPanel({ data, sectionOrder }: ResumePreview
       {/* Empty state */}
       {!p?.name && !data.summary && !data.experience?.length && (
         <div className="text-center py-12">
-          <p className="text-sm text-surface-300">No content yet. Switch to Form or Markdown to start editing.</p>
+          <p className="text-sm text-surface-300">{t("resumeStudio.emptyState") || "No content yet. Switch to Form or Markdown to start editing."}</p>
         </div>
       )}
     </div>

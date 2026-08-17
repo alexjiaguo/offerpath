@@ -16,28 +16,26 @@ export default function DiscoverJobDetailPage({
  params: Promise<{ id: string }>;
 }) {
  const { id } = use(params);
- const {
- getJobById,
- getCompanyById,
- getJobsByCompany,
- toggleSaved,
- } = useDiscoveryStore();
+ const job = useDiscoveryStore((s) => s.jobs.find((j) => j.id === id));
+ const company = useDiscoveryStore((s) =>
+  job ? s.companies.find((c) => c.id === job.company_id) : undefined
+ );
+ const relatedJobs = useDiscoveryStore((s) =>
+  job ? s.jobs.filter((j) => j.company_id === job.company_id && j.id !== job.id) : []
+ );
+ const toggleSaved = useDiscoveryStore((s) => s.toggleSaved);
 
- const job = getJobById(id);
  if (!job) {
  return (
  <div className="w-full animate-fade-in p-8 text-center">
  <h1 className="text-xl font-bold mb-2">Job Not Found</h1>
  <p className="text-surface-300 text-sm mb-4">This job listing may have been removed.</p>
  <Link href="/dashboard/discover" className="text-brand-400 hover:text-brand-300 text-sm">
- ← Back to Discovery
+ ← Back to job search
  </Link>
  </div>
  );
  }
-
- const company = getCompanyById(job.company_id);
- const relatedJobs = getJobsByCompany(job.company_id).filter((j) => j.id !== job.id);
 
  const scoreColor =
  job.match_score >= 90 ? "text-emerald-400" :
@@ -59,7 +57,7 @@ export default function DiscoverJobDetailPage({
  className="inline-flex items-center gap-1.5 text-sm text-surface-300 hover:text-surface-400 transition-colors mb-5"
  >
  <ArrowLeft className="w-4 h-4" />
- Back to Discovery
+ Back to job search
  </Link>
 
  {/* Hero Card */}
@@ -119,6 +117,7 @@ export default function DiscoverJobDetailPage({
  <div className="flex items-center gap-3 mt-5 pt-5 border-t border-white/[0.04]">
  <button
  onClick={() => toggleSaved(job.id)}
+ aria-label={job.saved ? "Remove bookmark" : "Save job"}
  className={cn(
  "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
  job.saved
@@ -126,7 +125,7 @@ export default function DiscoverJobDetailPage({
  : "bg-surface-200 text-surface-300 hover:text-brand-400 hover:bg-brand-500/10"
  )}
  >
- {job.saved ? <BookmarkSimple className="w-4 h-4" /> : <BookmarkSimple className="w-4 h-4" />}
+ {job.saved ? <BookmarkSimple weight="fill" className="w-4 h-4" /> : <BookmarkSimple className="w-4 h-4" />}
  {job.saved ? "Saved" : "Save"}
  </button>
  <a

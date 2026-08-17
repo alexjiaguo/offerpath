@@ -1,141 +1,108 @@
 'use client';
 import React from 'react';
-import { TemplateProps, vis, formatDates, getSkills, getTechSkills, paperStyle, sanitizeHtml } from './shared';
+import { TemplateProps, vis, getSkills, getTechSkills, getContactItemsWithFields, paperStyle, keyElement } from './shared';
+import { EditableText, ProjectEntryContent, TwoLineEduEntry } from '../editable/EditableText';
+import { EditableDateRange } from '../editable/EditableDateRange';
+import { EntryActions, DragHandle, DropZone, AddEntryButton, BulletDelete, AddBulletButton, EditableSkillChip } from '../editable/InlineControls';
 
 const Academic: React.FC<TemplateProps> = ({ data, theme, sectionOrder, sectionVisibility }) => {
  const skills = getSkills(data);
  const techSkills = getTechSkills(data);
+ const bulletGap = `${theme.bulletSpacing ?? 4}px`;
 
  const sectionTitle: React.CSSProperties = {
- fontSize: `${theme.sectionTitleSize || 12}px`, fontWeight: 700, color: theme.primaryColor,
+ fontSize: `${theme.sectionTitleSize ?? 12}px`, fontWeight: 700, color: theme.primaryColor,
  textTransform: 'uppercase', letterSpacing: '1.5px',
  borderBottom: `1px solid ${theme.accentColor}`, paddingBottom: '2px', marginBottom: '6px',
  };
 
  const sections: Record<string, () => React.ReactNode> = {
- summary: () => data.summary ? (
- <section key="summary" style={{ marginBottom: '12px' }}>
- <div style={{ fontSize: `${theme.baseFontSize || 10}px`, color: '#3a3a3a', lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.summary) }} />
- </section>
- ) : null,
-
+ summary: () => data.summary ? (<section key="summary" style={{ marginBottom: `${theme.sectionSpacing ?? 12}px` }}><EditableText field="summary" value={data.summary} html style={{ fontSize: `${theme.baseFontSize ?? 10}px`, color: '#3a3a3a', lineHeight: 1.5 }} /></section>) : null,
  experience: () => (data.experience || []).length > 0 ? (
- <section key="experience" style={{ marginBottom: '12px' }}>
+ <section key="experience" style={{ marginBottom: `${theme.sectionSpacing ?? 12}px` }}>
  <div style={sectionTitle}>Professional Experience</div>
  {data.experience!.map((item, idx) => (
- <div key={idx} style={{ marginBottom: '7px' }}>
+ <DropZone key={idx} section="experience" index={idx}>
+ <div style={{ marginBottom: `${theme.itemSpacing ?? 8}px`, position: 'relative' }}>
+ <DragHandle section="experience" index={idx} />
  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
- <span style={{ fontWeight: 700, color: theme.primaryColor }}>{item.title}</span>
- <span style={{ color: theme.accentColor, fontWeight: 400, fontStyle: 'italic', fontSize: '0.95em' }}>{formatDates(item.start_date, item.end_date, item.current)}</span>
+ <span style={{ fontWeight: 700, color: theme.primaryColor }}><EditableText field={`experience[${idx}].title`} value={item.title} style={{ fontWeight: 700, color: theme.primaryColor }} /></span>
+ <span style={{ color: theme.accentColor, fontWeight: 400, fontStyle: 'italic', fontSize: '0.95em' }}><EditableDateRange pathPrefix={`experience[${idx}]`} start={item.start_date} end={item.end_date} current={item.current} style={{ color: theme.accentColor, fontWeight: 400, fontStyle: 'italic', fontSize: '0.95em' }} /></span>
  </div>
- <div style={{ marginBottom: '4px' }}><strong style={{ color: theme.accentColor }}>{item.company}</strong>{item.location ? ` - ${item.location}` : ''}</div>
+ <div style={{ marginBottom: '4px' }}><strong style={{ color: theme.accentColor }}><EditableText field={`experience[${idx}].company`} value={item.company} style={{ color: theme.accentColor }} /></strong>{item.location ? ` — ` : ''}{item.location && <EditableText field={`experience[${idx}].location`} value={item.location} />}<EntryActions section="experience" index={idx} /></div>
  <ul style={{ listStyleType: 'disc', paddingLeft: '16px', marginTop: '2px', margin: 0 }}>
- {item.bullets.map((b, i) => <li key={i} style={{ marginBottom: '4px', lineHeight: theme.lineHeight || 1.3 }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(b) }} />)}
+ {item.bullets.map((b, i) => <li key={i} style={{ marginBottom: bulletGap, lineHeight: theme.lineHeight ?? 1.3 }}><EditableText field={`experience[${idx}].bullets[${i}]`} value={b} html style={{ lineHeight: theme.lineHeight ?? 1.3 }} /><BulletDelete expIndex={idx} bulletIndex={i} /></li>)}
+ <AddBulletButton expIndex={idx} />
  </ul>
  </div>
+ </DropZone>
  ))}
+ <AddEntryButton section="experience" label="Add experience" />
  </section>
- ) : null,
-
- education: () => (data.education || []).length > 0 ? (
- <section key="education" style={{ marginBottom: '12px' }}>
- <div style={sectionTitle}>Education</div>
- {data.education!.map((item, idx) => (
- <div key={idx} style={{ marginBottom: '6px' }}>
- <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
- <span style={{ fontWeight: 700, color: theme.primaryColor, fontSize: `${theme.companyFontSize || 10.5}px` }}>
- {item.institution}{item.location ? `, ${item.location}` : ''}
- </span>
- <span style={{ color: theme.accentColor, fontStyle: 'italic', fontSize: '0.95em' }}>{formatDates(item.start_date, item.end_date)}</span>
- </div>
- <div style={{ fontSize: '1em', marginTop: '1px' }}>
- {item.degree}{item.field ? `, ${item.field}` : ''}
- {item.gpa ? ` | GPA: ${item.gpa}` : ''}
- </div>
- </div>
- ))}
- </section>
- ) : null,
-
+ ) : <AddEntryButton section="experience" label="Add experience" />,
+  education: () => (data.education || []).length > 0 ? (
+    <section key="education" style={{ marginBottom: `${theme.sectionSpacing ?? 12}px` }}>
+      <div style={sectionTitle}>Education</div>
+      {data.education!.map((item, idx) => (
+        <DropZone key={idx} section="education" index={idx}>
+          <TwoLineEduEntry item={item} index={idx} theme={theme} />
+        </DropZone>
+      ))}
+      <AddEntryButton section="education" label="Add education" />
+    </section>
+  ) : <AddEntryButton section="education" label="Add education" />,
  skills: () => skills.length > 0 ? (
- <section key="skills" style={{ marginBottom: `${theme.sectionSpacing || 12}px` }}>
+ <section key="skills" style={{ marginBottom: `${theme.sectionSpacing ?? 12}px` }}>
  <div style={sectionTitle}>Key Skills</div>
  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
- {skills.map((s) => (
- <span key={s.id} style={{
- padding: '2px 8px', borderRadius: '3px', fontSize: '10px',
- backgroundColor: s.isHighlighted ? theme.primaryColor : '#f0f3f6',
- color: s.isHighlighted ? '#fff' : '#2c3e50', fontWeight: s.isHighlighted ? 600 : 400,
- }}>{s.name}</span>
- ))}
+ {skills.map((s, si) => <EditableSkillChip key={s.id} field={`skills[${si}].name`} value={s.name} section="skills" index={si} style={{ padding: '2px 8px', borderRadius: '3px', fontSize: '10px', backgroundColor: s.isHighlighted ? theme.primaryColor : '#f0f3f6', color: s.isHighlighted ? '#fff' : '#2c3e50', fontWeight: s.isHighlighted ? 600 : 400 }} />)}
+ <AddEntryButton section="skills" label="Add skill" />
  </div>
  </section>
- ) : null,
-
+ ) : <AddEntryButton section="skills" label="Add skill" />,
  technicalSkills: () => techSkills.length > 0 ? (
- <section key="technicalSkills" style={{ marginBottom: `${theme.sectionSpacing || 12}px` }}>
+ <section key="technicalSkills" style={{ marginBottom: `${theme.sectionSpacing ?? 12}px` }}>
  <div style={sectionTitle}>Technical Skills</div>
- {techSkills.map((cat) => (
- <div key={cat.id} style={{ marginBottom: '3px' }}>
- <strong style={{ color: theme.primaryColor }}>{cat.category}:</strong> {cat.skills}
- </div>
- ))}
+ {techSkills.map((cat, ti) => (<div key={cat.id} style={{ marginBottom: `${Math.max(0, (theme.itemSpacing ?? 8) - 4)}px`, fontSize: '10px' }}><strong style={{ color: theme.primaryColor }}><EditableText field={`technicalSkills[${ti}].category`} value={cat.category} style={{ color: theme.primaryColor }} />:</strong> <EditableText field={`technicalSkills[${ti}].skills`} value={cat.skills} /><EntryActions section="technicalSkills" index={ti} /></div>))}
+ <AddEntryButton section="technicalSkills" label="Add category" />
  </section>
- ) : null,
-
- projects: () => (data.projects || []).length > 0 ? (
- <section key="projects" style={{ marginBottom: `${theme.sectionSpacing || 12}px` }}>
- <h2 style={sectionTitle}>Projects</h2>
- {data.projects!.map((item, idx) => (
- <div key={idx} style={{ marginBottom: `${theme.itemSpacing || 6}px`, fontSize: `${theme.baseFontSize || 10}px`, lineHeight: theme.lineHeight || 1.3 }}>
- <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
- <span style={{ fontWeight: 600, color: theme.primaryColor }}>
- {item.url ? <a href={item.url} style={{ color: theme.primaryColor, textDecoration: 'none' }}>{item.name}</a> : item.name}
- </span>
- {(item.tech || []).length > 0 && <span style={{ fontSize: '10px', color: theme.accentColor }}>{item.tech!.join(' / ')}</span>}
- </div>
- {item.description && <div style={{ marginTop: '2px', color: '#3a3a3a' }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.description) }} />}
- </div>
- ))}
- </section>
- ) : null,
+ ) : <AddEntryButton section="technicalSkills" label="Add category" />,
+    projects: () => (data.projects || []).length > 0 ? (
+      <section key="projects" style={{ marginBottom: `${theme.sectionSpacing ?? 12}px` }}>
+        <h2 style={sectionTitle}>Projects</h2>
+        {data.projects!.map((item, idx) => (
+          <DropZone key={idx} section="projects" index={idx}>
+              <ProjectEntryContent item={item} index={idx} theme={theme} />
+            </DropZone>
+        ))}
+        <AddEntryButton section="projects" label="Add project" />
+      </section>
+    ) : <AddEntryButton section="projects" label="Add project" />,
  };
 
  const langCertBlock = () => {
  const showLang = vis(sectionVisibility, 'languages') && (data.languages || []).length > 0;
  const showCert = vis(sectionVisibility, 'certifications') && (data.certifications || []).length > 0;
  if (!showLang && !showCert) return null;
- return (
- <div key="lang-cert" style={{ display: 'grid', gridTemplateColumns: showLang && showCert ? '1fr 1fr' : '1fr', gap: '20px', marginBottom: `${theme.sectionSpacing || 12}px` }}>
- {showLang && <section><div style={sectionTitle}>Languages</div><div style={{ fontSize: '10px' }}>{data.languages!.join(' · ')}</div></section>}
- {showCert && <section><div style={sectionTitle}>Certifications</div>{data.certifications!.map((c, i) => <div key={i} style={{ marginBottom: '3px', fontSize: '10px' }}>{c}</div>)}</section>}
- </div>
- );
+ return (<div key="lang-cert" style={{ display: 'grid', gridTemplateColumns: showLang && showCert ? '1fr 1fr' : '1fr', gap: '20px', marginBottom: `${theme.sectionSpacing ?? 12}px` }}>{showLang && <section><div style={sectionTitle}>Languages</div><div style={{ fontSize: '10px' }}>{(data.languages || []).map((l, li) => <React.Fragment key={li}>{li > 0 && ' · '}<EditableText field={`languages[${li}]`} value={l} /></React.Fragment>)}</div></section>}{showCert && <section><div style={sectionTitle}>Certifications</div>{(data.certifications || []).map((c, ci) => <div key={ci} style={{ marginBottom: `${Math.max(0, (theme.itemSpacing ?? 8) - 4)}px`, fontSize: '10px' }}><EditableText field={`certifications[${ci}]`} value={c} /></div>)}</section>}</div>);
  };
 
  let langCertRendered = false;
+ const contactItems = getContactItemsWithFields(data, sectionVisibility);
 
  return (
  <div style={{ ...paperStyle(theme), fontFamily: theme.fontFamily || "'EB Garamond', serif", position: 'relative' }} className="resume-paper">
  <header style={{ textAlign: 'center', marginBottom: '12px', paddingBottom: '10px', borderBottom: `2px solid ${theme.primaryColor}` }}>
- <h1 style={{ fontSize: `${theme.headerFontSize || 28}px`, fontWeight: 700, color: theme.primaryColor, letterSpacing: '1.5px', marginBottom: '2px', lineHeight: 1.2 }}>{data.personal?.name}</h1>
+ <h1 style={{ fontSize: `${theme.headerFontSize ?? 28}px`, fontWeight: 700, color: theme.primaryColor, letterSpacing: '1.5px', marginBottom: '2px', lineHeight: 1.2 }}><EditableText field="personal.name" value={data.personal?.name} style={{ fontSize: `${theme.headerFontSize ?? 28}px`, fontWeight: 700, color: theme.primaryColor, letterSpacing: '1.5px', lineHeight: 1.2 }} /></h1>
  <div style={{ fontSize: '0.95em', color: '#555', marginTop: '4px' }}>
- {[
- data.personal?.phone,
- data.personal?.email,
- data.personal?.linkedin,
- data.personal?.location,
- ...(vis(sectionVisibility, 'portfolio') && data.personal?.portfolio_url ? [data.personal.portfolio_url] : []),
- ...(vis(sectionVisibility, 'visaStatus') && data.personal?.visa_status ? [data.personal.visa_status] : []),
- ].filter(Boolean).join(' · ')}
+ {contactItems.map((item, i) => <React.Fragment key={i}>{i > 0 && ' · '}<EditableText field={item.field} value={item.value} style={{ fontSize: '0.95em', color: '#555' }} /></React.Fragment>)}
  </div>
  </header>
-
  {sectionOrder.map((key) => {
  if (!vis(sectionVisibility, key)) return null;
  if (key === 'languages' || key === 'certifications') { if (langCertRendered) return null; langCertRendered = true; return langCertBlock(); }
  if (key === 'photo') return null;
- return sections[key]?.() ?? null;
+ return keyElement(sections[key]?.(), key);
  })}
  </div>
  );

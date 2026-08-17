@@ -5,6 +5,8 @@ import { CheckCircle } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { TEMPLATE_CONFIGS } from "./templates/config";
 
+import { useTranslation } from "@/i18n";
+
 interface TemplateThumbnailPickerProps {
   selectedTemplate: string;
   onSelect: (id: string) => void;
@@ -14,11 +16,13 @@ export default function TemplateThumbnailPicker({
   selectedTemplate,
   onSelect,
 }: TemplateThumbnailPickerProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex-1 min-w-0 w-full overflow-hidden">
       <div className="flex overflow-x-auto gap-3 pb-2 pt-1 px-1 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {TEMPLATE_CONFIGS.map((tmpl) => {
           const isSelected = selectedTemplate === tmpl.id;
+          const tmplName = (t.resumeStudio?.templatesMap as Record<string, string>)?.[tmpl.id] || tmpl.name;
           return (
             <button
               key={tmpl.id}
@@ -29,12 +33,12 @@ export default function TemplateThumbnailPicker({
                   ? "border-ember-500 shadow-sm"
                   : "border-surface-200 hover:border-surface-300 shadow-sm"
               )}
-              title={tmpl.name}
+              title={tmplName}
             >
               <div className="aspect-[1/1.414] bg-surface-100 relative w-full overflow-hidden border-b border-surface-200/50">
                 <Image
                   src={`/images/templates/${tmpl.thumbnail}.png`}
-                  alt={tmpl.name}
+                  alt={tmplName}
                   fill
                   sizes="84px"
                   className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
@@ -50,7 +54,7 @@ export default function TemplateThumbnailPicker({
                 "w-full px-1 py-1.5 text-[9px] font-bold uppercase tracking-wider text-center truncate transition-colors",
                 isSelected ? "text-ember-600 bg-ember-50" : "text-surface-400 bg-surface-0 group-hover:bg-surface-50"
               )}>
-                {tmpl.name}
+                {tmplName}
               </div>
             </button>
           );

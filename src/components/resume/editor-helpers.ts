@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { User, FileText, Briefcase, GraduationCap, Wrench, Cpu, Translate, Certificate, FolderOpen } from "@phosphor-icons/react";
 import type { ResumeData } from "@/types";
@@ -7,14 +9,14 @@ export type EditorMode = "form" | "richtext" | "markdown" | "preview";
 export type SectionMeta = { key: string; label: string; icon: React.ComponentType<{ className?: string }> };
 
 export const SECTION_META: SectionMeta[] = [
-  { key: "personal", label: "Identity", icon: User },
+  { key: "personal", label: "Contact", icon: User },
   { key: "summary", label: "Summary", icon: FileText },
   { key: "experience", label: "Experience", icon: Briefcase },
   { key: "education", label: "Education", icon: GraduationCap },
   { key: "skills", label: "Skills", icon: Wrench },
-  { key: "technicalSkills", label: "Tech Skills", icon: Cpu },
+  { key: "technicalSkills", label: "Technical", icon: Cpu },
   { key: "languages", label: "Languages", icon: Translate },
-  { key: "certifications", label: "Certs", icon: Certificate },
+  { key: "certifications", label: "Certifications", icon: Certificate },
   { key: "projects", label: "Projects", icon: FolderOpen },
 ];
 

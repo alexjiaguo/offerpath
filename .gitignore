@@ -48,3 +48,7 @@ next-env.d.ts
 # Sensitive Data / Credentials
 cookies.json
 
+
+# Codex local config (contains Supabase PAT)
+.codex/
+.codex

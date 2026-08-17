@@ -1,61 +1,109 @@
-import { ChartBar, ChatCircleText, Folders, Compass, Cpu, CreditCard, FileText, Gear, SquaresFour, Kanban, Key, IconProps } from "@phosphor-icons/react";
+import { Bank, ChartBar, ChatCircleText, Folders, Compass, Cpu, CreditCard, FileText, Gear, SquaresFour, Kanban, Key, IconProps } from "@phosphor-icons/react";
+import { TranslationSchema } from "@/i18n/types";
 
 export interface NavSubItem {
- label: string;
- href: string;
- icon?: React.ComponentType<IconProps>;
+  label: string;
+  href: string;
+  icon?: React.ComponentType<IconProps>;
 }
 
 export interface NavItemDef {
- label: string;
- href: string;
- icon: React.ComponentType<IconProps>;
- subItems?: NavSubItem[];
+  label: string;
+  href: string;
+  icon: React.ComponentType<IconProps>;
+  subItems?: NavSubItem[];
 }
 
 export interface NavSection {
- section: string;
- items: NavItemDef[];
+  section: string;
+  items: NavItemDef[];
 }
 
+export function getNavItems(t: TranslationSchema): NavSection[] {
+  return [
+    {
+      section: t.nav.overview,
+      items: [
+        { label: t.nav.dashboard, href: "/dashboard", icon: SquaresFour },
+      ],
+    },
+    {
+      section: t.nav.workspace,
+      items: [
+        {
+          label: t.nav.jobTracker,
+          href: "/dashboard/pipeline",
+          icon: Kanban,
+          subItems: [
+            { label: t.nav.board, href: "/dashboard/pipeline", icon: Kanban },
+            { label: t.nav.analytics, href: "/dashboard/pipeline/analytics", icon: ChartBar },
+            { label: t.nav.compareOffers, href: "/dashboard/pipeline/compare", icon: Bank },
+          ],
+        },
+        { label: t.nav.resumes, href: "/dashboard/resume", icon: FileText },
+        { label: t.nav.jobSearch, href: "/dashboard/discover", icon: Compass },
+        {
+          label: t.nav.interviewPrep,
+          href: "/dashboard/interview",
+          icon: ChatCircleText,
+          subItems: [
+            { label: t.nav.overview, href: "/dashboard/interview", icon: Cpu },
+            { label: t.nav.starStories, href: "/dashboard/interview/stories", icon: Folders },
+          ],
+        },
+      ],
+    },
+    {
+      section: t.nav.account,
+      items: [
+        { label: t.nav.settings, href: "/dashboard/settings", icon: Gear },
+        { label: t.nav.billingPlans, href: "/dashboard/settings/billing", icon: CreditCard },
+        { label: t.nav.apiKeys, href: "/dashboard/settings/api-keys", icon: Key },
+      ],
+    },
+  ];
+}
+
+// Default export for backward compatibility
 export const NAV_ITEMS: NavSection[] = [
- {
- section: "Overview",
- items: [
- { label: "Dashboard", href: "/dashboard", icon: SquaresFour },
- ],
- },
- {
- section: "Modules",
- items: [
- {
- label: "Job Tracker",
- href: "/dashboard/pipeline",
- icon: Kanban,
- subItems: [
- { label: "Board", href: "/dashboard/pipeline", icon: Kanban },
- { label: "Analytics", href: "/dashboard/pipeline/analytics", icon: ChartBar },
- ],
- },
- { label: "Resume Studio", href: "/dashboard/resume", icon: FileText },
- { label: "Job Search", href: "/dashboard/discover", icon: Compass },
- {
- label: "Interview Simulator",
- href: "/dashboard/interview",
- icon: ChatCircleText,
- subItems: [
- { label: "Overview", href: "/dashboard/interview", icon: Cpu },
- { label: "Stories", href: "/dashboard/interview/stories", icon: Folders },
- ],
- },
- ],
- },
- {
- section: "Account",
- items: [
- { label: "Settings", href: "/dashboard/settings", icon: Gear },
- { label: "Billing & Plans", href: "/dashboard/settings/billing", icon: CreditCard },
- { label: "API Configuration", href: "/dashboard/settings/api-keys", icon: Key },
- ],
- },
+  {
+    section: "Overview",
+    items: [
+      { label: "Dashboard", href: "/dashboard", icon: SquaresFour },
+    ],
+  },
+  {
+    section: "Workspace",
+    items: [
+      {
+        label: "Job Tracker",
+        href: "/dashboard/pipeline",
+        icon: Kanban,
+        subItems: [
+          { label: "Board", href: "/dashboard/pipeline", icon: Kanban },
+          { label: "Analytics", href: "/dashboard/pipeline/analytics", icon: ChartBar },
+          { label: "Compare Offers", href: "/dashboard/pipeline/compare", icon: Bank },
+        ],
+      },
+      { label: "Resumes", href: "/dashboard/resume", icon: FileText },
+      { label: "Job Search", href: "/dashboard/discover", icon: Compass },
+      {
+        label: "Interview prep",
+        href: "/dashboard/interview",
+        icon: ChatCircleText,
+        subItems: [
+          { label: "Overview", href: "/dashboard/interview", icon: Cpu },
+          { label: "STAR stories", href: "/dashboard/interview/stories", icon: Folders },
+        ],
+      },
+    ],
+  },
+  {
+    section: "Account",
+    items: [
+      { label: "Settings", href: "/dashboard/settings", icon: Gear },
+      { label: "Billing & Plans", href: "/dashboard/settings/billing", icon: CreditCard },
+      { label: "API keys", href: "/dashboard/settings/api-keys", icon: Key },
+    ],
+  },
 ];

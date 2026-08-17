@@ -34,6 +34,8 @@ export type LLMProvider = "openai" | "gemini" | "deepseek";
 
 // ── Resume ──────────────────────────────────────────
 
+export type ResumeStudioMode = "form" | "studio";
+
 export interface Resume {
  id: string;
  user_id: string;
@@ -43,6 +45,7 @@ export interface Resume {
  theme: ResumeTheme;
  section_order: SectionKey[];
  section_visibility: Record<string, Record<SectionKey, boolean>>;
+ editorMode?: ResumeStudioMode;
  is_base: boolean;
  created_at: string;
  updated_at: string;
@@ -163,6 +166,7 @@ export interface ResumeTheme {
  pagePadding: number;
  sectionSpacing: number;
  itemSpacing: number;
+ bulletSpacing?: number;
  // Sidebar (PremiumHeadshot, ElegantTwoColumn)
  sidebarBg?: string;
  sidebarText?: string;

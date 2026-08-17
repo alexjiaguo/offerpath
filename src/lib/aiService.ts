@@ -9,6 +9,7 @@ import { logger } from "@/lib/logger";
 
 import type { ResumeData, ExperienceEntry, Story } from "@/types";
 import DOMPurify from 'dompurify';
+import { ResumeParserService } from "@/lib/ResumeParserService";
 import { useProfileStore } from "@/store/profileStore";
 
 // ── Real API Integration ───────────────────────────
@@ -54,20 +55,33 @@ function extractJsonBlock(text: string): string {
 
 async function callLLM(config: LLMConfig, systemPrompt: string, userPrompt: string): Promise<string> {
  const { provider, apiKey } = config;
+ const controller = new AbortController();
+ const timer = setTimeout(() => controller.abort(), 30000);
 
- const res = await fetch("/api/ai", {
- method: "POST",
- headers: {
- "Content-Type": "application/json",
- },
- body: JSON.stringify({
- action: "call-llm",
- provider,
- apiKey,
- systemPrompt,
- userPrompt,
- }),
- });
+ let res: Response;
+ try {
+  res = await fetch("/api/ai", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      action: "call-llm",
+      provider,
+      apiKey,
+      systemPrompt,
+      userPrompt,
+    }),
+    signal: controller.signal,
+  });
+ } catch (err) {
+  if (err instanceof Error && err.name === "AbortError") {
+    throw new Error("AI request timed out");
+  }
+  throw err;
+ } finally {
+  clearTimeout(timer);
+ }
 
  if (!res.ok) {
  const errText = await res.text();
@@ -89,7 +103,7 @@ async function callLLM(config: LLMConfig, systemPrompt: string, userPrompt: stri
 }
 
 /** Get the best available LLM config from the profile store */
-function getLLMConfig(): LLMConfig | null {
+export function getLLMConfig(): LLMConfig | null {
  try {
  const store = useProfileStore.getState();
  const priority: LLMProvider[] = ["openai", "anthropic", "deepseek", "gemini"];
@@ -101,8 +115,7 @@ function getLLMConfig(): LLMConfig | null {
  // Store not available (SSR, etc.)
  }
 
- // Fallback: check environment variables (empty in the client, but we return a config with no apiKey so the server proxy tries its own variables)
- return { provider: "openai" };
+ return null;
 }
 
 const SANITIZE_ALLOWED_TAGS = ['strong', 'em', 'u', 'b', 'i', 'br', 'span', 'mark'];
@@ -116,6 +129,208 @@ function sanitizeHtml(text: string): string {
  return purify.sanitize(text, { ALLOWED_TAGS: SANITIZE_ALLOWED_TAGS, ALLOWED_ATTR: [] });
  }
  return text;
+}
+
+// ── Resume Parsing (AI-powered with regex fallback) ──
+
+/**
+ * Parses raw resume text into structured ResumeData.
+ * Uses LLM for extraction when available; falls back to
+ * the regex-based ResumeParserService if no LLM is configured
+ * or the LLM call fails.
+ */
+export async function parseResumeWithAI(
+  text: string,
+  fileType: string
+): Promise<Partial<ResumeData>> {
+  const llm = getLLMConfig();
+
+  if (llm) {
+    try {
+      const result = await parseResumeWithLLM(llm, text, fileType);
+      if (result && (result.personal?.name || result.experience?.length || result.education?.length)) {
+        return result;
+      }
+      logger.warn("LLM parsing returned empty result, falling back to regex parser");
+    } catch (err) {
+      logger.warn("LLM resume parsing failed, falling back to regex parser:", err);
+    }
+  }
+
+  // Fallback: synchronous regex-based parser
+  return ResumeParserService.parse(text, fileType);
+}
+
+async function parseResumeWithLLM(
+  config: LLMConfig,
+  text: string,
+  fileType: string
+): Promise<Partial<ResumeData>> {
+  const systemPrompt = `You are a resume parser. Extract ALL information from the resume text and return it as a JSON object matching this exact schema:
+
+{
+  "personal": {
+    "name": "full name",
+    "title": "professional title or headline",
+    "email": "email address",
+    "phone": "phone number",
+    "location": "city, state/country",
+    "linkedin": "LinkedIn URL or handle",
+    "website": "personal website URL if present"
+  },
+  "summary": "professional summary or objective text",
+  "experience": [
+    {
+      "company": "company name",
+      "title": "job title",
+      "location": "work location if stated",
+      "start_date": "start date as it appears",
+      "end_date": "end date as it appears, empty string if current",
+      "current": true or false,
+      "bullets": ["bullet point 1", "bullet point 2"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "school/university name",
+      "degree": "degree name as written",
+      "field": "field of study if stated",
+      "location": "school location if stated",
+      "start_date": "start date if stated",
+      "end_date": "graduation date or end date"
+    }
+  ],
+  "skills": ["skill1", "skill2", "skill3"],
+  "technicalSkills": [
+    {
+      "category": "category name e.g. Languages, Cloud, Tools",
+      "skills": "comma-separated skill names"
+    }
+  ],
+  "certifications": ["certification name 1", "certification name 2"],
+  "projects": [
+    {
+      "name": "project name",
+      "description": "one-line description",
+      "url": "project URL if present",
+      "tech": ["technology1", "technology2"]
+    }
+  ],
+  "languages": ["English", "Mandarin Chinese"]
+}
+
+Rules:
+- Extract EVERY piece of information present in the text. Do not skip or summarize.
+- Use the exact text from the resume for values - do not rephrase or invent.
+- For dates, use the format as it appears in the source (e.g., "Jan 2020", "2020-03", "2020").
+- Set "current" to true if the end date is "Present" or "Current".
+- For "skills", list individual skill names as separate array entries (not comma-separated in one string).
+- For "technicalSkills", group skills by category if the resume has categories. If skills are listed without categories, use "General" as the category.
+- If a field is not present in the resume, use an empty string for strings, an empty array for arrays, or false for booleans.
+- Plain strings only. Do not wrap names, titles, or bullets in markdown asterisks.
+- Return ONLY the JSON object, no markdown code fences or explanation.`;
+
+  const userPrompt = `File type: ${fileType}\n\nResume text:\n${text}`;
+
+  const response = await callLLM(config, systemPrompt, userPrompt);
+  const cleaned = extractJsonBlock(response);
+  const parsed = JSON.parse(cleaned);
+
+  return normalizeResumeData(parsed);
+}
+
+/**
+ * Normalizes the LLM-parsed JSON into the exact ResumeData shape
+ * expected by the app, ensuring IDs and required fields are present.
+ */
+function normalizeResumeData(raw: Record<string, unknown>): Partial<ResumeData> {
+  const result: Partial<ResumeData> = {};
+
+  // Personal info
+  if (raw.personal && typeof raw.personal === 'object') {
+    const p = raw.personal as Record<string, unknown>;
+    result.personal = {
+      name: String(p.name || ''),
+      title: p.title ? String(p.title) : undefined,
+      email: p.email ? String(p.email) : undefined,
+      phone: p.phone ? String(p.phone) : undefined,
+      location: p.location ? String(p.location) : undefined,
+      linkedin: p.linkedin ? String(p.linkedin) : undefined,
+      website: p.website ? String(p.website) : undefined,
+    };
+  }
+
+  // Summary
+  if (typeof raw.summary === 'string') {
+    result.summary = raw.summary;
+  }
+
+  // Experience
+  if (Array.isArray(raw.experience)) {
+    result.experience = (raw.experience as Record<string, unknown>[]).map((e) => ({
+      company: String(e.company || ''),
+      title: String(e.title || ''),
+      location: e.location ? String(e.location) : undefined,
+      start_date: String(e.start_date || ''),
+      end_date: e.end_date ? String(e.end_date) : '',
+      current: Boolean(e.current),
+      bullets: Array.isArray(e.bullets)
+        ? (e.bullets as unknown[]).map((b) => String(b))
+        : [],
+    }));
+  }
+
+  // Education
+  if (Array.isArray(raw.education)) {
+    result.education = (raw.education as Record<string, unknown>[]).map((e) => ({
+      institution: String(e.institution || ''),
+      degree: String(e.degree || ''),
+      field: String(e.field || ''),
+      location: e.location ? String(e.location) : undefined,
+      start_date: e.start_date ? String(e.start_date) : undefined,
+      end_date: e.end_date ? String(e.end_date) : undefined,
+    }));
+  }
+
+  // Skills - LLM returns string array, normalize to SkillItem[]
+  if (Array.isArray(raw.skills)) {
+    result.skills = (raw.skills as unknown[]).map((name, i) => ({
+      id: String(i + 1),
+      name: String(name),
+      isHighlighted: false,
+    }));
+  }
+
+  // Technical skills
+  if (Array.isArray(raw.technicalSkills)) {
+    result.technicalSkills = (raw.technicalSkills as Record<string, unknown>[]).map((t, i) => ({
+      id: String(i + 1),
+      category: String(t.category || ''),
+      skills: String(t.skills || ''),
+    }));
+  }
+
+  // Certifications
+  if (Array.isArray(raw.certifications)) {
+    result.certifications = (raw.certifications as unknown[]).map((c) => String(c));
+  }
+
+  // Projects
+  if (Array.isArray(raw.projects)) {
+    result.projects = (raw.projects as Record<string, unknown>[]).map((p) => ({
+      name: String(p.name || ''),
+      description: String(p.description || ''),
+      url: p.url ? String(p.url) : undefined,
+      tech: Array.isArray(p.tech) ? (p.tech as unknown[]).map((t) => String(t)) : undefined,
+    }));
+  }
+
+  // Languages
+  if (Array.isArray(raw.languages)) {
+    result.languages = (raw.languages as unknown[]).map((l) => String(l));
+  }
+
+  return result;
 }
 
 // ── Types ───────────────────────────────────────────
@@ -230,7 +445,7 @@ Evaluate ATS compatibility.`;
  const feedback: { severity: "high" | "medium" | "low"; message: string }[] = [];
  
  if (missing.length > 5) {
- feedback.push({ severity: "high", message: "Critical missing keywords detected. ATS systems may filter this asset." });
+ feedback.push({ severity: "high", message: "Critical missing keywords detected. ATS systems may filter this resume." });
  }
  if (!req.resumeData.summary || req.resumeData.summary.length < 100) {
  feedback.push({ severity: "medium", message: "Professional summary is too brief for optimal indexing." });
@@ -257,7 +472,10 @@ export async function tailorResume(req: TailorRequest): Promise<TailorResult> {
  "experience": [{"title": "...", "company": "...", "location": "...", "dates": "...", "bullets": ["..."]}],
  "skillsToHighlight": ["skill1", "skill2"],
  "tailoringNotes": "markdown notes about changes made"
-}`;
+}
+Rules:
+- Plain strings only in summary, titles, companies, and bullets. Do not wrap names, titles, or bullets in markdown asterisks.
+- tailoringNotes may use markdown.`;
  const userPrompt = `## Base Resume
 ${JSON.stringify(req.baseResume, null, 2)}
 
@@ -377,14 +595,41 @@ Produce a tailored resume as JSON.`;
  };
 }
 
+// ── Single Bullet AI Polish ────────────────────────
+
+export async function polishBulletPoint(bullet: string, roleTitle?: string): Promise<string> {
+  const trimmed = bullet.trim();
+  if (!trimmed) return "";
+
+  const config = getLLMConfig();
+  if (config) {
+    try {
+      const systemPrompt = "You are an elite executive resume writer. Improve this single resume bullet point by starting with a powerful action verb, quantifying results or impact where appropriate, and keeping it concise, impactful, and ATS-friendly. Return ONLY the improved bullet point as plain text without quotation marks, bullet symbols, or conversational prefix.";
+      const userPrompt = `Role: ${roleTitle || "Professional"}\nOriginal bullet point:\n${trimmed}`;
+      const res = await callLLM(config, systemPrompt, userPrompt);
+      const cleaned = res.replace(/^[-•*▪▫➢✓]\s*/, '').replace(/^"|"$/g, '').trim();
+      if (cleaned) return cleaned;
+    } catch (err) {
+      logger.warn("Real bullet polish failed, falling back to local enhancement:", err);
+    }
+  }
+
+  // Local enhancement fallback
+  let polished = trimmed.replace(/^[-•*▪▫➢✓]\s*/, '');
+  polished = polished.charAt(0).toUpperCase() + polished.slice(1);
+  return polished;
+}
+
 // ── Interview Prep Generation ───────────────────────
 
 export async function generateInterviewPrep(
  req: InterviewPrepRequest
 ): Promise<InterviewPrepResult> {
  const llm = getLLMConfig();
+ if (!llm) {
+ throw new Error("Add an API key in Settings to generate interview prep.");
+ }
 
- if (llm) {
  const systemPrompt = `You are an expert interview preparation AI. Given a job description and candidate profile, produce comprehensive interview prep. Return JSON matching this schema:
 {
  "companyResearch": "markdown research brief",
@@ -416,139 +661,48 @@ Generate 8 interview questions with suggested answers.`;
  };
  }
  } catch (err) {
- logger.warn("Real Interview Prep generation failed, falling back to mock:", err);
- // Fallback to keyword-based mock
+ logger.warn("Interview prep generation failed:", err);
+ throw new Error("Could not generate interview prep. Check your API key and try again.");
  }
- }
-
- // ── Mock fallback ──────────────────────────────────
- await delay(2500 + Math.random() * 1500);
-
- const keywords = extractKeywords(req.jobDescription);
-
- const companyResearch = `## ${req.companyName}: Company Research Brief
-
-*AI-generated research based on available context.*
-
-### About ${req.companyName}
-Research the company's recent news, product launches, and strategic direction before your interview. Focus on:
-- What products/services does ${req.companyName} offer?
-- What is their competitive advantage?
-- What are their recent achievements or challenges?
-- What is the company culture like?
-
-### Why This Role Matters
-The **${req.jobTitle}** role appears to focus on: ${keywords.slice(0, 4).join(", ") || "product strategy and execution"}.
-
-### Talking Points
-- Connect your experience with ${keywords.slice(0, 2).join(" and ") || "their core business"}
-- Prepare specific metrics from your achievements
-- Show understanding of their market position
-
-### Interview Tips
-- Research the interviewer(s) on LinkedIn
-- Prepare 3-5 thoughtful questions about the team and roadmap
-- Have your STAR stories ready with quantified impact
-- Be ready to discuss your 30-60-90 day plan`;
-
- const roleAnalysis = `## Role Analysis: ${req.jobTitle}
-
-### Key Focus Areas
-Based on the job description, this role emphasizes:
-${keywords.map((kw, i) => `${i + 1}. **${kw.charAt(0).toUpperCase() + kw.slice(1)}**`).join("\n") || "1. Product management core skills"}
-
-### Your Competitive Advantages
-- Map each job requirement to a specific achievement from your background
-- Quantify impact wherever possible (revenue, users, efficiency gains)
-- Highlight transferable skills from adjacent domains
-
-### Gap Areas to Address
-- Identify any requirements you're less experienced in
-- Prepare honest answers about learning curves
-- Show eagerness and a plan to ramp up quickly`;
-
- const questions = [
- {
- question: `Why are you interested in ${req.companyName} and this specific role?`,
- category: "behavioral",
- difficulty: "easy" as const,
- suggestedAnswer: `Research ${req.companyName}'s mission and recent developments. Connect your passion for ${keywords[0] || "product innovation"} to their specific challenges. Share what excites you about the ${req.jobTitle} opportunity.`,
- },
- {
- question: `Walk me through your approach to the first 90 days as ${req.jobTitle}.`,
- category: "product",
- difficulty: "medium" as const,
- suggestedAnswer: `Month 1: Listen & Learn — stakeholder interviews, data deep-dive, user research. Month 2: Quick Wins — identify 2-3 improvements, build credibility with the team. Month 3: Strategy — present product vision, roadmap, and OKRs. Customize this with ${req.companyName}-specific context.`,
- },
- {
- question: `Tell me about a time you drove significant ${keywords[0] || "business"} impact through a product decision.`,
- category: "behavioral",
- difficulty: "medium" as const,
- suggestedAnswer: `Use your strongest STAR story. Focus on: the decision you made, data that informed it, how you aligned stakeholders, and quantified business impact. Tie it back to how similar thinking would apply at ${req.companyName}.`,
- },
- {
- question: `How would you prioritize features for ${req.companyName}'s ${req.jobTitle.toLowerCase().includes("platform") ? "platform" : "product"} roadmap?`,
- category: "product",
- difficulty: "hard" as const,
- suggestedAnswer: `Framework: RICE scoring combined with strategic alignment. Show your approach: (1) Understand business objectives, (2) Gather user insights, (3) Score initiatives by impact × confidence / effort, (4) Align with company strategy, (5) Communicate trade-offs clearly. Reference a real example where you made tough prioritization decisions.`,
- },
- {
- question: "How do you handle disagreements with engineering or design partners?",
- category: "behavioral",
- difficulty: "easy" as const,
- suggestedAnswer: `Show your collaborative approach: (1) Listen first to understand their perspective, (2) Find shared goals, (3) Use data to make objective comparisons, (4) Propose compromises, (5) Commit to the decision together. Reference your conflict resolution experience.`,
- },
- {
- question: `Describe a product you shipped that failed. What did you learn?`,
- category: "situational",
- difficulty: "medium" as const,
- suggestedAnswer: `Show vulnerability and learning. Structure: What was the hypothesis? What went wrong? What data told you it failed? What did you change? What was the ultimate outcome? Great PMs learn from failures — show you're one of them.`,
- },
- {
- question: `How do you measure success for a ${req.jobTitle.toLowerCase().includes("ad") ? "advertising" : "product"} product?`,
- category: "technical",
- difficulty: "medium" as const,
- suggestedAnswer: `Framework: (1) North Star metric tied to user value, (2) Input metrics you can influence, (3) Guardrail metrics to protect, (4) Business metrics that matter to stakeholders. Customize for ${req.companyName}'s context.`,
- },
- {
- question: "Tell me about a time you influenced stakeholders without direct authority.",
- category: "leadership",
- difficulty: "hard" as const,
- suggestedAnswer: `Use your strongest influence story. Highlight: structured decision-making, data-driven persuasion, building coalitions, and aligning incentives. Emphasize the outcome and what you learned about organizational dynamics.`,
- },
- ];
-
- return { companyResearch, roleAnalysis, questions };
 }
 
-// ── Story Extraction ──────────────────────────────────
+function captureStarField(block: string, label: string): string {
+ const re = new RegExp(`${label}\\s*[:\\-–]\\s*([\\s\\S]*?)(?=(?:situation|task|action|result|metrics)\\s*[:\\-–]|$)`, "i");
+ return block.match(re)?.[1]?.trim() ?? "";
+}
 
-export async function extractStoriesFromFile(_text: string): Promise<Partial<Story>[]> {
- void _text;
- // Simulate AI processing time
- await delay(2500 + Math.random() * 1000);
+export function extractStoriesFromText(text: string): Partial<Story>[] {
+ const chunks = text
+ .split(/\n(?=#{1,3}\s|\d+\.\s|[A-Z][^\n]{8,80}\n)/)
+ .map((c) => c.trim())
+ .filter((c) => c.length > 40);
 
- // Return realistic mock stories extracted from document text
- return [
- {
- title: "Led cross-functional team to launch MVP",
- competency: "leadership",
- situation: "The company needed a new mobile app MVP within 3 months, but the team lacked a clear roadmap and was siloed.",
- task: "I was tasked with aligning engineering, design, and marketing to deliver the MVP on schedule.",
- action: "I instituted daily stand-ups, created a shared Jira board, and facilitated weekly alignment meetings to unblock cross-functional dependencies.",
- result: "We launched the MVP 1 week early, leading to 10k downloads in the first month.",
- metrics: "1 week early, 10k downloads",
- tags: ["mvp", "agile", "cross-functional"]
- },
- {
- title: "Resolved critical production database outage",
- competency: "technical",
- situation: "During Black Friday, our main database cluster experienced 100% CPU utilization, causing a site-wide outage.",
- task: "I needed to immediately restore service and ensure we wouldn't go down again during the peak traffic period.",
- action: "I quickly added read replicas and implemented an aggressive Redis caching layer for the product catalog to reduce database load.",
- result: "Service was restored within 15 minutes, and the site handled a 3x traffic spike without further issues.",
- metrics: "15 min recovery, 3x traffic scaling",
- tags: ["scaling", "outage", "database"]
+ const stories: Partial<Story>[] = [];
+ for (const chunk of chunks) {
+ const situation = captureStarField(chunk, "situation");
+ const task = captureStarField(chunk, "task");
+ const action = captureStarField(chunk, "action");
+ const result = captureStarField(chunk, "result");
+ if (!situation && !action && !result) continue;
+ const heading = chunk.match(/^(?:#{1,3}\s+|\d+\.\s+)?(.+)/)?.[1]?.trim() ?? "Untitled story";
+ stories.push({
+ title: heading.slice(0, 80),
+ competency: /lead|manager|team/i.test(chunk) ? "leadership" : /tech|engineer|outage|system/i.test(chunk) ? "technical" : "execution",
+ situation,
+ task,
+ action,
+ result,
+ metrics: captureStarField(chunk, "metrics"),
+ tags: [],
+ });
  }
- ];
+ return stories;
+}
+
+export async function extractStoriesFromFile(text: string): Promise<Partial<Story>[]> {
+ const stories = extractStoriesFromText(text);
+ if (stories.length === 0) {
+ throw new Error("No STAR stories found. Use Situation, Task, Action, and Result headings.");
+ }
+ return stories;
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { Warning, X } from '@phosphor-icons/react';
+import { Warning, X } from "@phosphor-icons/react";
+import { Dialog } from "@/components/ui/Dialog";
 
 interface ConfirmDialogProps {
  open: boolean;
@@ -21,19 +22,14 @@ export default function ConfirmDialog({
  onConfirm,
  onCancel,
 }: ConfirmDialogProps) {
- if (!open) return null;
-
  return (
- <>
- <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fade-in" onClick={onCancel} />
- <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
- <div className="w-full max-w-sm bg-white border border-surface-200 rounded-2xl shadow-2xl animate-scale-in" onClick={(e) => e.stopPropagation()}>
+ <Dialog open={open} onClose={onCancel} labelledBy="confirm-dialog-title" className="max-w-sm">
  <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200">
  <div className="flex items-center gap-3">
  <Warning className="w-5 h-5 text-red-500" />
- <h3 className="text-sm font-bold text-surface-400">{title}</h3>
+ <h3 id="confirm-dialog-title" className="text-sm font-bold text-surface-400">{title}</h3>
  </div>
- <button onClick={onCancel} className="p-1.5 rounded-lg text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all">
+ <button type="button" onClick={onCancel} className="p-1.5 rounded-lg text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all" aria-label="Close">
  <X className="w-4 h-4" />
  </button>
  </div>
@@ -41,10 +37,11 @@ export default function ConfirmDialog({
  <p className="text-sm text-surface-300">{message}</p>
  </div>
  <div className="flex justify-end gap-3 px-6 py-4 border-t border-surface-200">
- <button onClick={onCancel} className="px-4 py-2 rounded-lg text-sm text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all">
+ <button type="button" onClick={onCancel} className="px-4 py-2 rounded-lg text-sm text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all">
  Cancel
  </button>
  <button
+ type="button"
  onClick={onConfirm}
  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
  variant === "danger"
@@ -55,8 +52,6 @@ export default function ConfirmDialog({
  {confirmLabel}
  </button>
  </div>
- </div>
- </div>
- </>
+ </Dialog>
  );
 }

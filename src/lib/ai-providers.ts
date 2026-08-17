@@ -4,6 +4,16 @@
  may only export HTTP method handlers and config.
  ═══════════════════════════════════════════════════ */
 
+async function fetchWithTimeout(url: string, init: RequestInit, ms = 30000): Promise<Response> {
+ const controller = new AbortController();
+ const timer = setTimeout(() => controller.abort(), ms);
+ try {
+  return await fetch(url, { ...init, signal: controller.signal });
+ } finally {
+  clearTimeout(timer);
+ }
+}
+
 export function getEnvKey(provider: string): string | undefined {
  switch (provider) {
  case "openai":
@@ -97,7 +107,7 @@ export async function serverCallLLM(
  : "https://api.openai.com/v1";
  const model = provider === "deepseek" ? "deepseek-chat" : "gpt-4o-mini";
 
- const res = await fetch(`${baseUrl}/chat/completions`, {
+ const res = await fetchWithTimeout(`${baseUrl}/chat/completions`, {
  method: "POST",
  headers: {
  "Content-Type": "application/json",
@@ -122,7 +132,7 @@ export async function serverCallLLM(
  }
 
  if (provider === "anthropic") {
- const res = await fetch("https://api.anthropic.com/v1/messages", {
+ const res = await fetchWithTimeout("https://api.anthropic.com/v1/messages", {
  method: "POST",
  headers: {
  "Content-Type": "application/json",
@@ -145,7 +155,7 @@ export async function serverCallLLM(
  }
 
  if (provider === "gemini") {
- const res = await fetch(
+ const res = await fetchWithTimeout(
  `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
  {
  method: "POST",

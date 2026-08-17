@@ -4,6 +4,7 @@ import type {
   EducationEntry,
   ProjectEntry,
 } from "@/types";
+import { unwrapMarkdownBold } from "@/lib/markdownInline";
 
 /* ═══════════════════════════════════════════════════
    Markdown <-> ResumeData converter
@@ -47,7 +48,7 @@ export function resumeToMarkdown(data: ResumeData): string {
   const lines: string[] = [];
   const p = data.personal;
 
-  if (p?.name) lines.push(`# ${p.name}`);
+  if (p?.name) lines.push(`# ${unwrapMarkdownBold(p.name)}`);
 
   const contactParts = [
     p?.email,
@@ -66,8 +67,8 @@ export function resumeToMarkdown(data: ResumeData): string {
     lines.push("", "## Experience");
     for (const exp of data.experience) {
       const header = [
-        exp.title || "",
-        exp.company || "",
+        unwrapMarkdownBold(exp.title || ""),
+        unwrapMarkdownBold(exp.company || ""),
         exp.location || "",
         [exp.start_date, exp.current ? "Present" : exp.end_date].filter(Boolean).join(" - "),
       ].filter(Boolean).join(" | ");
@@ -82,8 +83,8 @@ export function resumeToMarkdown(data: ResumeData): string {
     lines.push("", "## Education");
     for (const edu of data.education) {
       const header = [
-        edu.institution || "",
-        edu.degree || "",
+        unwrapMarkdownBold(edu.institution || ""),
+        unwrapMarkdownBold(edu.degree || ""),
         edu.field || "",
         [edu.start_date, edu.end_date].filter(Boolean).join(" - "),
       ].filter(Boolean).join(" | ");
@@ -119,7 +120,7 @@ export function resumeToMarkdown(data: ResumeData): string {
   if (data.projects?.length) {
     lines.push("", "## Projects");
     for (const proj of data.projects) {
-      const header = [proj.name, proj.url].filter(Boolean).join(" | ");
+      const header = [unwrapMarkdownBold(proj.name || ""), proj.url].filter(Boolean).join(" | ");
       lines.push("", `### ${header}`);
       if (proj.description) lines.push(proj.description);
       if (proj.tech?.length) lines.push(`Tech: ${proj.tech.join(", ")}`);
@@ -158,7 +159,7 @@ export function markdownToResume(md: string, base: ResumeData): ResumeData {
 
     // H1 - Name + contact line
     if (trimmed.startsWith("# ") && !trimmed.startsWith("## ")) {
-      data.personal!.name = trimmed.slice(2).trim();
+      data.personal!.name = unwrapMarkdownBold(trimmed.slice(2).trim());
       // Next non-empty line is contact info
       i++;
       if (i < lines.length && lines[i].trim() && !lines[i].trim().startsWith("#")) {
@@ -244,8 +245,8 @@ export function markdownToResume(md: string, base: ResumeData): ResumeData {
         const datePart = parts.length > 1 ? parts[parts.length - 1] : "";
         const [startDate, endDate] = parseDateRange(datePart);
         currentExp = {
-          title: parts[0] || "",
-          company: parts[1] || "",
+          title: unwrapMarkdownBold(parts[0] || ""),
+          company: unwrapMarkdownBold(parts[1] || ""),
           location: parts[2] || "",
           start_date: startDate,
           end_date: endDate,
@@ -257,8 +258,8 @@ export function markdownToResume(md: string, base: ResumeData): ResumeData {
         const datePart = parts.length > 1 ? parts[parts.length - 1] : "";
         const [startDate, endDate] = parseDateRange(datePart);
         currentEdu = {
-          institution: parts[0] || "",
-          degree: parts[1] || "",
+          institution: unwrapMarkdownBold(parts[0] || ""),
+          degree: unwrapMarkdownBold(parts[1] || ""),
           field: parts[2] || "",
           start_date: startDate,
           end_date: endDate,
@@ -266,7 +267,7 @@ export function markdownToResume(md: string, base: ResumeData): ResumeData {
       } else if (currentSection === "projects") {
         // Name | URL
         currentProj = {
-          name: parts[0] || "",
+          name: unwrapMarkdownBold(parts[0] || ""),
           description: "",
           url: parts[1] || undefined,
           tech: [],
@@ -311,6 +312,28 @@ export function markdownToResume(md: string, base: ResumeData): ResumeData {
       currentProj.tech = trimmed.slice(5).split(",").map((s) => s.trim()).filter(Boolean);
       i++;
       continue;
+    }
+
+    // Projects: resume-pro line **[OfferPath](https://...)**: Description
+    // Also accept plain text lines like "OfferPath: description" / "OfferPath：描述".
+    if (currentSection === "projects") {
+      const linkMatch = trimmed.match(
+        /^[-*•]?\s*(?:\*\*)?\[([^\]]+)\]\((https?:\/\/[^)]+)\)(?:\*\*)?[：:][\s\u3000–-]*(.*)/,
+      );
+      const colonLine = linkMatch ?? trimmed.match(
+        /^[-*•]?\s*([^：:(]+?)[：:][\s\u3000]*(.*)/,
+      );
+      if (colonLine) {
+        if (currentProj) data.projects!.push(currentProj);
+        currentProj = {
+          name: (linkMatch ? linkMatch[1] : colonLine[1]).trim(),
+          url: linkMatch ? linkMatch[2].trim() : undefined,
+          description: (linkMatch ? linkMatch[3] : colonLine[2]).trim(),
+          tech: [],
+        };
+        i++;
+        continue;
+      }
     }
 
     // Description line for projects

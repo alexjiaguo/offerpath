@@ -173,7 +173,7 @@ export default function AnalyticsCharts() {
   <div className="card-editorial rounded-2xl p-6">
   <h3 className="text-[11px] uppercase tracking-[0.15em] font-mono font-semibold text-surface-400 mb-6 flex items-center gap-2">
   <Briefcase className="w-4 h-4" />
-  By Archetype
+  By role type
   </h3>
   <ResponsiveContainer width="100%" height={240}>
   <BarChart data={archetypeData} layout="vertical" barCategoryGap="20%">

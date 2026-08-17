@@ -2,20 +2,17 @@ import { NextResponse } from "next/server";
 import { getEnvKey, serverValidateApiKey, serverCallLLM } from "@/lib/ai-providers";
 import { createServerClient } from "@/lib/supabase-server";
 
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   try {
+    const body = await req.json();
+    const { action, provider, apiKey, systemPrompt, userPrompt } = body;
+
     const supabase = await createServerClient();
     if (supabase) {
       const { data: { user } } = await supabase.auth.getUser();
-      // When Supabase is configured, require an authenticated session or custom client key
-      const bodyText = await req.clone().text();
-      let customKey = false;
-      try {
-        const parsed = JSON.parse(bodyText);
-        if (parsed.apiKey?.trim()) customKey = true;
-      } catch {
-        // payload parse error handled below
-      }
+      const customKey = Boolean(typeof apiKey === "string" && apiKey.trim());
       if (!user && !customKey) {
         return NextResponse.json(
           { error: "Unauthorized access to AI proxy endpoint." },
@@ -23,9 +20,6 @@ export async function POST(req: Request) {
         );
       }
     }
-
-    const body = await req.json();
-    const { action, provider, apiKey, systemPrompt, userPrompt } = body;
 
     if (!action || typeof action !== "string") {
       return NextResponse.json({ error: "Missing action parameter" }, { status: 400 });

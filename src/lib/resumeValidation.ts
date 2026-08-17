@@ -118,10 +118,10 @@ export function validateResume(data: ResumeData): ValidationIssue[] {
 
   // Personal info
   if (!data.personal?.name?.trim()) {
-    issues.push({ field: "Identity", severity: "error", message: "Missing name." });
+    issues.push({ field: "Contact", severity: "error", message: "Missing name." });
   }
   if (!data.personal?.email?.trim()) {
-    issues.push({ field: "Identity", severity: "warning", message: "Missing email." });
+    issues.push({ field: "Contact", severity: "warning", message: "Missing email." });
   }
 
   return issues;

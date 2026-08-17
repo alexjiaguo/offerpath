@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Playfair_Display, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import { LanguageProvider } from "@/i18n";
 import MotionProvider from "@/components/providers/MotionProvider";
 import "./globals.css";
 
@@ -28,9 +29,9 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://offerpath.cc.cd"),
- title: "OfferPath — From Search to Signed Offer",
+ title: "OfferPath — From search to offer",
  description:
- "The end-to-end job hunting platform. Discover roles, track your pipeline, build tailored resumes, and ace interviews — all in one place.",
+ "Discover roles, track applications, build tailored resumes, and prepare for interviews — in one workspace.",
  keywords: [
  "job search",
  "resume builder",
@@ -42,9 +43,9 @@ export const metadata: Metadata = {
  ],
  authors: [{ name: "OfferPath" }],
  openGraph: {
- title: "OfferPath — From Search to Signed Offer",
+ title: "OfferPath — From search to offer",
  description:
- "The end-to-end job hunting platform. Discover roles, track your pipeline, build tailored resumes, and ace interviews.",
+ "Discover roles, track applications, build tailored resumes, and prepare for interviews — in one workspace.",
  type: "website",
  },
 };
@@ -58,7 +59,12 @@ export default function RootLayout({
  <html lang="en" className={`scroll-smooth ${jakarta.variable} ${playfair.variable} ${jetbrainsMono.variable}`}>
  <head />
  <body className="font-sans antialiased bg-surface-50 text-surface-400">
+ <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[200] focus:px-4 focus:py-2 focus:rounded-md focus:bg-surface-400 focus:text-white focus:text-sm">
+ Skip to main content
+ </a>
+ <LanguageProvider>
  <MotionProvider>{children}</MotionProvider>
+ </LanguageProvider>
  <Toaster
  position="top-right"
  toastOptions={{

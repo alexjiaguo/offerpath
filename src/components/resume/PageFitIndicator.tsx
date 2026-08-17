@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n";
 
 // A4 height at 96dpi: 297mm * (96 / 25.4) = ~1123px
 const A4_HEIGHT_PX = 1123;
@@ -11,7 +12,8 @@ interface PageFitIndicatorProps {
   selector?: string;
 }
 
-export default function PageFitIndicator({ selector = ".resume-paper" }: PageFitIndicatorProps) {
+export default function PageFitIndicator({ selector = "[data-live-preview] .resume-paper" }: PageFitIndicatorProps) {
+  const { t, isZh } = useTranslation();
   const [fillPct, setFillPct] = useState(0);
   const [measured, setMeasured] = useState(false);
   const observerRef = useRef<ResizeObserver | null>(null);
@@ -48,7 +50,7 @@ export default function PageFitIndicator({ selector = ".resume-paper" }: PageFit
 
   if (!measured) return null;
 
-  const isOverflow = fillPct > 105;
+  const isOverflow = fillPct > 100;
   const isUnderflow = fillPct < 96 && fillPct > 0;
 
   const statusColor = isOverflow
@@ -58,10 +60,10 @@ export default function PageFitIndicator({ selector = ".resume-paper" }: PageFit
     : "bg-emerald-50 border-emerald-200 text-emerald-600";
 
   const statusText = isOverflow
-    ? `Overflow ${fillPct}%`
+    ? `${t("resumeStudio.pageFitOverflow")} · ${fillPct}%`
     : isUnderflow
-    ? `Underflow ${fillPct}%`
-    : `Fit ${fillPct}%`;
+    ? (isZh ? "未填满 1 页" : "Under 1 page")
+    : t("resumeStudio.pageFitGood");
 
   return (
     <div className={cn("flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border", statusColor)}>

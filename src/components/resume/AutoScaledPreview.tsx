@@ -1,59 +1,88 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { computePreviewScale, PAPER_HEIGHT_PX } from "@/lib/editorSplit";
 
-export function AutoScaledPreview({ children }: { children: React.ReactNode }) {
+export function AutoScaledPreview({
+  children,
+  isResizing = false,
+  fit = "contain",
+}: {
+  children: React.ReactNode;
+  isResizing?: boolean;
+  fit?: "contain" | "width";
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
-  const [contentHeight, setContentHeight] = useState(1122.52); // Default to 1 A4 page height
+  const [contentHeight, setContentHeight] = useState(PAPER_HEIGHT_PX);
 
   useEffect(() => {
-    let currentScale = 1;
+    const update = () => {
+      const container = containerRef.current;
+      const content = contentRef.current;
+      if (!container || container.clientWidth === 0) return;
+      const nextHeight = content?.scrollHeight || PAPER_HEIGHT_PX;
+      setContentHeight(nextHeight);
+      const newScale =
+        fit === "contain"
+          ? computePreviewScale(container.clientWidth, container.clientHeight, nextHeight)
+          : computePreviewScale(container.clientWidth);
+      setScale(newScale);
+    };
 
-    const observer = new ResizeObserver((entries) => {
-      let shouldUpdate = false;
-      let newScale = currentScale;
-      let newHeight = contentHeight;
-
-      for (const entry of entries) {
-        if (entry.target === containerRef.current) {
-          const containerWidth = entry.contentRect.width;
-          const availableWidth = Math.max(containerWidth - 16, 240);
-          const computedScale = availableWidth / 794;
-          newScale = Math.max(0.2, Math.min(computedScale, 1.5));
-          shouldUpdate = true;
-        } else if (entry.target === contentRef.current) {
-          newHeight = entry.contentRect.height;
-          shouldUpdate = true;
-        }
-      }
-
-      if (shouldUpdate) {
-        currentScale = newScale;
-        setScale(newScale);
-        setContentHeight(newHeight);
-      }
-    });
-
+    const observer = new ResizeObserver(update);
     if (containerRef.current) observer.observe(containerRef.current);
     if (contentRef.current) observer.observe(contentRef.current);
 
-    return () => observer.disconnect();
-  }, [contentHeight]);
+    update();
+    const raf1 = requestAnimationFrame(update);
+    const t1 = setTimeout(update, 60);
+    const t2 = setTimeout(update, 200);
+    const t3 = setTimeout(update, 400);
+    window.addEventListener("resize", update);
+
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(raf1);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      window.removeEventListener("resize", update);
+    };
+  }, [fit]);
 
   return (
-    <div ref={containerRef} className="w-full flex justify-center origin-top">
+    <div
+      ref={containerRef}
+      className={
+        fit === "contain"
+          ? "w-full h-full min-h-0 origin-top overflow-hidden flex items-start justify-center"
+          : "w-full origin-top flex items-start justify-center"
+      }
+      {...(fit === "contain" ? { "data-live-preview": true } : {})}
+    >
       <div
         style={{
-          transform: `scale(${scale})`,
-          transformOrigin: "top center",
-          height: `${contentHeight * scale}px`,
+          width: 794 * scale,
+          height: contentHeight * scale,
+          maxWidth: "100%",
+          overflow: "hidden",
         }}
-        className="w-[210mm] transition-transform duration-200"
+        className="mx-auto"
       >
-        <div ref={contentRef} className="w-full h-auto">
-          {children}
+        <div
+          style={{
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+            width: 794,
+            height: contentHeight,
+          }}
+          className={isResizing ? undefined : "transition-transform duration-200"}
+        >
+          <div ref={contentRef} className="w-[794px] h-auto">
+            {children}
+          </div>
         </div>
       </div>
     </div>

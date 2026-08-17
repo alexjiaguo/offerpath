@@ -11,8 +11,13 @@ import { cn } from "@/lib/utils";
  ═══════════════════════════════════════════════════ */
 
 export default function OfferComparePage() {
- const { jobs } = usePipelineStore();
+ const jobs = usePipelineStore((s) => s.jobs);
  const offeredJobs = jobs.filter((j) => j.status === "offered");
+ const bestScore = Math.max(-1, ...offeredJobs.map((j) => j.score ?? -1));
+ const bestId =
+ bestScore >= 0
+ ? offeredJobs.find((j) => j.score != null && j.score === bestScore)?.id
+ : undefined;
 
  return (
  <div className="w-full animate-fade-in">
@@ -61,8 +66,8 @@ export default function OfferComparePage() {
  <>
  {/* Comparison Grid */}
  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
- {offeredJobs.map((job, index) => (
- <OfferCard key={job.id} job={job} isBest={index === 0} />
+ {offeredJobs.map((job) => (
+ <OfferCard key={job.id} job={job} isBest={!!bestId && job.id === bestId} />
  ))}
  </div>
 
@@ -121,7 +126,7 @@ export default function OfferComparePage() {
  j.score?.toFixed(1) || "—",
  },
  {
- label: "Archetype",
+ label: "Role type",
  render: (j: typeof offeredJobs[0]) =>
  j.archetype || "—",
  },

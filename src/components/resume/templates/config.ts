@@ -16,7 +16,7 @@ export interface TemplateConfig {
 export const TEMPLATE_CONFIGS: TemplateConfig[] = [
  { id: "classic-minimal", name: "Classic Minimal", desc: "Clean, centered header — universally ATS-friendly", tag: "Popular", pro: false, thumbnail: "1" },
  { id: "ats-executive", name: "ATS Executive", desc: "Left-aligned, optimized for executive-level ATS", tag: "ATS", pro: false, thumbnail: "2" },
- { id: "premium-headshot", name: "Premium Headshot", desc: "Dark sidebar with photo and contact block", tag: "Photo", pro: false, thumbnail: "3" },
+ { id: "premium-headshot", name: "Photo Sidebar", desc: "Dark sidebar with photo and contact block", tag: "Photo", pro: false, thumbnail: "3" },
  { id: "bold-engineer", name: "Bold Engineer", desc: "Bold header, contact badges, colored section pills", tag: "Tech", pro: false, thumbnail: "4" },
  { id: "clean-layout", name: "Clean Layout", desc: "Centered header, clear section separation", tag: "Clean", pro: false, thumbnail: "5" },
  { id: "clean-professional", name: "Clean Professional", desc: "Generous spacing, refined for senior roles", tag: "Senior", pro: false, thumbnail: "6" },

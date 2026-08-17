@@ -14,7 +14,6 @@ import type {
  MockFeedback,
  QuestionCategory,
 } from "@/types";
-import { generateInterviewPrep } from "@/lib/aiService";
 import { generateId } from "@/lib/utils";
 
 // ── Store Types ─────────────────────────────────────
@@ -60,7 +59,7 @@ export interface InterviewState {
 
 // ── Mock Data ───────────────────────────────────────
 
-const MOCK_STORIES: Story[] = [
+export const MOCK_STORIES: Story[] = [
  {
  id: "s1",
  user_id: "demo",
@@ -225,7 +224,7 @@ const MOCK_PREP_QUESTIONS: PrepQuestion[] = [
  },
 ];
 
-const MOCK_PREPS: InterviewPrep[] = [
+export const MOCK_PREPS: InterviewPrep[] = [
  {
  id: "p1",
  user_id: "demo",
@@ -240,7 +239,7 @@ const MOCK_PREPS: InterviewPrep[] = [
  },
 ];
 
-const MOCK_SESSIONS: MockSession[] = [
+export const MOCK_SESSIONS: MockSession[] = [
  {
  id: "m1",
  user_id: "demo",
@@ -365,9 +364,9 @@ function generateMockFeedback(): MockFeedback {
 export const useInterviewStore = create<InterviewState>()(
  persist(
  (set, get) => ({
- stories: MOCK_STORIES,
- preps: MOCK_PREPS,
- mockSessions: MOCK_SESSIONS,
+ stories: [],
+ preps: [],
+ mockSessions: [],
 
  // ── Story Bank CRUD ──
 
@@ -495,6 +494,11 @@ export const useInterviewStore = create<InterviewState>()(
  generateAIPrepForJob: async (jobId, jobTitle, companyName, description, profileSummary) => {
  const existingPrep = get().preps.find((p) => p.job_id === jobId);
  if (existingPrep) return existingPrep.id;
+
+ const { generateInterviewPrep, getLLMConfig } = await import("@/lib/aiService");
+ if (!getLLMConfig()) {
+ throw new Error("Add an API key in Settings to generate interview prep.");
+ }
 
  const result = await generateInterviewPrep({
  jobTitle,
@@ -639,6 +643,7 @@ export const useInterviewStore = create<InterviewState>()(
  }),
  {
  name: "offerpath-interview",
+ skipHydration: true,
  partialize: (state) => ({
  stories: state.stories,
  preps: state.preps,

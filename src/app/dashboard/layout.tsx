@@ -7,6 +7,7 @@ import Topbar from "@/components/layout/Topbar";
 import { useSupabaseSync } from "@/hooks/useSupabaseSync";
 import GuestBanner from "@/components/dashboard/GuestBanner";
 import { useUIStore } from "@/store/uiStore";
+import { usePersistHydration } from "@/hooks/usePersistHydration";
 
 const AddJobDialog = dynamic(() => import("@/components/pipeline/AddJobDialog"), { ssr: false });
 
@@ -15,8 +16,8 @@ export default function DashboardLayout({
 }: {
  children: React.ReactNode;
 }) {
- // Hydrates stores from Supabase on mount, then syncs changes back.
  useSupabaseSync();
+ usePersistHydration();
  const sidebarCollapsed = useUIStore((s) => s.sidebarCollapsed);
 
  return (
@@ -30,7 +31,7 @@ export default function DashboardLayout({
  <div className={`flex-1 ${sidebarCollapsed ? "md:pl-[72px]" : "md:pl-[240px]"} flex flex-col min-h-[100dvh] min-w-0 transition-[padding] duration-300 ease-out`}>
  <Topbar />
  <GuestBanner />
- <main className="flex-1 min-h-0 relative w-full flex flex-col overflow-y-auto p-4 md:p-6 lg:p-8 bg-surface-50">
+ <main id="main-content" className="flex-1 min-h-0 relative w-full flex flex-col overflow-y-auto p-4 md:p-6 lg:p-8 bg-surface-50">
  {children}
  </main>
  </div>

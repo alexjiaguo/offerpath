@@ -96,4 +96,31 @@ describe("profileStore", () => {
     expect(empty.disclosures.locationPreference).toBe("hybrid");
   });
 
+  it("uploadResume updates profile fullName, email, skills, and experience", async () => {
+    const md = `# Jane Smith
+jane.smith@example.com | San Francisco, CA
+
+## Professional Summary
+Experienced Staff Engineer with deep frontend and backend expertise.
+
+## Experience
+### Senior Engineer | Stripe
+2020 - Present
+- Built scalable payments infrastructure
+
+## Skills
+React, TypeScript, Node.js
+`;
+    const file = new File([md], "resume.md", { type: "text/markdown" });
+    await useProfileStore.getState().uploadResume(file);
+
+    const profile = useProfileStore.getState().profile;
+    expect(profile.fullName).toBe("Jane Smith");
+    expect(profile.email).toBe("jane.smith@example.com");
+    expect(profile.targetRoleSummary).toContain("Staff Engineer");
+    expect(profile.keySkills).toContain("React");
+    expect(profile.keySkills).toContain("TypeScript");
+    expect(profile.workExperience.length).toBeGreaterThan(0);
+    expect(profile.currentCompany).toBe("Stripe");
+  });
 });
