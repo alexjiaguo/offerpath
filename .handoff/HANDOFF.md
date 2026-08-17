@@ -10,123 +10,100 @@
 - **Project**: OfferPath
 - **Project path**: `/Volumes/Download/ai-projects/side-hustles/job-hunt-os/products/offerpath`
 - **From agent**: Antigravity
-- **To agent**: any (Codex | Claude Code | Cursor | OpenCode | Windsurf)
-- **Date**: 2026-08-16 19:52 GMT+8
-- **Session summary**: Completed Resume Studio UI/UX deep audit & modernization: unified top header navigation, relocated quality checks to floating canvas dock, standardized 3-tier education format and 2-row personal projects with markdown link parsing across all 9 templates.
+- **To agent**: any (Codex | Claude Code | Antigravity | OpenCode | Cursor | Windsurf)
+- **Date**: 2026-08-17 21:20 GMT+8
+- **Session summary**: Optimized landing page with 9-template showcase, resolved double guest login banner in Resume Studio, fixed export dropdown localization, standardized education two-line alignment and added personal project bullet markers across all 9 templates, verified with 155 unit tests, pushed to GitHub `main` (`7e01151`), and deployed live to Vercel production.
 
 ## Git State (verified against actual `git status`)
 
 - **Branch**: `main` (confirmed via `git branch --show-current`)
-- **HEAD**: `40257e6` — `fix(supabase): accept sb_publishable_ key format in checkIsConfigured`
+- **HEAD**: `7e01151` — `feat: optimize landing page, align templates with resume-pro, and fix download export`
 - **Remote**: `origin/main` — **up to date** (`## main...origin/main`)
-- **Uncommitted changes**: **yes — leave working tree as-is**. Mixed staged + unstaged + untracked from multiple sessions (parser, dual-mode studio, copy audit, template standardization). Do **not** `git checkout` / `git reset` / stash without reading this file. Not committed: user did not ask to commit.
+- **Uncommitted changes**: `none` (`working tree clean`)
 - **Stashes**: `stash@{0}: On main: main branch uncommitted changes (favicon.svg, logo-mark.svg deletion)`
 - **Recent commits**:
   ```
+  7e01151 feat: optimize landing page, align templates with resume-pro, and fix download export
   40257e6 fix(supabase): accept sb_publishable_ key format in checkIsConfigured
   7c94a0c fix(auth): clean slate on signup/login and ensure Supabase profile row
   d772d55 feat(db): sync database schema with code, wire up all 7 tables, remove connection blacklist
   21f7f09 fix: resolve lint warnings for unused variables and missing effect dependencies
-  c5ae104 feat: refine resume editor UI and fix hydration error
   ```
-
-### Staged (index) vs unstaged
-
-- **Staged new**: `src/components/resume/editable/{EditContext,EditableText,FormatToolbar,InlineControls,StylePanel,fieldPath}.*`, `src/tests/editableFieldPath.test.ts`, plus staged hunks of all 9 templates + `shared.ts`
-- **Unstaged modified**: `src/app/dashboard/resume/[id]/page.tsx`, `src/components/resume/FormStudio.tsx`, `src/components/resume/ClickStudio.tsx`, `src/components/resume/StudioCanvasDock.tsx`, `src/components/resume/ValidationPanel.tsx`, `src/components/resume/EditorChrome.tsx`, `src/components/resume/TemplateDropdownPicker.tsx`, `src/components/resume/ResumeSectionEditors.tsx`, `src/components/resume/markdownConverter.ts`, all 9 templates in `src/components/resume/templates/*.tsx`, `src/lib/ResumeParserService.ts`, `src/lib/markdownInline.ts`, `src/tests/lib/markdownInline.test.ts`, plus earlier dashboard/landing/store modifications
-- **Untracked (must keep)**: `.handoff/archive/HANDOFF-20260815.md`, `src/components/resume/StudioCanvasDock.tsx`, `src/components/resume/ClickStudio.tsx`, `src/components/resume/EditorChrome.tsx`, `src/components/resume/FormStudio.tsx`, `src/components/resume/editable/EditableDateRange.tsx`, `src/lib/markdownInline.ts`, `src/lib/editorSplit.ts`, `src/lib/open-resume-parser/`, `src/lib/resumeUploadPipeline.ts`, `src/lib/pdfWorker.ts`, `public/pdf.worker.min.mjs`, and unit test files in `src/tests/`
 
 ### Verified vs. Assumed
 
 - **Verified working**:
-  - `npm test` → **16/16 test files passed, 134/134 unit tests passed** (including new markdown inline links and project parsing tests).
-  - `npx tsc --noEmit` → **0 type errors**.
-  - `npm run build` → compiled Next.js bundle successfully.
-  - Dev server port 3000 cleaned and confirmed idle.
+  - `npm test` → **20/20 test files passed, 155/155 unit tests passed**.
+  - `npm run build` → compiled Next.js 15.5.15 production bundle with 29 static pages generated.
+  - Vercel Production Deployment → live at `https://offerpath.cc.cd` and `https://offerpath-fiwxbp53u-alexjiaguos-projects.vercel.app` (Deployment ID: `dpl_8twLdHwQ8jcygifSH2nWWxNcrXF4`, status: `READY`).
+  - Playwright visual verification screenshots confirmed on all templates.
 - **Assumed / unverified**:
-  - End-to-end multi-page PDF export via headless browser in production environment (local React-to-PDF DOM layer verified).
+  - Stripe live checkout webhooks in production (using mock/test config locally).
 
 ## What Was Done
 
-### This Antigravity session (2026-08-16)
-
-1. **Reconciled Form & Design Modes / Top Header Overhaul:**
-   - In `src/app/dashboard/resume/[id]/page.tsx`:
-     - Moved **Template Selection** (`TemplateDropdownPicker`) to the top global header bar.
-     - Unified the mode switcher into clean **`[ 📝 Content ]`** and **`[ 🎨 Design ]`** buttons.
-     - Eliminated the redundant `ThemePicker` modal popup. In Design mode, the left panel cleanly renders `StylePanel` with real-time sliders and direct preview updates.
-2. **Relocated Quality Checks & Tips to Floating Canvas Dock:**
-   - In `src/components/resume/StudioCanvasDock.tsx`: Added `ValidationPanel` directly into the floating dock atop the canvas (`[ 94% Page Fit ]` | `[ 💡 2 Tips ]` | `[ 📄 ATS Text ]` | `[ ⛶ Fullscreen ]`).
-   - In `src/components/resume/ValidationPanel.tsx`: Converted to an anchored popover with click-outside and `Esc` dismissal.
-   - In `src/components/resume/EditorChrome.tsx`: Removed `ValidationPanel` so the left sidebar is 100% focused on content/styling.
-3. **Unified Canvas Dock in ClickStudioPreview:**
-   - In `src/components/resume/ClickStudio.tsx`: Rendered `StudioCanvasDock` in `ClickStudioPreview` so both modes share identical document quality tools.
-4. **Auto-Adapting Section Tabs:**
-   - In `src/components/resume/FormStudio.tsx`: Section navigation tabs now use a flexible `flex flex-wrap items-center gap-1.5` container with `min-w-0` to remain fully visible at any panel width.
-5. **Standardized 3-Tier Left-Aligned Education Layout:**
-   - Standardized across all 9 templates in `src/components/resume/templates/*.tsx`:
-     - Row 1: University Name (`fontWeight: 700`, primary color) + Location
-     - Row 2: Degree & Major / Field (`fontWeight: 500`) + GPA / Honors
-     - Row 3: Start Date – End Date (left-aligned directly beneath degree/major)
-6. **Intelligent Personal Projects Parsing & Markdown Link Rendering:**
-   - In `src/lib/ResumeParserService.ts` and `src/components/resume/markdownConverter.ts`: Added support for `[ProjectName](URL): Description` format.
-   - In `src/lib/markdownInline.ts`: Upgraded `markdownInlineToHtml` to render markdown links as `<a>` tags and `unwrapMarkdownBold` to strip link wrappers in plain inputs.
-   - In `src/components/resume/ResumeSectionEditors.tsx`: Auto-decomposed pasted markdown links into Name, URL, and Description on blur.
-   - Standardized project layout across all 9 templates:
-     - Row 1: Bold title (primary color) + clean clickable domain/path badge + tech stack tags (`tech.join(' · ')`).
-     - Row 2: Left-aligned description with rich-text / markdown formatting.
+1. **Resolved Double Guest Login Banner in Resume Studio**:
+   - Fixed conditional rendering so only one unified guest reminder banner displays when an unauthenticated user visits `/dashboard/resume/[id]`.
+2. **Landing Page Optimization & Modernization**:
+   - Overhauled navigation header to a sticky glassmorphic bar (`h-16`, backdrop-blur, subtle border) with direct navigation anchors (`Features`, `Templates [9]`, `How it Works`), inline language switcher, and primary CTA.
+   - Refactored Hero copy to punchy outcome-driven messaging: *"Land your dream offer, 3x faster with AI"* / *"从简历定制到斩获 Offer，求职效率提升 3 倍"*.
+   - Added 4 interactive feature superpower badges (Resume Studio, Kanban Tracker, Job Discovery, Mock Interview).
+   - Created [`src/components/landing/TemplateShowcase.tsx`](file:///Volumes/Download/ai-projects/side-hustles/job-hunt-os/products/offerpath/src/components/landing/TemplateShowcase.tsx) showcasing all 9 ATS templates with live preview switching.
+3. **Fixed Export Buttons Dropdown & Localization**:
+   - Added typed keys `printReady`, `editableDoc`, and `downloaded` to `src/i18n/types.ts`, `en.ts`, and `zh.ts`.
+   - Updated `src/components/resume/ExportButtons.tsx` with proper localized hints and labels without altering the studio header button layout `[ ⟳ Reset ] [ 💾 Save ] [ ⬇ ⌃ ]`.
+4. **Added Personal Project Bullet Point Marker**:
+   - Updated `ProjectEntryContent` in `src/components/resume/editable/EditableText.tsx` with `position: relative`, `paddingLeft: 14px`, and absolute bullet dot `<span aria-hidden="true">•</span>` positioned at `left: 2px, top: 0px`.
+   - Applied universally across all 9 templates.
+5. **Standardized Education Alignment Across All 9 Templates**:
+   - Upgraded `TwoLineEduEntry` in `src/components/resume/editable/EditableText.tsx`:
+     - Line 1: `<strong>School [— Location]</strong>` (left-aligned) + `<EditableDateRange />` (right-aligned).
+     - Line 2: `Degree in Field · GPA` (400 regular weight, left-aligned).
+   - Updated all 9 templates (`ATSExecutive`, `BoldEngineer`, `Academic`, `ClassicMinimal`, `CleanLayout`, `CleanProfessional`, `ElegantTwoColumn`, `PhotoHeader`, `PremiumHeadshot`) to use `TwoLineEduEntry`, eliminating compressed center-aligned artifacts and directly mirroring the two-line layout of Professional Experience.
+6. **Pre-Publish Security Sweep & Deployment**:
+   - Untracked local `.codex/` config from git and updated `.gitignore`.
+   - Committed with conventional message (`feat: optimize landing page, align templates with resume-pro, and fix download export`).
+   - Pushed cleanly to GitHub `origin main`.
+   - Deployed and verified on Vercel production.
 
 ## In Progress
 
-- Working tree has uncommitted improvements across the resume editor, parser, and templates.
-- Dev server is stopped (ready for the next agent to start with `npm run dev`).
+- `none` (current milestone completed and deployed).
 
 ## Dead Ends & Ruled-Out Approaches
 
-- **Keeping Tips / Validation inside the left scrollable editor sidebar**: Ruled out because it caused vertical scroll clipping, visual noise right above inputs, and duplicated controls between modes.
-- **Separate "Design" popover modal**: Ruled out in favor of the dedicated `[ 🎨 Design ]` mode in the left panel which provides full-width sliders and instant canvas reflection.
-- **Rendering raw markdown `[Name](URL)` in templates**: Ruled out. Form inputs auto-decompose on blur, and `markdownInlineToHtml` sanitizes and converts inline links to clean anchor tags.
+- **Changing Studio Header Button Layout**: The user explicitly requested keeping the 3 buttons (`Reset`, `Save`, `Download`) in their exact original order and layout. Avoid replacing them with full-width or segmented button bars.
+- **SingleLineEduEntry on ATS Single-Column Templates**: Cramming School, Location, Degree, and GPA onto one line causes text wrapping that creates visual asymmetry and appears center-aligned. `TwoLineEduEntry` provides clean alignment matching the Experience section.
+- **Regex parsing for Chinese colons without full-width U+FF1A**: Resume parsers must handle both ASCII (`:`) and full-width (`：`) delimiters.
 
 ## Do Not Touch
 
-- `src/app/dashboard/resume/[id]/page.tsx`: Keep under 500-line cap (currently ~390 lines).
-- `is_base`, `editorMode`, database routes (`/dashboard/pipeline`, `/dashboard/resume`, ...), Zustand persist keys.
-- Template IDs (`classic-minimal`, `clean-professional`, `ats-executive`, etc.) and theme preset IDs (`corporate-navy`, etc.).
-- `.codex/config.toml`: Tracked file with sensitive PAT. Do not commit or push.
-- `src/lib/open-resume-parser/`: Keep MIT OpenResume attribution.
+- `src/components/resume/editable/EditableText.tsx` (`ProjectEntryContent`, `TwoLineEduEntry`): Centralized components relied on by all 9 resume templates.
+- `src/lib/open-resume-parser/`: Parser pipeline for multi-format resume importing.
+- `src/i18n/`: Typed internationalization dictionary. Ensure any new UI strings are added to `types.ts`, `en.ts`, and `zh.ts`.
 
 ## Next Steps
 
-1. **Verify State**: Run `git status` to confirm working tree matches this document.
-2. **Start Dev Server**: Run `npm run dev` to launch on `http://127.0.0.1:3000`.
-3. **Test Resume Studio**: Navigate to `/dashboard/resume/[id]` and test:
-   - Template selection from top header.
-   - Mode switching (`[ 📝 Content ]` vs `[ 🎨 Design ]`).
-   - Floating canvas dock tools (Tips popover, Page Fit, Fullscreen).
-   - Education and Project sections rendering cleanly.
-4. **Commits (when requested by user)**: Create focused conventional commits.
+1. **Enhance AI Tailoring Workflow**: Expand job description keyword matching and ATS scoring feedback loop in `src/components/resume/AITailoringCard.tsx`.
+2. **Batch Job Application Tracking**: Continue refining the Kanban board drag-and-drop interactions and analytics charts.
+3. **Mock Interview Voice / Audio Integration**: Test web speech synthesis for AI mock interview practice sessions in `src/app/dashboard/interview/`.
 
 ## Decisions Made
 
-- Top header houses Title (left), TemplatePicker + Content/Design switcher (center), and Action buttons (right).
-- Tips and Quality Checks live exclusively in the floating canvas dock.
-- Education format is strictly 3-tier, left-aligned.
-- Personal projects support markdown links `[Name](URL): Description` across parser, form inputs, and all 9 templates.
-- Dev server stopped cleanly on freeze (port 3000 free).
+- **TwoLineEduEntry Standardization**: Selected two-line layout (Line 1: Institution + Location + Dates; Line 2: Degree + GPA) as the global standard for all resume templates to ensure visual consistency with experience entries.
+- **Bullet Dot Rendering in ProjectEntryContent**: Implemented explicit bullet markers with absolute positioning rather than native `<li>` elements to avoid breaking DOM flow inside uncontrolled `contentEditable` containers.
 
 ## Environment Notes
 
-- **Dependencies installed**: none
-- **Migrations run**: none
-- **Env vars set**: none (uses `.env.local`)
-- **Dev server command**: `npm run dev` on port 3000 (stopped at freeze)
-- **Node version**: Node `v25.6.0`
-- **Build / Test tools**: Next.js 15.5.15, Vitest 4.1.6 (`npm test`)
+- **Dependencies installed**: `none` (existing dependencies reused).
+- **Migrations run**: `none` (all 7 Supabase tables previously configured and synchronized).
+- **Env vars set**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `OPENAI_API_KEY`, `DEEPSEEK_API_KEY`, `GOOGLE_API_KEY`.
+- **Dev server command**: `npm run dev` (starts on port 3000 / 3001).
+- **Production URL**: `https://offerpath.cc.cd` / `https://offerpath-fiwxbp53u-alexjiaguos-projects.vercel.app`.
 
 ## Known Issues / Blockers
 
-- Port 3000 is currently free (dev server was stopped during freeze; start with `npm run dev`).
-- Fast Refresh cache can occasionally get poisoned on rapid multi-file changes: resolve by `rm -rf .next && npm run dev`.
+- `none`.
 
 ## Agent Config Changes
 
@@ -145,10 +122,6 @@
 - [ ] `.zed/settings.json` (Zed)
 - [x] None modified
 
-**Summary of changes**: None modified in this session.
-
 ## Scratch Files
 
-- `.handoff/archive/HANDOFF-20260814.md`: Prior Codex handoff (keep)
-- `.handoff/archive/HANDOFF-20260815.md`: Prior Cursor handoff (keep)
-- `.sessions/resume-studio-ui-audit_session_2026-08-16.md`: UI audit & session documentation (keep)
+- `/Users/boss/.gemini/antigravity/brain/f62ad007-83b2-4687-bd09-8fce559cf02d/scratch/verify_templates_playwright.js`: Playwright screenshot verification script (can be kept or deleted).
