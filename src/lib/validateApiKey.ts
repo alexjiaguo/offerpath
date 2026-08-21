@@ -4,7 +4,9 @@
  marking it active in the profile store.
  ═══════════════════════════════════════════════════ */
 
-export type ValidationProvider = "openai" | "anthropic" | "gemini" | "deepseek";
+import type { LLMProvider } from "@/lib/llmProviders";
+
+export type ValidationProvider = LLMProvider;
 
 export interface ValidationResult {
  valid: boolean;
@@ -24,6 +26,7 @@ export interface ValidationResult {
 export async function validateApiKey(
  provider: ValidationProvider,
  apiKey: string,
+ options?: { baseUrl?: string; model?: string },
 ): Promise<ValidationResult> {
  if (!apiKey || !apiKey.trim()) {
  return { valid: false, error: "API key is empty" };
@@ -39,6 +42,8 @@ export async function validateApiKey(
  action: "validate-key",
  provider,
  apiKey,
+ baseUrl: options?.baseUrl,
+ model: options?.model,
  }),
  });
 
@@ -53,4 +58,3 @@ export async function validateApiKey(
  return { valid: false, error: message };
  }
 }
-

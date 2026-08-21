@@ -13,15 +13,15 @@ export function AnnouncementBar() {
   const messages = useMemo(() => {
     if (isZh) {
       return [
-        { label: "最新", text: "90 秒内为目标岗位智能针对性润色简历" },
-        { label: "模型", text: "支持接入自己的 OpenAI、Anthropic、Google 或 DeepSeek 密钥" },
-        { label: "精选", text: "每周自动巡航：追踪 30 家心仪企业与高匹配岗位" },
+        { label: "NEW", text: "90 秒内为目标岗位智能针对性润色简历" },
+        { label: "KEYS", text: "支持接入 OpenAI、Anthropic、Google 或 DeepSeek 密钥" },
+        { label: "RADAR", text: "每周自动巡航：追踪 30+ 家知名企业官网直聘岗位" },
       ];
     }
     return [
-      { label: "New", text: "Tailor a resume to a job in about 90 seconds" },
-      { label: "Keys", text: "Bring your own OpenAI, Anthropic, Google, or DeepSeek key" },
-      { label: "Free", text: "Weekly job feed: 30 roles across 30 companies you follow" },
+      { label: "NEW", text: "Tailor a resume to any job description in 90 seconds" },
+      { label: "KEYS", text: "Bring your own OpenAI, Anthropic, Google, or DeepSeek API key" },
+      { label: "RADAR", text: "Continuous radar: track 30+ enterprise career boards automatically" },
     ];
   }, [isZh]);
 
@@ -38,27 +38,27 @@ export function AnnouncementBar() {
   const current = messages[index] || messages[0];
 
   return (
-    <div className="relative z-[60] bg-ember-50 border-b border-ember-100">
-      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 h-10 flex items-center justify-center text-sm">
+    <div className="relative z-[60] bg-[#111111] border-b border-black/20 text-xs">
+      <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 h-9 flex items-center justify-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={`${isZh}-${index}`}
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
-            className="flex items-center gap-2 text-ember-700"
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.3 }}
+            className="flex items-center gap-2 text-white/90"
           >
-            <span className="inline-flex items-center rounded-md bg-ember-500 text-white text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 shrink-0">
+            <span className="inline-flex items-center rounded-full bg-[#C2410C] text-white text-[9px] font-mono font-bold tracking-wider px-2 py-0.5 shrink-0">
               {current.label}
             </span>
-            <span className="font-medium truncate max-w-[180px] xs:max-w-[240px] sm:max-w-none text-xs sm:text-sm">{current.text}</span>
+            <span className="font-sans truncate max-w-[200px] xs:max-w-[280px] sm:max-w-none text-xs text-white/90">{current.text}</span>
             <a
               href="#features"
-              className="inline-flex items-center gap-0.5 underline underline-offset-2 font-semibold hover:text-ember-600 transition-colors shrink-0 text-xs sm:text-sm"
+              className="inline-flex items-center gap-0.5 text-[#FBE3D2] hover:text-white hover:underline font-semibold shrink-0 text-xs transition-colors"
             >
               {t.landing.announcementHighlight}
-              <ArrowUpRight weight="bold" className="w-3.5 h-3.5" />
+              <ArrowUpRight weight="bold" className="w-3 h-3" />
             </a>
           </motion.div>
         </AnimatePresence>
@@ -66,9 +66,9 @@ export function AnnouncementBar() {
           type="button"
           aria-label="Dismiss announcement"
           onClick={() => setDismissed(true)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 inline-flex items-center justify-center rounded-md text-ember-700 hover:bg-ember-100 transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 inline-flex items-center justify-center rounded text-white/50 hover:text-white transition-colors"
         >
-          <X weight="bold" className="w-3.5 h-3.5" />
+          <X weight="bold" className="w-3 h-3" />
         </button>
       </div>
     </div>

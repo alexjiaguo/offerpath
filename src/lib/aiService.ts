@@ -11,14 +11,15 @@ import type { ResumeData, ExperienceEntry, Story } from "@/types";
 import DOMPurify from 'dompurify';
 import { ResumeParserService } from "@/lib/ResumeParserService";
 import { useProfileStore } from "@/store/profileStore";
+import { LLM_PROVIDER_CONFIG, type LLMProvider } from "@/lib/llmProviders";
 
 // ── Real API Integration ───────────────────────────
-
-type LLMProvider = "openai" | "anthropic" | "gemini" | "deepseek";
 
 interface LLMConfig {
  provider: LLMProvider;
  apiKey?: string;
+ baseUrl?: string;
+ model?: string;
 }
 
 /**
@@ -65,13 +66,15 @@ async function callLLM(config: LLMConfig, systemPrompt: string, userPrompt: stri
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      action: "call-llm",
-      provider,
-      apiKey,
-      systemPrompt,
-      userPrompt,
-    }),
+ body: JSON.stringify({
+ action: "call-llm",
+ provider,
+ apiKey,
+ baseUrl: config.baseUrl,
+ model: config.model,
+ systemPrompt,
+ userPrompt,
+ }),
     signal: controller.signal,
   });
  } catch (err) {
@@ -106,10 +109,29 @@ async function callLLM(config: LLMConfig, systemPrompt: string, userPrompt: stri
 export function getLLMConfig(): LLMConfig | null {
  try {
  const store = useProfileStore.getState();
- const priority: LLMProvider[] = ["openai", "anthropic", "deepseek", "gemini"];
+ const priority: LLMProvider[] = [
+ "openai",
+ "anthropic",
+ "deepseek",
+ "gemini",
+ "mistral",
+ "openrouter",
+ "perplexity",
+ "ollama",
+ "lmstudio",
+ ];
  for (const p of priority) {
  const key = store.apiKeys.find((k: { provider: string; status: string }) => k.provider === p && k.status === "active");
- if (key && key.key?.trim()) return { provider: p, apiKey: key.key.trim() };
+ const providerConfig = LLM_PROVIDER_CONFIG[p];
+ const hasUsableKey = !!key?.key?.trim() || !providerConfig.apiKeyRequired;
+ if (key && hasUsableKey) {
+ return {
+ provider: p,
+ apiKey: key.key?.trim() || undefined,
+ baseUrl: key.baseUrl?.trim() || providerConfig.defaultBaseUrl,
+ model: key.model?.trim() || providerConfig.defaultModel,
+ };
+ }
  }
  } catch {
  // Store not available (SSR, etc.)

@@ -2,14 +2,14 @@ import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
 import ElegantTwoColumn from "@/components/resume/templates/ElegantTwoColumn";
 import PhotoHeader from "@/components/resume/templates/PhotoHeader";
-import type { ResumeData, ResumeTheme } from "@/types";
+import type { ResumeData, ResumeTheme, SectionKey } from "@/types";
 
 const data: ResumeData = {
   personal: { name: "Alex", email: "a@b.c" },
   summary: "Test",
   experience: [
-    { id: "1", title: "PM", company: "Acme", location: "SF", start_date: "2020", end_date: "2024", current: false, bullets: ["Did X", "Did Y"] },
-    { id: "2", title: "Senior PM", company: "Beta", location: "NY", start_date: "2018", end_date: "2020", current: false, bullets: ["Did Z"] },
+    { title: "PM", company: "Acme", location: "SF", start_date: "2020", end_date: "2024", current: false, bullets: ["Did X", "Did Y"] },
+    { title: "Senior PM", company: "Beta", location: "NY", start_date: "2018", end_date: "2020", current: false, bullets: ["Did Z"] },
   ],
   education: [], skills: [], projects: [],
 };
@@ -26,7 +26,7 @@ const visibility = {
   languages: true, certifications: true, projects: true, photo: true, portfolio: true, visaStatus: true,
 } as Record<string, boolean>;
 
-const fullOrder = ["summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects", "photo", "portfolio", "visaStatus"] as SectionKey[];
+const fullOrder: SectionKey[] = ["summary", "experience", "education", "technicalSkills", "skills", "languages", "certifications", "projects", "photo", "portfolio", "visaStatus"];
 
 function findExpItems(container: HTMLElement, expectedBorderColor: string): HTMLElement[] {
   const all = container.querySelectorAll("div");

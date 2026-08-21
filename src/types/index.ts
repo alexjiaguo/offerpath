@@ -1,6 +1,8 @@
 /* ═══════════════════════════════════════════════════
- OfferPath — Core Type Definitions
+ OfferPath - Core Type Definitions
  ═══════════════════════════════════════════════════ */
+
+import type { LLMProvider } from "@/lib/llmProviders";
 
 // ── User & Profile ──────────────────────────────────
 
@@ -30,7 +32,6 @@ export interface UserPreferences {
 
 // ── AI / LLM ────────────────────────────────────────
 
-export type LLMProvider = "openai" | "gemini" | "deepseek";
 
 // ── Resume ──────────────────────────────────────────
 

@@ -25,8 +25,8 @@ const baseTheme: ResumeTheme = {
 const mockData: ResumeData = {
   personal: { name: "Alex Guo", email: "alex@example.com" },
   education: [
-    { id: "e1", institution: "Stanford", degree: "MS", field: "CS", start_date: "2018", end_date: "2020" },
-    { id: "e2", institution: "Berkeley", degree: "BS", field: "EECS", start_date: "2014", end_date: "2018" },
+    { institution: "Stanford", degree: "MS", field: "CS", start_date: "2018", end_date: "2020" },
+    { institution: "Berkeley", degree: "BS", field: "EECS", start_date: "2014", end_date: "2018" },
   ],
   technicalSkills: [
     { id: "t1", category: "Languages", skills: "TypeScript, Python, Go" },
@@ -35,7 +35,6 @@ const mockData: ResumeData = {
   certifications: ["AWS Solutions Architect", "CFA Level 1"],
   projects: [
     {
-      id: "p1",
       name: "[OfferPath](https://offerpath.io):",
       url: "",
       description: "AI-powered job search OS with ATS analysis.",

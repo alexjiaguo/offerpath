@@ -23,6 +23,8 @@ export async function POST(request: Request) {
 
  const provider = llmConfig?.provider || "openai";
  const apiKey = llmConfig?.apiKey || getEnvKey(provider);
+ const baseUrl = llmConfig?.baseUrl;
+ const model = llmConfig?.model;
 
  if (apiKey) {
  const systemPrompt = `You are an AI job parser. Extract the following details from the job description and return ONLY valid JSON:
@@ -35,7 +37,7 @@ export async function POST(request: Request) {
  }`;
 
  try {
- const response = await serverCallLLM(provider, apiKey, systemPrompt, text);
+ const response = await serverCallLLM(provider, apiKey, systemPrompt, text, { baseUrl, model });
  // Find JSON block
  const startIdx = response.indexOf("{");
  const endIdx = response.lastIndexOf("}");

@@ -5,6 +5,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { LLMProvider } from "@/lib/llmProviders";
 
 // ── Types ───────────────────────────────────────────
 
@@ -70,9 +71,11 @@ export interface UploadedResume {
 
 export interface ApiKeyEntry {
  id: string;
- provider: "openai" | "gemini" | "deepseek" | "anthropic";
+ provider: LLMProvider;
  label: string;
  key: string;
+ baseUrl?: string;
+ model?: string;
  status: "active" | "invalid" | "untested";
  addedAt: string;
 }
@@ -90,6 +93,7 @@ export interface ProfileState {
  addApiKey: (entry: ApiKeyEntry) => void;
  removeApiKey: (id: string) => void;
  updateApiKeyStatus: (id: string, status: ApiKeyEntry["status"]) => void;
+ updateApiKeyConfig: (id: string, config: Pick<ApiKeyEntry, "baseUrl" | "model">) => void;
  getActiveApiKey: (provider: ApiKeyEntry["provider"]) => ApiKeyEntry | undefined;
  addWorkExperience: (entry: WorkExperienceEntry) => void;
  removeWorkExperience: (id: string) => void;
@@ -252,6 +256,11 @@ export const useProfileStore = create<ProfileState>()(
  updateApiKeyStatus: (id, status) => {
  set((state) => ({
  apiKeys: state.apiKeys.map((k) => (k.id === id ? { ...k, status } : k)),
+ }));
+ },
+ updateApiKeyConfig: (id, config) => {
+ set((state) => ({
+ apiKeys: state.apiKeys.map((k) => (k.id === id ? { ...k, ...config } : k)),
  }));
  },
  getActiveApiKey: (provider) => {

@@ -15,6 +15,7 @@ import type { ResumeData, ResumeTheme, SectionKey } from "@/types";
 const mockTheme: ResumeTheme = {
   primaryColor: "#1a1a2e",
   accentColor: "#0066cc",
+  backgroundColor: "#ffffff",
   textColor: "#2d3748",
   fontFamily: "Inter",
   baseFontSize: 10,
@@ -36,7 +37,6 @@ const mockData: ResumeData = {
   },
   education: [
     {
-      id: "edu-1",
       institution: "Stanford University",
       degree: "Master of Science",
       field: "Computer Science",
@@ -47,13 +47,11 @@ const mockData: ResumeData = {
   ],
   projects: [
     {
-      id: "proj-1",
       name: "Arena Copilot",
       url: "https://github.com/alex/arena",
       description: "AI ops chatbot handling support workflows.",
     },
     {
-      id: "proj-2",
       name: "OfferPath",
       url: "https://offerpath.io",
       description: "Smart job application platform.",

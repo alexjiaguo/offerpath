@@ -1014,6 +1014,16 @@ export interface TranslationSchema {
     label: string;
     labelPlaceholder: string;
     keyLabel: string;
+    baseUrlLabel: string;
+    baseUrlHelp: string;
+    modelLabel: string;
+    modelPlaceholder: string;
+    keyOptional: string;
+    localProviderNote: string;
+    editConfig: string;
+    saveConfig: string;
+    cancelEdit: string;
+    noKeyRequired: string;
     status: string;
     statusConnected: string;
     statusInvalid: string;

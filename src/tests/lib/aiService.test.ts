@@ -249,9 +249,33 @@ JavaScript, TypeScript, React, Node.js, Python`;
     expect(result.experience!.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("returns null from getLLMConfig when no API key is configured", () => {
-    useProfileStore.setState({ apiKeys: [] });
-    expect(getLLMConfig()).toBeNull();
+ it("returns null from getLLMConfig when no API key is configured", () => {
+ useProfileStore.setState({ apiKeys: [] });
+ expect(getLLMConfig()).toBeNull();
+ });
+
+  it("returns keyless local configurations with base URL and model", () => {
+    useProfileStore.setState({
+      apiKeys: [
+        {
+          id: "test-ollama",
+          provider: "ollama",
+          label: "Local Qwen",
+          key: "",
+          baseUrl: "http://localhost:11434/v1",
+          model: "qwen2.5:7b",
+          status: "active",
+          addedAt: "2026-01-01",
+        },
+      ],
+    });
+
+    expect(getLLMConfig()).toEqual({
+      provider: "ollama",
+      apiKey: undefined,
+      baseUrl: "http://localhost:11434/v1",
+      model: "qwen2.5:7b",
+    });
   });
 
   it("falls back to regex parser when no API key is configured", async () => {
