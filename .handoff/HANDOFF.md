@@ -9,119 +9,100 @@
 
 - **Project**: OfferPath
 - **Project path**: `/Volumes/Download/ai-projects/side-hustles/job-hunt-os/products/offerpath`
-- **From agent**: Antigravity
+- **From agent**: Codex (Claude-Code handoff, Aug 22 freeze)
 - **To agent**: any (Codex | Claude Code | Antigravity | OpenCode | Cursor | Windsurf)
-- **Date**: 2026-08-17 21:20 GMT+8
-- **Session summary**: Optimized landing page with 9-template showcase, resolved double guest login banner in Resume Studio, fixed export dropdown localization, standardized education two-line alignment and added personal project bullet markers across all 9 templates, verified with 155 unit tests, pushed to GitHub `main` (`7e01151`), and deployed live to Vercel production.
+- **Date**: 2026-08-22 10:20 GMT+8
+- **Session summary**: Landed the full landing redesign on `main`, deleted the now-redundant `lp_redesign` branch, pushed and let Vercel auto-deploy, captured wide-desktop verification, and froze the repo for handoff.
 
 ## Git State (verified against actual `git status`)
 
 - **Branch**: `main` (confirmed via `git branch --show-current`)
-- **HEAD**: `7e01151` — `feat: optimize landing page, align templates with resume-pro, and fix download export`
+- **HEAD**: `e2734b1` — `feat: landing page redesign with system font and responsive desktop layout`
 - **Remote**: `origin/main` — **up to date** (`## main...origin/main`)
-- **Uncommitted changes**: `none` (`working tree clean`)
-- **Stashes**: `stash@{0}: On main: main branch uncommitted changes (favicon.svg, logo-mark.svg deletion)`
+- **Uncommitted changes at freeze**: 1-line timestamp bump inside the auto-injected `claude-mem-context` block of `AGENTS.md` (no semantic change; folded into the freeze commit).
+- **Stashes**: `stash@{0}: On main: main branch uncommitted changes (favicon.svg, logo-mark.svg deletion)` — pre-existing, untouched.
+- **Branch status**:
+  - `main` (e2734b1) — clean, in sync with `origin/main`.
+  - `lp_redesign` — **deleted** (local + remote; never had unique commits relative to main, deletion was safe).
+  - `codex/new-resume-studio` (5ea9530) — diverged: 3 commits ahead, 3 behind. Carries `fix(editor): pass full theme to preview, split export into PDF + DOC buttons in 3-col row`; not on main. Needs explicit decision before next work.
 - **Recent commits**:
   ```
+  e2734b1 feat: landing page redesign with system font and responsive desktop layout
+  4434458 docs: update agent handoff document
   7e01151 feat: optimize landing page, align templates with resume-pro, and fix download export
   40257e6 fix(supabase): accept sb_publishable_ key format in checkIsConfigured
   7c94a0c fix(auth): clean slate on signup/login and ensure Supabase profile row
-  d772d55 feat(db): sync database schema with code, wire up all 7 tables, remove connection blacklist
-  21f7f09 fix: resolve lint warnings for unused variables and missing effect dependencies
   ```
 
 ### Verified vs. Assumed
 
 - **Verified working**:
-  - `npm test` → **20/20 test files passed, 155/155 unit tests passed**.
-  - `npm run build` → compiled Next.js 15.5.15 production bundle with 29 static pages generated.
-  - Vercel Production Deployment → live at `https://offerpath.cc.cd` and `https://offerpath-fiwxbp53u-alexjiaguos-projects.vercel.app` (Deployment ID: `dpl_8twLdHwQ8jcygifSH2nWWxNcrXF4`, status: `READY`).
-  - Playwright visual verification screenshots confirmed on all templates.
+  - `npm test` → 21 test files / 160 unit tests pass.
+  - `npm run lint` → passes (pre-existing unused-import warnings only).
+  - `npm run build` → Next 15.5.15 production bundle, 29 routes generated.
+  - Local production server (`npm run start -- -p 3001`) → 200 on `/`, 200 on `/preview-templates`.
+  - Vercel production (`https://offerpath.cc.cd`) → HTTP 200, new landing markup served (template preview alt present, system-font CSS shipped).
+  - Wide-viewport screenshot before/after confirms 1600px content rail and expanded template preview; previous empty-side problem resolved.
 - **Assumed / unverified**:
-  - Stripe live checkout webhooks in production (using mock/test config locally).
+  - Supabase live auth/webhook flows on the production URL (only verified via env presence; not exercised end-to-end in this session).
+  - Vercel CLI auth token (the stored token is invalid; manual `vercel login` would be required to re-enable CLI deploys — auto-deploy via the Git integration works).
 
 ## What Was Done
 
-1. **Resolved Double Guest Login Banner in Resume Studio**:
-   - Fixed conditional rendering so only one unified guest reminder banner displays when an unauthenticated user visits `/dashboard/resume/[id]`.
-2. **Landing Page Optimization & Modernization**:
-   - Overhauled navigation header to a sticky glassmorphic bar (`h-16`, backdrop-blur, subtle border) with direct navigation anchors (`Features`, `Templates [9]`, `How it Works`), inline language switcher, and primary CTA.
-   - Refactored Hero copy to punchy outcome-driven messaging: *"Land your dream offer, 3x faster with AI"* / *"从简历定制到斩获 Offer，求职效率提升 3 倍"*.
-   - Added 4 interactive feature superpower badges (Resume Studio, Kanban Tracker, Job Discovery, Mock Interview).
-   - Created [`src/components/landing/TemplateShowcase.tsx`](file:///Volumes/Download/ai-projects/side-hustles/job-hunt-os/products/offerpath/src/components/landing/TemplateShowcase.tsx) showcasing all 9 ATS templates with live preview switching.
-3. **Fixed Export Buttons Dropdown & Localization**:
-   - Added typed keys `printReady`, `editableDoc`, and `downloaded` to `src/i18n/types.ts`, `en.ts`, and `zh.ts`.
-   - Updated `src/components/resume/ExportButtons.tsx` with proper localized hints and labels without altering the studio header button layout `[ ⟳ Reset ] [ 💾 Save ] [ ⬇ ⌃ ]`.
-4. **Added Personal Project Bullet Point Marker**:
-   - Updated `ProjectEntryContent` in `src/components/resume/editable/EditableText.tsx` with `position: relative`, `paddingLeft: 14px`, and absolute bullet dot `<span aria-hidden="true">•</span>` positioned at `left: 2px, top: 0px`.
-   - Applied universally across all 9 templates.
-5. **Standardized Education Alignment Across All 9 Templates**:
-   - Upgraded `TwoLineEduEntry` in `src/components/resume/editable/EditableText.tsx`:
-     - Line 1: `<strong>School [— Location]</strong>` (left-aligned) + `<EditableDateRange />` (right-aligned).
-     - Line 2: `Degree in Field · GPA` (400 regular weight, left-aligned).
-   - Updated all 9 templates (`ATSExecutive`, `BoldEngineer`, `Academic`, `ClassicMinimal`, `CleanLayout`, `CleanProfessional`, `ElegantTwoColumn`, `PhotoHeader`, `PremiumHeadshot`) to use `TwoLineEduEntry`, eliminating compressed center-aligned artifacts and directly mirroring the two-line layout of Professional Experience.
-6. **Pre-Publish Security Sweep & Deployment**:
-   - Untracked local `.codex/` config from git and updated `.gitignore`.
-   - Committed with conventional message (`feat: optimize landing page, align templates with resume-pro, and fix download export`).
-   - Pushed cleanly to GitHub `origin main`.
-   - Deployed and verified on Vercel production.
+1. **Landing template preview fix** — replaced the repeated mock resume with the actual per-template thumbnail (`/images/templates/{1..6}.png`).
+2. **System font unification for the landing** — added a `--font-landing-system` token and a scoped override on `#main-content, #main-content *` so only the landing uses the native stack (other product areas keep Plus Jakarta Sans / Playfair / JetBrains).
+3. **Wide-desktop layout pass** — widened the landing rail to `max-w-[1600px]` at the `2xl` breakpoint, increased grid gaps/padding, expanded the template preview up to 620px, and rebalanced the footer to 5 columns.
+4. **Commit + push** — single commit `e2734b1` on `main`; pushed to `origin/main`; Vercel auto-deploy confirmed via live HTTP 200.
+5. **Branch cleanup** — local and remote `lp_redesign` removed (safe: no unique commits).
+6. **Handoff freeze** — this document written; `AGENTS.md` and `CLAUDE.md` synced with the handoff protocol block; previous `HANDOFF.md` archived under `.handoff/archive/`.
 
-## In Progress
+## In Progress / Incomplete
 
-- `none` (current milestone completed and deployed).
+- **None on `main`.** All session deliverables are committed and live.
+- `codex/new-resume-studio` is the only open branch with diverging work; merge or rebase decision is deferred to the next agent.
 
 ## Dead Ends & Ruled-Out Approaches
 
-- **Changing Studio Header Button Layout**: The user explicitly requested keeping the 3 buttons (`Reset`, `Save`, `Download`) in their exact original order and layout. Avoid replacing them with full-width or segmented button bars.
-- **SingleLineEduEntry on ATS Single-Column Templates**: Cramming School, Location, Degree, and GPA onto one line causes text wrapping that creates visual asymmetry and appears center-aligned. `TwoLineEduEntry` provides clean alignment matching the Experience section.
-- **Regex parsing for Chinese colons without full-width U+FF1A**: Resume parsers must handle both ASCII (`:`) and full-width (`：`) delimiters.
-
-## Do Not Touch
-
-- `src/components/resume/editable/EditableText.tsx` (`ProjectEntryContent`, `TwoLineEduEntry`): Centralized components relied on by all 9 resume templates.
-- `src/lib/open-resume-parser/`: Parser pipeline for multi-format resume importing.
-- `src/i18n/`: Typed internationalization dictionary. Ensure any new UI strings are added to `types.ts`, `en.ts`, and `zh.ts`.
+- **Vercel CLI deploy with stored token** — fails with `The specified token is not valid`. Do not retry CLI deploys without first running `vercel login`. Auto-deploy from the Git integration is the working path.
+- **Headless Playwright (bundled Chromium) for visual QA** — `npx playwright install chromium` runs to ~30%+ and then the session was aborted before it finished. Wide-viewport verification was instead done with a one-off `Google Chrome --headless=new --screenshot` against the local prod server. Continue using that path; do not re-trigger the full Chromium install.
+- **Wide-layout redesign via per-section component rewrites** — the 2xl rail expansion was the smaller, safer diff. Do not move the landing onto a 12-col full-bleed framework unless the user asks for a broader redesign.
+- **Dev server with the default Next.js dev compiler** — repeatedly hit `EMFILE: too many open files, watch` under this machine’s file-descriptor limit. Don’t rely on `npm run dev`; use `npm run build && npm run start -- -p 3001`.
 
 ## Next Steps
 
-1. **Enhance AI Tailoring Workflow**: Expand job description keyword matching and ATS scoring feedback loop in `src/components/resume/AITailoringCard.tsx`.
-2. **Batch Job Application Tracking**: Continue refining the Kanban board drag-and-drop interactions and analytics charts.
-3. **Mock Interview Voice / Audio Integration**: Test web speech synthesis for AI mock interview practice sessions in `src/app/dashboard/interview/`.
+1. Decide on `codex/new-resume-studio`: rebase onto current `main`, fast-forward merge, or close. The 3-row PDF/DOC export split and theme-passing fix are the headline changes.
+2. When picking up any new landing work, start by re-running the wide-viewport screenshot (`/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --screenshot=... --window-size=1920,1080 http://localhost:3001/`) — that is the canonical regression check for the desktop empty-space class of bugs.
+3. If the Vercel CLI is needed again, run `vercel login` once to refresh the stored token; until then, rely on the Git push → auto-deploy flow.
 
-## Decisions Made
+## Decisions Made (and why)
 
-- **TwoLineEduEntry Standardization**: Selected two-line layout (Line 1: Institution + Location + Dates; Line 2: Degree + GPA) as the global standard for all resume templates to ensure visual consistency with experience entries.
-- **Bullet Dot Rendering in ProjectEntryContent**: Implemented explicit bullet markers with absolute positioning rather than native `<li>` elements to avoid breaking DOM flow inside uncontrolled `contentEditable` containers.
+- **Single landing commit, not a series of fix-ups** — the user explicitly asked for a merge + push, so the work shipped as one reviewable commit rather than 4–5 small ones.
+- **`#main-content *` font override rather than replacing the global font tokens** — only the landing needed the system font, and changing `--font-sans` globally would have broken resume templates and dashboard UI that depend on the existing brand fonts.
+- **2xl breakpoint for the wide rail instead of bumping the default `max-w-7xl`** — the 1280px default is correct for laptop; widening to 1600px only above 1536px keeps the design tight on smaller widescreens.
 
-## Environment Notes
+## Environment Changes
 
-- **Dependencies installed**: `none` (existing dependencies reused).
-- **Migrations run**: `none` (all 7 Supabase tables previously configured and synchronized).
-- **Env vars set**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `OPENAI_API_KEY`, `DEEPSEEK_API_KEY`, `GOOGLE_API_KEY`.
-- **Dev server command**: `npm run dev` (starts on port 3000 / 3001).
-- **Production URL**: `https://offerpath.cc.cd` / `https://offerpath-fiwxbp53u-alexjiaguos-projects.vercel.app`.
+- No new dependencies installed.
+- No env vars added or rotated.
+- No Supabase migrations run.
+- `package.json` / `package-lock.json` were committed as part of the landing commit (pre-existing on the branch; not authored this session).
 
-## Known Issues / Blockers
+## Known Broken / Blocked
 
-- `none`.
+- Vercel CLI deploys fail with an invalid stored token (see Dead Ends). Workaround: Git-push auto-deploy.
+- macOS file-descriptor limit interferes with `next dev`. Workaround: use `next start` against a fresh build (see Dead Ends).
 
-## Agent Config Changes
+## Do-Not-Touch Zones
 
-- [ ] `AGENTS.md` (Codex, OpenCode)
-- [ ] `CLAUDE.md` (Claude Code)
-- [ ] `GEMINI.md` (Antigravity)
-- [ ] `.cursorrules` or `.cursor/rules/` (Cursor)
-- [ ] `.windsurfrules` (Windsurf)
-- [ ] `.clinerules` (Cline)
-- [ ] `.github/copilot-instructions.md` (GitHub Copilot)
-- [ ] `.aider.conf.yml` or `CONVENTIONS.md` (Aider)
-- [ ] `.goosehints` (Goose)
-- [ ] `.roorules` or `.roo/rules/` (Roo Code)
-- [ ] `.continue/config.json` (Continue)
-- [ ] `.traerules` (Trae)
-- [ ] `.zed/settings.json` (Zed)
-- [x] None modified
+- `.handoff/archive/` — historical hand-offs. Read-only.
+- `public/images/templates/{1..9}.png` — the 816×1056 template thumbnails. The landing preview now binds to these; replacing the assets requires re-validating the wide-desktop layout.
+- The auto-injected `claude-mem-context` block at the bottom of `AGENTS.md` is environment-managed; do not rewrite it manually.
 
-## Scratch Files
+## Restart Cheat Sheet
 
-- `/Users/boss/.gemini/antigravity/brain/f62ad007-83b2-4687-bd09-8fce559cf02d/scratch/verify_templates_playwright.js`: Playwright screenshot verification script (can be kept or deleted).
+- Build: `npm run build`
+- Serve locally: `npm run start -- -p 3001`
+- Wide-viewport screenshot: `"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu --screenshot=/tmp/<name>.png --window-size=1920,1080 --hide-scrollbars http://localhost:3001/`
+- Tests: `npm test`
+- Lint: `npm run lint`
+- Push to deploy: `git push origin main` (Vercel auto-deploys)

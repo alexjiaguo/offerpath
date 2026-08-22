@@ -192,3 +192,25 @@ npx @claude-flow/cli@latest doctor --fix
 - **Logo Constraints (OfferPath):** Logos must be highly abstract, simple, futuristic, and technical. Do not over-design or try to literally depict system features. The only allowed text is "offerpath" (no slogans like "B2B growth SaaS").
 - **UI Preview Rendering:** When creating HTML or UI previews for the user, DO NOT output large blocks of raw code in the chat. Write the code to a file and open it in the browser for the user to review.
 - **Comprehensive Previews:** When mocking up UI components (like logos), display them in all relevant contexts across the system (e.g., navigation bar, login screen, footer) to provide a complete picture.
+
+<!-- AGENT_HANDOFF_PROTOCOL:START -->
+## Agent Handoff Protocol
+
+This project uses the **agent-handoff** skill to switch agents without losing context. The handoff document is the source of truth: **`.handoff/HANDOFF.md`** in the project root.
+
+**Freeze (before leaving the project):**
+1. Verify git state with `git status` and `git branch --show-current`; the handoff document must reflect reality, not agent memory.
+2. Commit or stash any uncommitted work; never leave changes that a `git checkout .` could destroy.
+3. Stop dev servers and background processes. Note the port and the command needed to restart them.
+4. Clean up scratch files in `/tmp` or the project root unless they are needed for the next session.
+5. Overwrite `.handoff/HANDOFF.md` with all required sections (metadata, git state, verified vs assumed, what was done, in progress, dead ends, next steps, decisions, environment, broken/blocked, do-not-touch zones, restart cheat sheet). Archive the previous file to `.handoff/archive/HANDOFF-<timestamp>.md` first.
+6. Sync the handoff protocol block into the other agent’s config file (Codex → `AGENTS.md`, Claude Code → `CLAUDE.md`, etc.) using the idempotency markers below. Never clobber existing content.
+
+**Thaw (when resuming):**
+1. Read `.handoff/HANDOFF.md` first.
+2. Verify the git state it describes matches `git status` and `git branch --show-current`.
+3. Follow the *Next Steps* section; check *Dead Ends* before re-deriving anything.
+4. Once oriented, archive or clear the handoff per the skill’s guidance.
+
+Do not delete this block. Use `<!-- AGENT_HANDOFF_PROTOCOL:START -->` / `<!-- AGENT_HANDOFF_PROTOCOL:END -->` markers to update it safely.
+<!-- AGENT_HANDOFF_PROTOCOL:END -->
