@@ -65,10 +65,13 @@ export function TemplateShowcase() {
             {featured.map((tmpl) => {
               const isActive = tmpl.id === selectedId;
               return (
-                <button
+                <motion.button
                   key={tmpl.id}
                   onClick={() => setSelectedId(tmpl.id)}
-                  className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
+                  whileHover={{ scale: 1.04, y: -1 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-2 cursor-pointer ${
                     isActive
                       ? "bg-[#111111] text-white font-semibold shadow-md"
                       : "bg-white/70 backdrop-blur-md text-[#555555] border border-neutral-200/80 hover:bg-white hover:text-[#111111] shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
@@ -84,16 +87,18 @@ export function TemplateShowcase() {
                   >
                     {tmpl.tag}
                   </span>
-                </button>
+                </motion.button>
               );
             })}
           </div>
 
           {/* Interactive Inspector Mode Toggle */}
           <div className="flex items-center gap-1 p-1 rounded-full bg-neutral-200/60 backdrop-blur-md border border-white/60 self-start sm:self-auto shrink-0">
-            <button
+            <motion.button
               onClick={() => setViewMode("visual")}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                 viewMode === "visual"
                   ? "bg-white text-neutral-900 shadow-xs font-semibold"
                   : "text-neutral-600 hover:text-neutral-900"
@@ -101,10 +106,12 @@ export function TemplateShowcase() {
             >
               <Eye weight="bold" className="w-3.5 h-3.5 text-[#C2410C]" />
               <span>{isZh ? "视觉呈现" : "Visual Preview"}</span>
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => setViewMode("xray")}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                 viewMode === "xray"
                   ? "bg-neutral-900 text-white shadow-xs font-semibold"
                   : "text-neutral-600 hover:text-neutral-900"
@@ -112,7 +119,7 @@ export function TemplateShowcase() {
             >
               <Cpu weight="bold" className="w-3.5 h-3.5 text-emerald-400" />
               <span>{isZh ? "ATS 透视 X-Ray" : "ATS X-Ray"}</span>
-            </button>
+            </motion.button>
           </div>
         </div>
 

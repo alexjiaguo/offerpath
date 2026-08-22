@@ -159,8 +159,9 @@ export function PhilosophyPillars() {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.1 }}
-              transition={{ delay: 0.08 * i, duration: 0.5 }}
-              className="ds-glass-card p-8 flex flex-col items-center text-center group"
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ delay: 0.08 * i, duration: 0.5, type: "spring", stiffness: 350, damping: 25 }}
+              className="ds-glass-card p-8 flex flex-col items-center text-center group cursor-pointer"
             >
               <div className="mb-6 p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-white/80 transition-transform duration-300 group-hover:scale-110 shadow-xs text-[#111111] group-hover:text-[#C2410C]">
                 {p.icon}

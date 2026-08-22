@@ -7,11 +7,9 @@ import {
   ArrowRight,
   Sparkle,
   FileText,
-  MagnifyingGlass,
   Compass,
   Kanban,
   ChatCircleDots,
-  ChatCircleText,
   Copy,
   Check,
 } from "@phosphor-icons/react";
@@ -126,11 +124,11 @@ export function DeepSeekHero() {
                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#C2410C]/10 border border-[#C2410C]/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
                   <Sparkle weight="fill" className="w-3 h-3 text-[#C2410C]" />
                   <span className="text-[10px] font-mono font-bold text-[#C2410C] tracking-wide uppercase">
-                    {isZh ? "公测 v2.0" : "v2.0 Beta"}
+                    {isZh ? "AI 求职工作台" : "AI Career OS"}
                   </span>
                 </div>
                 <span className="text-xs font-medium text-neutral-700 tracking-tight font-sans">
-                  {isZh ? "智能求职操作系统 · 开发者预览版" : "Career OS · Developer Preview"}
+                  {isZh ? "从投递到 Offer 全流程赋能" : "End-to-End Job Search & Interview Platform"}
                 </span>
                 <ArrowRight weight="bold" className="w-3 h-3 text-neutral-400 group-hover:text-neutral-700 transition-colors ml-0.5" />
               </div>
@@ -155,7 +153,7 @@ export function DeepSeekHero() {
             <p className="text-base sm:text-lg text-[#666666] max-w-xl mb-8 leading-relaxed font-sans">
               {isZh
                 ? "专为高标准求职者打造的一体化 AI 工作台。根据目标职位 (JD) 90 秒逆向定制高通过率 ATS 简历、实时雷达扫描企业官网直聘岗位、用 STAR 法则全真模拟名企面试。"
-                : "The developer-grade AI job search OS. Reverse-engineer any job description into ATS-beating resumes in 90 seconds, scan direct company career boards, and train with adaptive STAR interview coaches."}
+                : "The all-in-one AI career operating system. Reverse-engineer any job description into ATS-beating resumes in 90 seconds, scan direct company career boards, and train with adaptive STAR interview coaches."}
             </p>
 
             {/* Primary & Secondary Pill Action Buttons */}
@@ -172,34 +170,46 @@ export function DeepSeekHero() {
 
             {/* 4 Superpower Feature Pills */}
             <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-black/5 w-full">
-              <a
+              <motion.a
                 href="#features"
-                className="px-3.5 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 hover:bg-white/90 hover:border-white shadow-[0_2px_8px_rgba(0,0,0,0.03),0_0_0_1px_rgba(255,255,255,0.7)_inset] transition-all text-xs text-[#333333] font-medium flex items-center gap-1.5"
+                whileHover={{ y: -3, scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="px-3.5 py-1.5 rounded-full bg-white/70 backdrop-blur-md border border-white/90 hover:bg-white hover:border-white shadow-[0_2px_8px_rgba(0,0,0,0.03),0_0_0_1px_rgba(255,255,255,0.7)_inset] transition-colors text-xs text-[#333333] font-medium flex items-center gap-1.5 cursor-pointer"
               >
                 <FileText weight="duotone" className="w-3.5 h-3.5 text-[#C2410C]" />
                 <span>{isZh ? "9套 ATS 简历工坊" : "9 ATS Resume Studio"}</span>
-              </a>
-              <a
+              </motion.a>
+              <motion.a
                 href="#features"
-                className="px-3.5 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 hover:bg-white/90 hover:border-white shadow-[0_2px_8px_rgba(0,0,0,0.03),0_0_0_1px_rgba(255,255,255,0.7)_inset] transition-all text-xs text-[#333333] font-medium flex items-center gap-1.5"
+                whileHover={{ y: -3, scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="px-3.5 py-1.5 rounded-full bg-white/70 backdrop-blur-md border border-white/90 hover:bg-white hover:border-white shadow-[0_2px_8px_rgba(0,0,0,0.03),0_0_0_1px_rgba(255,255,255,0.7)_inset] transition-colors text-xs text-[#333333] font-medium flex items-center gap-1.5 cursor-pointer"
               >
                 <Compass weight="duotone" className="w-3.5 h-3.5 text-emerald-600" />
                 <span>{isZh ? "官网职位实时雷达" : "Direct Job Radar"}</span>
-              </a>
-              <a
+              </motion.a>
+              <motion.a
                 href="#features"
-                className="px-3.5 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 hover:bg-white/90 hover:border-white shadow-[0_2px_8px_rgba(0,0,0,0.03),0_0_0_1px_rgba(255,255,255,0.7)_inset] transition-all text-xs text-[#333333] font-medium flex items-center gap-1.5"
+                whileHover={{ y: -3, scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="px-3.5 py-1.5 rounded-full bg-white/70 backdrop-blur-md border border-white/90 hover:bg-white hover:border-white shadow-[0_2px_8px_rgba(0,0,0,0.03),0_0_0_1px_rgba(255,255,255,0.7)_inset] transition-colors text-xs text-[#333333] font-medium flex items-center gap-1.5 cursor-pointer"
               >
                 <Kanban weight="duotone" className="w-3.5 h-3.5 text-amber-600" />
                 <span>{isZh ? "求职进度看板" : "Kanban Tracker"}</span>
-              </a>
-              <a
+              </motion.a>
+              <motion.a
                 href="#features"
-                className="px-3.5 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 hover:bg-white/90 hover:border-white shadow-[0_2px_8px_rgba(0,0,0,0.03),0_0_0_1px_rgba(255,255,255,0.7)_inset] transition-all text-xs text-[#333333] font-medium flex items-center gap-1.5"
+                whileHover={{ y: -3, scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="px-3.5 py-1.5 rounded-full bg-white/70 backdrop-blur-md border border-white/90 hover:bg-white hover:border-white shadow-[0_2px_8px_rgba(0,0,0,0.03),0_0_0_1px_rgba(255,255,255,0.7)_inset] transition-colors text-xs text-[#333333] font-medium flex items-center gap-1.5 cursor-pointer"
               >
                 <ChatCircleDots weight="duotone" className="w-3.5 h-3.5 text-indigo-600" />
                 <span>{isZh ? "STAR 模拟面试教练" : "STAR Mock Coach"}</span>
-              </a>
+              </motion.a>
             </div>
           </motion.div>
 
@@ -217,7 +227,7 @@ export function DeepSeekHero() {
                   <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
                   <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
                   <span className="w-3 h-3 rounded-full bg-[#28c840]" />
-                  <span className="ml-2 font-mono text-[11px] text-white/40">offerpath-cli</span>
+                  <span className="ml-2 font-mono text-[11px] text-white/50 bg-white/[0.06] px-2 py-0.5 rounded-md border border-white/[0.08]">offerpath.app/studio</span>
                 </div>
 
                 <div className="flex items-center gap-1 bg-white/[0.06] p-0.5 rounded-lg border border-white/[0.06]">
@@ -264,18 +274,20 @@ export function DeepSeekHero() {
                         </div>
                         <div className="flex gap-1.5">
                           {presets.map((p, idx) => (
-                            <button
+                            <motion.button
                               key={p.company}
                               type="button"
                               onClick={() => handleSwitchPreset(idx)}
-                              className={`px-2 py-0.5 rounded text-[11px] font-mono transition-colors ${
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className={`px-2 py-0.5 rounded text-[11px] font-mono transition-colors cursor-pointer ${
                                 selectedPreset === idx
-                                  ? "bg-white/20 text-white font-semibold border border-white/20"
+                                  ? "bg-white/20 text-white font-semibold border border-white/20 shadow-xs"
                                   : "bg-white/5 text-white/50 hover:text-white/80"
                               }`}
                             >
                               {p.company}
-                            </button>
+                            </motion.button>
                           ))}
                         </div>
                       </div>
@@ -303,7 +315,7 @@ export function DeepSeekHero() {
                           <button
                             type="button"
                             onClick={handleCopy}
-                            className="flex items-center gap-1 text-[11px] text-white/40 hover:text-white transition-colors"
+                            className="flex items-center gap-1 text-[11px] text-white/40 hover:text-white transition-colors cursor-pointer"
                           >
                             {copied ? (
                               <>
@@ -354,8 +366,10 @@ export function DeepSeekHero() {
                       </div>
 
                       {radarJobs.map((j) => (
-                        <div
+                        <motion.div
                           key={j.company}
+                          whileHover={{ scale: 1.015, x: 2 }}
+                          transition={{ type: "spring", stiffness: 350, damping: 25 }}
                           className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.06] hover:border-white/20 transition-all flex items-center justify-between"
                         >
                           <div>
@@ -375,7 +389,7 @@ export function DeepSeekHero() {
                           >
                             {isZh ? "速投" : "Apply"}
                           </Link>
-                        </div>
+                        </motion.div>
                       ))}
 
                       <div className="pt-2 text-center">
