@@ -9,100 +9,106 @@
 
 - **Project**: OfferPath
 - **Project path**: `/Volumes/Download/ai-projects/side-hustles/job-hunt-os/products/offerpath`
-- **From agent**: Codex (Claude-Code handoff, Aug 22 freeze)
+- **From agent**: Antigravity
 - **To agent**: any (Codex | Claude Code | Antigravity | OpenCode | Cursor | Windsurf)
-- **Date**: 2026-08-22 10:20 GMT+8
-- **Session summary**: Landed the full landing redesign on `main`, deleted the now-redundant `lp_redesign` branch, pushed and let Vercel auto-deploy, captured wide-desktop verification, and froze the repo for handoff.
+- **Date**: 2026-08-22 16:52 GMT+8
+- **Session summary**: Equalized multi-tab showcase heights (eliminating blank space across all 4 tabs), unified dark studio UI, added dynamic spring micro-interactions across the landing page, resolved Next.js smooth-scroll warning, ran tests and production build, committed (`54fc7dd`), pushed to `origin/main` for Vercel deployment, and stopped all background dev servers.
 
 ## Git State (verified against actual `git status`)
 
 - **Branch**: `main` (confirmed via `git branch --show-current`)
-- **HEAD**: `e2734b1` — `feat: landing page redesign with system font and responsive desktop layout`
+- **HEAD**: `54fc7dd` — `feat(landing): optimize layout, dark studio previews, and interactive physics`
 - **Remote**: `origin/main` — **up to date** (`## main...origin/main`)
-- **Uncommitted changes at freeze**: 1-line timestamp bump inside the auto-injected `claude-mem-context` block of `AGENTS.md` (no semantic change; folded into the freeze commit).
+- **Uncommitted changes**: none (`nothing to commit, working tree clean`)
 - **Stashes**: `stash@{0}: On main: main branch uncommitted changes (favicon.svg, logo-mark.svg deletion)` — pre-existing, untouched.
 - **Branch status**:
-  - `main` (e2734b1) — clean, in sync with `origin/main`.
-  - `lp_redesign` — **deleted** (local + remote; never had unique commits relative to main, deletion was safe).
-  - `codex/new-resume-studio` (5ea9530) — diverged: 3 commits ahead, 3 behind. Carries `fix(editor): pass full theme to preview, split export into PDF + DOC buttons in 3-col row`; not on main. Needs explicit decision before next work.
+  - `main` (`54fc7dd`) — clean, pushed and in sync with `origin/main`.
+  - `codex/new-resume-studio` (`5ea9530`) — diverged: 3 commits ahead, 3 behind. Carries `fix(editor): pass full theme to preview, split export into PDF + DOC buttons in 3-col row`. Needs rebase/merge decision.
 - **Recent commits**:
   ```
+  54fc7dd feat(landing): optimize layout, dark studio previews, and interactive physics
+  9e89838 chore: freeze handoff after landing redesign
   e2734b1 feat: landing page redesign with system font and responsive desktop layout
   4434458 docs: update agent handoff document
   7e01151 feat: optimize landing page, align templates with resume-pro, and fix download export
-  40257e6 fix(supabase): accept sb_publishable_ key format in checkIsConfigured
-  7c94a0c fix(auth): clean slate on signup/login and ensure Supabase profile row
   ```
 
 ### Verified vs. Assumed
 
 - **Verified working**:
-  - `npm test` → 21 test files / 160 unit tests pass.
-  - `npm run lint` → passes (pre-existing unused-import warnings only).
-  - `npm run build` → Next 15.5.15 production bundle, 29 routes generated.
-  - Local production server (`npm run start -- -p 3001`) → 200 on `/`, 200 on `/preview-templates`.
-  - Vercel production (`https://offerpath.cc.cd`) → HTTP 200, new landing markup served (template preview alt present, system-font CSS shipped).
-  - Wide-viewport screenshot before/after confirms 1600px content rail and expanded template preview; previous empty-side problem resolved.
+  - `npm test -- --run` → 21 test files / 160 unit tests pass.
+  - `npm run build` → Next 15.5.15 production build succeeds cleanly (29/29 routes generated).
+  - All 4 preview engines in `StickyFeatureShowcase.tsx` render with matching ~460px heights and dark studio styling.
+  - Interactive spring physics active on tags, cards, and pills across the landing page.
+  - `data-scroll-behavior="smooth"` attribute added to `<html>` in `src/app/layout.tsx`, clearing the Next.js console warning.
+  - `git push origin main` → successfully pushed to `https://github.com/alexjiaguo/offerpath.git`.
+  - All dev servers and background tasks terminated cleanly; ports 3000/3001/3002 verified freed.
 - **Assumed / unverified**:
-  - Supabase live auth/webhook flows on the production URL (only verified via env presence; not exercised end-to-end in this session).
-  - Vercel CLI auth token (the stored token is invalid; manual `vercel login` would be required to re-enable CLI deploys — auto-deploy via the Git integration works).
+  - Vercel deployment pipeline automatically completes building on `https://offerpath.cc.cd` triggered by push to `main`.
 
 ## What Was Done
 
-1. **Landing template preview fix** — replaced the repeated mock resume with the actual per-template thumbnail (`/images/templates/{1..6}.png`).
-2. **System font unification for the landing** — added a `--font-landing-system` token and a scoped override on `#main-content, #main-content *` so only the landing uses the native stack (other product areas keep Plus Jakarta Sans / Playfair / JetBrains).
-3. **Wide-desktop layout pass** — widened the landing rail to `max-w-[1600px]` at the `2xl` breakpoint, increased grid gaps/padding, expanded the template preview up to 620px, and rebalanced the footer to 5 columns.
-4. **Commit + push** — single commit `e2734b1` on `main`; pushed to `origin/main`; Vercel auto-deploy confirmed via live HTTP 200.
-5. **Branch cleanup** — local and remote `lp_redesign` removed (safe: no unique commits).
-6. **Handoff freeze** — this document written; `AGENTS.md` and `CLAUDE.md` synced with the handoff protocol block; previous `HANDOFF.md` archived under `.handoff/archive/`.
+1. **Multi-Tab Height Calibration & Whitespace Elimination (`StickyFeatureShowcase.tsx`)**:
+   - Streamlined left trigger descriptions to concise 2-line cards (~460px total stacked height).
+   - Calibrated all 4 right preview panels (**Engine 01** AI Resume Studio, **Engine 02** Direct Job Radar, **Engine 03** Kanban Pipeline, **Engine 04** STAR Mock Interview Coach) to have matching internal vertical density (~460px height).
+   - Unified all 4 engines to a 100% dark studio IDE theme (`bg-[#141721]`, `border-white/[0.12]`).
+2. **Micro-Interactions & Spring Motion Physics**:
+   - Added interactive spring animations (`whileHover`, `whileTap`) to cards, tags, pills, and action buttons across `DeepSeekHero`, `PhilosophyPillars`, `HowItWorks`, `TemplateShowcase`, and `QuickStartSection`.
+3. **Next.js Layout Warning Fix (`src/app/layout.tsx`)**:
+   - Added `data-scroll-behavior="smooth"` to `<html>` to satisfy Next.js smooth scrolling requirements during client-side route transitions.
+4. **Testing, Build, and Deployment**:
+   - Ran `npm test -- --run` (160/160 tests passing).
+   - Ran `npm run build` (29/29 routes compiled).
+   - Committed changes as `54fc7dd` and pushed to `origin/main`.
+5. **Process Cleanup & Handoff**:
+   - Killed running dev server background tasks (`task-260`, port 3002).
+   - Archived previous handoff document to `.handoff/archive/HANDOFF-20260822-102000.md`.
+   - Wrote this updated `.handoff/HANDOFF.md`.
 
-## In Progress / Incomplete
+## In Progress
 
-- **None on `main`.** All session deliverables are committed and live.
-- `codex/new-resume-studio` is the only open branch with diverging work; merge or rebase decision is deferred to the next agent.
+- **none on `main`** — All work items are complete, tested, committed, and pushed.
 
 ## Dead Ends & Ruled-Out Approaches
 
-- **Vercel CLI deploy with stored token** — fails with `The specified token is not valid`. Do not retry CLI deploys without first running `vercel login`. Auto-deploy from the Git integration is the working path.
-- **Headless Playwright (bundled Chromium) for visual QA** — `npx playwright install chromium` runs to ~30%+ and then the session was aborted before it finished. Wide-viewport verification was instead done with a one-off `Google Chrome --headless=new --screenshot` against the local prod server. Continue using that path; do not re-trigger the full Chromium install.
-- **Wide-layout redesign via per-section component rewrites** — the 2xl rail expansion was the smaller, safer diff. Do not move the landing onto a 12-col full-bleed framework unless the user asks for a broader redesign.
-- **Dev server with the default Next.js dev compiler** — repeatedly hit `EMFILE: too many open files, watch` under this machine’s file-descriptor limit. Don’t rely on `npm run dev`; use `npm run build && npm run start -- -p 3001`.
+- **Vercel CLI direct deploy without refreshing login** — `npx vercel --prod` fails with `The specified token is not valid. Use vercel login to generate a new token`. Do not run Vercel CLI deploys without running `vercel login` first; git push to `main` handles auto-deployment.
+- **Over-expanding left trigger descriptions** — Adding 3–4 lines of description per trigger stretched the left column to >560px, causing height mismatch with the right preview panels. Concise 2-line descriptions preserve vertical alignment.
+
+## Do Not Touch
+
+- `.handoff/archive/` — Historical handoff records. Read-only.
+- `public/images/templates/{1..9}.png` — High-resolution template previews rendered by `TemplateShowcase`.
+- Auto-injected `claude-mem-context` block at the bottom of `AGENTS.md` — Environment-managed.
 
 ## Next Steps
 
-1. Decide on `codex/new-resume-studio`: rebase onto current `main`, fast-forward merge, or close. The 3-row PDF/DOC export split and theme-passing fix are the headline changes.
-2. When picking up any new landing work, start by re-running the wide-viewport screenshot (`/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --screenshot=... --window-size=1920,1080 http://localhost:3001/`) — that is the canonical regression check for the desktop empty-space class of bugs.
-3. If the Vercel CLI is needed again, run `vercel login` once to refresh the stored token; until then, rely on the Git push → auto-deploy flow.
+1. Review live deployment on `https://offerpath.cc.cd` once Vercel finishes the git-triggered build.
+2. Evaluate merging or rebasing the `codex/new-resume-studio` branch (carrying the 3-row PDF/DOC export button split and full theme passing).
+3. If CLI deployment is desired in terminal, run `npx vercel login` to re-authenticate.
 
-## Decisions Made (and why)
+## Decisions Made
 
-- **Single landing commit, not a series of fix-ups** — the user explicitly asked for a merge + push, so the work shipped as one reviewable commit rather than 4–5 small ones.
-- **`#main-content *` font override rather than replacing the global font tokens** — only the landing needed the system font, and changing `--font-sans` globally would have broken resume templates and dashboard UI that depend on the existing brand fonts.
-- **2xl breakpoint for the wide rail instead of bumping the default `max-w-7xl`** — the 1280px default is correct for laptop; widening to 1600px only above 1536px keeps the design tight on smaller widescreens.
+- **Dark Studio Theme Consistency**: Converted Tab 0 (AI Resume Studio) from a white card to a dark IDE card so all 4 tabs maintain visual continuity when toggling between features.
+- **2-Line Descriptions with Balanced 460px Viewports**: Kept both columns locked to ~460px so no layout jumps or whitespace occur when clicking across tabs.
 
-## Environment Changes
+## Environment Notes
 
-- No new dependencies installed.
-- No env vars added or rotated.
-- No Supabase migrations run.
-- `package.json` / `package-lock.json` were committed as part of the landing commit (pre-existing on the branch; not authored this session).
+- **Dependencies installed**: none added in this session.
+- **Migrations run**: none.
+- **Env vars set**: standard `.env.local` configuration.
+- **Dev server command**: `npm run dev -- -p 3002` (dev) or `npm run start -- -p 3001` (prod server after `npm run build`).
+- **Node version**: Node.js 25.6.0.
 
-## Known Broken / Blocked
+## Known Issues / Blockers
 
-- Vercel CLI deploys fail with an invalid stored token (see Dead Ends). Workaround: Git-push auto-deploy.
-- macOS file-descriptor limit interferes with `next dev`. Workaround: use `next start` against a fresh build (see Dead Ends).
+- Stored Vercel CLI token expired (workaround: relies on automated GitHub integration for deployments, or run `vercel login`).
 
-## Do-Not-Touch Zones
+## Agent Config Changes
 
-- `.handoff/archive/` — historical hand-offs. Read-only.
-- `public/images/templates/{1..9}.png` — the 816×1056 template thumbnails. The landing preview now binds to these; replacing the assets requires re-validating the wide-desktop layout.
-- The auto-injected `claude-mem-context` block at the bottom of `AGENTS.md` is environment-managed; do not rewrite it manually.
+- [x] `AGENTS.md` (Codex, OpenCode) — Verified `AGENT_HANDOFF_PROTOCOL` block present.
+- [x] `CLAUDE.md` (Claude Code) — Verified `AGENT_HANDOFF_PROTOCOL` block present.
+- [x] None modified (No config edits needed; markers already synchronized).
 
-## Restart Cheat Sheet
+## Scratch Files
 
-- Build: `npm run build`
-- Serve locally: `npm run start -- -p 3001`
-- Wide-viewport screenshot: `"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu --screenshot=/tmp/<name>.png --window-size=1920,1080 --hide-scrollbars http://localhost:3001/`
-- Tests: `npm test`
-- Lint: `npm run lint`
-- Push to deploy: `git push origin main` (Vercel auto-deploys)
+- None left behind (all ports freed, scratch scripts cleaned up).
