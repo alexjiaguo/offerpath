@@ -10,10 +10,8 @@ dist/
 build/
 
 # Env
-.env
-.env.local
-.env.production.local
-.env.development.local
+.env*
+!.env.example
 
 # Debug
 npm-debug.log*

@@ -5,6 +5,15 @@ import chromiumAws from "@sparticuz/chromium";
 // @ts-expect-error - jsdom module declaration missing
 import { JSDOM } from "jsdom";
 import DOMPurify from "dompurify";
+import { rateLimit, clientIpFromHeaders } from "@/lib/rateLimit";
+
+const MAX_HTML_LENGTH = 2_000_000;
+
+function safeFilename(title: unknown): string {
+  if (typeof title !== "string") return "resume";
+  const cleaned = title.replace(/[^\w\-. ]+/g, "").trim().slice(0, 80);
+  return cleaned || "resume";
+}
 
 // On Vercel, use @sparticuz/chromium (serverless-optimized Chromium build).
 // Locally, fall back to the system-installed Chrome/Chromium.
@@ -34,12 +43,28 @@ export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
-    const { html, title } = await request.json();
+    if (!rateLimit(`pdf:${clientIpFromHeaders(request.headers)}`, 6, 60_000)) {
+      return NextResponse.json(
+        { error: "Too many export requests. Please wait a moment." },
+        { status: 429 }
+      );
+    }
+
+    const body = await request.json();
+    const html = body?.html;
+    const title = body?.title;
 
     if (!html || typeof html !== "string") {
       return NextResponse.json(
         { error: "Valid HTML content string is required" },
         { status: 400 }
+      );
+    }
+
+    if (html.length > MAX_HTML_LENGTH) {
+      return NextResponse.json(
+        { error: "Resume content is too large to render" },
+        { status: 413 }
       );
     }
 
@@ -68,7 +93,7 @@ export async function POST(request: Request) {
       response.headers.set("Content-Type", "application/pdf");
       response.headers.set(
         "Content-Disposition",
-        `attachment; filename="${title || "resume"}.pdf"`
+        `attachment; filename="${safeFilename(title)}.pdf"`
       );
       return response;
     } finally {

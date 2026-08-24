@@ -137,3 +137,75 @@ export function isLoopbackUrl(baseUrl: string): boolean {
     return false;
   }
 }
+
+export function isPrivateHostname(hostname: string): boolean {
+  const host = hostname.toLowerCase().replace(/\.$/, "");
+  if (host === "localhost" || host.endsWith(".localhost")) return true;
+  if (host.endsWith(".local") || host.endsWith(".internal")) return true;
+  if (host === "::1" || host === "[::1]") return true;
+  if (/^f[cd][0-9a-f]{2}:/.test(host) || host.startsWith("fe80:")) return true;
+  const v4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (v4) {
+    const a = Number(v4[1]);
+    const b = Number(v4[2]);
+    if (a === 0 || a === 10 || a === 127) return true;
+    if (a === 169 && b === 254) return true;
+    if (a === 172 && b >= 16 && b <= 31) return true;
+    if (a === 192 && b === 168) return true;
+    if (a === 100 && b >= 64 && b <= 127) return true;
+  }
+  return false;
+}
+
+export interface ResolveBaseUrlOptions {
+  usingServerKey?: boolean;
+}
+
+export function resolveProviderBaseUrl(
+  provider: LLMProvider,
+  baseUrl: string | undefined,
+  options?: ResolveBaseUrlOptions
+): { baseUrl: string; error?: string } {
+  const config = LLM_PROVIDER_CONFIG[provider];
+  const raw = baseUrl?.trim() ?? "";
+
+  if (options?.usingServerKey || raw === "") {
+    return { baseUrl: config.defaultBaseUrl };
+  }
+
+  let url: URL;
+  try {
+    url = new URL(raw);
+  } catch {
+    return { baseUrl: raw, error: "Invalid base URL" };
+  }
+
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    return { baseUrl: raw, error: "Base URL must use http or https" };
+  }
+
+  if (url.username || url.password) {
+    return { baseUrl: raw, error: "Base URL must not embed credentials" };
+  }
+
+  if (config.local) {
+    if (!isLoopbackUrl(url.toString())) {
+      return {
+        baseUrl: raw,
+        error: `${config.name} base URL must be a loopback address`,
+      };
+    }
+  } else {
+    if (url.protocol !== "https:") {
+      return { baseUrl: raw, error: "Custom base URL must use https" };
+    }
+    if (isPrivateHostname(url.hostname)) {
+      return {
+        baseUrl: raw,
+        error: "Custom base URL must not point at a private network",
+      };
+    }
+  }
+
+  return { baseUrl: `${url.origin}${url.pathname.replace(/\/+$/, "")}` };
+}

@@ -3,13 +3,14 @@
 import {
   getLLMProviderConfig,
   isLLMProvider,
-  normalizeLLMBaseUrl,
+  resolveProviderBaseUrl,
   type LLMProvider,
 } from "@/lib/llmProviders";
 
 export interface LLMRequestOptions {
   baseUrl?: string;
   model?: string;
+  serverManagedKey?: boolean;
 }
 
 async function fetchWithTimeout(url: string, init: RequestInit, ms = 30000): Promise<Response> {
@@ -52,14 +53,16 @@ function getRequestConfig(provider: string, options?: LLMRequestOptions) {
   }
 
   const config = getLLMProviderConfig(provider)!;
-  const normalized = normalizeLLMBaseUrl(provider, options?.baseUrl);
-  if (normalized.error) {
-    return { error: normalized.error };
+  const resolved = resolveProviderBaseUrl(provider, options?.baseUrl, {
+    usingServerKey: options?.serverManagedKey,
+  });
+  if (resolved.error) {
+    return { error: resolved.error };
   }
 
   return {
     provider: provider as LLMProvider,
-    baseUrl: normalized.baseUrl,
+    baseUrl: resolved.baseUrl,
     model: options?.model?.trim() || config.defaultModel,
   };
 }
