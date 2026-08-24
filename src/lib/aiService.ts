@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger";
  Otherwise falls back to mock implementations.
  ═══════════════════════════════════════════════════ */
 
-import type { ResumeData, ExperienceEntry, Story } from "@/types";
+import type { ResumeData, ExperienceEntry, Story, JobEvaluation } from "@/types";
 import DOMPurify from 'dompurify';
 import { ResumeParserService } from "@/lib/ResumeParserService";
 import { useProfileStore } from "@/store/profileStore";
@@ -762,6 +762,59 @@ export async function generateInterviewQuestions(
     throw new Error("AI returned an empty question set.");
   }
   return questions;
+}
+
+// ── Job Fit Evaluation ──────────────────────────────
+
+export interface JobEvalRequest {
+  jobTitle: string;
+  companyName: string;
+  jobDescription?: string;
+  location?: string;
+  profileSummary?: string;
+}
+
+function asStringArray(value: unknown, max = 6): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((v) => asNonEmptyString(v))
+    .filter(Boolean)
+    .slice(0, max);
+}
+
+export async function evaluateJob(req: JobEvalRequest): Promise<JobEvaluation> {
+  const llm = getLLMConfig();
+  if (!llm) throw new Error("Add an API key in Settings to run AI evaluation.");
+
+  const systemPrompt = `You are a technical recruiter evaluating candidate fit for a role using ONLY the material provided — never invent facts about the candidate or company. Return JSON exactly:
+{"score": <0-5, one decimal>, "tier": <1|2|3 where 1 is strongest fit>, "archetype": "<industry/role label, max 20 chars>", "fit_reasons": ["..."], "concerns": ["..."], "key_requirements": ["..."], "match_summary": "<two sentences>"}`;
+  const userPrompt = `## Role\nTitle: ${req.jobTitle}\nCompany: ${req.companyName}\nLocation: ${req.location || "(not stated)"}\n\n## Job Description\n${req.jobDescription || "(not provided)"}\n\n## Candidate Background Summary\n${req.profileSummary || "(not provided)"}`;
+
+  let parsed: unknown;
+  try {
+    const response = await callLLM(llm, systemPrompt, userPrompt);
+    parsed = JSON.parse(extractJsonBlock(response));
+  } catch (err) {
+    logger.warn("Real job evaluation failed:", err);
+    throw err instanceof Error ? err : new Error("AI evaluation failed. Please try again.");
+  }
+
+  if (!parsed || typeof parsed !== "object" || typeof (parsed as Record<string, unknown>).score !== "number") {
+    throw new Error("AI returned an unreadable evaluation.");
+  }
+  const p = parsed as Record<string, unknown>;
+  const score = Math.max(0, Math.min(5, Number(p.score)));
+  const tier = [1, 2, 3].includes(Number(p.tier)) ? Number(p.tier) : 3;
+
+  return {
+    score,
+    tier,
+    archetype: asNonEmptyString(p.archetype) || req.companyName || "General",
+    fit_reasons: asStringArray(p.fit_reasons),
+    concerns: asStringArray(p.concerns),
+    key_requirements: asStringArray(p.key_requirements),
+    match_summary: asNonEmptyString(p.match_summary),
+  };
 }
 
 // ── Interview Prep Generation ───────────────────────

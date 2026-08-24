@@ -697,7 +697,7 @@ export class ResumeParserService {
 
     const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.]+/);
     const email = emailMatch ? emailMatch[0] : '';
-    const phoneMatch = text.match(/(?:\+?\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/);
+    const phoneMatch = text.match(/(?:\+?86[\s.-]?)?1[3-9]\d{9}|(?:\+?\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/);
     const phone = phoneMatch ? phoneMatch[0] : '';
     const linkedinMatch = text.match(/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/(?:in\/)?[\w-]+/i);
     const linkedin = linkedinMatch ? linkedinMatch[0] : '';

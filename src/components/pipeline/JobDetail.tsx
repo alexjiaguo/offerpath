@@ -161,11 +161,38 @@ interface JobDetailProps {
 
 export default function JobDetail({ jobId }: JobDetailProps) {
  const router = useRouter();
- const { getJobById, moveJob, deleteJob } = usePipelineStore();
+ const { getJobById, moveJob, deleteJob, updateJob } = usePipelineStore();
  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+ const [evaluating, setEvaluating] = useState(false);
  const { getResumeById, getATSScore } = useResumeStore();
  const job = getJobById(jobId);
  const linkedResume = job?.resume_id ? getResumeById(job.resume_id) : undefined;
+
+ const handleRunEvaluation = async () => {
+ if (!job || evaluating) return;
+ setEvaluating(true);
+ try {
+ const { getLLMConfig, evaluateJob } = await import("@/lib/aiService");
+ if (!getLLMConfig()) {
+ toast.error("Add an API key in Settings to run AI evaluation.");
+ return;
+ }
+ const evaluation = await evaluateJob({
+ jobTitle: job.title,
+ companyName:
+ typeof job.company === "string" ? job.company : job.company?.name ?? "",
+ jobDescription: job.description,
+ location: job.location,
+ profileSummary: linkedResume?.data.summary ?? "",
+ });
+ updateJob(job.id, { evaluation });
+ toast.success("AI evaluation complete.");
+ } catch (err) {
+ toast.error(err instanceof Error ? err.message : "AI evaluation failed.");
+ } finally {
+ setEvaluating(false);
+ }
+ };
 
  // Split-pane and AI Outreach Builder tab state
  const [activeTab, setActiveTab] = useState<"overview" | "resume" | "outreach">("overview");
@@ -810,9 +837,23 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  <h3 className="text-xs font-bold text-surface-400 mb-1 font-display">
  Not Evaluated Yet
  </h3>
- <p className="text-[11px] text-surface-300">
+ <p className="text-[11px] text-surface-300 mb-4 px-4">
  Run AI evaluation to get a fitness score and detailed match analysis.
  </p>
+ <button
+ type="button"
+ onClick={handleRunEvaluation}
+ disabled={evaluating}
+ className={cn(
+ "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all",
+ evaluating
+ ? "bg-brand-500/20 text-brand-300 cursor-wait"
+ : "bg-brand-500 text-white hover:bg-brand-400"
+ )}
+ >
+ <Sparkle weight="fill" className={cn("w-3.5 h-3.5", evaluating && "animate-pulse")} />
+ {evaluating ? "Evaluating…" : "Run AI Evaluation"}
+ </button>
  </div>
  )}
 

@@ -113,7 +113,7 @@ export const extractProfile = (sections: ResumeSectionToLines): { profile: ORPro
   const [url] = getTextWithHighestFeatureScore(textItems, URL_FEATURE_SETS);
   const [summary] = getTextWithHighestFeatureScore(textItems, SUMMARY_FEATURE_SETS, undefined, true);
 
-  const summaryLines = getSectionLinesByKeywords(sections, ["summary"]);
+  const summaryLines = getSectionLinesByKeywords(sections, ["summary", "个人总结", "个人简介", "自我评价"]);
   const summarySection = summaryLines.flat().map((t) => t.text).join(" ");
   const objectiveLines = getSectionLinesByKeywords(sections, ["objective"]);
   const objectiveSection = objectiveLines.flat().map((t) => t.text).join(" ");
@@ -132,7 +132,7 @@ export const extractProfile = (sections: ResumeSectionToLines): { profile: ORPro
 
 // ── Work Experience Extraction ──────────────────────
 
-const WORK_EXPERIENCE_KEYWORDS = ['work', 'experience', 'employment', 'history', 'job'];
+const WORK_EXPERIENCE_KEYWORDS = ['work', 'experience', 'employment', 'history', 'job', '工作经历', '工作经验', '专业经历', '职业经历'];
 const JOB_TITLES = ['Accountant', 'Administrator', 'Advisor', 'Agent', 'Analyst', 'Apprentice', 'Architect', 'Assistant', 'Associate', 'Auditor', 'Bartender', 'Biologist', 'Bookkeeper', 'Buyer', 'Carpenter', 'Cashier', 'CEO', 'Clerk', 'Co-op', 'Co-Founder', 'Consultant', 'Coordinator', 'CTO', 'Developer', 'Designer', 'Director', 'Driver', 'Editor', 'Electrician', 'Engineer', 'Extern', 'Founder', 'Freelancer', 'Head', 'Intern', 'Janitor', 'Journalist', 'Laborer', 'Lawyer', 'Lead', 'Manager', 'Mechanic', 'Member', 'Nurse', 'Officer', 'Operator', 'Operation', 'Photographer', 'President', 'Producer', 'Recruiter', 'Representative', 'Researcher', 'Sales', 'Server', 'Scientist', 'Specialist', 'Supervisor', 'Teacher', 'Technician', 'Trader', 'Trainee', 'Treasurer', 'Tutor', 'Vice', 'VP', 'Volunteer', 'Webmaster', 'Worker'];
 
 const hasJobTitle = (item: TextItem) =>
@@ -210,7 +210,7 @@ const GPA_FEATURE_SETS: FeatureSet[] = [
 
 export const extractEducation = (sections: ResumeSectionToLines): { educations: OREducation[] } => {
   const educations: OREducation[] = [];
-  const lines = getSectionLinesByKeywords(sections, ["education"]);
+  const lines = getSectionLinesByKeywords(sections, ["education", "教育背景", "教育经历", "学历"]);
   const subsections = divideSectionIntoSubsections(lines);
 
   for (const subsectionLines of subsections) {
@@ -246,7 +246,7 @@ export const extractEducation = (sections: ResumeSectionToLines): { educations: 
 
 export const extractProject = (sections: ResumeSectionToLines): { projects: ORProject[] } => {
   const projects: ORProject[] = [];
-  const lines = getSectionLinesByKeywords(sections, ["project"]);
+  const lines = getSectionLinesByKeywords(sections, ["project", "项目经历", "项目经验"]);
   const subsections = divideSectionIntoSubsections(lines);
 
   for (const subsectionLines of subsections) {
@@ -271,7 +271,7 @@ export const extractProject = (sections: ResumeSectionToLines): { projects: ORPr
 // ── Skills Extraction ───────────────────────────────
 
 export const extractSkills = (sections: ResumeSectionToLines): { skills: ORSkills } => {
-  const lines = getSectionLinesByKeywords(sections, ["skill"]);
+  const lines = getSectionLinesByKeywords(sections, ["skill", "技能特长", "专业技能", "技术技能", "核心技能", "技能"]);
   const descriptionsLineIdx = getDescriptionsLineIdx(lines) ?? 0;
   const descriptionsLines = lines.slice(descriptionsLineIdx);
   const descriptions = getBulletPointsFromLines(descriptionsLines);

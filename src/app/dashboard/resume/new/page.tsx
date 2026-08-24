@@ -6,6 +6,8 @@ import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, U
 import Link from "next/link";
 import { useResumeStore } from "@/store/resumeStore";
 import { parseUploadedResume } from "@/lib/resumeUploadPipeline";
+import { getLLMConfig } from "@/lib/aiService";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/i18n";
@@ -57,21 +59,47 @@ function NewResumeContent() {
     router.push(`/dashboard/resume/${id}`);
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (!selectedFile) return;
+  const runParse = async (selectedFile: File) => {
     setFile(selectedFile);
     setMode("parsing");
     setLoading(true);
     setError(null);
 
     try {
-      const result = await parseUploadedResume(selectedFile);
+      const CONSENT_KEY = "offerpath_ai_parse_consent";
+      const consented = localStorage.getItem(CONSENT_KEY) === "on";
+      const aiAvailable = Boolean(getLLMConfig());
+      const result = await parseUploadedResume(selectedFile, {
+        allowAIFallback: consented,
+      });
       if (!result.ok) {
         setError(result.error);
         setLoading(false);
         setMode("upload");
         return;
+      }
+
+      if (result.warning) {
+        toast.warning(result.warning);
+      }
+      if (!consented && aiAvailable && !result.aiUsed) {
+        const needsAI = !result.data.personal?.email || !(result.data.experience?.length ?? 0);
+        toast.info(
+          isZh
+            ? "部分简历可借助 AI 提升解析完整度（内容将发送至所选 AI 服务商）。"
+            : "AI can improve parsing for tricky resumes (content would be sent to your selected AI provider).",
+          needsAI
+            ? {
+                action: {
+                  label: isZh ? "允许并重试" : "Allow and retry",
+                  onClick: () => {
+                    localStorage.setItem(CONSENT_KEY, "on");
+                    void runParse(selectedFile);
+                  },
+                },
+              }
+            : undefined
+        );
       }
 
       const id = addResume({
@@ -106,6 +134,12 @@ function NewResumeContent() {
       setLoading(false);
       setMode("upload");
     }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+    await runParse(selectedFile);
   };
 
   const n = t.resumeStudio.newResume;

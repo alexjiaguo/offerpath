@@ -251,6 +251,21 @@ const SECTION_TITLE_PRIMARY_KEYWORDS = [
 const SECTION_TITLE_SECONDARY_KEYWORDS = [
   "job", "course", "extracurricular", "objective", "summary", "award", "honor", "project",
 ];
+// Chinese section headings are matched by exact title text since the
+// bold/uppercase heuristics below do not apply to CJK characters.
+const CJK_SECTION_TITLES = [
+  "工作经历", "工作经验", "专业经历", "职业经历",
+  "教育背景", "教育经历", "学历背景",
+  "技能特长", "专业技能", "技术技能", "核心技能", "技能",
+  "项目经历", "项目经验", "个人项目", "主要项目",
+  "个人总结", "个人简介", "自我评价",
+  "语言能力", "资格证书", "荣誉证书",
+];
+
+const isCjkSectionTitle = (text: string) => {
+  const normalized = text.replace(/[\s:：]+/g, "");
+  return normalized.length > 0 && CJK_SECTION_TITLES.includes(normalized);
+};
 const SECTION_TITLE_KEYWORDS = [
   ...SECTION_TITLE_PRIMARY_KEYWORDS,
   ...SECTION_TITLE_SECONDARY_KEYWORDS,
@@ -264,6 +279,11 @@ const isSectionTitle = (line: Line, lineNumber: number) => {
 
   const textItem = line[0];
   const text = textItem.text.trim();
+
+  if (isCjkSectionTitle(text)) {
+    return true;
+  }
+
   const matchesKeyword = SECTION_TITLE_KEYWORDS.some((keyword) =>
     text.toLowerCase().includes(keyword)
   );

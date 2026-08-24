@@ -3,6 +3,14 @@ import { PDFJS_WORKER_SRC } from "@/lib/pdfWorker";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_PDF_PAGES = 100;
 
+function safeStringFromCodes(codes: number[]): string {
+  let result = '';
+  for (let i = 0; i < codes.length; i += 8192) {
+    result += String.fromCharCode(...codes.slice(i, i + 8192));
+  }
+  return result;
+}
+
 const ALLOWED_EXTENSIONS = new Set(['pdf', 'docx', 'doc', 'txt', 'md']);
 const GENERIC_MIMES = new Set(['', 'application/octet-stream', 'binary/octet-stream']);
 
@@ -221,8 +229,11 @@ export class FileParserService {
       .replace(/\\par[d]?\s*/gi, '\n')
       .replace(/\\line\s*/gi, '\n')
       .replace(/\\tab\s*/gi, '\t')
-      // Replace hex encoded characters \'hh
-      .replace(/\\'([0-9a-fA-F]{2})/g, (_m, hex) => String.fromCharCode(parseInt(hex, 16)))
+      // Replace hex encoded characters \'hh and unicode escapes \uNNNN
+      .replace(/\\u(-?\d+)\s?\??/g, (_m, code: string) =>
+        String.fromCharCode(Number(code) & 0xffff)
+      )
+      .replace(/\\'([0-9a-fA-F]{2})/g, (_m, hex: string) => String.fromCharCode(parseInt(hex, 16)))
       // Remove other control words
       .replace(/\\[a-zA-Z]+(-?\d+)?\s?/g, '')
       // Remove group brackets
@@ -249,7 +260,7 @@ export class FileParserService {
         utf16Buffer.push(charCode);
       } else {
         if (utf16Buffer.length >= 4) {
-          const run = String.fromCharCode(...utf16Buffer);
+          const run = safeStringFromCodes(utf16Buffer);
           if (/[a-zA-Z0-9\u4e00-\u9fa5]{2,}/.test(run) && !this.isWordMetadata(run)) {
             textRuns.push(run);
           }
@@ -258,7 +269,7 @@ export class FileParserService {
       }
     }
     if (utf16Buffer.length >= 4) {
-      const run = String.fromCharCode(...utf16Buffer);
+      const run = safeStringFromCodes(utf16Buffer);
       if (!this.isWordMetadata(run)) textRuns.push(run);
     }
 
@@ -270,7 +281,7 @@ export class FileParserService {
         asciiBuffer.push(b);
       } else {
         if (asciiBuffer.length >= 4) {
-          const run = String.fromCharCode(...asciiBuffer);
+          const run = safeStringFromCodes(asciiBuffer);
           if (/[a-zA-Z0-9]{2,}/.test(run) && !this.isWordMetadata(run)) {
             textRuns.push(run);
           }
@@ -279,7 +290,7 @@ export class FileParserService {
       }
     }
     if (asciiBuffer.length >= 4) {
-      const run = String.fromCharCode(...asciiBuffer);
+      const run = safeStringFromCodes(asciiBuffer);
       if (!this.isWordMetadata(run)) textRuns.push(run);
     }
 
