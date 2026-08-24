@@ -726,6 +726,44 @@ export async function polishBulletPoint(bullet: string, roleTitle?: string): Pro
   return polished;
 }
 
+// ── Mock Interview Question Generation ─────────────
+
+export interface MockQuestionsRequest {
+  jobTitle: string;
+  companyName: string;
+  jobDescription: string;
+  profileSummary: string;
+}
+
+export async function generateInterviewQuestions(
+  req: MockQuestionsRequest,
+  count = 6
+): Promise<string[]> {
+  const llm = getLLMConfig();
+  if (!llm) throw new Error("NO_LLM");
+
+  const systemPrompt = `You are a senior interviewer conducting a first-round interview for ${req.jobTitle || "the role"}${req.companyName ? ` at ${req.companyName}` : ""}. Generate ${count} interview questions calibrated to this candidate and role. Mix behavioral, role-specific, and situational questions; ground them in the job description and probe the candidate's actual background. Return ONLY a JSON array of question strings, e.g. ["question 1", "question 2"]. No numbering, no markdown.`;
+  const userPrompt = `## Job Description\n${req.jobDescription || "(not provided)"}\n\n## Candidate Profile\n${req.profileSummary || "(not provided)"}`;
+
+  const response = await callLLM(llm, systemPrompt, userPrompt);
+  const parsed: unknown = JSON.parse(extractJsonBlock(response));
+  if (!Array.isArray(parsed)) {
+    throw new Error("AI returned an unreadable question set.");
+  }
+  const questions = parsed
+    .map((q) =>
+      typeof q === "string"
+        ? q.trim()
+        : asNonEmptyString((q as Record<string, unknown>)?.question)
+    )
+    .filter(Boolean)
+    .slice(0, count);
+  if (questions.length === 0) {
+    throw new Error("AI returned an empty question set.");
+  }
+  return questions;
+}
+
 // ── Interview Prep Generation ───────────────────────
 
 export async function generateInterviewPrep(

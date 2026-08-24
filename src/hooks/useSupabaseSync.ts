@@ -98,28 +98,58 @@ function getStoreAdapter(storeName: StoreName) {
  };
 
  case "discovery":
- return {
- subscribe: (listener: () => void) =>
- useDiscoveryStore.subscribe(listener),
- getSnapshot: () => {
- const { companies, jobs } = useDiscoveryStore.getState();
- return { companies, jobs };
- },
- hydrate: (data: unknown) => {
- if (!data || typeof data !== "object") return;
- const d = data as { companies?: unknown[]; jobs?: unknown[] };
- if (Array.isArray(d.companies)) {
- useDiscoveryStore.setState({
- companies: d.companies as unknown as DiscoveredCompany[],
- });
- }
- if (Array.isArray(d.jobs)) {
- useDiscoveryStore.setState({
- jobs: d.jobs as unknown as DiscoveredJob[],
- });
- }
- },
- };
+  return {
+  subscribe: (listener: () => void) =>
+  useDiscoveryStore.subscribe(listener),
+  getSnapshot: () => {
+  const { companies, jobs } = useDiscoveryStore.getState();
+  return { companies, jobs };
+  },
+  hydrate: (data: unknown) => {
+  if (!data || typeof data !== "object") return;
+  const d = data as { companies?: unknown[]; jobs?: unknown[] };
+  if (Array.isArray(d.companies)) {
+  useDiscoveryStore.setState({
+  companies: d.companies as unknown as DiscoveredCompany[],
+  });
+  }
+  if (Array.isArray(d.jobs)) {
+  useDiscoveryStore.setState({
+  jobs: d.jobs as unknown as DiscoveredJob[],
+  });
+  }
+  },
+  };
+
+ case "interview":
+  return {
+  subscribe: (listener: () => void) =>
+  useInterviewStore.subscribe(listener),
+  getSnapshot: () => {
+  const { stories, preps, mockSessions } = useInterviewStore.getState();
+  return { stories, preps, mockSessions };
+  },
+  hydrate: (data: unknown) => {
+  if (!data || typeof data !== "object") return;
+  const d = data as {
+  stories?: unknown[];
+  preps?: unknown[];
+  mockSessions?: unknown[];
+  };
+  const patch: Partial<{
+  stories: Story[];
+  preps: InterviewPrep[];
+  mockSessions: MockSession[];
+  }> = {};
+  if (Array.isArray(d.stories)) patch.stories = d.stories as Story[];
+  if (Array.isArray(d.preps)) patch.preps = d.preps as InterviewPrep[];
+  if (Array.isArray(d.mockSessions))
+  patch.mockSessions = d.mockSessions as MockSession[];
+  if (Object.keys(patch).length > 0) {
+  useInterviewStore.setState(patch);
+  }
+  },
+  };
  }
 }
 
@@ -165,10 +195,11 @@ export function useSupabaseSync(): SyncState {
 
  let cancelled = false;
  const storeNames: StoreName[] = [
- "pipeline",
- "resume",
- "profile",
- "discovery",
+  "pipeline",
+  "resume",
+  "profile",
+  "discovery",
+  "interview",
  ];
  const unsubscribers: (() => void)[] = [];
 

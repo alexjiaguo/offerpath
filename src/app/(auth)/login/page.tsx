@@ -123,7 +123,7 @@ function LoginForm() {
               const { createClient } = await import("@/lib/supabase");
               const sb = createClient();
               if (!sb) { setError("Supabase is not configured."); return; }
-              const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/login" });
+              const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/reset-password" });
               if (error) setError(error.message);
               else setInfo(t.auth.resetPasswordSent);
             } catch (err) { setError(err instanceof Error ? err.message : "Failed to send reset email."); }

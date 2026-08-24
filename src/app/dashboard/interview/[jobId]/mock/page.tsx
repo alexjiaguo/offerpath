@@ -31,6 +31,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
  const [sessionId, setSessionId] = useState<string | null>(existingSessionId);
  const [userInput, setUserInput] = useState("");
  const [isTyping, setIsTyping] = useState(false);
+ const [generating, setGenerating] = useState(false);
  const chatEndRef = useRef<HTMLDivElement>(null);
 
  const session = sessionId ? getMockById(sessionId) : null;
@@ -41,8 +42,25 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
  chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
  }, [session?.transcript.length]);
 
- const handleStart = () => {
- const id = startMockSession(jobId);
+ const handleStart = async () => {
+ setGenerating(true);
+ let questions: string[] | undefined;
+ try {
+ const { getLLMConfig, generateInterviewQuestions } = await import("@/lib/aiService");
+ if (getLLMConfig()) {
+ questions = await generateInterviewQuestions({
+ jobTitle: job?.title ?? "the role",
+ companyName: typeof job?.company === "string" ? job.company : job?.company?.name ?? "",
+ jobDescription: job?.description ?? "",
+ profileSummary: "",
+ });
+ }
+ } catch {
+ questions = undefined;
+ } finally {
+ setGenerating(false);
+ }
+ const id = startMockSession(jobId, questions);
  setSessionId(id);
  };
 
@@ -119,10 +137,14 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
  </p>
  <button
  onClick={handleStart}
- className="inline-flex items-center gap-2 px-6 py-3 rounded-xl gradient-brand text-white font-medium hover:opacity-90 transition-opacity"
+ disabled={generating}
+ className={cn(
+ "inline-flex items-center gap-2 px-6 py-3 rounded-xl gradient-brand text-white font-medium transition-opacity",
+ generating ? "opacity-60 cursor-wait" : "hover:opacity-90"
+ )}
  >
- <ChatCircleText className="w-4 h-4" />
- Start Mock Interview
+ <ChatCircleText className={cn("w-4 h-4", generating && "animate-pulse")} />
+ {generating ? "Preparing your interview…" : "Start Mock Interview"}
  </button>
  </div>
  </div>

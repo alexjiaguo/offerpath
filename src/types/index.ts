@@ -300,6 +300,7 @@ export interface MockSession {
  feedback?: MockFeedback;
  duration_seconds?: number;
  created_at: string;
+ questionPool?: string[];
 }
 
 export interface MockMessage {

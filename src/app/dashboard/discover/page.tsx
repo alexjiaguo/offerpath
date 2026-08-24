@@ -316,12 +316,22 @@ export default function DiscoverPage() {
             className="btn-editorial-primary flex items-center gap-2"
           >
             {latestScan?.status === "running" ? (
-              <><ArrowsClockwise className="w-4 h-4 animate-spin" /> {t.discover.scanning}</>
+              <><ArrowsClockwise className="w-4 h-4 animate-spin" /> {isZh ? "模拟扫描中…" : "Simulating scan…"}</>
             ) : (
-              <><Play className="w-4 h-4" weight="fill" /> {t.discover.runScanBtn}</>
+              <><Play className="w-4 h-4" weight="fill" /> {isZh ? "运行模拟扫描" : "Run demo scan"}</>
             )}
           </button>
         </div>
+      </div>
+
+      {/* Demo data notice */}
+      <div className="mb-6 flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-surface-400 leading-relaxed">
+        <Lightning className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" weight="fill" />
+        <p>
+          {isZh
+            ? "演示模式：当前职位与公司为示例数据，“扫描”会模拟返回结果，暂未抓取真实招聘网站。"
+            : "Demo preview: jobs and companies below are sample data, and scans simulate results — live career-page crawling is not built yet."}
+        </p>
       </div>
 
       {/* Stats strip */}
@@ -706,18 +716,19 @@ export default function DiscoverPage() {
                 <Globe className="w-4 h-4 text-surface-300" />
                 <div>
                   <p className="text-sm font-medium">{t.discover.autoScan}</p>
-                  <p className="text-[10px] text-surface-300">{isZh ? "在后台按计划定时抓取匹配机会" : "Automatically scan for new jobs"}</p>
+                  <p className="text-[10px] text-surface-300">{isZh ? "定时自动扫描（即将推出）" : "Scheduled auto-scanning (coming soon)"}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 {prefsForm.auto_scan_enabled && (
-                  <select value={prefsForm.auto_scan_interval} onChange={(e) => setPrefsForm({ ...prefsForm, auto_scan_interval: e.target.value as "daily" | "weekly" | "biweekly" })} className="px-2 py-1 rounded-lg bg-surface-50 text-xs text-surface-400 border border-surface-200 focus:outline-none">
+                  <select disabled value={prefsForm.auto_scan_interval} onChange={(e) => setPrefsForm({ ...prefsForm, auto_scan_interval: e.target.value as "daily" | "weekly" | "biweekly" })} className="px-2 py-1 rounded-lg bg-surface-50 text-xs text-surface-400 border border-surface-200 focus:outline-none opacity-50 cursor-not-allowed">
                     <option value="daily">{isZh ? "每日" : "Daily"}</option>
                     <option value="weekly">{isZh ? "每周" : "Weekly"}</option>
                     <option value="biweekly">{isZh ? "每双周" : "Biweekly"}</option>
                   </select>
                 )}
-                <button onClick={() => setPrefsForm({ ...prefsForm, auto_scan_enabled: !prefsForm.auto_scan_enabled })} className={cn("w-10 h-6 rounded-full transition-all relative", prefsForm.auto_scan_enabled ? "bg-ember-600" : "bg-surface-300")}>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-surface-300">{isZh ? "即将推出" : "Coming soon"}</span>
+                <button type="button" aria-disabled="true" onClick={(e) => e.preventDefault()} className={cn("w-10 h-6 rounded-full relative opacity-40 cursor-not-allowed", prefsForm.auto_scan_enabled ? "bg-ember-600" : "bg-surface-300")}>
                   <div className={cn("w-4 h-4 rounded-full bg-white absolute top-1 transition-all", prefsForm.auto_scan_enabled ? "left-5" : "left-1")} />
                 </button>
               </div>

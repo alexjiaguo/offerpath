@@ -43,7 +43,7 @@ export interface InterviewState {
 
  // Mock Session Actions
  addMockSession: (session: Omit<MockSession, "id" | "user_id" | "created_at">) => string;
- startMockSession: (jobId: string) => string;
+ startMockSession: (jobId: string, questions?: string[]) => string;
  addMockMessage: (sessionId: string, role: "interviewer" | "candidate", message: string) => void;
  endMockSession: (sessionId: string) => void;
 
@@ -544,16 +544,19 @@ export const useInterviewStore = create<InterviewState>()(
  return id;
  },
 
- startMockSession: (jobId) => {
+ startMockSession: (jobId, questions) => {
  const id = generateId();
+ const questionPool =
+ questions && questions.length > 0 ? questions : MOCK_INTERVIEW_QUESTIONS;
  const session: MockSession = {
  id,
  user_id: "demo",
  job_id: jobId,
+ questionPool,
  transcript: [
  {
  role: "interviewer",
- message: MOCK_INTERVIEW_QUESTIONS[0],
+ message: questionPool[0],
  timestamp: new Date().toISOString(),
  },
  ],
@@ -577,11 +580,12 @@ export const useInterviewStore = create<InterviewState>()(
 
  // If candidate just responded, add a follow-up interviewer question
  if (role === "candidate") {
+ const pool = s.questionPool ?? MOCK_INTERVIEW_QUESTIONS;
  const questionIndex = Math.floor(transcript.filter((m) => m.role === "interviewer").length);
- if (questionIndex < MOCK_INTERVIEW_QUESTIONS.length) {
+ if (questionIndex < pool.length) {
  transcript.push({
  role: "interviewer",
- message: MOCK_INTERVIEW_QUESTIONS[questionIndex],
+ message: pool[questionIndex],
  timestamp: new Date(Date.now() + 2000).toISOString(),
  });
  } else {

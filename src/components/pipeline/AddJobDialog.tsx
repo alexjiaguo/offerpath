@@ -49,32 +49,70 @@ export default function AddJobDialog() {
     setAddJobDialogOpen(false);
   };
 
+  const applyParsedJob = (job: { title?: string; company?: string; location?: string; salary_range?: string }) => {
+    let applied = false;
+    if (job.title) { setTitle(job.title); applied = true; }
+    if (job.company) { setCompany(job.company); applied = true; }
+    if (job.location) { setLocation(job.location); applied = true; }
+    if (job.salary_range) { setSalaryRange(job.salary_range); applied = true; }
+    return applied;
+  };
+
+  const parseJobText = async (text: string) => {
+    const res = await fetch("/api/jobs/parse", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    });
+    if (!res.ok) {
+      toast.error(isZh ? "无法解析该招聘需求文本。" : "Could not parse the job description.");
+      return;
+    }
+    const data = await res.json();
+    if (data.job && applyParsedJob(data.job)) {
+      toast.success(isZh ? "岗位信息提取成功！" : "Job details extracted!");
+    } else {
+      toast.error(isZh ? "未能在文本中找到有效职位字段。" : "No job fields found in that text.");
+    }
+  };
+
   const handleEvaluate = async () => {
-    if (!(mode === "text" && description.trim())) {
+    if (mode === "url") {
+      const trimmedUrl = url.trim();
+      if (!/^https?:\/\/.+/.test(trimmedUrl)) {
+        toast.error(isZh ? "请输入以 http:// 或 https:// 开头的有效网址" : "Please enter a valid URL starting with http:// or https://");
+        return;
+      }
+      setIsEvaluating(true);
+      try {
+        const fetchRes = await fetch("/api/jobs/fetch-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: trimmedUrl })
+        });
+        const fetchData = await fetchRes.json().catch(() => ({}));
+        if (!fetchRes.ok) {
+          toast.error(fetchData?.error || (isZh ? "无法抓取该网页内容。" : "Couldn't fetch that page."));
+          return;
+        }
+        setDescription(fetchData.text as string);
+        await parseJobText(fetchData.text as string);
+      } catch (e) {
+        logger.error("Failed to import job from URL", e);
+        toast.error(isZh ? "网址导入失败，请重试。" : "URL import failed. Please try again.");
+      } finally {
+        setIsEvaluating(false);
+      }
+      return;
+    }
+
+    if (!(description.trim())) {
       toast.message(isZh ? "请粘贴招聘描述 (JD) 以自动解析岗位、企业与工作地点。" : "Paste a job description to extract title, company, and location.");
       return;
     }
     setIsEvaluating(true);
     try {
-      const res = await fetch("/api/jobs/parse", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: description })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.job) {
-          if (data.job.title) setTitle(data.job.title);
-          if (data.job.company) setCompany(data.job.company);
-          if (data.job.location) setLocation(data.job.location);
-          if (data.job.salary_range) setSalaryRange(data.job.salary_range);
-          toast.success(isZh ? "岗位信息提取成功！" : "Job details extracted!");
-        } else {
-          toast.error(isZh ? "未能在文本中找到有效职位字段。" : "No job fields found in that text.");
-        }
-      } else {
-        toast.error(isZh ? "无法解析该招聘需求文本。" : "Could not parse the job description.");
-      }
+      await parseJobText(description);
     } catch (e) {
       logger.error("Failed to parse job description", e);
       toast.error(isZh ? "自动提取信息失败" : "Failed to extract details automatically");
@@ -252,7 +290,7 @@ export default function AddJobDialog() {
       <div className="flex items-center justify-between px-6 py-4 border-t border-surface-200 bg-surface-100/30">
         <button
           onClick={handleEvaluate}
-          disabled={isEvaluating || (!title.trim() && !description.trim())}
+          disabled={isEvaluating || (mode === "url" ? !/^https?:\/\/.+/.test(url.trim()) : (!title.trim() && !description.trim()))}
           className={cn(
             "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
             isEvaluating
