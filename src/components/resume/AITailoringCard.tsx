@@ -58,8 +58,13 @@ export default function AITailoringCard({
       ]);
       setDraftResult(tailorRes);
       setAtsResult(atsRes);
-    } catch {
-      toast.error(t("resumeStudio.aiActions.enhanceBulletError") || "Analysis failed. Please try again.");
+    } catch (err) {
+      toast.error(
+        err instanceof Error && err.message
+          ? err.message
+          : t("resumeStudio.aiActions.enhanceBulletError") ||
+              "Analysis failed. Please try again."
+      );
     } finally {
       setProcessing(false);
     }
@@ -253,16 +258,26 @@ export default function AITailoringCard({
                     <div className="space-y-3">
                       {draftResult.experience.map((exp, i) => {
                         const old = resumeData.experience?.[i];
+                        const beforeDates = [
+                          old?.start_date,
+                          old?.current ? "Present" : old?.end_date,
+                        ].filter(Boolean).join(" – ");
+                        const afterDates = [
+                          exp.start_date,
+                          exp.current ? "Present" : exp.end_date,
+                        ].filter(Boolean).join(" – ");
                         return (
                           <div key={i} className="grid grid-cols-2 gap-3">
                             <div className="p-3 rounded-xl bg-red-500/5 border border-red-500/10">
                               <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1 truncate">{old?.title || old?.company || `Entry ${i + 1}`} - Before</p>
+                              {beforeDates && <p className="text-[9px] text-surface-300 uppercase tracking-widest mb-1 truncate">{beforeDates}</p>}
                               <ul className="text-[10px] text-surface-300 leading-relaxed list-disc pl-4 space-y-0.5">
                                 {(old?.bullets || []).map((b, bi) => <li key={bi}>{b.replace(/<[^>]*>/g, "")}</li>)}
                               </ul>
                             </div>
                             <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
                               <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1 truncate">{exp.title || exp.company || `Entry ${i + 1}`} - After</p>
+                              {afterDates && <p className="text-[9px] text-surface-300 uppercase tracking-widest mb-1 truncate">{afterDates}</p>}
                               <ul className="text-[10px] text-surface-300 leading-relaxed list-disc pl-4 space-y-0.5">
                                 {(exp.bullets || []).map((b, bi) => <li key={bi}>{b.replace(/<[^>]*>/g, "")}</li>)}
                               </ul>

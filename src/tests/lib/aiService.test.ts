@@ -88,24 +88,34 @@ Let me know if you need anything else!
  expect(result.matchedKeywords).toContain("ML");
  });
 
- it("should gracefully fall back to local mock when server/proxy returns an error", async () => {
- // Return a 500 error from proxy
- vi.mocked(global.fetch).mockResolvedValueOnce({
- ok: false,
- status: 500,
- text: async () => "Internal Server Error",
- } as unknown as Response);
+ it("throws when the proxy errors even though an API key is configured", async () => {
+  // Return a 500 error from proxy
+  vi.mocked(global.fetch).mockResolvedValueOnce({
+  ok: false,
+  status: 500,
+  text: async () => "Internal Server Error",
+  } as unknown as Response);
 
- // Run evaluateATS - should not crash, but fall back to the mock keyword-based result
- const result = await evaluateATS({
- resumeData: { summary: "Experienced leader", skills: [{ id: "s1", name: "strategy", isHighlighted: false }] },
- jobDescription: "Looking for leadership and strategy"
+  await expect(
+  evaluateATS({
+  resumeData: { summary: "Experienced leader" },
+  jobDescription: "Looking for leadership",
+  })
+  ).rejects.toThrow();
  });
 
- expect(result).toBeDefined();
- expect(typeof result.score).toBe("number");
- // Verify fallback has feedback messages
- expect(result.feedback.length).toBeGreaterThan(0);
+ it("falls back to keyword-based mock only when no API key is configured", async () => {
+  useProfileStore.setState({ apiKeys: [] });
+
+  const result = await evaluateATS({
+  resumeData: { summary: "Experienced leader", skills: [{ id: "s1", name: "strategy", isHighlighted: false }] },
+  jobDescription: "Looking for leadership and strategy"
+  });
+
+  expect(global.fetch).not.toHaveBeenCalled();
+  expect(result).toBeDefined();
+  expect(typeof result.score).toBe("number");
+  expect(result.feedback.length).toBeGreaterThan(0);
  });
 
 });

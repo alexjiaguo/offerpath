@@ -223,8 +223,20 @@ export default function ResumeEditorPage({
   };
 
   const handleApplyTailor = (result: TailorResult) => {
+    const highlighted = new Set(
+      result.skillsToHighlight.map((s) => s.trim().toLowerCase())
+    );
     updateResume(id, {
-      data: { ...data, summary: result.summary, experience: result.experience },
+      data: {
+        ...data,
+        summary: result.summary,
+        experience: result.experience,
+        skills: data.skills?.map((skill) =>
+          highlighted.has(skill.name.trim().toLowerCase())
+            ? { ...skill, isHighlighted: true }
+            : skill
+        ),
+      },
     });
     toast.success(t("resumeStudio.header.tailorSuccess"));
   };

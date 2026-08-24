@@ -55,9 +55,9 @@ function extractJsonBlock(text: string): string {
 }
 
 async function callLLM(config: LLMConfig, systemPrompt: string, userPrompt: string): Promise<string> {
- const { provider, apiKey } = config;
- const controller = new AbortController();
- const timer = setTimeout(() => controller.abort(), 30000);
+  const { provider, apiKey } = config;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 55000);
 
  let res: Response;
  try {
@@ -372,6 +372,86 @@ export interface TailorResult {
  tailoringNotes: string;
 }
 
+function asNonEmptyString(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+/**
+ * Validates and repairs an LLM tailor response against the base resume.
+ * Dates, company, and location are never trusted from the model alone:
+ * missing or empty fields fall back to the base resume entry (matched by
+ * company/title first, then by position) so tailoring can never erase
+ * factual data it was only asked to rephrase around.
+ */
+export function normalizeTailorResult(
+  baseResume: ResumeData,
+  raw: unknown
+): TailorResult {
+  const baseExperience = baseResume.experience ?? [];
+  const rawObj =
+    raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+
+  const summary = asNonEmptyString(rawObj.summary) || baseResume.summary || "";
+
+  let experience: ExperienceEntry[] = [];
+  if (Array.isArray(rawObj.experience)) {
+    const entries = (rawObj.experience as Record<string, unknown>[]).map(
+      (entry, index) => {
+        const company = asNonEmptyString(entry.company);
+        const title = asNonEmptyString(entry.title);
+        const base =
+          baseExperience.find(
+            (b) =>
+              company &&
+              b.company.trim().toLowerCase() === company.toLowerCase()
+          ) ??
+          baseExperience.find(
+            (b) => title && b.title.trim().toLowerCase() === title.toLowerCase()
+          ) ??
+          baseExperience[index];
+
+        const bullets = Array.isArray(entry.bullets)
+          ? (entry.bullets as unknown[])
+              .map((b) => asNonEmptyString(b))
+              .filter(Boolean)
+          : [];
+
+        return {
+          company: company || base?.company || "",
+          title: title || base?.title || "",
+          location: asNonEmptyString(entry.location) || base?.location,
+          start_date: asNonEmptyString(entry.start_date) || base?.start_date || "",
+          end_date: asNonEmptyString(entry.end_date) || base?.end_date || "",
+          current:
+            typeof entry.current === "boolean"
+              ? entry.current
+              : Boolean(base?.current),
+          bullets: bullets.length > 0 ? bullets : (base?.bullets ?? []),
+        } satisfies ExperienceEntry;
+      }
+    );
+
+    experience = entries.filter((e) => e.company || e.title);
+  }
+
+  if (experience.length === 0 && baseExperience.length > 0) {
+    experience = baseExperience;
+  }
+
+  const skillsToHighlight = Array.isArray(rawObj.skillsToHighlight)
+    ? (rawObj.skillsToHighlight as unknown[])
+        .map((s) => asNonEmptyString(s))
+        .filter(Boolean)
+    : [];
+
+  return {
+    summary,
+    experience,
+    skillsToHighlight,
+    tailoringNotes: asNonEmptyString(rawObj.tailoringNotes),
+  };
+}
+
 export interface InterviewPrepRequest {
  jobTitle: string;
  companyName: string;
@@ -444,14 +524,18 @@ ${req.jobDescription}
 Evaluate ATS compatibility.`;
 
  try {
- const response = await callLLM(llm, systemPrompt, userPrompt);
- const cleaned = extractJsonBlock(response);
- return JSON.parse(cleaned);
- } catch (err) {
- logger.warn("Real ATS evaluation failed, falling back to mock:", err);
- // Fallback to keyword-based mock
- }
- }
+  const response = await callLLM(llm, systemPrompt, userPrompt);
+  const cleaned = extractJsonBlock(response);
+  const parsed = JSON.parse(cleaned);
+  if (!parsed || typeof parsed !== "object" || typeof parsed.score !== "number") {
+  throw new Error("AI returned an unreadable ATS evaluation.");
+  }
+  return parsed as ATSResult;
+  } catch (err) {
+  logger.warn("Real ATS evaluation failed:", err);
+  throw err instanceof Error ? err : new Error("ATS evaluation failed. Please try again.");
+  }
+  }
 
  // ── Mock fallback ──────────────────────────────────
  await delay(1500 + Math.random() * 1000);
@@ -485,20 +569,24 @@ Evaluate ATS compatibility.`;
 }
 
 export async function tailorResume(req: TailorRequest): Promise<TailorResult> {
- const llm = getLLMConfig();
+  const llm = getLLMConfig();
 
- if (llm) {
- const systemPrompt = `You are an expert resume tailoring AI. Given a base resume and a job description, produce a tailored version that maximizes ATS match while remaining truthful. Return JSON matching this schema:
+  if (llm) {
+    const systemPrompt = `You are an expert resume tailoring AI. Given a base resume and a job description, produce a tailored version that maximizes ATS match while remaining truthful. Return JSON matching this exact schema:
 {
- "summary": "tailored professional summary string",
- "experience": [{"title": "...", "company": "...", "location": "...", "dates": "...", "bullets": ["..."]}],
- "skillsToHighlight": ["skill1", "skill2"],
- "tailoringNotes": "markdown notes about changes made"
+  "summary": "tailored professional summary string",
+  "experience": [{"title": "...", "company": "...", "location": "...", "start_date": "Jan 2020", "end_date": "", "current": false, "bullets": ["..."]}],
+  "skillsToHighlight": ["skill1", "skill2"],
+  "tailoringNotes": "markdown notes about changes made"
 }
 Rules:
+- Preserve the same number and order of experience entries as the base resume.
+- Copy "start_date", "end_date", and "current" for each entry VERBATIM from the base resume. Never invent, reformat, or drop dates.
+- Copy "company" and "location" verbatim unless explicitly correcting them.
+- Only rewrite "summary" and "bullets" (plus "skillsToHighlight" drawn from the base resume's own skill names).
 - Plain strings only in summary, titles, companies, and bullets. Do not wrap names, titles, or bullets in markdown asterisks.
 - tailoringNotes may use markdown.`;
- const userPrompt = `## Base Resume
+    const userPrompt = `## Base Resume
 ${JSON.stringify(req.baseResume, null, 2)}
 
 ## Target Job
@@ -513,25 +601,21 @@ ${req.profileSummary}
 
 Produce a tailored resume as JSON.`;
 
- try {
- const response = await callLLM(llm, systemPrompt, userPrompt);
- try {
- const cleaned = extractJsonBlock(response);
- return JSON.parse(cleaned);
- } catch {
- // If JSON parse fails, return the raw text as notes
- return {
- summary: req.baseResume.summary || "",
- experience: req.baseResume.experience || [],
- skillsToHighlight: [],
- tailoringNotes: `AI response (could not parse as JSON):\n${response}`,
- };
- }
- } catch (err) {
- logger.warn("Real Resume Tailoring failed, falling back to mock:", err);
- // Fallback to keyword-based mock
- }
- }
+    let parsed: unknown;
+    try {
+      const response = await callLLM(llm, systemPrompt, userPrompt);
+      const cleaned = extractJsonBlock(response);
+      parsed = JSON.parse(cleaned);
+    } catch (err) {
+      logger.warn("Real Resume Tailoring failed:", err);
+      throw err instanceof Error ? err : new Error("AI tailoring failed. Please try again.");
+    }
+
+    if (!parsed || typeof parsed !== "object") {
+      throw new Error("AI returned an unreadable response. Please try again.");
+    }
+    return normalizeTailorResult(req.baseResume, parsed);
+  }
 
  // ── Mock fallback ──────────────────────────────────
  await delay(2000 + Math.random() * 1500);

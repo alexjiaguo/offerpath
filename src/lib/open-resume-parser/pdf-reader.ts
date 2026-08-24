@@ -32,6 +32,8 @@ export function resolveFontName(
 
 // ── PDF Reading ─────────────────────────────────────
 
+const MAX_PDF_PAGES = 100;
+
 // Lazy-load pdfjs to avoid worker issues during SSR
 let pdfjsModule: typeof import("pdfjs-dist") | null = null;
 
@@ -61,6 +63,10 @@ export const readPdfFromFile = async (file: File): Promise<TextItems> => {
   const pdfjs = await getPdfjs();
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+
+  if (pdf.numPages > MAX_PDF_PAGES) {
+    throw new Error(`PDF has ${pdf.numPages} pages. Maximum is ${MAX_PDF_PAGES}.`);
+  }
 
   let textItems: TextItems = [];
 
