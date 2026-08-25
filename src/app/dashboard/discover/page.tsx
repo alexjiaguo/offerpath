@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowsDownUp, ArrowsClockwise, BookmarkSimple, ArrowSquareOut, Briefcase, Buildings, Target, CheckCircle, CaretDown, Clock, Compass, Funnel, FloppyDisk, MapPin, Globe, TrendUp, Lightning, Pencil, Play, Plus, MagnifyingGlass, Sparkle, Barcode, X } from '@phosphor-icons/react';
 import { useDiscoveryStore } from "@/store/discoveryStore";
+import { usePipelineStore } from "@/store/pipelineStore";
 import type { DiscoveryTab, SortKey, DiscoveredCompany } from "@/store/discoveryStore";
 import { Dialog } from "@/components/ui/Dialog";
 import { cn } from "@/lib/utils";
@@ -87,7 +88,28 @@ function JobCard({ jobId }: { jobId: string }) {
   const job = useDiscoveryStore((s) => s.jobs.find((j) => j.id === jobId));
   const toggleSaved = useDiscoveryStore((s) => s.toggleSaved);
   const dismissJob = useDiscoveryStore((s) => s.dismissJob);
+  const setAddJobDialogOpen = usePipelineStore((s) => s.setAddJobDialogOpen);
+  const setAddJobPrefill = usePipelineStore((s) => s.setAddJobPrefill);
+
   if (!job) return null;
+
+  const trackDiscoveredJob = () => {
+    setAddJobPrefill({
+      title: job.title,
+      company: {
+        id: `prefill-${job.id}`,
+        user_id: "demo",
+        name: job.company_name,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      location: job.location,
+      url: job.url || undefined,
+      salary_range: job.salary_range || undefined,
+      description: job.description || undefined,
+    });
+    setAddJobDialogOpen(true);
+  };
 
   return (
     <div className={cn(
@@ -144,6 +166,15 @@ function JobCard({ jobId }: { jobId: string }) {
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => trackDiscoveredJob()}
+            title={isZh ? "加入求职看板" : "Track this job"}
+            className={cn(
+              "p-1.5 rounded-lg transition-all text-surface-300 hover:text-surface-400 hover:bg-surface-100"
+            )}
+          >
+            <Briefcase className="w-4 h-4" />
+          </button>
           <button
             onClick={() => toggleSaved(job.id)}
             aria-label={job.saved ? (isZh ? "取消收藏" : "Remove bookmark") : (isZh ? "收藏职位" : "Save job")}

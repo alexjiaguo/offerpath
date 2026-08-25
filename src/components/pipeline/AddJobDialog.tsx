@@ -1,7 +1,7 @@
 "use client";
 import { logger } from "@/lib/logger";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ArrowsClockwise, FileText, Link, Sparkle, X } from '@phosphor-icons/react';
 import { cn } from "@/lib/utils";
@@ -21,6 +21,8 @@ export default function AddJobDialog() {
   const addJobDialogOpen = usePipelineStore((s) => s.addJobDialogOpen);
   const setAddJobDialogOpen = usePipelineStore((s) => s.setAddJobDialogOpen);
   const addJob = usePipelineStore((s) => s.addJob);
+  const addJobPrefill = usePipelineStore((s) => s.addJobPrefill);
+  const setAddJobPrefill = usePipelineStore((s) => s.setAddJobPrefill);
   const companies = usePipelineStore((s) => s.companies);
   const [mode, setMode] = useState<InputMode>("url");
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -49,6 +51,24 @@ export default function AddJobDialog() {
     setIsEvaluating(false);
     setMode("url");
   };
+
+  useEffect(() => {
+    if (!addJobDialogOpen || !addJobPrefill) return;
+    const p = addJobPrefill;
+    if (p.title) setTitle(p.title);
+    if (p.company?.name) setCompany(p.company.name);
+    if (p.location) setLocation(p.location);
+    if (p.url) setUrl(p.url);
+    if (p.description) {
+      setDescription(p.description);
+      setMode("text");
+    }
+    if (p.salary_range) setSalaryRange(p.salary_range);
+    if (p.tier === 1 || p.tier === 2 || p.tier === 3) setTier(p.tier);
+    if (p.notes) setNotes(p.notes);
+    setAddJobPrefill(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addJobDialogOpen, addJobPrefill]);
 
   const handleClose = () => {
     resetForm();

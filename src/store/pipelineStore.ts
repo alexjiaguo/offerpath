@@ -32,6 +32,7 @@ export interface PipelineState {
  sortDirection: SortDirection;
  selectedJobId: string | null;
  addJobDialogOpen: boolean;
+ addJobPrefill: Partial<Job> | null;
  weeklyGoalCount: number;
  setWeeklyGoalCount: (count: number) => void;
 
@@ -51,6 +52,7 @@ export interface PipelineState {
  setSort: (field: SortField, direction?: SortDirection) => void;
  setSelectedJob: (id: string | null) => void;
  setAddJobDialogOpen: (open: boolean) => void;
+ setAddJobPrefill: (prefill: Partial<Job> | null) => void;
  setResumePickerOpen: (open: boolean, jobId?: string | null) => void;
  linkResumeToJob: (jobId: string, resumeId: string) => void;
 
@@ -173,6 +175,7 @@ export const usePipelineStore = create<PipelineState>()(
  sortDirection: "desc",
  selectedJobId: null,
  addJobDialogOpen: false,
+ addJobPrefill: null,
  weeklyGoalCount: 5,
  setWeeklyGoalCount: (count) => set({ weeklyGoalCount: count }),
  resumePickerOpen: false,
@@ -307,6 +310,7 @@ export const usePipelineStore = create<PipelineState>()(
 
  setSelectedJob: (id) => set({ selectedJobId: id }),
  setAddJobDialogOpen: (open) => set({ addJobDialogOpen: open }),
+ setAddJobPrefill: (prefill) => set({ addJobPrefill: prefill }),
 
  setResumePickerOpen: (open, jobId) =>
  set({
