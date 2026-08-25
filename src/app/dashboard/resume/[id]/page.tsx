@@ -13,7 +13,6 @@ import {
   FloppyDisk,
   ArrowCounterClockwise,
   NotePencil,
-  CursorClick,
   Palette,
 } from "@phosphor-icons/react";
 import { useResumeStore, PLACEHOLDER_RESUME_DATA } from "@/store/resumeStore";
@@ -42,7 +41,6 @@ import { ClickStudioLeft, ClickStudioPreview } from "@/components/resume/ClickSt
 import ExportButtons from "@/components/resume/ExportButtons";
 import { StudioCanvasDock } from "@/components/resume/StudioCanvasDock";
 import TemplateDropdownPicker from "@/components/resume/TemplateDropdownPicker";
-import ThemePicker from "@/components/resume/ThemePicker";
 
 export default function ResumeEditorPage({
   params,
@@ -513,27 +511,15 @@ export default function ResumeEditorPage({
               resume={resume}
               resumeId={id}
               data={data}
-              previewShared={previewShared}
               selectedTemplate={selectedTemplate}
               compactTabs={compactTabs}
               mounted={mounted}
               tabItems={tabItems}
               activeSection={activeSection}
               setActiveSection={setActiveSection}
-              saved={saved}
               sensors={sensors}
               profileSummary={getProfileSummary()}
-              onTemplateChange={(tmplId) => {
-                saveToHistory(id);
-                setSelectedTemplate(tmplId);
-                updateResume(id, { template: tmplId });
-              }}
-              onThemeChange={(updates) => {
-                saveToHistory(id);
-                updateResume(id, { theme: { ...resume.theme, ...updates } as ResumeTheme });
-              }}
               onApplyTailor={handleApplyTailor}
-              onSave={handleSave}
               onSectionDragEnd={handleSectionDragEnd}
               updateResume={updateResume}
               saveToHistory={saveToHistory}
@@ -547,25 +533,11 @@ export default function ResumeEditorPage({
                 saveToHistory(id);
                 updateResume(id, { theme: { ...resume.theme, ...updates } as ResumeTheme });
               }}
-              selectedTemplate={selectedTemplate}
-              onTemplateChange={(tmplId) => {
-                saveToHistory(id);
-                setSelectedTemplate(tmplId);
-                updateResume(id, { template: tmplId });
-              }}
               resumeData={data}
               resumeId={id}
-              resumeTitle={resume.title}
               profileSummary={getProfileSummary()}
               onApplyTailor={handleApplyTailor}
               saveToHistory={saveToHistory}
-              onSave={handleSave}
-              saved={saved}
-              preview={
-                <AutoScaledPreview fit="width">
-                  <ResumePreview {...previewShared} />
-                </AutoScaledPreview>
-              }
             />
           )}
         </div>

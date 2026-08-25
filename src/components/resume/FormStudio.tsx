@@ -4,43 +4,29 @@ import { useState } from "react";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
 import { DndContext, closestCenter, type DragEndEvent, type DndContextProps } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
-import type { Resume, ResumeData, ResumeTheme, SectionKey } from "@/types";
+import type { Resume, ResumeData, SectionKey } from "@/types";
 import type { TailorResult } from "@/lib/aiService";
-import ResumePreview from "@/components/resume/ResumePreview";
 import { metaFor } from "@/components/resume/editor-helpers";
 import { SortableSectionTab } from "@/components/resume/SortableSectionTab";
-import { AutoScaledPreview } from "@/components/resume/AutoScaledPreview";
 import { ResumeSectionEditors } from "@/components/resume/ResumeSectionEditors";
 import { EditorChrome } from "@/components/resume/EditorChrome";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 
-export type PreviewShared = {
-  data: ResumeData;
-  template: string;
-  theme: ResumeTheme;
-  sectionOrder: SectionKey[];
-  sectionVisibility?: Record<SectionKey, boolean>;
-};
 
 interface FormStudioProps {
   resume: Resume;
   resumeId: string;
   data: ResumeData;
-  previewShared: PreviewShared;
   selectedTemplate: string;
   compactTabs: boolean;
   mounted: boolean;
   tabItems: string[];
   activeSection: string;
   setActiveSection: (id: string) => void;
-  saved: boolean;
   sensors: DndContextProps["sensors"];
   profileSummary: string;
-  onTemplateChange: (tmplId: string) => void;
-  onThemeChange: (updates: Partial<ResumeTheme>) => void;
   onApplyTailor: (result: TailorResult) => void;
-  onSave: () => void;
   onSectionDragEnd: (event: DragEndEvent) => void;
   updateResume: (id: string, updates: { data: ResumeData }) => void;
   saveToHistory: (id: string) => void;
@@ -52,20 +38,15 @@ export function FormStudio({
   resume,
   resumeId,
   data,
-  previewShared,
   selectedTemplate,
   compactTabs,
   mounted,
   tabItems,
   activeSection,
   setActiveSection,
-  saved,
   sensors,
   profileSummary,
-  onTemplateChange,
-  onThemeChange,
   onApplyTailor,
-  onSave,
   onSectionDragEnd,
   updateResume,
   saveToHistory,

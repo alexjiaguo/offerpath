@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowsOut } from "@phosphor-icons/react";
 import type { ResumeData, ResumeTheme, SectionKey } from "@/types";
 import type { TailorResult } from "@/lib/aiService";
 import ResumePreview from "@/components/resume/ResumePreview";
@@ -13,21 +12,15 @@ import { StudioCanvasDock } from "@/components/resume/StudioCanvasDock";
 interface ClickStudioLeftProps {
   theme: ResumeTheme;
   onThemeChange: (updates: Partial<ResumeTheme>) => void;
-  selectedTemplate: string;
-  onTemplateChange: (tmplId: string) => void;
   resumeData: ResumeData;
   resumeId: string;
-  resumeTitle: string;
   profileSummary: string;
   onApplyTailor: (result: TailorResult) => void;
   saveToHistory: (id: string) => void;
-  onSave: () => void;
-  saved: boolean;
-  preview?: React.ReactNode;
 }
 
-export function ClickStudioLeft({ preview, ...props }: ClickStudioLeftProps) {
-  return <StylePanel {...props} preview={preview} />;
+export function ClickStudioLeft(props: ClickStudioLeftProps) {
+  return <StylePanel {...props} />;
 }
 
 interface ClickStudioPreviewProps {

@@ -205,33 +205,21 @@ function PanelSection({
 export interface StylePanelProps {
   theme: ResumeTheme;
   onThemeChange: (updates: Partial<ResumeTheme>) => void;
-  selectedTemplate: string;
-  onTemplateChange: (tmplId: string) => void;
   resumeData: ResumeData;
   resumeId: string;
-  resumeTitle: string;
   profileSummary: string;
   onApplyTailor: (result: TailorResult) => void;
   saveToHistory: (id: string) => void;
-  onSave: () => void;
-  saved: boolean;
-  preview?: React.ReactNode;
 }
 
 export function StylePanel({
   theme,
   onThemeChange,
-  selectedTemplate,
-  onTemplateChange,
   resumeData,
   resumeId,
-  resumeTitle,
   profileSummary,
   onApplyTailor,
   saveToHistory,
-  onSave,
-  saved,
-  preview,
 }: StylePanelProps) {
   const { t } = useTranslation();
   const [showAdvanced, setShowAdvanced] = useState(false);

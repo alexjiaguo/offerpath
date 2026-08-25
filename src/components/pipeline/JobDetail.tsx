@@ -176,7 +176,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  if (job?.resume_id && job.description) {
  runLocalATSEvaluation(job.resume_id, job.id);
  }
- }, [job?.resume_id, job?.description, runLocalATSEvaluation]);
+ }, [job?.id, job?.resume_id, job?.description, runLocalATSEvaluation]);
 
  const handleUpgradeATS = async () => {
  if (!job?.resume_id || upgradingATS) return;
@@ -506,59 +506,6 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  )}
  </div>
  </div>
-
- {/* Comp details (if offer) */}
- {job.comp_details && (
- <div className="card-editorial space-y-3">
- <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
- <CurrencyDollar weight="bold" className="w-4 h-4 text-pastel-green-fg" />
- Compensation Details
- </h2>
- <div className="grid grid-cols-2 gap-4">
- {job.comp_details.base_salary && (
- <div>
- <p className="text-[10px] font-mono uppercase tracking-wider text-surface-300 mb-0.5">Base Salary</p>
- <p className="text-base font-display font-semibold text-surface-400">{job.comp_details.base_salary}</p>
- </div>
- )}
- {job.comp_details.equity && (
- <div>
- <p className="text-[10px] font-mono uppercase tracking-wider text-surface-300 mb-0.5">Equity</p>
- <p className="text-base font-display font-semibold text-surface-400">{job.comp_details.equity}</p>
- </div>
- )}
- {job.comp_details.bonus && (
- <div>
- <p className="text-[10px] font-mono uppercase tracking-wider text-surface-300 mb-0.5">Bonus</p>
- <p className="text-base font-display font-semibold text-surface-400">{job.comp_details.bonus}</p>
- </div>
- )}
- {job.comp_details.total_comp && (
- <div>
- <p className="text-[10px] font-mono uppercase tracking-wider text-surface-300 mb-0.5">Total Comp</p>
- <p className="text-lg font-display font-bold text-pastel-green-fg">
- {job.comp_details.total_comp}
- </p>
- </div>
- )}
- </div>
- {job.comp_details.benefits && job.comp_details.benefits.length > 0 && (
- <div className="mt-3 pt-3 border-t border-surface-200">
- <p className="text-[10px] font-mono uppercase tracking-wider text-surface-300 mb-2">Benefits</p>
- <div className="flex flex-wrap gap-1.5">
- {job.comp_details.benefits.map((b) => (
- <span
- key={b}
- className="px-2 py-0.5 rounded text-[11px] font-mono bg-surface-100 text-surface-400 border border-surface-200"
- >
- {b}
- </span>
- ))}
- </div>
- </div>
- )}
- </div>
- )}
  </div>
  )}
 
