@@ -205,7 +205,7 @@ export const en: TranslationSchema = {
     welcomeGreeting: "Welcome back",
     searchAtGlance: "Your search at a glance",
     systemStatus: "Pipeline Active",
-    addNewJob: "Add Opportunity",
+    addNewJob: "Add Job",
     stats: {
       totalJobs: "Active Opportunities",
       successRate: "Interview Rate",

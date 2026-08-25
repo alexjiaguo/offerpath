@@ -205,7 +205,7 @@ export const zh: TranslationSchema = {
     welcomeGreeting: "欢迎回来",
     searchAtGlance: "求职全局概览",
     systemStatus: "看板运行正常",
-    addNewJob: "添加在途职位",
+    addNewJob: "添加职位",
     stats: {
       totalJobs: "在途跟进职位",
       successRate: "面试转化率",

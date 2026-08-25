@@ -20,6 +20,7 @@ import { useTranslation } from "@/i18n";
 export default function DashboardPage() {
   const { t, isZh } = useTranslation();
   const getStats = usePipelineStore((s) => s.getStats);
+  const setAddJobDialogOpen = usePipelineStore((s) => s.setAddJobDialogOpen);
   const weeklyGoalCount = usePipelineStore((s) => s.weeklyGoalCount);
   const setWeeklyGoalCount = usePipelineStore((s) => s.setWeeklyGoalCount);
   const resumes = useResumeStore((s) => s.resumes);
@@ -111,13 +112,14 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <Link
-            href="/dashboard/pipeline/add"
+          <button
+            type="button"
+            onClick={() => setAddJobDialogOpen(true)}
             className="btn-editorial-primary inline-flex items-center gap-2"
           >
             <Plus weight="bold" className="w-3.5 h-3.5" />
             <span>{t.dashboard.addNewJob}</span>
-          </Link>
+          </button>
         </motion.div>
       </div>
 
