@@ -315,6 +315,7 @@ export interface MockFeedback {
  improvements: string[];
  tips: string[];
  category_scores?: Record<string, number>;
+ engine?: "llm" | "heuristic";
 }
 
 // ── Story Bank ──────────────────────────────────────

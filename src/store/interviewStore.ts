@@ -15,6 +15,7 @@ import type {
  QuestionCategory,
 } from "@/types";
 import { generateId } from "@/lib/utils";
+import { usePipelineStore } from "@/store/pipelineStore";
 
 // ── Store Types ─────────────────────────────────────
 
@@ -45,7 +46,7 @@ export interface InterviewState {
  addMockSession: (session: Omit<MockSession, "id" | "user_id" | "created_at">) => string;
  startMockSession: (jobId: string, questions?: string[]) => string;
  addMockMessage: (sessionId: string, role: "interviewer" | "candidate", message: string) => void;
- endMockSession: (sessionId: string) => void;
+ endMockSession: (sessionId: string) => Promise<void>;
 
  // Computed
  getStoriesByCompetency: (competency?: string) => Story[];
@@ -331,9 +332,10 @@ const MOCK_INTERVIEW_QUESTIONS = [
 
 // ── Helpers ─────────────────────────────────────────
 
-function generateMockFeedback(): MockFeedback {
+function generateHeuristicFeedback(): MockFeedback {
  return {
- overall_score: 3.5 + Math.random() * 1.5,
+ engine: "heuristic",
+ overall_score: 3.8,
  strengths: [
  "Clear and structured responses",
  "Good use of quantified examples",
@@ -350,11 +352,11 @@ function generateMockFeedback(): MockFeedback {
  "End answers with measurable impact",
  ],
  category_scores: {
- "Technical Depth": 3 + Math.random() * 2,
- "Strategic Thinking": 3 + Math.random() * 2,
- "Communication": 3 + Math.random() * 2,
- "Domain Knowledge": 3 + Math.random() * 2,
- "Leadership Signals": 3 + Math.random() * 2,
+ "Technical Depth": 3.8,
+ "Strategic Thinking": 3.8,
+ "Communication": 3.8,
+ "Domain Knowledge": 3.8,
+ "Leadership Signals": 3.8,
  },
  };
 }
@@ -602,14 +604,34 @@ export const useInterviewStore = create<InterviewState>()(
  }));
  },
 
- endMockSession: (sessionId) => {
- const feedback = generateMockFeedback();
+ endMockSession: async (sessionId) => {
+ const session = get().mockSessions.find((m) => m.id === sessionId);
+ const duration = Math.floor(
+ (Date.now() - new Date(session?.created_at ?? Date.now()).getTime()) / 1000
+ );
+
+ let feedback = generateHeuristicFeedback();
+ try {
+ const { getLLMConfig, evaluateMockInterview } = await import("@/lib/aiService");
+ if (getLLMConfig() && session) {
+ const job = session.job_id
+ ? usePipelineStore.getState().jobs.find((j) => j.id === session.job_id)
+ : undefined;
+ feedback = await evaluateMockInterview({
+ jobTitle: job?.title ?? "",
+ companyName:
+ typeof job?.company === "string" ? job.company : job?.company?.name ?? "",
+ jobDescription: job?.description,
+ transcript: session.transcript,
+ });
+ }
+ } catch {
+ feedback = generateHeuristicFeedback();
+ }
+
  set((state) => ({
  mockSessions: state.mockSessions.map((s) => {
  if (s.id !== sessionId) return s;
- const duration = Math.floor(
- (Date.now() - new Date(s.created_at).getTime()) / 1000
- );
  return {
  ...s,
  score: feedback.overall_score,
@@ -620,7 +642,7 @@ export const useInterviewStore = create<InterviewState>()(
  }));
  },
 
- // ── Computed ──
+  // ── Computed ──
 
  getStoriesByCompetency: (competency) => {
  const { stories } = get();

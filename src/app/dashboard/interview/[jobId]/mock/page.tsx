@@ -32,6 +32,7 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
  const [userInput, setUserInput] = useState("");
  const [isTyping, setIsTyping] = useState(false);
  const [generating, setGenerating] = useState(false);
+ const [isEnding, setIsEnding] = useState(false);
  const chatEndRef = useRef<HTMLDivElement>(null);
 
  const session = sessionId ? getMockById(sessionId) : null;
@@ -75,9 +76,14 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
  setTimeout(() => setIsTyping(false), 1500);
  };
 
- const handleEnd = () => {
- if (!sessionId) return;
- endMockSession(sessionId);
+ const handleEnd = async () => {
+ if (!sessionId || isEnding) return;
+ setIsEnding(true);
+ try {
+ await endMockSession(sessionId);
+ } finally {
+ setIsEnding(false);
+ }
  };
 
  const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -158,6 +164,16 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
  <p className="text-5xl font-bold gradient-text mb-2">
  {session.feedback.overall_score.toFixed(1)}
  </p>
+ {session.feedback.engine === "heuristic" && (
+ <span className="inline-block px-2 py-0.5 rounded-md bg-surface-100 border border-surface-200 text-[9px] font-mono font-bold uppercase tracking-wider text-surface-300 mb-2">
+ Practice mode — heuristic feedback
+ </span>
+ )}
+ {session.feedback.engine === "llm" && (
+ <span className="inline-block px-2 py-0.5 rounded-md bg-brand-500/10 border border-brand-500/20 text-[9px] font-mono font-bold uppercase tracking-wider text-brand-400 mb-2">
+ AI-analyzed transcript
+ </span>
+ )}
  <p className="text-sm text-surface-300">
  out of 5.0
  {session.duration_seconds && (

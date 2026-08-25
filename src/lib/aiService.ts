@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger";
  Otherwise falls back to mock implementations.
  ═══════════════════════════════════════════════════ */
 
-import type { ResumeData, ExperienceEntry, Story, JobEvaluation } from "@/types";
+import type { ResumeData, ExperienceEntry, Story, JobEvaluation, MockFeedback } from "@/types";
 import DOMPurify from 'dompurify';
 import { ResumeParserService } from "@/lib/ResumeParserService";
 import { useProfileStore } from "@/store/profileStore";
@@ -814,6 +814,71 @@ export async function evaluateJob(req: JobEvalRequest): Promise<JobEvaluation> {
     concerns: asStringArray(p.concerns),
     key_requirements: asStringArray(p.key_requirements),
     match_summary: asNonEmptyString(p.match_summary),
+  };
+}
+
+// ── Mock Interview Feedback ────────────────────────
+
+export interface MockFeedbackRequest {
+  jobTitle: string;
+  companyName: string;
+  jobDescription?: string;
+  transcript: { role: "interviewer" | "candidate"; message: string }[];
+}
+
+function asScoreMap(value: unknown): Record<string, number> {
+  if (!value || typeof value !== "object") return {};
+  const out: Record<string, number> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    const n = Number(v);
+    if (k && Number.isFinite(n)) out[k] = Math.max(0, Math.min(5, n));
+  }
+  return out;
+}
+
+export async function evaluateMockInterview(
+  req: MockFeedbackRequest
+): Promise<MockFeedback> {
+  const llm = getLLMConfig();
+  if (!llm) throw new Error("NO_LLM");
+
+  const candidateTurns = req.transcript.filter((t) => t.role === "candidate");
+  const transcriptText = req.transcript
+    .map((t) => `${t.role === "interviewer" ? "INTERVIEWER" : "CANDIDATE"}: ${t.message}`)
+    .join("\n\n");
+
+  const systemPrompt = `You are a senior interview coach scoring a mock interview transcript. Ground every point in what the candidate actually said — quote or paraphrase their answers, never invent content. Return JSON exactly:
+{"overall_score": <0-5 one decimal>, "category_scores": {"Technical Depth": <0-5>, "Strategic Thinking": <0-5>, "Communication": <0-5>, "Domain Knowledge": <0-5>, "Leadership Signals": <0-5>}, "strengths": ["..."], "improvements": ["..."], "tips": ["..."]}
+Keep each list to 2-4 concise items.`;
+  const userPrompt = `## Role\n${req.jobTitle || "the role"}${req.companyName ? ` at ${req.companyName}` : ""}\n\n## Job Description\n${req.jobDescription || "(not provided)"}\n\n## Transcript (${candidateTurns.length} candidate answers)\n${transcriptText}`;
+
+  let parsed: unknown;
+  try {
+    const response = await callLLM(llm, systemPrompt, userPrompt);
+    parsed = JSON.parse(extractJsonBlock(response));
+  } catch (err) {
+    logger.warn("Real mock-interview feedback failed:", err);
+    throw err instanceof Error ? err : new Error("AI feedback failed.");
+  }
+
+  if (!parsed || typeof parsed !== "object" || typeof (parsed as Record<string, unknown>).overall_score !== "number") {
+    throw new Error("AI returned an unreadable evaluation.");
+  }
+  const p = parsed as Record<string, unknown>;
+
+  return {
+    overall_score: Math.max(0, Math.min(5, Number(p.overall_score))),
+    category_scores: asScoreMap(p.category_scores),
+    strengths: Array.isArray(p.strengths)
+      ? (p.strengths as unknown[]).map(asNonEmptyString).filter(Boolean).slice(0, 4)
+      : [],
+    improvements: Array.isArray(p.improvements)
+      ? (p.improvements as unknown[]).map(asNonEmptyString).filter(Boolean).slice(0, 4)
+      : [],
+    tips: Array.isArray(p.tips)
+      ? (p.tips as unknown[]).map(asNonEmptyString).filter(Boolean).slice(0, 4)
+      : [],
+    engine: "llm",
   };
 }
 
