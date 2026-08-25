@@ -264,7 +264,6 @@ export async function syncStoreToSupabase(
  headquarters: company.headquarters ?? company.hq ?? null,
  notes: company.notes ?? null,
  tier: company.tier ?? null,
- research_brief: company.research_brief ?? null,
  logo_url: company.logo_url ?? null,
  };
  await supabase

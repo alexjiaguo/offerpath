@@ -5,7 +5,8 @@ import { Sparkle, ArrowsClockwise, CheckCircle, X, Target, Warning } from "@phos
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { ResumeData } from "@/types";
-import { tailorResume, evaluateATS, type TailorResult, type ATSResult } from "@/lib/aiService";
+import { tailorResume, type TailorResult, type ATSResult } from "@/lib/aiService";
+import { evaluateLocalAts } from "@/lib/localAts";
 import { useTranslation } from "@/i18n";
 
 interface AITailoringCardProps {
@@ -46,18 +47,37 @@ export default function AITailoringCard({
     if (!tailorJD.trim()) return;
     setProcessing(true);
     try {
-      const [tailorRes, atsRes] = await Promise.all([
-        tailorResume({
-          baseResume: resumeData,
-          jobDescription: tailorJD,
-          jobTitle: tailorJobTitle || "Job title",
-          companyName: tailorCompany || "Target Company",
-          profileSummary,
-        }),
-        evaluateATS({ resumeData, jobDescription: tailorJD }),
-      ]);
+      const tailorRes = await tailorResume({
+        baseResume: resumeData,
+        jobDescription: tailorJD,
+        jobTitle: tailorJobTitle || "Job title",
+        companyName: tailorCompany || "Target Company",
+        profileSummary,
+      });
       setDraftResult(tailorRes);
-      setAtsResult(atsRes);
+
+      // One AI action per tailor run: keyword-level match preview is computed
+      // locally on the tailored draft; LLM reasoning stays available via
+      // "Analyze with AI" on the job page.
+      const tailoredData = {
+        ...resumeData,
+        summary: tailorRes.summary,
+        experience: tailorRes.experience,
+      };
+      const local = evaluateLocalAts(tailoredData, tailorJD);
+      const feedback: ATSResult["feedback"] = [];
+      if (local.missingKeywords.length > 5) {
+        feedback.push({ severity: "high", message: "Several JD keywords are still missing from the tailored draft." });
+      }
+      if (local.matchedKeywords.length > 0) {
+        feedback.push({ severity: "low", message: `Covered: ${local.matchedKeywords.slice(0, 5).join(", ")}.` });
+      }
+      setAtsResult({
+        score: local.score,
+        matchedKeywords: local.matchedKeywords,
+        missingKeywords: local.missingKeywords,
+        feedback,
+      });
     } catch (err) {
       toast.error(
         err instanceof Error && err.message
@@ -201,7 +221,7 @@ export default function AITailoringCard({
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <Target className="w-4 h-4 text-surface-300" />
-                        <span className="text-sm font-bold text-surface-400 uppercase tracking-widest">{t("resumeStudio.aiActions.atsScore") || "ATS Match Score"}</span>
+                        <span className="text-sm font-bold text-surface-400 uppercase tracking-widest">{t("resumeStudio.aiActions.atsScore") || "Keyword Match Preview"}</span>
                       </div>
                       <div className="text-[10px] font-bold text-surface-300 uppercase tracking-widest mb-2">
                         {atsResult.matchedKeywords.length} Matched - {atsResult.missingKeywords.length} Missing

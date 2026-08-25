@@ -8,6 +8,7 @@ import { usePipelineStore } from "@/store/pipelineStore";
 import type { DiscoveryTab, SortKey, DiscoveredCompany } from "@/store/discoveryStore";
 import { Dialog } from "@/components/ui/Dialog";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import { useTranslation } from "@/i18n";
 
 /* ═══════════════════════════════════════════════════
@@ -228,6 +229,19 @@ export default function DiscoverPage() {
   const filterLevel = useDiscoveryStore((s) => s.filterLevel);
   const filterMinScore = useDiscoveryStore((s) => s.filterMinScore);
   const startScan = useDiscoveryStore((s) => s.startScan);
+  const scanLive = useDiscoveryStore((s) => s.scanLive);
+
+  const handleScan = async () => {
+    const result = await scanLive();
+    if (!result.ok) {
+      toast.error(result.error ?? "Live scan failed.");
+      return;
+    }
+    toast.success(`${result.added ?? 0} new jobs pulled from career pages.`);
+    if (result.errors?.length) {
+      toast.message(result.errors.slice(0, 3).join("\n"));
+    }
+  };
   const setActiveTab = useDiscoveryStore((s) => s.setActiveTab);
   const setSearchQuery = useDiscoveryStore((s) => s.setSearchQuery);
   const setSortBy = useDiscoveryStore((s) => s.setSortBy);
@@ -343,13 +357,13 @@ export default function DiscoverPage() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => startScan()}
+            onClick={() => void handleScan()}
             className="btn-editorial-primary flex items-center gap-2"
           >
             {latestScan?.status === "running" ? (
-              <><ArrowsClockwise className="w-4 h-4 animate-spin" /> {isZh ? "模拟扫描中…" : "Simulating scan…"}</>
+              <><ArrowsClockwise className="w-4 h-4 animate-spin" /> {isZh ? "扫描中…" : "Scanning…"}</>
             ) : (
-              <><Play className="w-4 h-4" weight="fill" /> {isZh ? "运行模拟扫描" : "Run demo scan"}</>
+              <><Play className="w-4 h-4" weight="fill" /> {isZh ? "运行实时扫描" : "Run live scan"}</>
             )}
           </button>
         </div>
@@ -358,11 +372,20 @@ export default function DiscoverPage() {
       {/* Demo data notice */}
       <div className="mb-6 flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-surface-400 leading-relaxed">
         <Lightning className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" weight="fill" />
-        <p>
-          {isZh
-            ? "演示模式：当前职位与公司为示例数据，“扫描”会模拟返回结果，暂未抓取真实招聘网站。"
-            : "Demo preview: jobs and companies below are sample data, and scans simulate results — live career-page crawling is not built yet."}
-        </p>
+        {scanRuns.some((r) => r.source === "career_pages" && r.status === "completed") ? (
+          <p className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            {isZh
+              ? "实时模式：扫描会直接读取已跟踪公司官网 / Greenhouse / Lever / Ashby / Workable 的公开职位数据。"
+              : "Live mode: scans read public openings from tracked companies' Greenhouse / Lever / Ashby / Workable boards and career pages."}
+          </p>
+        ) : (
+          <p>
+            {isZh
+              ? "演示模式：当前列表为示例数据。为公司在设置中填写招聘页地址（支持 Greenhouse / Lever / Ashby / Workable），点击“运行实时扫描”即可拉取真实职位。"
+              : "Demo preview: listings below are sample data. Set each company's career URL (Greenhouse / Lever / Ashby / Workable supported), then Run demo scan becomes a live pull."}
+          </p>
+        )}
       </div>
 
       {/* Stats strip */}

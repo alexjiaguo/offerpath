@@ -106,6 +106,7 @@ export interface DiscoveryState {
  updateProfile: (updates: Partial<SearchProfile>) => void;
  addCompany: (company: Omit<DiscoveredCompany, "id">) => void;
  startScan: () => void;
+ scanLive: () => Promise<{ ok: boolean; added?: number; error?: string; errors?: string[] }>;
 
  // Computed
  getFilteredJobs: () => DiscoveredJob[];
@@ -193,46 +194,110 @@ export const useDiscoveryStore = create<DiscoveryState>()(
  },
 
  startScan: () => {
- const existing = new Set(get().jobs.map((j) => `${j.company_name}|${j.title}`));
- const candidates = MOCK_DISCOVERED_JOBS.filter(
- (j) => !existing.has(`${j.company_name}|${j.title}`)
- ).slice(0, 5);
- const newRun: ScanRun = {
- id: `sr-${Date.now()}`,
+ void get().scanLive();
+ },
+
+ scanLive: async () => {
+ const companies = get()
+ .companies.filter((c) => c.career_url)
+ .slice(0, 10);
+ if (companies.length === 0) {
+ return { ok: false, error: "Add a company with a career page URL first." };
+ }
+
+ const runId = `sr-${Date.now()}`;
+ set((state) => ({
+ scanRuns: [
+ {
+ id: runId,
  profile_id: get().profile.id,
- status: "running",
+ status: "running" as const,
  started_at: new Date().toISOString(),
- companies_scanned: 0,
+ companies_scanned: companies.length,
  new_jobs_found: 0,
  total_matches: 0,
- source: "career_pages",
- };
- set((state) => ({ scanRuns: [newRun, ...state.scanRuns] }));
+ source: "career_pages" as const,
+ },
+ ...state.scanRuns,
+ ],
+ }));
 
- window.setTimeout(() => {
- const added = candidates.map((j, i) => ({
- ...j,
- id: `scan-${Date.now()}-${i}`,
- posted_date: new Date().toISOString().slice(0, 10),
+ try {
+ const res = await fetch("/api/discover/scan", {
+ method: "POST",
+ headers: { "Content-Type": "application/json" },
+ body: JSON.stringify({
+ companies: companies.map((c) => ({ name: c.name, career_url: c.career_url })),
+ }),
+ });
+ const data = await res.json();
+ if (!res.ok) throw new Error(data?.error ?? `status ${res.status}`);
+
+ const existing = new Set(get().jobs.map((j) => `${j.company_name}|${j.title}`));
+ const added: DiscoveredJob[] = [];
+ for (const result of data.results ?? []) {
+ for (const job of result.jobs ?? []) {
+ const key = `${result.company}|${job.title}`;
+ if (existing.has(key)) continue;
+ existing.add(key);
+ added.push({
+ id: `live-${runId}-${added.length}`,
+ company_id: "",
+ company_name: result.company,
+ title: String(job.title ?? "").slice(0, 120),
+ location: job.location ?? "",
+ type: "",
+ level: "",
+ salary_range: job.salary_range ?? "",
+ url: job.url,
+ match_score: 0,
+ source: "career_page",
+ description: job.description ?? "",
+ posted_date:
+ job.posted_date ?? new Date().toISOString().slice(0, 10),
+ tags: [],
+ requirements: [],
  saved: false,
  dismissed: false,
- }));
+ });
+ }
+ }
+
  set((state) => ({
  jobs: [...added, ...state.jobs],
- scanRuns: state.scanRuns.map((sr) =>
- sr.id === newRun.id
+ scanRuns: state.scanRuns.map((r) =>
+ r.id === runId
  ? {
- ...sr,
+ ...r,
  status: "completed" as const,
  completed_at: new Date().toISOString(),
- companies_scanned: get().companies.length || MOCK_COMPANIES.length,
  new_jobs_found: added.length,
  total_matches: state.jobs.length + added.length,
  }
- : sr
+ : r
  ),
  }));
- }, 1200);
+
+ return {
+ ok: true,
+ added: added.length,
+ errors: (data.results ?? [])
+ .filter((r: { error?: string }) => r.error)
+ .map((r: { company: string; error?: string }) => `${r.company}: ${r.error}`),
+ };
+ } catch (err) {
+ set((state) => ({
+ scanRuns: state.scanRuns.map((r) =>
+ r.id === runId
+ ? { ...r, status: "failed" as const, completed_at: new Date().toISOString() }
+ : r
+ ),
+ }));
+ return {
+ ok: false,
+ error: err instanceof Error ? err.message : "Live scan failed.",
+ };
+ }
  },
 
  // Computed

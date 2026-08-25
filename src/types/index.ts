@@ -206,7 +206,6 @@ export interface Company {
  headquarters?: string;
  notes?: string;
  tier?: number;
- research_brief?: string;
  logo_url?: string;
  created_at: string;
  updated_at: string;
