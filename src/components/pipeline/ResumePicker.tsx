@@ -23,7 +23,7 @@ export default function ResumePicker() {
  getJobById,
  } = usePipelineStore();
 
- const { resumes, getATSScore } = useResumeStore();
+ const { resumes, getATSScoreView } = useResumeStore();
  const [selectedId, setSelectedId] = useState<string | null>(null);
 
  if (!resumePickerOpen || !resumePickerJobId) return null;
@@ -61,8 +61,8 @@ export default function ResumePicker() {
  if (!a.is_base && b.is_base) return -1;
  if (a.is_base && !b.is_base) return 1;
  // Then by ATS score (desc)
- const scoreA = getATSScore(a.id, resumePickerJobId);
- const scoreB = getATSScore(b.id, resumePickerJobId);
+ const scoreA = getATSScoreView(a.id, resumePickerJobId) ?? 0;
+ const scoreB = getATSScoreView(b.id, resumePickerJobId) ?? 0;
  return scoreB - scoreA;
  });
 
@@ -115,7 +115,7 @@ export default function ResumePicker() {
  </div>
  ) : (
  sortedResumes.map((resume) => {
- const atsScore = getATSScore(resume.id, resumePickerJobId);
+ const atsScore = getATSScoreView(resume.id, resumePickerJobId);
  const isSelected = selectedId === resume.id;
 
  return (
@@ -185,7 +185,7 @@ export default function ResumePicker() {
  </div>
 
  {/* ATS Score */}
- <ATSScoreInline score={atsScore} />
+ <ATSScoreInline score={atsScore ?? 0} />
  </button>
  );
  })

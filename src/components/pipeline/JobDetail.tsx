@@ -8,7 +8,7 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { ArrowLeft, ArrowSquareOut, Briefcase, Target, Calendar, CheckCircle, CaretRight, CurrencyDollar, Warning, FileText, MapPin, Shield, Star, Sparkle, Trash, XCircle, EnvelopeOpen, Copy, Check } from '@phosphor-icons/react';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { JobStatus, ExperienceEntry, EducationEntry, SkillItem } from "@/types";
 import { formatDate, statusColor } from "@/lib/utils";
@@ -164,9 +164,32 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  const { getJobById, moveJob, deleteJob, updateJob } = usePipelineStore();
  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
  const [evaluating, setEvaluating] = useState(false);
- const { getResumeById, getATSScore } = useResumeStore();
+ const [upgradingATS, setUpgradingATS] = useState(false);
+ const { getResumeById, atsEvaluations, runLocalATSEvaluation, upgradeATSEvaluationWithAI, getATSScoreView } = useResumeStore();
  const job = getJobById(jobId);
  const linkedResume = job?.resume_id ? getResumeById(job.resume_id) : undefined;
+
+ const atsView = job?.resume_id ? getATSScoreView(job.resume_id, job.id) : null;
+ const atsEngine = job?.resume_id ? atsEvaluations[`${job.resume_id}:${job.id}`]?.engine : undefined;
+
+ useEffect(() => {
+ if (job?.resume_id && job.description) {
+ runLocalATSEvaluation(job.resume_id, job.id);
+ }
+ }, [job?.resume_id, job?.description, runLocalATSEvaluation]);
+
+ const handleUpgradeATS = async () => {
+ if (!job?.resume_id || upgradingATS) return;
+ setUpgradingATS(true);
+ try {
+ await upgradeATSEvaluationWithAI(job.resume_id, job.id);
+ toast.success("AI match analysis complete.");
+ } catch (err) {
+ toast.error(err instanceof Error ? err.message : "AI analysis failed.");
+ } finally {
+ setUpgradingATS(false);
+ }
+ };
 
  const handleRunEvaluation = async () => {
  if (!job || evaluating) return;
@@ -378,7 +401,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  Resume Preview
  {linkedResume && (
  <span className="eyebrow-tag bg-pastel-green-bg text-pastel-green-fg border border-pastel-green-fg/20">
- {getATSScore(job.resume_id!, job.id)}% Match
+ {atsView !== null ? `${atsView}% Match` : "Match"}
  </span>
  )}
  </button>
@@ -550,10 +573,27 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  Linked Resume Preview
  </h2>
  <p className="text-xs text-surface-300 mt-0.5 font-mono">
- {linkedResume.title} — ATS Alignment: <span className="font-bold text-surface-400">{getATSScore(job.resume_id!, job.id)}%</span>
+ {linkedResume.title} — ATS Alignment: <span className="font-bold text-surface-400">{atsView !== null ? `${atsView}%` : "--"}</span>
+ {atsEngine === "llm" && (
+ <span className="ml-1.5 px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-500 text-[9px] font-sans font-bold uppercase">AI</span>
+ )}
  </p>
  </div>
  <div className="flex gap-2">
+ <button
+ type="button"
+ onClick={handleUpgradeATS}
+ disabled={upgradingATS}
+ className={cn(
+ "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold border transition-all",
+ upgradingATS
+ ? "bg-surface-100 text-surface-300 cursor-wait border-surface-200"
+ : "bg-white text-surface-400 border-surface-200 hover:border-surface-400"
+ )}
+ >
+ <Sparkle weight="fill" className={cn("w-3.5 h-3.5", upgradingATS && "animate-pulse")} />
+ {upgradingATS ? "Analyzing…" : atsEngine === "llm" ? "Re-run AI analysis" : "Analyze with AI"}
+ </button>
  <Link
  href={`/dashboard/resume?view=${linkedResume.id}`}
  className="btn-editorial-secondary"
@@ -878,7 +918,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  <div className="rounded-md border border-surface-200 p-3 bg-surface-50 space-y-2">
  {(() => {
  const linkedResume = getResumeById(job.resume_id!);
- const atsScore = getATSScore(job.resume_id!, job.id);
+ const atsScore = atsView;
  return linkedResume ? (
  <>
  <div className="flex items-center gap-2">
@@ -891,7 +931,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  {linkedResume.title}
  </p>
  <div className="py-1">
- <ATSScoreBadge score={atsScore} size="sm" />
+ <ATSScoreBadge score={atsScore ?? 0} size="sm" />
  </div>
  <div className="flex gap-2">
  <Link

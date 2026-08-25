@@ -9,6 +9,8 @@ import { persist } from "zustand/middleware";
 import type { Resume, SectionKey, ResumeTheme, ResumeData } from "@/types";
 import { DEFAULT_SECTION_VISIBILITY } from "@/types";
 import { generateId } from "@/lib/utils";
+import { evaluateLocalAts } from "@/lib/localAts";
+import { usePipelineStore } from "@/store/pipelineStore";
 import { saveResumeAction, deleteResumeAction } from "@/app/actions/resume";
 
 // ── Store Types ─────────────────────────────────────
@@ -50,7 +52,20 @@ export interface ResumeState {
  getResumeById: (id: string) => Resume | undefined;
  getBaseResumes: () => Resume[];
  getTailoredResumes: () => Resume[];
- getATSScore: (resumeId: string, jobId: string) => number;
+
+ // ATS Evaluation (persisted, single source of truth)
+ atsEvaluations: Record<string, ATSEvaluation>;
+ runLocalATSEvaluation: (resumeId: string, jobId: string) => void;
+ upgradeATSEvaluationWithAI: (resumeId: string, jobId: string) => Promise<void>;
+ getATSScoreView: (resumeId: string, jobId: string) => number | null;
+}
+
+export interface ATSEvaluation {
+ score: number;
+ engine: "local" | "llm";
+ matchedKeywords: string[];
+ missingKeywords: string[];
+ evaluatedAt: string;
 }
 
 // ── Default Theme ──────────────────────────────────
@@ -335,32 +350,6 @@ export const MOCK_RESUMES: Resume[] = [
 
 // ── ATS Score Deterministic Mock ────────────────────
 
-function computeATSScore(resumeId: string, jobId: string): number {
- const seed = (resumeId + jobId)
- .split("")
- .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-
- const knownMatches: Record<string, number> = {
- "r2-j1": 92,
- "r3-j3": 95,
- "r1-j1": 68,
- "r1-j2": 72,
- "r1-j3": 65,
- "r1-j4": 60,
- "r1-j5": 74,
- "r1-j6": 55,
- "r2-j3": 78,
- "r3-j1": 75,
- };
-
- const key = `${resumeId}-${jobId}`;
- if (knownMatches[key] !== undefined) {
- return knownMatches[key];
- }
-
- return 45 + (seed % 44);
-}
-
 // Placeholder content shown in the live preview when a resume is still empty,
 // so users can compare templates before entering their own data.
 export const PLACEHOLDER_RESUME_DATA: ResumeData = MOCK_RESUMES[0].data;
@@ -572,13 +561,73 @@ export const useResumeStore = create<ResumeState>()(
 
  getTailoredResumes: () => get().resumes.filter((r) => !r.is_base),
 
- getATSScore: (resumeId, jobId) => computeATSScore(resumeId, jobId),
+ atsEvaluations: {},
+
+ runLocalATSEvaluation: (resumeId, jobId) => {
+ const key = `${resumeId}:${jobId}`;
+ const existing = get().atsEvaluations[key];
+ if (existing?.engine === "llm") return;
+
+ const resume = get().resumes.find((r) => r.id === resumeId);
+ const job = usePipelineStore.getState().jobs.find((j) => j.id === jobId);
+ if (!resume || !job?.description?.trim()) return;
+
+ const result = evaluateLocalAts(resume.data, job.description);
+ set((state) => ({
+ atsEvaluations: {
+ ...state.atsEvaluations,
+ [key]: {
+ score: result.score,
+ engine: "local",
+ matchedKeywords: result.matchedKeywords,
+ missingKeywords: result.missingKeywords,
+ evaluatedAt: new Date().toISOString(),
+ },
+ },
+ }));
+ },
+
+ upgradeATSEvaluationWithAI: async (resumeId, jobId) => {
+ const resume = get().resumes.find((r) => r.id === resumeId);
+ const job = usePipelineStore.getState().jobs.find((j) => j.id === jobId);
+ if (!resume || !job) throw new Error("Resume or job not found");
+
+ const { evaluateATS } = await import("@/lib/aiService");
+ const result = await evaluateATS({
+ resumeData: resume.data,
+ jobDescription: job.description || "",
+ });
+
+ set((state) => ({
+ atsEvaluations: {
+ ...state.atsEvaluations,
+ [`${resumeId}:${jobId}`]: {
+ score: Math.max(0, Math.min(100, Math.round(result.score))),
+ engine: "llm",
+ matchedKeywords: result.matchedKeywords ?? [],
+ missingKeywords: result.missingKeywords ?? [],
+ evaluatedAt: new Date().toISOString(),
+ },
+ },
+ }));
+ },
+
+ getATSScoreView: (resumeId, jobId) => {
+ const stored = get().atsEvaluations[`${resumeId}:${jobId}`];
+ if (stored) return stored.score;
+
+ const resume = get().resumes.find((r) => r.id === resumeId);
+ const job = usePipelineStore.getState().jobs.find((j) => j.id === jobId);
+ if (!resume || !job?.description?.trim()) return null;
+ return evaluateLocalAts(resume.data, job.description).score;
+ },
  }),
  {
  name: "offerpath-resume",
  skipHydration: true,
  partialize: (state) => ({
  resumes: state.resumes,
+ atsEvaluations: state.atsEvaluations,
  }),
  }
  )

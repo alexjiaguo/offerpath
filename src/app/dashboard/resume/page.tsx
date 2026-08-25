@@ -35,7 +35,7 @@ function ResumePageContent() {
 
   const { getJobById: getPipelineJob } = usePipelineStore();
   const { getJobById: getDiscoveryJob } = useDiscoveryStore();
-  const { resumes, getATSScore, duplicateResume, deleteResume } = useResumeStore();
+  const { resumes, getATSScoreView, duplicateResume, deleteResume } = useResumeStore();
   const searchQuery = usePipelineStore((s) => s.filters.search);
 
   const filteredResumes = resumes.filter(
@@ -156,7 +156,7 @@ function ResumePageContent() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredResumes.map((resume, i) => {
-                const atsScore = tailorForJobId ? getATSScore(resume.id, tailorForJobId) : null;
+                const atsScore = tailorForJobId ? getATSScoreView(resume.id, tailorForJobId) : null;
                 return (
                   <motion.div
                     key={resume.id}
