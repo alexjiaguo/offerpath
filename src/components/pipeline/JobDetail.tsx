@@ -416,6 +416,19 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  )}
  </div>
 
+ {/* Notes */}
+ {job.notes && (
+ <div className="card-editorial space-y-2">
+ <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
+ <EnvelopeOpen weight="bold" className="w-4 h-4 text-surface-400" />
+ Notes
+ </h2>
+ <div className="text-xs text-surface-400 leading-relaxed whitespace-pre-wrap font-sans">
+ {job.notes}
+ </div>
+ </div>
+ )}
+
  {/* Timeline */}
  <div className="card-editorial space-y-3">
  <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">

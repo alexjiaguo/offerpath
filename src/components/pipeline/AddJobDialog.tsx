@@ -32,6 +32,9 @@ export default function AddJobDialog() {
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
   const [salaryRange, setSalaryRange] = useState("");
+  const [companyUrl, setCompanyUrl] = useState("");
+  const [tier, setTier] = useState<1 | 2 | 3>(2);
+  const [notes, setNotes] = useState("");
 
   const resetForm = () => {
     setTitle("");
@@ -40,6 +43,9 @@ export default function AddJobDialog() {
     setUrl("");
     setDescription("");
     setSalaryRange("");
+    setCompanyUrl("");
+    setTier(2);
+    setNotes("");
     setIsEvaluating(false);
     setMode("url");
   };
@@ -141,6 +147,7 @@ export default function AddJobDialog() {
             id: `temp-${Date.now()}`,
             user_id: "demo",
             name: company,
+            career_url: companyUrl.trim() || undefined,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           }
@@ -149,6 +156,8 @@ export default function AddJobDialog() {
       location: location.trim() || undefined,
       url: url.trim() || undefined,
       salary_range: salaryRange.trim() || undefined,
+      tier,
+      notes: notes.trim() || undefined,
       status: "new",
     });
 
@@ -270,6 +279,49 @@ export default function AddJobDialog() {
           </div>
         </div>
 
+        <div>
+          <label className="text-xs font-medium text-surface-300 mb-1.5 block">
+            {isZh ? "公司官网 / 招聘页" : "Company career page"}
+          </label>
+          <input
+            type="url"
+            value={companyUrl}
+            onChange={(e) => setCompanyUrl(e.target.value)}
+            placeholder="https://company.com/careers"
+            className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-surface-200 text-sm text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all"
+          />
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-surface-300 mb-1.5 block">
+            {isZh ? "优先级 Tier" : "Priority tier"}
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {([1, 2, 3] as const).map((tierValue) => (
+              <button
+                key={tierValue}
+                type="button"
+                onClick={() => setTier(tierValue)}
+                className={cn(
+                  "px-3 py-2 rounded-lg text-xs font-semibold border transition-all",
+                  tier === tierValue
+                    ? "bg-surface-400 text-white border-surface-400"
+                    : "bg-surface-50 text-surface-300 border-surface-200 hover:border-surface-300"
+                )}
+              >
+                {isZh ? `Tier ${tierValue}` : `Tier ${tierValue}`}
+                <span className="block text-[10px] font-normal opacity-70">
+                  {tierValue === 1
+                    ? isZh ? "全力冲刺" : "Dream role"
+                    : tierValue === 2
+                      ? isZh ? "积极争取" : "Strong interest"
+                      : isZh ? "机会观察" : "Worth watching"}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {mode === "text" && (
           <div>
             <label className="text-xs font-medium text-surface-300 mb-1.5 block">
@@ -284,6 +336,23 @@ export default function AddJobDialog() {
             />
           </div>
         )}
+
+        <div>
+          <label className="text-xs font-medium text-surface-300 mb-1.5 block">
+            {isZh ? "备注（TA / 内推人联系方式等）" : "Notes (recruiter / TA contacts, referrals…)"}
+          </label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder={
+              isZh
+                ? "例如：TA Sarah Li (sarah@company.com)，内推人张伟，HR 电话 13800000000"
+                : "e.g. TA: Sarah Li (sarah@company.com), referral: Wei Zhang, HR phone +1 …"
+            }
+            rows={2}
+            className="w-full px-3 py-2.5 rounded-lg bg-surface-100 border border-surface-200 text-sm text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all resize-none"
+          />
+        </div>
       </div>
 
       {/* Footer */}
