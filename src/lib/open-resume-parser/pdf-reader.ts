@@ -163,6 +163,20 @@ const groupByY = (textItems: TextItems): Lines => {
 };
 
 export const groupTextItemsIntoLines = (textItems: TextItems): Lines => {
+  // Two-column layouts need their streams read sequentially (left column
+  // top-to-bottom, then right); naive Y-grouping interleaves them.
+  const split = splitIntoColumns(textItems);
+  if (split) {
+    return [
+      ...groupSingleStream(split.fullWidth),
+      ...groupSingleStream(split.left),
+      ...groupSingleStream(split.right),
+    ];
+  }
+  return groupSingleStream(textItems);
+};
+
+function groupSingleStream(textItems: TextItems): Lines {
   const eolCount = textItems.filter((item) => item.hasEOL).length;
   const useY = textItems.length > 0 && eolCount < Math.max(1, textItems.length * 0.15);
   const lines = useY ? groupByY(textItems) : groupByHasEOL(textItems);
@@ -188,7 +202,93 @@ export const groupTextItemsIntoLines = (textItems: TextItems): Lines => {
   }
 
   return lines;
-};
+}
+
+interface ColumnSplit {
+  left: TextItems;
+  right: TextItems;
+  fullWidth: TextItems;
+}
+
+/**
+ * Conservative two-column detector. Deliberately strict: it must never fire
+ * on the common single-column-with-right-aligned-dates layout, where a
+ * "gutter" exists but the right side holds only short date strings.
+ */
+export function splitIntoColumns(textItems: TextItems): ColumnSplit | null {
+  if (textItems.length < 20) return null;
+
+  const minX = Math.min(...textItems.map((t) => t.x));
+  const maxX = Math.max(...textItems.map((t) => t.x + t.width));
+  const span = maxX - minX;
+  if (span < 200) return null;
+
+  const BUCKETS = 100;
+  const occupied = new Array<boolean>(BUCKETS).fill(false);
+  for (const item of textItems) {
+    // Full-width elements (name headers, section rules) would occupy every
+    // bucket and hide real gutters — exclude them from occupancy.
+    if (item.width > span * 0.6) continue;
+    const startB = Math.floor(((item.x - minX) / span) * BUCKETS);
+    const endB = Math.ceil(((item.x + item.width - minX) / span) * BUCKETS);
+    for (let b = Math.max(0, startB); b <= Math.min(BUCKETS - 1, endB); b++) {
+      occupied[b] = true;
+    }
+  }
+
+  const zoneStart = Math.floor(BUCKETS * 0.3);
+  let bestStart = -1;
+  let bestLen = 0;
+  let curStart = -1;
+  let curLen = 0;
+  for (let b = zoneStart; b <= Math.ceil(BUCKETS * 0.7); b++) {
+    if (!occupied[b]) {
+      if (curStart === -1) curStart = b;
+      curLen++;
+      if (curLen > bestLen) {
+        bestLen = curLen;
+        bestStart = curStart;
+      }
+    } else {
+      curStart = -1;
+      curLen = 0;
+    }
+  }
+  if (bestLen < 5) return null;
+
+  const gutterX0 = minX + (bestStart / BUCKETS) * span;
+  const gutterX1 = minX + ((bestStart + bestLen) / BUCKETS) * span;
+
+  const left: TextItems = [];
+  const right: TextItems = [];
+  const fullWidth: TextItems = [];
+  let crossedChars = 0;
+  let totalChars = 0;
+
+  for (const item of textItems) {
+    const chars = item.text.trim().length;
+    totalChars += chars;
+    const itemEnd = item.x + item.width;
+    if (itemEnd <= gutterX0) left.push(item);
+    else if (item.x >= gutterX1) right.push(item);
+    else {
+      fullWidth.push(item);
+      crossedChars += chars;
+    }
+  }
+
+  if (left.length < 8 || right.length < 8) return null;
+
+  const rightChars = right.reduce((a, t) => a + t.text.trim().length, 0);
+  if (totalChars === 0) return null;
+  if (rightChars / totalChars < 0.15) return null;
+  if (crossedChars / totalChars > 0.25) return null;
+
+  const distinctY = new Set(right.map((t) => Math.round(t.y)));
+  if (distinctY.size < 3) return null;
+
+  return { left, right, fullWidth };
+}
 
 const shouldAddSpaceBetweenText = (leftText: string, rightText: string) => {
   const leftTextEnd = leftText[leftText.length - 1];

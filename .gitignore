@@ -50,3 +50,7 @@ cookies.json
 # Codex local config (contains Supabase PAT)
 .codex/
 .codex
+
+# Playwright
+test-results/
+playwright-report/
