@@ -1,7 +1,7 @@
 "use client";
 import { logger } from "@/lib/logger";
 
-import { ArrowsDownUp, ChartBar, Funnel, Kanban, Plus, MagnifyingGlass, X, DownloadSimple, UploadSimple } from '@phosphor-icons/react';
+import { ArrowsDownUp, ChartBar, Funnel, Kanban, MagnifyingGlass, X, DownloadSimple, UploadSimple } from '@phosphor-icons/react';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
@@ -24,7 +24,6 @@ export default function PipelinePage() {
   const sortField = usePipelineStore((s) => s.sortField);
   const sortDirection = usePipelineStore((s) => s.sortDirection);
   const setSort = usePipelineStore((s) => s.setSort);
-  const setAddJobDialogOpen = usePipelineStore((s) => s.setAddJobDialogOpen);
   const getStats = usePipelineStore((s) => s.getStats);
 
   const stats = getStats();
@@ -113,15 +112,6 @@ export default function PipelinePage() {
             {stats.total} {isZh ? "个职位" : (stats.total === 1 ? "job" : "jobs")}
           </span>
         </div>
-
-        {/* Add Job */}
-        <button
-          onClick={() => setAddJobDialogOpen(true)}
-          className="btn-editorial-primary flex items-center gap-2"
-        >
-          <Plus weight="bold" className="w-4 h-4" />
-          <span>{t.pipeline.addJob}</span>
-        </button>
       </div>
 
       {/* Toolbar Row */}
