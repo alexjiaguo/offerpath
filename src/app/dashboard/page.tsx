@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Pulse, ArrowRight, Briefcase, CheckCircle, CaretRight, Compass, FileText, TrendUp, Kanban, Plus, Star, Target, Trophy } from '@phosphor-icons/react';
+import { Pulse, ArrowRight, Briefcase, CheckCircle, CaretRight, Compass, FileText, TrendUp, Kanban, Star, Target, Trophy } from '@phosphor-icons/react';
 import { useMemo } from "react";
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
@@ -20,7 +20,6 @@ import { useTranslation } from "@/i18n";
 export default function DashboardPage() {
   const { t, isZh } = useTranslation();
   const getStats = usePipelineStore((s) => s.getStats);
-  const setAddJobDialogOpen = usePipelineStore((s) => s.setAddJobDialogOpen);
   const weeklyGoalCount = usePipelineStore((s) => s.weeklyGoalCount);
   const setWeeklyGoalCount = usePipelineStore((s) => s.setWeeklyGoalCount);
   const resumes = useResumeStore((s) => s.resumes);
@@ -105,21 +104,6 @@ export default function DashboardPage() {
           <p className="text-surface-300 text-xs mt-1">
             {t.dashboard.searchAtGlance}
           </p>
-        </motion.div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <button
-            type="button"
-            onClick={() => setAddJobDialogOpen(true)}
-            className="btn-editorial-primary inline-flex items-center gap-2"
-          >
-            <Plus weight="bold" className="w-3.5 h-3.5" />
-            <span>{t.dashboard.addNewJob}</span>
-          </button>
         </motion.div>
       </div>
 
