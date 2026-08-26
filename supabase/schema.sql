@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS resumes (
   is_base BOOLEAN DEFAULT FALSE,
   section_order JSONB DEFAULT '[]',
   section_visibility JSONB DEFAULT '{}',
+  ats_evaluations JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -105,6 +106,7 @@ CREATE TABLE IF NOT EXISTS mock_sessions (
   score DECIMAL(3,1),
   feedback JSONB DEFAULT '{}',
   duration_seconds INTEGER,
+  question_pool JSONB DEFAULT '[]',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

@@ -5,10 +5,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {
- MOCK_COMPANIES,
- MOCK_DISCOVERED_JOBS,
-} from "./mockDiscoveryData";
+import { generateId } from "@/lib/utils";
 
 // ── Types ───────────────────────────────────────────
 
@@ -186,7 +183,7 @@ export const useDiscoveryStore = create<DiscoveryState>()(
  addCompany: (companyData) => {
  const newCompany: DiscoveredCompany = {
  ...companyData,
- id: `dc-${Date.now()}`,
+ id: generateId(),
  };
  set((state) => ({
  companies: [newCompany, ...state.companies],

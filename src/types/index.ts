@@ -37,6 +37,14 @@ export interface UserPreferences {
 
 export type ResumeStudioMode = "form" | "studio";
 
+export interface ATSEvaluation {
+  score: number;
+  engine: "local" | "llm";
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  evaluatedAt: string;
+}
+
 export interface Resume {
  id: string;
  user_id: string;
@@ -48,6 +56,7 @@ export interface Resume {
  section_visibility: Record<string, Record<SectionKey, boolean>>;
  editorMode?: ResumeStudioMode;
  is_base: boolean;
+ ats_evaluations?: Record<string, ATSEvaluation>;
  created_at: string;
  updated_at: string;
 }

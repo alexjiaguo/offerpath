@@ -42,16 +42,22 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const raw = window.localStorage.getItem(SETTINGS_PREFS_KEY);
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw) as { notificationsEnabled?: boolean; weeklyDigest?: boolean; defaultTemplate?: string };
-      if (typeof parsed.notificationsEnabled === "boolean") setNotificationsEnabled(parsed.notificationsEnabled);
-      if (typeof parsed.weeklyDigest === "boolean") setWeeklyDigest(parsed.weeklyDigest);
-      if (typeof parsed.defaultTemplate === "string") setDefaultTemplate(parsed.defaultTemplate);
-    } catch {
-      /* ignore */
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw) as { notificationsEnabled?: boolean; weeklyDigest?: boolean; defaultTemplate?: string };
+        if (typeof parsed.notificationsEnabled === "boolean") setNotificationsEnabled(parsed.notificationsEnabled);
+        if (typeof parsed.weeklyDigest === "boolean") setWeeklyDigest(parsed.weeklyDigest);
+        if (typeof parsed.defaultTemplate === "string") setDefaultTemplate(parsed.defaultTemplate);
+      } catch {
+        /* ignore */
+      }
+    } else if (profile) {
+      const p = profile as unknown as { notificationsEnabled?: boolean; weeklyDigest?: boolean; defaultTemplate?: string };
+      if (typeof p.notificationsEnabled === "boolean") setNotificationsEnabled(p.notificationsEnabled);
+      if (typeof p.weeklyDigest === "boolean") setWeeklyDigest(p.weeklyDigest);
+      if (typeof p.defaultTemplate === "string") setDefaultTemplate(p.defaultTemplate);
     }
-  }, []);
+  }, [profile]);
 
   const handleSave = () => {
     window.localStorage.setItem(SETTINGS_PREFS_KEY, JSON.stringify({
@@ -59,9 +65,14 @@ export default function SettingsPage() {
       weeklyDigest,
       defaultTemplate,
     }));
+    updateProfile({
+      notificationsEnabled,
+      weeklyDigest,
+      defaultTemplate,
+    } as never);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
-    toast.success(isZh ? "个人偏好设置已成功保存！" : "Preferences saved on this device.");
+    toast.success(isZh ? "个人偏好设置已成功保存！" : "Preferences saved successfully.");
   };
 
   const handleFileUpload = async (file: File) => {

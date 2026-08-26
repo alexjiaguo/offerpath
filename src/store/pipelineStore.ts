@@ -90,7 +90,7 @@ const DEFAULT_FILTERS: PipelineFilters = {
 
 export const MOCK_COMPANIES: Company[] = [
  {
- id: "c1",
+ id: "10000000-0000-4000-8000-000000000001",
  user_id: "demo",
  name: "Google",
  industry: "Technology",
@@ -102,7 +102,7 @@ export const MOCK_COMPANIES: Company[] = [
  updated_at: "2026-03-15T00:00:00Z",
  },
  {
- id: "c2",
+ id: "10000000-0000-4000-8000-000000000002",
  user_id: "demo",
  name: "Stripe",
  industry: "Fintech",
@@ -114,7 +114,7 @@ export const MOCK_COMPANIES: Company[] = [
  updated_at: "2026-03-16T00:00:00Z",
  },
  {
- id: "c3",
+ id: "10000000-0000-4000-8000-000000000003",
  user_id: "demo",
  name: "Grab",
  industry: "Technology / Ride-hailing",
@@ -126,7 +126,7 @@ export const MOCK_COMPANIES: Company[] = [
  updated_at: "2026-03-17T00:00:00Z",
  },
  {
- id: "c4",
+ id: "10000000-0000-4000-8000-000000000004",
  user_id: "demo",
  name: "Shopify",
  industry: "E-Commerce",
@@ -138,7 +138,7 @@ export const MOCK_COMPANIES: Company[] = [
  updated_at: "2026-03-18T00:00:00Z",
  },
  {
- id: "c5",
+ id: "10000000-0000-4000-8000-000000000005",
  user_id: "demo",
  name: "ByteDance",
  industry: "Technology / Social Media",
@@ -229,34 +229,51 @@ export const usePipelineStore = create<PipelineState>()(
  get().moveJobDirect(id, newStatus);
  },
 
- moveJobDirect: (id, newStatus) => {
- set((state) => ({
- jobs: state.jobs.map((j) => {
- if (j.id !== id) return j;
- const updates: Partial<Job> = {
- status: newStatus,
- updated_at: new Date().toISOString(),
- };
- // Set timestamps for lifecycle events
- if (newStatus === "applied" && !j.applied_at) updates.applied_at = new Date().toISOString();
- if (newStatus === "interviewing" && !j.interviewed_at) updates.interviewed_at = new Date().toISOString();
- if (newStatus === "offered" && !j.offered_at) updates.offered_at = new Date().toISOString();
- 
- // Append history
- const newHistory = [...(j.history || []), {
- action: "Status Update",
- date: new Date().toISOString(),
- details: `Moved to ${newStatus}`
- }];
- updates.history = newHistory;
- 
- return { ...j, ...updates };
- }),
- }));
- 
- // Background sync
- updateJobStatusAction(id, newStatus).catch(err => logger.error("Failed to sync status update to server", err));
- },
+  moveJobDirect: (id, newStatus) => {
+    let appliedAt: string | undefined;
+    let interviewedAt: string | undefined;
+    let offeredAt: string | undefined;
+
+    set((state) => ({
+      jobs: state.jobs.map((j) => {
+        if (j.id !== id) return j;
+        const updates: Partial<Job> = {
+          status: newStatus,
+          updated_at: new Date().toISOString(),
+        };
+        // Set timestamps for lifecycle events
+        if (newStatus === "applied" && !j.applied_at) {
+          appliedAt = new Date().toISOString();
+          updates.applied_at = appliedAt;
+        }
+        if (newStatus === "interviewing" && !j.interviewed_at) {
+          interviewedAt = new Date().toISOString();
+          updates.interviewed_at = interviewedAt;
+        }
+        if (newStatus === "offered" && !j.offered_at) {
+          offeredAt = new Date().toISOString();
+          updates.offered_at = offeredAt;
+        }
+        
+        // Append history
+        const newHistory = [...(j.history || []), {
+          action: "Status Update",
+          date: new Date().toISOString(),
+          details: `Moved to ${newStatus}`
+        }];
+        updates.history = newHistory;
+        
+        return { ...j, ...updates };
+      }),
+    }));
+    
+    // Background sync
+    updateJobStatusAction(id, newStatus, {
+      applied_at: appliedAt,
+      interviewed_at: interviewedAt,
+      offered_at: offeredAt,
+    }).catch(err => logger.error("Failed to sync status update to server", err));
+  },
 
  reorderJobs: (activeId, overId, newStatus) => {
  set((state) => {

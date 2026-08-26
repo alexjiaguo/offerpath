@@ -4,7 +4,7 @@ import { logger } from "@/lib/logger";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ArrowsClockwise, FileText, Link, Sparkle, X } from '@phosphor-icons/react';
-import { cn } from "@/lib/utils";
+import { cn, generateId } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
 import { Dialog } from "@/components/ui/Dialog";
 import { useTranslation } from "@/i18n";
@@ -159,19 +159,27 @@ export default function AddJobDialog() {
       (c) => c.name.toLowerCase() === company.toLowerCase()
     );
 
+    const resolvedCompany = existingCompany || (company.trim()
+      ? {
+          id: generateId(),
+          user_id: "demo",
+          name: company.trim(),
+          career_url: companyUrl.trim() || undefined,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+      : undefined);
+
+    if (resolvedCompany && !existingCompany) {
+      usePipelineStore.setState((state) => ({
+        companies: [resolvedCompany, ...state.companies],
+      }));
+    }
+
     addJob({
       title: title.trim(),
-      company_id: existingCompany?.id,
-      company: existingCompany || (company
-        ? {
-            id: `temp-${Date.now()}`,
-            user_id: "demo",
-            name: company,
-            career_url: companyUrl.trim() || undefined,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          }
-        : undefined),
+      company_id: resolvedCompany?.id,
+      company: resolvedCompany,
       description: description.trim() || undefined,
       location: location.trim() || undefined,
       url: url.trim() || undefined,

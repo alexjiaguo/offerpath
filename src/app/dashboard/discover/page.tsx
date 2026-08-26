@@ -228,7 +228,6 @@ export default function DiscoverPage() {
   const filterLocation = useDiscoveryStore((s) => s.filterLocation);
   const filterLevel = useDiscoveryStore((s) => s.filterLevel);
   const filterMinScore = useDiscoveryStore((s) => s.filterMinScore);
-  const startScan = useDiscoveryStore((s) => s.startScan);
   const scanLive = useDiscoveryStore((s) => s.scanLive);
 
   const handleScan = async () => {
