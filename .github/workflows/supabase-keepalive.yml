@@ -1,0 +1,44 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every Monday and Thursday (every 3-4 days, well within the 7-day pause window)
+    - cron: '0 0 * * 1,4'
+  workflow_dispatch: # Allows manual trigger from GitHub UI for testing anytime
+
+jobs:
+  ping-database:
+    name: Ping Supabase Database
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API & Database
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::SUPABASE_URL or SUPABASE_ANON_KEY is not set in GitHub repository secrets."
+            echo "Please configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY under Repo Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
+          # Strip trailing slash if present
+          CLEAN_URL="${SUPABASE_URL%/}"
+
+          echo "Pinging Supabase REST endpoint: $CLEAN_URL/rest/v1/..."
+          
+          # Query a public/RLS endpoint to generate genuine Postgres query activity
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            "$CLEAN_URL/rest/v1/profiles?select=id&limit=1")
+
+          echo "Response HTTP status code: $HTTP_STATUS"
+
+          # 200 (success), 206 (partial), or 401/403/404 (valid DB communication even if RLS/table restricts content)
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 500 ]; then
+            echo "✅ Successfully contacted Supabase. Activity timer reset."
+          else
+            echo "::warning::Received unexpected HTTP status $HTTP_STATUS from Supabase."
+            exit 1
+          fi
