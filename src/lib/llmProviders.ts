@@ -8,6 +8,8 @@ export const LLM_PROVIDERS = [
   "perplexity",
   "ollama",
   "lmstudio",
+  "openai-compatible",
+  "anthropic-compatible",
 ] as const;
 
 export type LLMProvider = (typeof LLM_PROVIDERS)[number];
@@ -96,6 +98,22 @@ export const LLM_PROVIDER_CONFIG: Record<LLMProvider, LLMProviderConfig> = {
     apiKeyRequired: false,
     local: true,
     keyPlaceholder: "Optional",
+  },
+  "openai-compatible": {
+    name: "OpenAI Compatible",
+    kind: "openai-compatible",
+    defaultBaseUrl: "https://api.openai.com/v1",
+    defaultModel: "gpt-4o-mini",
+    apiKeyRequired: true,
+    keyPlaceholder: "sk-...",
+  },
+  "anthropic-compatible": {
+    name: "Anthropic Compatible",
+    kind: "anthropic",
+    defaultBaseUrl: "https://api.anthropic.com/v1",
+    defaultModel: "claude-3-5-sonnet-20241022",
+    apiKeyRequired: true,
+    keyPlaceholder: "sk-ant-...",
   },
 };
 
