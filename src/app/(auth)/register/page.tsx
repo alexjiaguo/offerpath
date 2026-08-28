@@ -22,17 +22,17 @@ export default function RegisterPage() {
   const benefits = useMemo(() => {
     if (isZh) {
       return [
-        "无限追踪在途求职岗位",
-        "AI 智能定制润色简历",
-        "模拟面试实战与智能打分",
-        "无需绑定任何信用卡",
+        "无限求职追踪",
+        "AI 简历定制",
+        "模拟面试打分",
+        "无需绑定信用卡",
       ];
     }
     return [
-      "Track unlimited job applications",
-      "AI-powered resume tailoring",
-      "Mock interviews with scoring",
-      "No credit card required",
+      "Unlimited job tracking",
+      "AI resume tailoring",
+      "Mock interview prep",
+      "No credit card needed",
     ];
   }, [isZh]);
 
@@ -87,11 +87,11 @@ export default function RegisterPage() {
       </div>
 
       {/* Benefits */}
-      <div className="grid grid-cols-2 gap-2 mb-6">
+      <div className="grid grid-cols-2 gap-x-3 gap-y-2 mb-6 max-w-[280px] mx-auto">
         {benefits.map((b) => (
-          <div key={b} className="flex items-center gap-1.5">
+          <div key={b} className="flex items-center gap-1.5 justify-start">
             <CheckCircle className="w-3.5 h-3.5 text-ember-600 flex-shrink-0" weight="fill" />
-            <span className="text-[11px] text-surface-300">{b}</span>
+            <span className="text-[11px] text-surface-300 whitespace-nowrap">{b}</span>
           </div>
         ))}
       </div>

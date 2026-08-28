@@ -47,6 +47,8 @@ const PROVIDER_STYLES: Record<LLMProvider, string> = {
   perplexity: "text-teal-700 bg-teal-500/10",
   ollama: "text-slate-700 bg-slate-500/10",
   lmstudio: "text-violet-700 bg-violet-500/10",
+  "openai-compatible": "text-teal-700 bg-teal-500/10",
+  "anthropic-compatible": "text-rose-700 bg-rose-500/10",
 };
 
 const SIMPLE_ICONS = {
@@ -61,11 +63,20 @@ const SIMPLE_ICONS = {
 } as const;
 
 function ProviderLogo({ provider }: { provider: LLMProvider }) {
-  if (provider === "openai") {
+  if (provider === "openai" || provider === "openai-compatible") {
     return <SiOpenai className="h-5 w-5 text-surface-900" aria-hidden="true" />;
   }
 
-  const icon = SIMPLE_ICONS[provider];
+  if (provider === "anthropic-compatible") {
+    return (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" role="img" aria-hidden="true">
+        <path d={siAnthropic.path} fill={`#${siAnthropic.hex}`} />
+      </svg>
+    );
+  }
+
+  const icon = SIMPLE_ICONS[provider as keyof typeof SIMPLE_ICONS];
+  if (!icon) return null;
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" role="img" aria-hidden="true">
       <path d={icon.path} fill={`#${icon.hex}`} />

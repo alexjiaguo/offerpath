@@ -119,6 +119,8 @@ export function getLLMConfig(): LLMConfig | null {
  "perplexity",
  "ollama",
  "lmstudio",
+ "openai-compatible",
+ "anthropic-compatible",
  ];
  for (const p of priority) {
  const key = store.apiKeys.find((k: { provider: string; status: string }) => k.provider === p && k.status === "active");
@@ -133,6 +135,15 @@ export function getLLMConfig(): LLMConfig | null {
  };
  }
  }
+    // 2. If user is on a paid plan (pro/ultra/team), allow server-managed AI
+    const tier = store.profile?.tier;
+    if (tier === "pro" || tier === "ultra" || tier === "team") {
+      return {
+        provider: "openai",
+        model: LLM_PROVIDER_CONFIG.openai.defaultModel,
+        baseUrl: LLM_PROVIDER_CONFIG.openai.defaultBaseUrl,
+      };
+    }
  } catch {
  // Store not available (SSR, etc.)
  }

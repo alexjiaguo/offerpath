@@ -125,9 +125,12 @@ export async function POST(req: Request) {
       }
 
       if (!customKey && keyToUse) {
-        if (isProdLike() && !authed) {
+        if (!authed) {
           return NextResponse.json(
-            { error: "Unauthorized access to AI proxy endpoint." },
+            {
+              error:
+                "Free plan and guest users must provide an API key (BYOK) to use AI features. Upgrade to Pro for built-in managed AI credits.",
+            },
             { status: 401 }
           );
         }

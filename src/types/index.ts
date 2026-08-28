@@ -6,7 +6,7 @@ import type { LLMProvider } from "@/lib/llmProviders";
 
 // ── User & Profile ──────────────────────────────────
 
-export type Tier = "free" | "pro" | "team";
+export type Tier = "free" | "pro" | "ultra" | "team";
 
 export interface Profile {
  id: string;

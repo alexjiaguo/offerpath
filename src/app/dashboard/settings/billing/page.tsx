@@ -1,10 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Check, CreditCard, Shield, Sparkle } from '@phosphor-icons/react';
+import {
+  ArrowLeft,
+  Check,
+  CheckCircle,
+  CreditCard,
+  Key,
+  Shield,
+  Sparkle,
+  WarningCircle,
+} from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 import { useMemo } from "react";
+import { useProfileStore } from "@/store/profileStore";
+import {
+  PRO_TIER_MONTHLY_AI_USES,
+  ULTRA_TIER_MONTHLY_AI_USES,
+  getTierQuotaLimit,
+} from "@/lib/aiQuota";
+import type { Tier } from "@/types";
 
 /* ═══════════════════════════════════════════════════
    Billing Page — subscription management
@@ -13,85 +29,114 @@ import { useMemo } from "react";
 
 export default function BillingPage() {
   const { t, isZh } = useTranslation();
-  const currentPlan = "free";
+  const { profile, apiKeys } = useProfileStore();
 
-  const plans = useMemo(() => [
-    {
-      name: t.billing.freePlan,
-      price: "$0",
-      period: isZh ? "永久免费" : "forever",
-      highlight: false,
-      features: isZh ? [
-        "支持 2 份主简历",
-        "3 套基础模板",
-        "每周 3 次 AI 针对性分析",
-        "10 个在途求职岗位看板",
-        "每周 1 次全真模拟面试",
-        "5 个 STAR 故事存储",
-        "PDF 导出支持",
-      ] : [
-        "2 resumes",
-        "3 basic templates",
-        "3 AI uses/week",
-        "10 pipeline jobs",
-        "1 mock interview/week",
-        "5 STAR stories",
-        "PDF export only",
-      ],
-    },
-    {
-      name: t.billing.proPlan,
-      price: "$15",
-      period: isZh ? "/月" : "/month",
-      highlight: true,
-      features: isZh ? [
-        "无限份定制针对性简历",
-        "全部 9 套经过 ATS 验证的精选模板",
-        "无限次 AI 深度润色与考题生成",
-        "无限在途求职岗位追踪看板",
-        "无限全真模拟面试与 AI 专家复盘",
-        "无限 STAR 经历故事库",
-        "支持 PDF + DOCX 导出",
-        "完整求职漏斗数据分析",
-        "支持自带 (BYO) 或托管 API 密钥",
-      ] : [
-        "Unlimited resumes",
-        "All 9 premium templates",
-        "Unlimited AI uses",
-        "Unlimited pipeline jobs",
-        "Unlimited mock interviews",
-        "Unlimited stories",
-        "PDF + DOCX export",
-        "Full analytics",
-        "BYO + managed API keys",
-      ],
-    },
-    {
-      name: t.billing.ultraPlan,
-      price: "$29",
-      period: isZh ? "/月" : "/month",
-      highlight: false,
-      features: isZh ? [
-        "包含 Pro 版本的全部功能",
-        "专属定制简历排版模板",
-        "开放开放平台 API 访问",
-        "猎头与团队招聘协作看板",
-        "高并发大模型调用通道",
-        "1 对 1 求职顾问专属通道",
-        "支持 CLI 命令行与 MCP 智能代理接入",
-        "API 速率限额提升",
-      ] : [
-        "Everything in Pro",
-        "Custom templates",
-        "API access",
-        "Team analytics view",
-        "Managed key pool",
-        "Priority support",
-        "CLI and MCP support",
-        "API rate boost",
-      ],
-    },
-  ], [t, isZh]);
+  const currentPlan = (profile.tier ?? "free").toLowerCase() as Tier;
+  const isFree = currentPlan === "free";
+  const isPro = currentPlan === "pro";
+
+  const aiLimit = getTierQuotaLimit(currentPlan);
+  const aiUsed = profile.aiUsesThisMonth ?? 0;
+  const isAiExhausted = !isFree && aiUsed >= aiLimit;
+
+  const hasActiveByok = apiKeys.some(
+    (k) =>
+      k.status === "active" &&
+      (Boolean(k.key?.trim()) || k.provider === "ollama" || k.provider === "lmstudio")
+  );
+  const activeByok = apiKeys.find((k) => k.status === "active");
+
+  const plans = useMemo(
+    () => [
+      {
+        id: "free",
+        name: t.billing.freePlan,
+        price: "$0",
+        period: isZh ? "永久免费" : "forever",
+        highlight: false,
+        features: isZh
+          ? [
+              "自带 API Key (BYOK) 无限使用 AI 功能",
+              "无自带 Key 时使用默认基础功能",
+              "支持 2 份主简历",
+              "全部 9 套 ATS 精选模板",
+              "10 个在途求职岗位看板",
+              "每周 1 次模拟面试",
+              "5 个 STAR 故事存储",
+              "PDF 导出支持",
+            ]
+          : [
+              "Unlimited AI with your own API key (BYOK)",
+              "Standard non-AI features without key",
+              "2 resumes",
+              "All 9 ATS templates",
+              "10 pipeline jobs",
+              "1 mock interview/week",
+              "5 STAR stories",
+              "PDF export only",
+            ],
+      },
+      {
+        id: "pro",
+        name: t.billing.proPlan,
+        price: "$15",
+        period: isZh ? "/月" : "/month",
+        highlight: true,
+        features: isZh
+          ? [
+              `每月 ${PRO_TIER_MONTHLY_AI_USES} 次内置托管 AI 深度分析额度`,
+              "额度用尽后可无缝接入自带 Key (BYOK) 继续使用",
+              "无限份定制针对性简历",
+              "全部 9 套经过 ATS 验证的精选模板",
+              "无限在途求职岗位追踪看板",
+              "无限全真模拟面试与 AI 专家复盘",
+              "无限 STAR 经历故事库",
+              "支持 PDF + DOCX 导出",
+              "完整求职漏斗数据分析",
+            ]
+          : [
+              `${PRO_TIER_MONTHLY_AI_USES} Managed AI credits/month`,
+              "Seamless BYOK fallback when quota is reached",
+              "Unlimited tailored resumes",
+              "All 9 ATS premium templates",
+              "Unlimited pipeline jobs",
+              "Unlimited mock interviews & scoring",
+              "Unlimited STAR stories",
+              "PDF + DOCX export",
+              "Full funnel analytics",
+            ],
+      },
+      {
+        id: "ultra",
+        name: t.billing.ultraPlan,
+        price: "$29",
+        period: isZh ? "/月" : "/month",
+        highlight: false,
+        features: isZh
+          ? [
+              `每月 ${ULTRA_TIER_MONTHLY_AI_USES} 次托管 AI 额度 (Pro 的 5 倍)`,
+              "包含 Pro 版本的全部功能与权益",
+              "额度用尽后支持自带 Key (BYOK) 无限调用",
+              "高并发大模型加速通道",
+              "开放开放平台 API 访问与 Webhooks",
+              "猎头与团队招聘协作看板",
+              "1 对 1 求职顾问专属通道",
+              "API 速率限额提升",
+            ]
+          : [
+              `${ULTRA_TIER_MONTHLY_AI_USES} Managed AI credits/month (5x Pro quota)`,
+              "Everything in Pro included",
+              "Seamless BYOK fallback for unlimited usage",
+              "High-concurrency model acceleration pool",
+              "API access & webhooks",
+              "Team recruiter collaboration view",
+              "Priority career advisor channel",
+              "API rate limit boost",
+            ],
+      },
+    ],
+    [t, isZh]
+  );
 
   return (
     <div className="w-full animate-fade-in space-y-6 pb-12">
@@ -110,11 +155,96 @@ export default function BillingPage() {
         </Link>
       </div>
 
+      {/* Quota & Action Reminders */}
+      {isFree && !hasActiveByok && (
+        <div className="card-editorial rounded-2xl p-5 bg-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <WarningCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-surface-400">
+                {isZh ? "免费计划未包含托管 AI 额度" : "Free Plan: No Managed AI Credits"}
+              </p>
+              <p className="text-xs text-surface-300 mt-1 leading-relaxed">
+                {isZh
+                  ? "当前运行于基础模式。您可以自带 API 密钥 (BYOK) 免费解锁全功能 AI，或升级至 Pro / Ultra 计划使用内置托管算力。"
+                  : "Currently running in standard mode. Connect your own API key (BYOK) in Settings for unlimited AI, or upgrade to Pro / Ultra for built-in managed credits."}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
+            <Link
+              href="/dashboard/settings/api-keys"
+              className="btn-editorial-primary text-xs px-4 py-2 flex items-center justify-center gap-1.5 w-full sm:w-auto"
+            >
+              <Key className="w-4 h-4" />
+              {isZh ? "添加 API Key" : "Connect API Key"}
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {isFree && hasActiveByok && (
+        <div className="card-editorial rounded-2xl p-4 bg-emerald-500/10 border border-emerald-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" weight="fill" />
+            <div>
+              <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                {isZh ? "已启用自带密钥 (BYOK)" : "BYOK Mode Active"}
+              </p>
+              <p className="text-xs text-surface-300 mt-0.5">
+                {isZh
+                  ? `正在使用您的 ${activeByok?.label || activeByok?.provider || "自定义"} Key，无额度限制享受完整 AI 体验。`
+                  : `Using your ${activeByok?.label || activeByok?.provider || "custom"} key for all AI features with zero quota limits.`}
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/dashboard/settings/api-keys"
+            className="btn-editorial-secondary text-xs px-3 py-1.5 flex-shrink-0 w-full sm:w-auto text-center"
+          >
+            {isZh ? "管理密钥" : "Manage Keys"}
+          </Link>
+        </div>
+      )}
+
+      {isAiExhausted && (
+        <div className="card-editorial rounded-2xl p-5 bg-red-500/10 border border-red-500/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <WarningCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-red-700">
+                {isZh ? "本月托管 AI 额度已用尽" : "Monthly Managed AI Quota Exhausted"}
+              </p>
+              <p className="text-xs text-surface-300 mt-1 leading-relaxed">
+                {isPro
+                  ? isZh
+                    ? `您本月的 ${PRO_TIER_MONTHLY_AI_USES} 次 Pro 托管额度已耗尽。可升级至 Ultra 计划获取 5 倍额度 (${ULTRA_TIER_MONTHLY_AI_USES} 次)，或接入自带 API Key 继续使用。`
+                    : `Your ${PRO_TIER_MONTHLY_AI_USES} monthly Pro credits are exhausted. Upgrade to Ultra for 5x quota (${ULTRA_TIER_MONTHLY_AI_USES} credits) or connect your own API key in Settings.`
+                  : isZh
+                    ? `您本月的 ${ULTRA_TIER_MONTHLY_AI_USES} 次 Ultra 托管额度已耗尽。可接入自带 API Key 继续使用。`
+                    : `Your ${ULTRA_TIER_MONTHLY_AI_USES} monthly Ultra credits are exhausted. Connect your own API key in Settings to continue without limits.`}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
+            <Link
+              href="/dashboard/settings/api-keys"
+              className="btn-editorial-primary text-xs px-4 py-2 flex items-center justify-center gap-1.5 w-full sm:w-auto"
+            >
+              <Key className="w-4 h-4" />
+              {isZh ? "添加 API Key" : "Connect API Key"}
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Current Plan Card */}
       <div className="card-editorial rounded-2xl p-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-surface-300 uppercase tracking-wider mb-1 font-mono">{t.billing.currentPlan}</p>
+            <p className="text-xs text-surface-300 uppercase tracking-wider mb-1 font-mono">
+              {t.billing.currentPlan}
+            </p>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold capitalize font-display">{currentPlan}</h2>
               <span className="text-[10px] px-2 py-0.5 rounded-md bg-surface-200 text-surface-400 font-bold font-mono">
@@ -124,33 +254,99 @@ export default function BillingPage() {
           </div>
           <div className="text-right text-sm text-surface-300">
             <p>{t.billing.nextRenewal}: —</p>
-            <p className="text-xs mt-0.5">{isZh ? "当前为免费体验计划 — 无需账单" : "Free plan — no billing"}</p>
+            <p className="text-xs mt-0.5">
+              {isFree
+                ? isZh
+                  ? "当前为免费计划 — 无需账单"
+                  : "Free plan — no billing"
+                : isZh
+                  ? "按月自动续期"
+                  : "Renews monthly"}
+            </p>
           </div>
         </div>
 
         {/* Usage Meters */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
           {[
-            { label: isZh ? "AI 使用次数" : "AI Uses", used: 1, limit: 3, unit: isZh ? "/周" : "/week" },
-            { label: isZh ? "简历份数" : "Resumes", used: 2, limit: 2, unit: "" },
-            { label: isZh ? "看板在途岗位" : "Pipeline Jobs", used: 5, limit: 10, unit: "" },
-            { label: isZh ? "模拟面试" : "Mock Interviews", used: 0, limit: 1, unit: isZh ? "/周" : "/week" },
+            {
+              label: isZh ? "AI 托管额度" : "Managed AI Quota",
+              used: isFree ? 0 : aiUsed,
+              limit: aiLimit,
+              display: isFree
+                ? hasActiveByok
+                  ? isZh
+                    ? "BYOK 已连接"
+                    : "BYOK Active"
+                  : isZh
+                    ? "0 / 0 (仅限 BYOK)"
+                    : "0 / 0 (BYOK Only)"
+                : `${aiUsed}/${aiLimit}`,
+              unit: isFree ? "" : isZh ? "/月" : "/mo",
+              isByok: isFree,
+            },
+            {
+              label: isZh ? "简历份数" : "Resumes",
+              used: 1,
+              limit: isFree ? 2 : 999,
+              display: isFree ? "1/2" : isZh ? "无限" : "Unlimited",
+              unit: "",
+            },
+            {
+              label: isZh ? "在途求职岗位" : "Pipeline Jobs",
+              used: 5,
+              limit: isFree ? 10 : 999,
+              display: isFree ? "5/10" : isZh ? "无限" : "Unlimited",
+              unit: "",
+            },
+            {
+              label: isZh ? "模拟面试" : "Mock Interviews",
+              used: 0,
+              limit: isFree ? 1 : 999,
+              display: isFree ? "0/1" : isZh ? "无限" : "Unlimited",
+              unit: isFree ? (isZh ? "/周" : "/wk") : "",
+            },
           ].map((meter) => {
-            const pct = Math.min((meter.used / meter.limit) * 100, 100);
-            const isNearLimit = pct >= 80;
+            const isUnlimited = meter.limit >= 999;
+            const pct = meter.isByok
+              ? hasActiveByok
+                ? 100
+                : 0
+              : isUnlimited
+                ? 15
+                : Math.min((meter.used / Math.max(1, meter.limit)) * 100, 100);
+            const isNearLimit = !meter.isByok && !isUnlimited && pct >= 80;
+
             return (
-              <div key={meter.label} className="p-3 rounded-xl bg-surface-100 border border-surface-200">
+              <div
+                key={meter.label}
+                className="p-3 rounded-xl bg-surface-100 border border-surface-200"
+              >
                 <div className="flex items-center justify-between text-xs mb-2">
                   <span className="text-surface-300">{meter.label}</span>
-                  <span className={cn("font-medium", isNearLimit ? "text-amber-600" : "text-surface-400")}>
-                    {meter.used}/{meter.limit}{meter.unit}
+                  <span
+                    className={cn(
+                      "font-medium",
+                      meter.isByok && hasActiveByok
+                        ? "text-emerald-600 font-bold"
+                        : isNearLimit
+                          ? "text-amber-600 font-bold"
+                          : "text-surface-400"
+                    )}
+                  >
+                    {meter.display}
+                    {meter.unit}
                   </span>
                 </div>
                 <div className="h-1.5 rounded-full bg-surface-200 overflow-hidden">
                   <div
                     className={cn(
                       "h-full rounded-full transition-all",
-                      isNearLimit ? "bg-amber-500" : "bg-ember-600"
+                      meter.isByok && hasActiveByok
+                        ? "bg-emerald-600"
+                        : isNearLimit
+                          ? "bg-amber-500"
+                          : "bg-ember-600"
                     )}
                     style={{ width: `${pct}%` }}
                   />
@@ -169,39 +365,41 @@ export default function BillingPage() {
 
       <div className="grid md:grid-cols-3 gap-4 mb-8">
         {plans.map((plan) => {
-          const isCurrent = plan.name.toLowerCase() === currentPlan || (isZh && plan.name === "免费版");
+          const isCurrent = plan.id === currentPlan;
           return (
             <div
               key={plan.name}
               className={cn(
-                "rounded-2xl p-6 relative transition-all",
+                "rounded-2xl p-6 relative transition-all flex flex-col justify-between",
                 plan.highlight
-                  ? "bg-gradient-to-b from-ember-500/10 to-surface-0 border-2 border-ember-600/30"
+                  ? "bg-gradient-to-b from-ember-500/10 to-surface-0 border-2 border-ember-600/30 shadow-sm"
                   : "card-editorial"
               )}
             >
-              {plan.highlight && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-md bg-ember-600 text-[10px] font-bold text-white uppercase tracking-wider font-mono">
-                  {t.billing.mostPopular}
+              <div>
+                {plan.highlight && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-md bg-ember-600 text-[10px] font-bold text-white uppercase tracking-wider font-mono">
+                    {t.billing.mostPopular}
+                  </div>
+                )}
+
+                <div className="text-center mb-5">
+                  <h3 className="text-lg font-bold mb-1 font-display">{plan.name}</h3>
+                  <p className="text-3xl font-bold font-display">
+                    {plan.price}
+                    <span className="text-sm font-normal text-surface-300">{plan.period}</span>
+                  </p>
                 </div>
-              )}
 
-              <div className="text-center mb-5">
-                <h3 className="text-lg font-bold mb-1 font-display">{plan.name}</h3>
-                <p className="text-3xl font-bold font-display">
-                  {plan.price}
-                  <span className="text-sm font-normal text-surface-300">{plan.period}</span>
-                </p>
+                <ul className="space-y-2.5 mb-6">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2 text-sm text-surface-400">
+                      <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              <ul className="space-y-2.5 mb-6">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm text-surface-400">
-                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
 
               <button
                 className={cn(
@@ -220,11 +418,13 @@ export default function BillingPage() {
         })}
       </div>
 
-      {/* Security Note */}
+      {/* Security & BYOK Note */}
       <div className="card-editorial rounded-xl p-4 flex items-center gap-3">
         <Shield className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-        <p className="text-xs text-surface-300">
-          {t.billing.sampleLimitsNote}
+        <p className="text-xs text-surface-300 leading-relaxed">
+          {isZh
+            ? "OfferPath 采用端到端加密与安全代理。自带 API Key (BYOK) 仅存储于本地浏览器并在发起请求时直接与供应商通信，我们绝不会存储您的密钥或训练您的个人数据。"
+            : "OfferPath uses end-to-end security and encrypted proxies. Bring Your Own Key (BYOK) credentials stay stored securely in your browser and are never saved on our servers or used for model training."}
         </p>
       </div>
     </div>

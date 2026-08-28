@@ -59,6 +59,8 @@ export interface UserProfile {
  workExperience: WorkExperienceEntry[];
  education: EducationEntry[];
  disclosures: EmploymentDisclosures;
+ tier?: "free" | "pro" | "ultra" | "team";
+ aiUsesThisMonth?: number;
 }
 
 export interface UploadedResume {
@@ -136,6 +138,8 @@ export function createEmptyProfile(fullName: string, email: string): UserProfile
       disabilityStatus: "",
       veteranStatus: "",
     },
+    tier: "free",
+    aiUsesThisMonth: 0,
   };
 }
 

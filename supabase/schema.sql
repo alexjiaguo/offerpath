@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   full_name TEXT,
   email TEXT,
   avatar_url TEXT,
-  tier TEXT DEFAULT 'free' CHECK (tier IN ('free', 'pro', 'team')),
+  tier TEXT DEFAULT 'free' CHECK (tier IN ('free', 'pro', 'ultra', 'team')),
   ai_uses_this_week INTEGER DEFAULT 0,
   week_reset_at TIMESTAMPTZ DEFAULT NOW(),
   stripe_customer_id TEXT,

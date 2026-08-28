@@ -1,11 +1,18 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
 
-export const FREE_TIER_WEEKLY_AI_USES = Number(
-  process.env.FREE_TIER_WEEKLY_AI_USES ?? "3"
+export const FREE_TIER_AI_USES = 0;
+export const PRO_TIER_MONTHLY_AI_USES = Number(
+  process.env.PRO_TIER_MONTHLY_AI_USES ?? "50"
+);
+export const ULTRA_TIER_MONTHLY_AI_USES = Number(
+  process.env.ULTRA_TIER_MONTHLY_AI_USES ?? String(PRO_TIER_MONTHLY_AI_USES * 5)
 );
 
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+// Legacy alias for backwards compatibility
+export const FREE_TIER_WEEKLY_AI_USES = FREE_TIER_AI_USES;
+
+const MONTH_MS = 30 * 24 * 60 * 60 * 1000;
 
 interface ProfileQuotaRow {
   tier: string | null;
@@ -16,7 +23,20 @@ interface ProfileQuotaRow {
 export interface AiQuotaResult {
   ok: boolean;
   remaining?: number;
+  limit?: number;
+  used?: number;
   error?: string;
+}
+
+export function getTierQuotaLimit(tier: string | null | undefined): number {
+  const normalized = (tier ?? "free").toLowerCase();
+  if (normalized === "ultra" || normalized === "team") {
+    return ULTRA_TIER_MONTHLY_AI_USES;
+  }
+  if (normalized === "pro") {
+    return PRO_TIER_MONTHLY_AI_USES;
+  }
+  return FREE_TIER_AI_USES;
 }
 
 export async function consumeAiUse(
@@ -35,27 +55,44 @@ export async function consumeAiUse(
   }
 
   const profile = data as unknown as ProfileQuotaRow;
+  const tier = (profile.tier ?? "free").toLowerCase();
 
-  if (profile.tier && profile.tier !== "free") {
-    return { ok: true };
+  // Free tier has 0 built-in managed AI credits. Requires BYOK.
+  if (tier === "free") {
+    return {
+      ok: false,
+      remaining: 0,
+      limit: 0,
+      used: profile.ai_uses_this_week ?? 0,
+      error:
+        "Free plan requires bringing your own API key (BYOK) for AI features. Upgrade to Pro for managed AI credits or connect your API key in Settings.",
+    };
   }
 
+  const limit = getTierQuotaLimit(tier);
   const now = Date.now();
   const resetAt = profile.week_reset_at ? Date.parse(profile.week_reset_at) : NaN;
   const windowExpired = Number.isNaN(resetAt) || now >= resetAt;
   const used = windowExpired ? 0 : (profile.ai_uses_this_week ?? 0);
 
-  if (used >= FREE_TIER_WEEKLY_AI_USES) {
+  if (used >= limit) {
+    const isPro = tier === "pro";
+    const upgradeSuggestion = isPro
+      ? "Upgrade to Ultra for 5x more quota (250 uses) or connect your own API key in Settings."
+      : "Connect your own API key in Settings to continue without limits.";
+
     return {
       ok: false,
       remaining: 0,
-      error: `Free plan AI limit reached (${FREE_TIER_WEEKLY_AI_USES}/week). Upgrade your plan or connect your own API key in Settings.`,
+      limit,
+      used,
+      error: `Monthly AI quota reached (${used}/${limit}). ${upgradeSuggestion}`,
     };
   }
 
   const nextUsed = used + 1;
   const nextResetAt = windowExpired
-    ? new Date(now + WEEK_MS).toISOString()
+    ? new Date(now + MONTH_MS).toISOString()
     : (profile.week_reset_at as string);
 
   const { error: updateError } = await supabase
@@ -68,11 +105,13 @@ export async function consumeAiUse(
 
   if (updateError) {
     logger.warn("[aiQuota] counter update failed, failing open:", updateError);
-    return { ok: true };
+    return { ok: true, limit, remaining: limit - used };
   }
 
   return {
     ok: true,
-    remaining: Math.max(0, FREE_TIER_WEEKLY_AI_USES - nextUsed),
+    limit,
+    used: nextUsed,
+    remaining: Math.max(0, limit - nextUsed),
   };
 }

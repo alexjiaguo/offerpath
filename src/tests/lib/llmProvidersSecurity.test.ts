@@ -35,6 +35,20 @@ describe("resolveProviderBaseUrl", () => {
     );
     expect(result.error).toBeUndefined();
     expect(result.baseUrl).toBe("https://proxy.example.com/v1");
+
+    const resultCompatOpenAI = resolveProviderBaseUrl(
+      "openai-compatible",
+      "https://custom-openai.example.com/v1"
+    );
+    expect(resultCompatOpenAI.error).toBeUndefined();
+    expect(resultCompatOpenAI.baseUrl).toBe("https://custom-openai.example.com/v1");
+
+    const resultCompatAnthropic = resolveProviderBaseUrl(
+      "anthropic-compatible",
+      "https://custom-anthropic.example.com/v1"
+    );
+    expect(resultCompatAnthropic.error).toBeUndefined();
+    expect(resultCompatAnthropic.baseUrl).toBe("https://custom-anthropic.example.com/v1");
   });
 
   it("rejects non-https custom endpoints for cloud providers", () => {

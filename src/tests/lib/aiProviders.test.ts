@@ -99,4 +99,54 @@ describe("ai-providers", () => {
       "https://gemini-proxy.example.com/v1beta/models/custom-gemini:generateContent?key=test-key"
     );
   });
+
+  it("supports openai-compatible custom endpoints", async () => {
+    vi.mocked(global.fetch).mockResolvedValueOnce(
+      mockResponse({ choices: [{ message: { content: "openai-compatible-ok" } }] })
+    );
+
+    const result = await serverCallLLM(
+      "openai-compatible",
+      "custom-key",
+      "system",
+      "user",
+      { baseUrl: "https://my-openai-proxy.com/v1", model: "deepseek-v3" }
+    );
+
+    expect(result).toBe("openai-compatible-ok");
+    expect(global.fetch).toHaveBeenCalledWith(
+      "https://my-openai-proxy.com/v1/chat/completions",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: "Bearer custom-key",
+        }),
+        body: expect.stringContaining('"model":"deepseek-v3"'),
+      })
+    );
+  });
+
+  it("supports anthropic-compatible custom endpoints", async () => {
+    vi.mocked(global.fetch).mockResolvedValueOnce(
+      mockResponse({ content: [{ type: "text", text: "anthropic-compatible-ok" }] })
+    );
+
+    const result = await serverCallLLM(
+      "anthropic-compatible",
+      "ant-key",
+      "system",
+      "user",
+      { baseUrl: "https://my-claude-proxy.com/v1", model: "claude-3-7-sonnet" }
+    );
+
+    expect(result).toBe("anthropic-compatible-ok");
+    expect(global.fetch).toHaveBeenCalledWith(
+      "https://my-claude-proxy.com/v1/messages",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          "x-api-key": "ant-key",
+        }),
+        body: expect.stringContaining('"model":"claude-3-7-sonnet"'),
+      })
+    );
+  });
 });
