@@ -10,9 +10,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getNavItems } from "@/lib/navConfig";
 import { signOut } from "@/lib/auth";
 import { useTranslation } from "@/i18n";
+import { toast } from "sonner";
 
 export default function Sidebar() {
-  const { t } = useTranslation();
+  const { t, isZh } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
   const collapsed = useUIStore((s) => s.sidebarCollapsed);
@@ -20,7 +21,12 @@ export default function Sidebar() {
   const navSections = getNavItems(t);
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : (isZh ? "退出登录失败" : "Sign out failed"));
+      return;
+    }
     router.push("/");
   };
 

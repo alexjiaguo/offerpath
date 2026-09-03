@@ -13,7 +13,7 @@ import { useTranslation } from "@/i18n";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
 export default function Topbar() {
-  const { t } = useTranslation();
+  const { t, isZh } = useTranslation();
   const pathname = usePathname();
   const searchQuery = usePipelineStore((s) => s.filters.search);
   const discoveryQuery = useDiscoveryStore((s) => s.searchQuery);
@@ -23,7 +23,9 @@ export default function Topbar() {
   const setStorySearch = useInterviewStore((s) => s.setStorySearch);
   const setAddJobDialogOpen = usePipelineStore((s) => s.setAddJobDialogOpen);
   const fullName = useProfileStore((s) => s.profile.fullName);
-  const initials = fullName.split(" ").filter(Boolean).map((n) => n[0]).slice(0, 2).join("").toUpperCase() || "G";
+  const guestLabel = isZh ? "访客" : "Guest";
+  const displayName = fullName || guestLabel;
+  const initials = fullName.split(" ").filter(Boolean).map((n) => n[0]).slice(0, 2).join("").toUpperCase() || (isZh ? "访" : "G");
 
   const isDiscover = pathname.startsWith("/dashboard/discover");
   const isInterview = pathname.startsWith("/dashboard/interview");
@@ -108,7 +110,7 @@ export default function Topbar() {
             {initials}
           </div>
           <div className="hidden lg:block text-left">
-            <div className="text-[11px] font-mono font-semibold tracking-tight text-surface-400 leading-none">{fullName}</div>
+            <div className="text-[11px] font-mono font-semibold tracking-tight text-surface-400 leading-none">{displayName}</div>
           </div>
         </Link>
       </div>

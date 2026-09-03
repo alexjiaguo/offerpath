@@ -2,11 +2,14 @@
 
 import { Bell, Briefcase, CheckCircle, FileText, FloppyDisk, Gear, Palette, User, UploadSimple, X, Lock, Globe } from '@phosphor-icons/react';
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/store/profileStore";
 import { useTranslation } from "@/i18n";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { deleteLocalAccountData } from "@/lib/auth";
 
 /* ═══════════════════════════════════════════════════
    Settings Page — profile, background upload, preferences
@@ -15,6 +18,7 @@ import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
 export default function SettingsPage() {
   const { t, isZh } = useTranslation();
+  const router = useRouter();
   const {
     profile,
     uploadedResume,
@@ -25,9 +29,16 @@ export default function SettingsPage() {
     clearResume,
   } = useProfileStore();
 
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [weeklyDigest, setWeeklyDigest] = useState(true);
-  const [defaultTemplate, setDefaultTemplate] = useState("modern");
+  // Preferences live on the profile (persisted + synced to Supabase).
+  // The legacy "offerpath.settings.prefs" localStorage sidecar is read once
+  // as a migration source, then removed.
+  const [notificationsEnabled, setNotificationsEnabled] = useState(
+    profile.notificationsEnabled ?? true
+  );
+  const [weeklyDigest, setWeeklyDigest] = useState(profile.weeklyDigest ?? true);
+  const [defaultTemplate, setDefaultTemplate] = useState(
+    profile.defaultTemplate ?? "classic-minimal"
+  );
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [skillInput, setSkillInput] = useState("");
@@ -41,38 +52,60 @@ export default function SettingsPage() {
   const SETTINGS_PREFS_KEY = "offerpath.settings.prefs";
 
   useEffect(() => {
+    // One-time migration from the legacy sidecar (pre-store era).
     const raw = window.localStorage.getItem(SETTINGS_PREFS_KEY);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as { notificationsEnabled?: boolean; weeklyDigest?: boolean; defaultTemplate?: string };
-        if (typeof parsed.notificationsEnabled === "boolean") setNotificationsEnabled(parsed.notificationsEnabled);
-        if (typeof parsed.weeklyDigest === "boolean") setWeeklyDigest(parsed.weeklyDigest);
-        if (typeof parsed.defaultTemplate === "string") setDefaultTemplate(parsed.defaultTemplate);
-      } catch {
-        /* ignore */
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw) as { notificationsEnabled?: boolean; weeklyDigest?: boolean; defaultTemplate?: string };
+      const updates: Partial<typeof profile> = {};
+      if (typeof parsed.notificationsEnabled === "boolean") {
+        setNotificationsEnabled(parsed.notificationsEnabled);
+        updates.notificationsEnabled = parsed.notificationsEnabled;
       }
-    } else if (profile) {
-      const p = profile as unknown as { notificationsEnabled?: boolean; weeklyDigest?: boolean; defaultTemplate?: string };
-      if (typeof p.notificationsEnabled === "boolean") setNotificationsEnabled(p.notificationsEnabled);
-      if (typeof p.weeklyDigest === "boolean") setWeeklyDigest(p.weeklyDigest);
-      if (typeof p.defaultTemplate === "string") setDefaultTemplate(p.defaultTemplate);
+      if (typeof parsed.weeklyDigest === "boolean") {
+        setWeeklyDigest(parsed.weeklyDigest);
+        updates.weeklyDigest = parsed.weeklyDigest;
+      }
+      if (typeof parsed.defaultTemplate === "string") {
+        setDefaultTemplate(parsed.defaultTemplate);
+        updates.defaultTemplate = parsed.defaultTemplate;
+      }
+      if (Object.keys(updates).length > 0) updateProfile(updates);
+    } catch {
+      /* ignore */
+    } finally {
+      window.localStorage.removeItem(SETTINGS_PREFS_KEY);
     }
-  }, [profile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSave = () => {
-    window.localStorage.setItem(SETTINGS_PREFS_KEY, JSON.stringify({
-      notificationsEnabled,
-      weeklyDigest,
-      defaultTemplate,
-    }));
+    // Stored on the profile: persists across devices via Supabase sync and
+    // drives real behavior (weekly digest, default template for new resumes).
     updateProfile({
       notificationsEnabled,
       weeklyDigest,
       defaultTemplate,
-    } as never);
+    });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
     toast.success(isZh ? "个人偏好设置已成功保存！" : "Preferences saved successfully.");
+  };
+
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const handleDeleteData = async () => {
+    setDeleting(true);
+    try {
+      await deleteLocalAccountData();
+      toast.success(isZh ? "本地数据已清除。" : "Your local data has been deleted.");
+      router.push("/register");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Delete failed.");
+    } finally {
+      setDeleting(false);
+      setConfirmDeleteOpen(false);
+    }
   };
 
   const handleFileUpload = async (file: File) => {
@@ -619,11 +652,22 @@ export default function SettingsPage() {
           {t.settings.dangerZoneTitle}
         </h2>
         <p className="text-sm text-surface-300 mb-4 font-sans">
-          {t.settings.dangerZoneDesc}
+          {isZh
+            ? "清除此浏览器中的所有 OfferPath 数据（求职看板、简历、故事库、偏好设置），并退出登录。Supabase 账号行需在控制台中删除。"
+            : "Erase all OfferPath data in this browser (pipeline, resumes, stories, preferences) and sign out. The Supabase auth identity itself must be removed in the project console."}
         </p>
-        <button onClick={() => toast.warning(isZh ? "演示环境中不可直接注销账户。" : "Account deletion not available in demo build.")} className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-sm font-medium hover:bg-red-500/20 transition-all">
-          {t.settings.deleteAccountBtn}
+        <button onClick={() => setConfirmDeleteOpen(true)} disabled={deleting} className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-sm font-medium hover:bg-red-500/20 transition-all disabled:opacity-50">
+          {deleting ? (isZh ? "删除中…" : "Deleting…") : (isZh ? "删除我的本地数据" : "Delete my local data")}
         </button>
+        <ConfirmDialog
+          open={confirmDeleteOpen}
+          title={isZh ? "删除本地数据？" : "Delete local data?"}
+          message={isZh ? "此操作不可撤销，所有本地求职数据将被永久清除。" : "This cannot be undone. All local job-search data will be permanently erased."}
+          confirmLabel={isZh ? "确认删除" : "Delete"}
+          variant="danger"
+          onConfirm={() => void handleDeleteData()}
+          onCancel={() => setConfirmDeleteOpen(false)}
+        />
       </section>
     </div>
   );

@@ -15,13 +15,6 @@ export function formatDate(date: string | Date, locale?: string): string {
  });
 }
 
-export function scoreColor(score: number): string {
- if (score >= 4.5) return "text-emerald-400";
- if (score >= 3.5) return "text-blue-400";
- if (score >= 2.5) return "text-yellow-400";
- return "text-red-400";
-}
-
 export function statusColor(status: string): string {
  const colors: Record<string, string> = {
  new: "bg-brand-500/20 text-brand-300 border-brand-500/30",
@@ -34,15 +27,6 @@ export function statusColor(status: string): string {
  archived: "bg-surface-300/20 text-surface-300 border-surface-300/30",
  };
  return colors[status] || colors.new;
-}
-
-export function tierLabel(tier: number): { label: string; color: string } {
- const tiers: Record<number, { label: string; color: string }> = {
- 1: { label: "Tier 1", color: "text-amber-400" },
- 2: { label: "Tier 2", color: "text-surface-300" },
- 3: { label: "Tier 3", color: "text-amber-700" },
- };
- return tiers[tier] || tiers[3];
 }
 
 export function generateId(): string {

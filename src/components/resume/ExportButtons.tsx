@@ -55,7 +55,7 @@ function useDocxExport(resumeData: ResumeData, resumeTitle: string) {
 export function DownloadPdfButton({ className }: { className?: string }) {
   const { isZh, t } = useTranslation();
   const { exportingPdf, exportedPdf, exportError, handlePdfExport } = usePdfExport();
-  const pdfLabel = t.resumeStudio?.exportPdf || (isZh ? "导出 PDF 格式" : "Download PDF");
+  const pdfLabel = t.resumeStudio?.exportPdf || (isZh ? "打印为 PDF" : "Print to PDF");
   const downloadedLabel = t.resumeStudio?.downloaded || (isZh ? "下载成功！" : "Downloaded!");
 
   return (
@@ -127,8 +127,8 @@ export default function ExportButtons({
   const items = [
     {
       key: "pdf",
-      label: t.resumeStudio?.exportPdf || (isZh ? "导出 PDF 格式" : "Download PDF"),
-      hint: t.resumeStudio?.printReady || (isZh ? "适配打印与 ATS 筛选的标准 PDF" : "Print-ready, ATS-compliant PDF"),
+      label: t.resumeStudio?.exportPdf || (isZh ? "打印为 PDF" : "Print to PDF"),
+      hint: t.resumeStudio?.printReady || (isZh ? "经由浏览器打印 / 另存为 PDF" : "Print / save as PDF via your browser"),
       icon: FileText,
       loading: exportingPdf,
       done: exportedPdf,

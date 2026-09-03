@@ -33,7 +33,7 @@ export default function LanguageSwitcher({
         <select
           value={locale}
           onChange={(e) => setLocale(e.target.value as "en" | "zh")}
-          aria-label="Select Interface Language"
+          aria-label={isZh ? "选择界面语言" : "Select Interface Language"}
           className="w-full px-3 py-2.5 rounded-xl bg-surface-100 border border-surface-200 text-sm text-surface-400 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all appearance-none cursor-pointer"
         >
           <option value="en">English (US)</option>
@@ -116,8 +116,8 @@ export default function LanguageSwitcher({
     <button
       type="button"
       onClick={toggleLocale}
-      title={isEn ? "Switch to 简体中文" : "Switch to English"}
-      aria-label="Switch Language"
+      title={isZh ? "切换到 English" : "Switch to 简体中文"}
+      aria-label={isZh ? "切换语言" : "Switch Language"}
       className={cn(
         "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-surface-200 bg-surface-0 hover:bg-surface-100 text-surface-400 text-xs font-mono font-semibold transition-all duration-150 active:scale-[0.98] group",
         className

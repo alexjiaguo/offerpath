@@ -159,6 +159,60 @@ export async function updateJobStatusAction(
   return { success: true };
 }
 
+/**
+ * Generic field update (compensation editor, evaluation results, notes…).
+ * Only whitelisted columns are written; id/user_id/history are protected.
+ */
+const UPDATABLE_JOB_FIELDS = new Set([
+  "title",
+  "description",
+  "location",
+  "url",
+  "score",
+  "tier",
+  "archetype",
+  "evaluation",
+  "resume_id",
+  "salary_range",
+  "comp_details",
+  "notes",
+  "kanban_order",
+  "applied_at",
+  "interviewed_at",
+  "offered_at",
+]);
+
+export async function updateJobAction(jobId: string, updates: Partial<Job>) {
+  const supabase = await createServerClient();
+  if (!supabase) return { success: false, error: "Supabase not configured" };
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Not authenticated" };
+
+  const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  for (const [key, value] of Object.entries(updates)) {
+    if (UPDATABLE_JOB_FIELDS.has(key)) payload[key] = value ?? null;
+  }
+  if (Object.keys(payload).length <= 1) {
+    return { success: false, error: "No updatable fields provided" };
+  }
+
+  const { error } = await supabase
+    .from("jobs")
+    .update(payload)
+    .eq("id", jobId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    logger.error("Failed to update job:", error);
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath("/dashboard/pipeline");
+  revalidatePath(`/dashboard/pipeline/${jobId}`);
+  return { success: true };
+}
+
 export async function addJobNoteAction(jobId: string, note: string) {
   const supabase = await createServerClient();
   if (!supabase) return { success: false, error: "Supabase not configured" };
@@ -186,10 +240,10 @@ export async function addJobNoteAction(jobId: string, note: string) {
 
   const { error } = await supabase
     .from("jobs")
-    .update({ 
-      notes, 
+    .update({
+      notes,
       updated_at: new Date().toISOString(),
-      history 
+      history
     })
     .eq("id", jobId)
     .eq("user_id", user.id);

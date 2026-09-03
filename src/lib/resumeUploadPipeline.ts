@@ -64,17 +64,13 @@ export async function parseUploadedResume(
       parsed = ResumeParserService.parse(rawText, extension);
     }
 
-    const allowAI = options?.allowAIFallback !== false && Boolean(getLLMConfig());
+    // AI fallback is OPT-IN (options.allowAIFallback === true): resume text
+    // must never be sent to an LLM without explicit user consent.
+    const allowAI = options?.allowAIFallback === true && Boolean(getLLMConfig());
 
     if (isExtractedResumeEmpty(parsed)) {
       if (!allowAI) {
-        if (!rawText) {
-          rawText = await FileParserService.parseFile(file);
-          parsed = ResumeParserService.parse(rawText, extension);
-        }
-        if (isExtractedResumeEmpty(parsed)) {
-          return { ok: false, error: EMPTY_ERROR };
-        }
+        return { ok: false, error: EMPTY_ERROR };
       } else {
         if (!rawText) {
           rawText = await FileParserService.parseFile(file);

@@ -15,6 +15,9 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 import { useMemo } from "react";
 import { useProfileStore } from "@/store/profileStore";
+import { useResumeStore } from "@/store/resumeStore";
+import { usePipelineStore } from "@/store/pipelineStore";
+import { useInterviewStore } from "@/store/interviewStore";
 import {
   PRO_TIER_MONTHLY_AI_USES,
   ULTRA_TIER_MONTHLY_AI_USES,
@@ -38,6 +41,20 @@ export default function BillingPage() {
   const aiLimit = getTierQuotaLimit(currentPlan);
   const aiUsed = profile.aiUsesThisMonth ?? 0;
   const isAiExhausted = !isFree && aiUsed >= aiLimit;
+
+  // Real usage counts from the stores — meters must reflect actual data,
+  // never hardcoded demo numbers.
+  const resumeCount = useResumeStore((s) => s.resumes.length);
+  const pipelineCount = usePipelineStore((s) => s.jobs.length);
+  const mocksThisWeek = useInterviewStore((s) =>
+    s.mockSessions.filter((m) => {
+      const created = new Date(m.created_at).getTime();
+      return Number.isFinite(created) && Date.now() - created < 7 * 24 * 60 * 60 * 1000;
+    }).length
+  );
+  const FREE_RESUME_LIMIT = 2;
+  const FREE_PIPELINE_LIMIT = 10;
+  const FREE_MOCK_WEEKLY_LIMIT = 1;
 
   const hasActiveByok = apiKeys.some(
     (k) =>
@@ -287,23 +304,23 @@ export default function BillingPage() {
             },
             {
               label: isZh ? "简历份数" : "Resumes",
-              used: 1,
-              limit: isFree ? 2 : 999,
-              display: isFree ? "1/2" : isZh ? "无限" : "Unlimited",
+              used: resumeCount,
+              limit: isFree ? FREE_RESUME_LIMIT : 999,
+              display: isFree ? `${resumeCount}/${FREE_RESUME_LIMIT}` : isZh ? `${resumeCount} · 无限` : `${resumeCount} · Unlimited`,
               unit: "",
             },
             {
               label: isZh ? "在途求职岗位" : "Pipeline Jobs",
-              used: 5,
-              limit: isFree ? 10 : 999,
-              display: isFree ? "5/10" : isZh ? "无限" : "Unlimited",
+              used: pipelineCount,
+              limit: isFree ? FREE_PIPELINE_LIMIT : 999,
+              display: isFree ? `${pipelineCount}/${FREE_PIPELINE_LIMIT}` : isZh ? `${pipelineCount} · 无限` : `${pipelineCount} · Unlimited`,
               unit: "",
             },
             {
               label: isZh ? "模拟面试" : "Mock Interviews",
-              used: 0,
-              limit: isFree ? 1 : 999,
-              display: isFree ? "0/1" : isZh ? "无限" : "Unlimited",
+              used: mocksThisWeek,
+              limit: isFree ? FREE_MOCK_WEEKLY_LIMIT : 999,
+              display: isFree ? `${mocksThisWeek}/${FREE_MOCK_WEEKLY_LIMIT}` : isZh ? `${mocksThisWeek} · 无限` : `${mocksThisWeek} · Unlimited`,
               unit: isFree ? (isZh ? "/周" : "/wk") : "",
             },
           ].map((meter) => {
@@ -313,7 +330,9 @@ export default function BillingPage() {
                 ? 100
                 : 0
               : isUnlimited
-                ? 15
+                // No quota on paid plans: show a neutral full track, the
+                // count in the label above is the real signal.
+                ? 100
                 : Math.min((meter.used / Math.max(1, meter.limit)) * 100, 100);
             const isNearLimit = !meter.isByok && !isUnlimited && pct >= 80;
 
@@ -344,9 +363,11 @@ export default function BillingPage() {
                       "h-full rounded-full transition-all",
                       meter.isByok && hasActiveByok
                         ? "bg-emerald-600"
-                        : isNearLimit
-                          ? "bg-amber-500"
-                          : "bg-ember-600"
+                        : isUnlimited
+                          ? "bg-surface-300"
+                          : isNearLimit
+                            ? "bg-amber-500"
+                            : "bg-ember-600"
                     )}
                     style={{ width: `${pct}%` }}
                   />
@@ -417,6 +438,16 @@ export default function BillingPage() {
           );
         })}
       </div>
+
+      {/* Checkout status — honest: no payment provider is connected yet */}
+      <p className="text-xs text-surface-300 text-center -mt-4 mb-8">
+        {isZh
+          ? "在线支付尚未接入 — 在此之前，连接自带 API Key 即可无限制使用全部 AI 功能。"
+          : "Online checkout isn't connected yet — until then, a BYOK key unlocks all AI features with no limits."}{" "}
+        <Link href="/dashboard/settings/api-keys" className="text-ember-700 hover:text-ember-700 font-medium underline">
+          {isZh ? "去连接密钥" : "Connect a key"}
+        </Link>
+      </p>
 
       {/* Security & BYOK Note */}
       <div className="card-editorial rounded-xl p-4 flex items-center gap-3">

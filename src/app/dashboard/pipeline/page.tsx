@@ -5,7 +5,6 @@ import { ArrowsDownUp, ChartBar, Funnel, Kanban, MagnifyingGlass, X, DownloadSim
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
-import { useDiscoveryStore } from "@/store/discoveryStore";
 import dynamic from "next/dynamic";
 const KanbanBoard = dynamic(() => import("@/components/pipeline/KanbanBoard"), { ssr: false });
 import { useState, useRef, useMemo } from "react";
@@ -25,6 +24,8 @@ export default function PipelinePage() {
   const sortDirection = usePipelineStore((s) => s.sortDirection);
   const setSort = usePipelineStore((s) => s.setSort);
   const getStats = usePipelineStore((s) => s.getStats);
+  const getUniqueArchetypes = usePipelineStore((s) => s.getUniqueArchetypes);
+  const archetypeOptions = getUniqueArchetypes();
 
   const stats = getStats();
   const [showFilters, setShowFilters] = useState(false);
@@ -81,7 +82,8 @@ export default function PipelinePage() {
             score: job.score,
             tier: job.tier,
             salary_range: job.salary_range,
-            notes: job.notes
+            notes: job.notes,
+            description: job.description,
           });
         });
         
@@ -99,7 +101,9 @@ export default function PipelinePage() {
     filters.search ||
     filters.statuses.length > 0 ||
     filters.tiers.length > 0 ||
-    filters.archetypes.length > 0;
+    filters.archetypes.length > 0 ||
+    filters.scoreMin !== null ||
+    filters.scoreMax !== null;
 
   return (
     <div className="animate-fade-in">
@@ -125,8 +129,8 @@ export default function PipelinePage() {
               type="text"
               value={filters.search}
               onChange={(e) => {
+                // Pipeline-local only: must not leak into the Discover filter.
                 setFilter({ search: e.target.value });
-                useDiscoveryStore.getState().setSearchQuery(e.target.value);
               }}
               placeholder={t.pipeline.searchPlaceholder}
               className="pl-9 pr-8 py-1.5 w-full rounded-md bg-surface-50 border border-surface-200 text-sm text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-300 transition-all font-sans"
@@ -135,7 +139,6 @@ export default function PipelinePage() {
               <button
                 onClick={() => {
                   setFilter({ search: "" });
-                  useDiscoveryStore.getState().setSearchQuery("");
                 }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-surface-100 text-surface-300"
               >
@@ -204,7 +207,7 @@ export default function PipelinePage() {
                 </div>
 
                 {/* Score range */}
-                <div>
+                <div className="mb-4">
                   <p className="text-xs font-mono font-bold text-surface-300 uppercase tracking-widest mb-2">{t.pipeline.minScoreLabel}</p>
                   <div className="flex gap-2 flex-wrap">
                     {[null, 3.0, 3.5, 4.0, 4.5].map((s) => (
@@ -223,6 +226,59 @@ export default function PipelinePage() {
                     ))}
                   </div>
                 </div>
+
+                {/* Max score */}
+                <div className="mb-4">
+                  <p className="text-xs font-mono font-bold text-surface-300 uppercase tracking-widest mb-2">
+                    {isZh ? "最高分数" : "Max score"}
+                  </p>
+                  <div className="flex gap-2 flex-wrap">
+                    {[null, 3.5, 4.0, 4.5].map((s) => (
+                      <button
+                        key={s ?? "all-max"}
+                        onClick={() => setFilter({ scoreMax: s })}
+                        className={cn(
+                          "px-3 py-1 rounded-md text-xs font-bold transition-all border font-mono",
+                          filters.scoreMax === s
+                            ? "bg-surface-400 text-surface-0 border-surface-400"
+                            : "bg-surface-50 text-surface-300 border-surface-200 hover:bg-surface-100"
+                        )}
+                      >
+                        {s === null ? (isZh ? "全部" : "All") : `≤${s}`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Archetype filter */}
+                {archetypeOptions.length > 0 && (
+                  <div>
+                    <p className="text-xs font-mono font-bold text-surface-300 uppercase tracking-widest mb-2">
+                      {isZh ? "岗位类型" : "Archetype"}
+                    </p>
+                    <div className="flex gap-2 flex-wrap">
+                      {archetypeOptions.map((a) => (
+                        <button
+                          key={a}
+                          onClick={() => {
+                            const archetypes = filters.archetypes.includes(a)
+                              ? filters.archetypes.filter((x) => x !== a)
+                              : [...filters.archetypes, a];
+                            setFilter({ archetypes });
+                          }}
+                          className={cn(
+                            "px-3 py-1 rounded-md text-xs font-bold transition-all border font-mono",
+                            filters.archetypes.includes(a)
+                              ? "bg-surface-400 text-surface-0 border-surface-400"
+                              : "bg-surface-50 text-surface-300 border-surface-200 hover:bg-surface-100"
+                          )}
+                        >
+                          {a}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -279,20 +335,20 @@ export default function PipelinePage() {
 
           <button
             onClick={handleExportCSV}
-            title={t.pipeline.exportCSV}
+            title={t.pipeline.exportCsv}
             className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-sm text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all h-[34px]"
           >
             <DownloadSimple weight="bold" className="w-4 h-4" />
-            <span className="hidden lg:inline font-medium">{t.pipeline.exportCSV}</span>
+            <span className="hidden lg:inline font-medium">{t.pipeline.exportCsv}</span>
           </button>
 
           <button
             onClick={() => fileInputRef.current?.click()}
-            title={t.pipeline.importCSV}
+            title={t.pipeline.importCsv}
             className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-sm text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all h-[34px]"
           >
             <UploadSimple weight="bold" className="w-4 h-4" />
-            <span className="hidden lg:inline font-medium">{t.pipeline.importCSV}</span>
+            <span className="hidden lg:inline font-medium">{t.pipeline.importCsv}</span>
           </button>
           <input
             type="file"

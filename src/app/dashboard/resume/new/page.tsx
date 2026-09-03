@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, WarningCircle, FileText, Sparkle, UploadSimple } from '@phosphor-icons/react';
+import { ArrowLeft, ArrowRight, WarningCircle, FileText, Sparkle, UploadSimple } from '@phosphor-icons/react';
 import Link from "next/link";
 import { useResumeStore } from "@/store/resumeStore";
 import { parseUploadedResume } from "@/lib/resumeUploadPipeline";
 import { getLLMConfig } from "@/lib/aiService";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/i18n";
 
@@ -22,8 +21,20 @@ function NewResumeContent() {
 
   const [mode, setMode] = useState<"choice" | "upload" | "parsing">("choice");
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [parseStartedAt, setParseStartedAt] = useState<number | null>(null);
+  const [elapsedSecs, setElapsedSecs] = useState(0);
+
+  // Honest progress: the parse is one atomic pipeline, so instead of a fake
+  // step checklist we show real elapsed time + the file being processed.
+  useEffect(() => {
+    if (mode !== "parsing" || parseStartedAt === null) return;
+    setElapsedSecs(0);
+    const timer = setInterval(() => {
+      setElapsedSecs(Math.floor((Date.now() - parseStartedAt) / 1000));
+    }, 500);
+    return () => clearInterval(timer);
+  }, [mode, parseStartedAt]);
 
   const handleCreateEmpty = () => {
     const id = addResume({
@@ -41,7 +52,7 @@ function NewResumeContent() {
         backgroundColor: "#ffffff", 
         textColor: "#1a1a2e", 
         fontFamily: "'Inter', sans-serif", 
-        baseFontSize: 10, 
+        baseFontSize: 11, 
         headerFontSize: 28, 
         sectionTitleSize: 12, 
         companyFontSize: 11, 
@@ -62,7 +73,7 @@ function NewResumeContent() {
   const runParse = async (selectedFile: File) => {
     setFile(selectedFile);
     setMode("parsing");
-    setLoading(true);
+    setParseStartedAt(Date.now());
     setError(null);
 
     try {
@@ -74,7 +85,6 @@ function NewResumeContent() {
       });
       if (!result.ok) {
         setError(result.error);
-        setLoading(false);
         setMode("upload");
         return;
       }
@@ -112,7 +122,7 @@ function NewResumeContent() {
           backgroundColor: "#ffffff", 
           textColor: "#1a1a2e", 
           fontFamily: "'Inter', sans-serif", 
-          baseFontSize: 10, 
+          baseFontSize: 11, 
           headerFontSize: 28, 
           sectionTitleSize: 12, 
           companyFontSize: 11, 
@@ -131,7 +141,6 @@ function NewResumeContent() {
       router.push(`/dashboard/resume/${id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : isZh ? "简历解析失败" : "Parsing failed.");
-      setLoading(false);
       setMode("upload");
     }
   };
@@ -257,26 +266,12 @@ function NewResumeContent() {
               </div>
               
               <h2 className="text-2xl font-bold text-surface-400 font-display mb-3">{n.parsingTitle}</h2>
-              <p className="text-surface-300 max-w-xs mx-auto mb-10">
+              <p className="text-surface-300 max-w-xs mx-auto mb-6">
                 {isZh ? `正在提取 ${file?.name || ""} 内容，智能识别工作经历、教育背景与核心技能。` : `Extracting information from ${file?.name}. Identifying experience, education, and skills.`}
               </p>
-              
-              <div className="space-y-3 max-w-xs mx-auto">
-                {[
-                  { label: n.stepReading, done: true },
-                  { label: n.stepIdentifying, done: loading },
-                  { label: n.stepFormatting, done: false },
-                ].map((step, i) => (
-                  <div key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest">
-                    {step.done ? (
-                      <CheckCircle className="w-3.5 h-3.5 text-emerald-400" weight="fill" />
-                    ) : (
-                      <div className="w-3.5 h-3.5 rounded-md border border-surface-400" />
-                    )}
-                    <span className={cn(step.done ? "text-surface-300" : "text-surface-300")}>{step.label}</span>
-                  </div>
-                ))}
-              </div>
+              <p className="text-xs font-mono text-surface-300 tabular-nums" aria-live="polite">
+                {isZh ? `已用时 ${elapsedSecs} 秒…` : `${elapsedSecs}s elapsed…`}
+              </p>
             </motion.div>
           )}
         </AnimatePresence>

@@ -293,7 +293,10 @@ export default function ResumeEditorPage({
     ? Math.max(EDITOR_MIN_WIDTH, splitRef.current.clientWidth - 320 - 20)
     : EDITOR_MIN_WIDTH;
   const previewShared = {
-    data: previewData ?? effectiveData,
+    // When the resume is empty the editor shows labeled sample data: the
+    // live preview must show the same placeholder the print path uses.
+    // (previewData is always truthy, so `?? effectiveData` never kicked in.)
+    data: resumeIsEmpty ? effectiveData : (previewData ?? effectiveData),
     template: selectedTemplate,
     theme: resume.theme,
     sectionOrder: sectionOrder as SectionKey[],
@@ -413,6 +416,17 @@ export default function ResumeEditorPage({
               onSelect={(tmplId) => {
                 setSelectedTemplate(tmplId);
                 updateResume(id, { template: tmplId });
+                // Persist immediately: previously the template lived only in
+                // local state until an explicit Save, so a reload silently
+                // reverted it on the server.
+                const current = getResumeById(id);
+                if (current) {
+                  const { editorMode: _mode, ...persistable } = current;
+                  void _mode;
+                  saveResumeAction(id, { ...persistable, template: tmplId }).then((result) => {
+                    if (!result.success) toast.error(t("resumeStudio.header.savedSyncError"));
+                  });
+                }
               }}
             />
           </div>

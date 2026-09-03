@@ -7,6 +7,7 @@ import { useInterviewStore } from "@/store/interviewStore";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 const StoryDialog = dynamic(() => import("@/components/interview/StoryDialog"), { ssr: false });
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { normalizeCompetency } from "@/components/interview/StoryDialog";
 import { toast } from "sonner";
 import { FileParserService } from "@/lib/FileParserService";
@@ -44,6 +45,7 @@ export default function StoriesPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingStoryId, setEditingStoryId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [isExtracting, setIsExtracting] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -351,10 +353,7 @@ export default function StoriesPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (confirm(isZh ? "确定要删除此故事吗？" : "Delete this story?")) {
-                            deleteStory(story.id);
-                            setExpandedId(null);
-                          }
+                          setPendingDeleteId(story.id);
                         }}
                         className="px-3 py-1.5 rounded-md border border-pastel-red-fg/20 bg-pastel-red-bg text-pastel-red-fg text-xs font-mono font-semibold uppercase tracking-wider hover:bg-red-100 transition-all inline-flex items-center gap-1.5"
                       >
@@ -378,6 +377,23 @@ export default function StoriesPage() {
           setEditingStoryId(null);
         }}
         editingStoryId={editingStoryId}
+      />
+
+      {/* Delete confirmation (design-system dialog, not native confirm()) */}
+      <ConfirmDialog
+        open={pendingDeleteId !== null}
+        title={t.stories.deleteBtn}
+        message={isZh ? "确定要删除这条 STAR 故事吗？此操作不可撤销。" : "Delete this STAR story? This cannot be undone."}
+        confirmLabel={t.stories.deleteBtn}
+        variant="danger"
+        onConfirm={() => {
+          if (pendingDeleteId) {
+            deleteStory(pendingDeleteId);
+            setExpandedId(null);
+          }
+          setPendingDeleteId(null);
+        }}
+        onCancel={() => setPendingDeleteId(null)}
       />
     </div>
   );

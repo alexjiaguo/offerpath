@@ -23,8 +23,10 @@ const STOPWORDS = new Set([
 ]);
 
 const MAX_KEYWORDS = 60;
+// Local keyword overlap systematically overstates vs LLM judgment, so a
+// perfect 100 is withheld (95 cap) — but zero overlap honestly scores 0
+// (the old MIN_SCORE=5 floor faked signal out of nothing).
 const MAX_SCORE = 95;
-const MIN_SCORE = 5;
 
 function isCjk(text: string): boolean {
   return /[\u4e00-\u9fa5]/.test(text);
@@ -114,7 +116,7 @@ export function evaluateLocalAts(
 
   const score = Math.min(
     MAX_SCORE,
-    Math.max(MIN_SCORE, Math.round((matched.length / total) * 100))
+    Math.round((matched.length / total) * 100)
   );
   return { score, matchedKeywords: matched, missingKeywords: missing };
 }

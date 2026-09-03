@@ -702,3 +702,32 @@ describe("ResumeParserService - Senior PM snapshot fixture", () => {
     expect(result.education?.length).toBeGreaterThan(0);
   });
 });
+
+describe("ResumeParserService - audit fixes", () => {
+  it("parses a bare markdown link project with no trailing colon", () => {
+    const md = `# Jane Doe\n\n## Projects\n\n[OfferPath](https://offerpath.io)\n`;
+    const result = ResumeParserService.parse(md, "md");
+    expect(result.projects).toHaveLength(1);
+    expect(result.projects![0].name).toBe("OfferPath");
+    expect(result.projects![0].url).toBe("https://offerpath.io");
+  });
+
+  it("strips bold markers from full-width-colon project names", () => {
+    const md = `# 王小明\n\n## 项目经历\n\n**OfferPath**：提升投递效率的求职系统\n`;
+    const result = ResumeParserService.parse(md, "md");
+    expect(result.projects).toHaveLength(1);
+    expect(result.projects![0].name).toBe("OfferPath");
+    expect(result.projects![0].description).toContain("求职系统");
+  });
+
+  it("does not split 截至 date prefix on bare 至", () => {
+    const { start_date } = ResumeParserService.parseDateRange("截至2023");
+    expect(start_date).toBe("截至2023");
+  });
+
+  it("still splits digit-flanked 至 ranges", () => {
+    const { start_date, end_date } = ResumeParserService.parseDateRange("2020至2023");
+    expect(start_date).toBe("2020");
+    expect(end_date).toBe("2023");
+  });
+});

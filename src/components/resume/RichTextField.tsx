@@ -9,6 +9,9 @@ import Color from "@tiptap/extension-color";
 import { TextB, TextItalic, TextUnderline as UnderlineIcon, TextStrikethrough, ListDashes, ListNumbers, PaintBucket } from '@phosphor-icons/react';
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
+import { stripPTags, ensureHtml } from "@/components/resume/editor-helpers";
+
+export { stripPTags, ensureHtml };
 
 interface RichTextFieldProps {
   content: string;
@@ -28,16 +31,6 @@ function MiniBtn({ onClick, active, disabled, children, title }: {
       {children}
     </button>
   );
-}
-
-export function stripPTags(html: string): string {
-  return html.replace(/<\/?p>/g, '');
-}
-
-export function ensureHtml(content: string): string {
-  if (!content) return '<p></p>';
-  if (content.startsWith('<')) return content;
-  return `<p>${content}</p>`;
 }
 
 export default function RichTextField({ content, onChange, placeholder, minHeight = 80 }: RichTextFieldProps) {

@@ -14,16 +14,19 @@ import { useTranslation } from "@/i18n";
 
 export default function InterviewPage() {
   const { t, isZh } = useTranslation();
-  const jobs = usePipelineStore((s) => s.jobs);
-  const stories = useInterviewStore((s) => s.stories);
+  const jobs = usePipelineStore((s) => s.jobs);  const stories = useInterviewStore((s) => s.stories);
   const mockSessions = useInterviewStore((s) => s.mockSessions);
   const getPrepByJobId = useInterviewStore((s) => s.getPrepByJobId);
 
-  // Jobs that should have prep (interviewing or applied)
+  // Jobs eligible for prep: anything active. "Saved" (pre-application)
+  // is intentionally included — researching before you apply is the
+  // primary use case. Rejected/discarded/archived are excluded.
   const prepJobs = jobs.filter(
     (j) =>
-      j.status === "interviewing" ||
+      j.status === "new" ||
+      j.status === "evaluated" ||
       j.status === "applied" ||
+      j.status === "interviewing" ||
       j.status === "offered"
   );
 
@@ -42,6 +45,22 @@ export default function InterviewPage() {
     completedMocks.length > 0
       ? completedMocks.reduce((sum, m) => sum + (m.score || 0), 0) / completedMocks.length
       : 0;
+
+  // Human status labels keyed by the real JobStatus vocabulary (the kanban
+  // `columns` map uses display names that never match these keys).
+  const statusLabel = (status: string): string => {
+    const map: Record<string, string> = {
+      new: t.pipeline.statusNew,
+      evaluated: t.pipeline.statusEvaluated,
+      applied: t.pipeline.statusApplied,
+      interviewing: t.pipeline.statusInterviewing,
+      offered: t.pipeline.statusOffered,
+      rejected: t.pipeline.statusRejected,
+      discarded: t.pipeline.statusDiscarded,
+      archived: t.pipeline.statusArchived,
+    };
+    return map[status] || status;
+  };
 
   return (
     <div className="w-full space-y-8 pb-12">
@@ -129,7 +148,7 @@ export default function InterviewPage() {
                       {job.title}
                     </p>
                     <p className="text-[11px] font-mono text-surface-300">
-                      {job.company?.name} · {(t.pipeline.columns as Record<string, string>)[job.status] || job.status}
+                      {job.company?.name} · {statusLabel(job.status)}
                     </p>
                   </div>
                 </div>
@@ -159,7 +178,7 @@ export default function InterviewPage() {
               href="/dashboard/pipeline"
               className="text-xs font-mono font-semibold text-surface-400 hover:text-black uppercase tracking-wider inline-flex items-center gap-1"
             >
-              {isZh ? "前往求职看板" : "Go to Pipeline"} <ArrowRight className="w-3.5 h-3.5" />
+              {t.interview.goToPipeline} <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         ) : (
@@ -193,22 +212,22 @@ export default function InterviewPage() {
                   </div>
 
                   <div className="flex items-center gap-3 text-[11px] font-mono text-surface-300 pt-2 border-t border-surface-200">
-                    {prep && (
+                      {prep && (
+                        <span className="flex items-center gap-1">
+                          <Cpu className="w-3 h-3" />
+                          {prep.questions.length} {t.interview.questionsCount}
+                        </span>
+                      )}
                       <span className="flex items-center gap-1">
-                        <Cpu className="w-3 h-3" />
-                        {prep.questions.length} {isZh ? "道真题" : "questions"}
+                        <ChatCircleText className="w-3 h-3" />
+                        {jobMocks.length} {t.interview.mocksCount}
                       </span>
-                    )}
-                    <span className="flex items-center gap-1">
-                      <ChatCircleText className="w-3 h-3" />
-                      {jobMocks.length} {isZh ? "场模拟" : "mocks"}
-                    </span>
-                    {bestScore && (
-                      <span className="eyebrow-tag bg-pastel-green-bg text-pastel-green-fg border border-pastel-green-fg/20 ml-auto">
-                        <Star className="w-3 h-3" />
-                        {isZh ? `最高: ${bestScore.toFixed(1)}` : `Best: ${bestScore.toFixed(1)}`}
-                      </span>
-                    )}
+                      {bestScore && (
+                        <span className="eyebrow-tag bg-pastel-green-bg text-pastel-green-fg border border-pastel-green-fg/20 ml-auto">
+                          <Star className="w-3 h-3" />
+                          {t.interview.bestScore}: {bestScore.toFixed(1)}
+                        </span>
+                      )}
                   </div>
                 </Link>
               );
@@ -242,7 +261,7 @@ export default function InterviewPage() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-surface-400 font-sans">
-                        {mockJob ? mockJob.title : (isZh ? "全真模拟面试" : "Mock Interview")}
+                        {mockJob ? mockJob.title : t.interview.mockFallback}
                         {mockJob?.company?.name && ` · ${mockJob.company.name}`}
                       </p>
                       <p className="text-[11px] font-mono text-surface-300">
@@ -251,7 +270,7 @@ export default function InterviewPage() {
                           day: "numeric",
                         })}
                         {mock.duration_seconds &&
-                          ` · ${Math.ceil(mock.duration_seconds / 60)} ${isZh ? "分钟" : "min"}`}
+                          ` · ${Math.ceil(mock.duration_seconds / 60)} ${t.interview.minLabel}`}
                       </p>
                     </div>
                   </div>

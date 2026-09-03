@@ -11,7 +11,24 @@ import { DEFAULT_SECTION_VISIBILITY } from "@/types";
 import { generateId } from "@/lib/utils";
 import { evaluateLocalAts } from "@/lib/localAts";
 import { usePipelineStore } from "@/store/pipelineStore";
+import { useDiscoveryStore } from "@/store/discoveryStore";
 import { saveResumeAction, deleteResumeAction } from "@/app/actions/resume";
+import { toast } from "sonner";
+
+// Demo-expected failures stay silent (local-first by design); real server
+// errors surface once instead of vanishing into the logger.
+const DEMO_EXPECTED_ERRORS = ["Supabase not configured", "Not authenticated"];
+function reportSyncError(context: string, result: { success: boolean; error?: string } | void, err?: unknown) {
+  if (err) {
+    logger.error(`Failed to sync ${context}`, err);
+    toast.error(`Couldn't save ${context} to the cloud. Your local copy is safe.`);
+    return;
+  }
+  if (result && !result.success && result.error && !DEMO_EXPECTED_ERRORS.includes(result.error)) {
+    logger.error(`Failed to sync ${context}: ${result.error}`);
+    toast.error(`Couldn't save ${context} to the cloud. Your local copy is safe.`);
+  }
+}
 
 // ── Store Types ─────────────────────────────────────
 
@@ -474,7 +491,10 @@ export const useResumeStore = create<ResumeState>()(
  set((state) => ({ resumes: [newResume, ...state.resumes] }));
  
  // Background sync
- saveResumeAction(id, newResume).catch(err => logger.error("Failed to sync resume creation", err));
+  saveResumeAction(id, newResume).then(
+    (result) => reportSyncError("resume creation", result),
+    (err) => reportSyncError("resume creation", undefined, err)
+  );
  
  return id;
  },
@@ -493,7 +513,10 @@ export const useResumeStore = create<ResumeState>()(
  set((state) => ({ resumes: state.resumes.filter((r) => r.id !== id) }));
  
  // Background sync
- deleteResumeAction(id).catch(err => logger.error("Failed to sync resume deletion", err));
+  deleteResumeAction(id).then(
+    (result) => reportSyncError("resume deletion", result),
+    (err) => reportSyncError("resume deletion", undefined, err)
+  );
  },
 
  duplicateResume: (id, newTitle) => {
@@ -512,7 +535,10 @@ export const useResumeStore = create<ResumeState>()(
  set((state) => ({ resumes: [duplicate, ...state.resumes] }));
  
  // Background sync
- saveResumeAction(newId, duplicate).catch(err => logger.error("Failed to sync duplicated resume", err));
+  saveResumeAction(newId, duplicate).then(
+    (result) => reportSyncError("duplicated resume", result),
+    (err) => reportSyncError("duplicated resume", undefined, err)
+  );
  
  return newId;
  },
@@ -563,16 +589,21 @@ export const useResumeStore = create<ResumeState>()(
 
  atsEvaluations: {},
 
- runLocalATSEvaluation: (resumeId, jobId) => {
- const key = `${resumeId}:${jobId}`;
- const existing = get().atsEvaluations[key];
- if (existing?.engine === "llm") return;
+  runLocalATSEvaluation: (resumeId, jobId) => {
+  const key = `${resumeId}:${jobId}`;
+  const existing = get().atsEvaluations[key];
+  if (existing?.engine === "llm") return;
 
- const resume = get().resumes.find((r) => r.id === resumeId);
- const job = usePipelineStore.getState().jobs.find((j) => j.id === jobId);
- if (!resume || !job?.description?.trim()) return;
+  const resume = get().resumes.find((r) => r.id === resumeId);
+  // Pipeline jobs and discovery listings are both valid tailor targets
+  // (resume page ?tailorFor= accepts either) — previously discovery jobs
+  // always missed, so their ATS badges never resolved.
+  const description =
+    usePipelineStore.getState().jobs.find((j) => j.id === jobId)?.description?.trim() ||
+    useDiscoveryStore.getState().jobs.find((j) => j.id === jobId)?.description?.trim();
+  if (!resume || !description) return;
 
- const result = evaluateLocalAts(resume.data, job.description);
+  const result = evaluateLocalAts(resume.data, description);
  set((state) => ({
  atsEvaluations: {
  ...state.atsEvaluations,
@@ -587,16 +618,18 @@ export const useResumeStore = create<ResumeState>()(
  }));
  },
 
- upgradeATSEvaluationWithAI: async (resumeId, jobId) => {
- const resume = get().resumes.find((r) => r.id === resumeId);
- const job = usePipelineStore.getState().jobs.find((j) => j.id === jobId);
- if (!resume || !job) throw new Error("Resume or job not found");
+  upgradeATSEvaluationWithAI: async (resumeId, jobId) => {
+  const resume = get().resumes.find((r) => r.id === resumeId);
+  const description =
+    usePipelineStore.getState().jobs.find((j) => j.id === jobId)?.description ||
+    useDiscoveryStore.getState().jobs.find((j) => j.id === jobId)?.description;
+  if (!resume || !description) throw new Error("Resume or job not found");
 
- const { evaluateATS } = await import("@/lib/aiService");
- const result = await evaluateATS({
- resumeData: resume.data,
- jobDescription: job.description || "",
- });
+  const { evaluateATS } = await import("@/lib/aiService");
+  const result = await evaluateATS({
+  resumeData: resume.data,
+  jobDescription: description,
+  });
 
  set((state) => ({
  atsEvaluations: {
@@ -612,15 +645,17 @@ export const useResumeStore = create<ResumeState>()(
  }));
  },
 
- getATSScoreView: (resumeId, jobId) => {
- const stored = get().atsEvaluations[`${resumeId}:${jobId}`];
- if (stored) return stored.score;
+  getATSScoreView: (resumeId, jobId) => {
+  const stored = get().atsEvaluations[`${resumeId}:${jobId}`];
+  if (stored) return stored.score;
 
- const resume = get().resumes.find((r) => r.id === resumeId);
- const job = usePipelineStore.getState().jobs.find((j) => j.id === jobId);
- if (!resume || !job?.description?.trim()) return null;
- return evaluateLocalAts(resume.data, job.description).score;
- },
+  const resume = get().resumes.find((r) => r.id === resumeId);
+  const description =
+    usePipelineStore.getState().jobs.find((j) => j.id === jobId)?.description?.trim() ||
+    useDiscoveryStore.getState().jobs.find((j) => j.id === jobId)?.description?.trim();
+  if (!resume || !description) return null;
+  return evaluateLocalAts(resume.data, description).score;
+  },
  }),
  {
  name: "offerpath-resume",

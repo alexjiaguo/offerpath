@@ -156,7 +156,7 @@ describe("Database & Sync Consistency Tests", () => {
   });
 
   describe("Profile Sync & Hydration Protection", () => {
-    it("does not overwrite server-authoritative tier or ai_uses_this_week during profile sync", async () => {
+    it("does not overwrite server-authoritative tier or ai_uses_this_month during profile sync", async () => {
       await syncStoreToSupabase("profile", {
         fullName: "Alex Chen",
         email: "alex@example.com",
@@ -167,11 +167,11 @@ describe("Database & Sync Consistency Tests", () => {
       });
 
       expect(mockFrom).toHaveBeenCalledWith("profiles");
-      // Must call update (not an upsert with tier="free" and ai_uses_this_week=0)
+      // Must call update (not an upsert with tier="free" and ai_uses_this_month=0)
       expect(mockUpdate).toHaveBeenCalled();
       const updatePayload = mockUpdate.mock.calls[0][0] as Record<string, unknown>;
       expect(updatePayload).not.toHaveProperty("tier");
-      expect(updatePayload).not.toHaveProperty("ai_uses_this_week");
+      expect(updatePayload).not.toHaveProperty("ai_uses_this_month");
       expect(updatePayload).toHaveProperty("preferences");
       const prefs = updatePayload.preferences as Record<string, unknown>;
       expect(prefs.phone).toBe("+1 555-0199");
@@ -298,7 +298,7 @@ describe("Database & Sync Consistency Tests", () => {
   });
 
   describe("Interview Preps Conflict Handling", () => {
-    it("upserts interview preps with onConflict: user_id,job_id", async () => {
+    it("upserts interview preps with onConflict: id (aligned with the id-based deletion sweep)", async () => {
       await syncStoreToSupabase("interview", {
         preps: [
           {
@@ -312,7 +312,7 @@ describe("Database & Sync Consistency Tests", () => {
 
       expect(mockFrom).toHaveBeenCalledWith("interview_preps");
       const prepUpsertCall = mockUpsert.mock.calls.find((call) => {
-        return (call[1] as { onConflict?: string })?.onConflict === "user_id,job_id";
+        return (call[1] as { onConflict?: string })?.onConflict === "id";
       });
       expect(prepUpsertCall).toBeDefined();
     });

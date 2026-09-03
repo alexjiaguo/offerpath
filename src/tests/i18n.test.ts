@@ -46,4 +46,33 @@ describe("i18n Locales and Types", () => {
 
     checkNonEmpty(zh as unknown as DictNode);
   });
+
+  it("Chinese translations should differ from English (no copy-paste untranslated entries)", () => {
+    // Proper nouns, numbers, and template IDs are legitimately identical —
+    // allow short values and values without CJK/Latin-distinctive content.
+    // A few entries are intentionally identical in both locales (URL/email
+    // examples, intentionally bilingual labels).
+    const ALLOWLIST = new Set([
+      "landing.pasteDemoPlaceholderUrl",
+      "auth.emailPlaceholder",
+      "topbar.languageToggle",
+    ]);
+    const identical: string[] = [];
+    function collect(enObj: DictNode, zhObj: DictNode, path = "") {
+      for (const k of Object.keys(enObj)) {
+        const currentPath = path ? `${path}.${k}` : k;
+        const v1 = enObj[k];
+        const v2 = (zhObj as DictNode)[k];
+        if (typeof v1 === "string" && typeof v2 === "string") {
+          if (v1 === v2 && v1.length > 12 && /[a-zA-Z\u4e00-\u9fff]/.test(v1) && !ALLOWLIST.has(currentPath)) {
+            identical.push(currentPath);
+          }
+        } else if (typeof v1 === "object" && v1 !== null && typeof v2 === "object" && v2 !== null) {
+          collect(v1 as DictNode, v2 as DictNode, currentPath);
+        }
+      }
+    }
+    collect(en as unknown as DictNode, zh as unknown as DictNode);
+    expect(identical, `Untranslated (identical) entries: ${identical.join(", ")}`).toEqual([]);
+  });
 });

@@ -30,11 +30,16 @@ const SEASONS = ["Summer", "Fall", "Spring", "Winter"];
 const hasSeason = (item: TextItem) =>
   SEASONS.some((season) => item.text.includes(season));
 const hasPresent = (item: TextItem) => item.text.includes("Present");
+// CJK date signals: 2023年, 5月, 至今/现在/目前 (Chinese resumes score 0
+// on the English-only features above, so dates were never detected).
+const hasCjkDate = (item: TextItem) =>
+  /[0-9]{4}年|[0-9]{1,2}月|至今|现在|目前/.test(item.text);
 export const DATE_FEATURE_SETS: FeatureSet[] = [
   [hasYear, 1],
   [hasMonth, 1],
   [hasSeason, 1],
   [hasPresent, 1],
+  [hasCjkDate, 1],
   [hasComma, -1],
 ];
 

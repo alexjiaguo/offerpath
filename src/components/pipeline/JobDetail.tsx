@@ -242,9 +242,45 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  const [outreachType, setOutreachType] = useState<"referral" | "thankyou" | "followup" | "negotiation">("referral");
  const [recipientName, setRecipientName] = useState("");
  const [outreachTone, setOutreachTone] = useState("Professional & Polished");
- const [generatedOutreach, setGeneratedOutreach] = useState("");
- const [isGeneratingOutreach, setIsGeneratingOutreach] = useState(false);
- const [copied, setCopied] = useState(false);
+  const [generatedOutreach, setGeneratedOutreach] = useState("");
+  const [isGeneratingOutreach, setIsGeneratingOutreach] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Compensation draft (compare page reads job.comp_details — previously
+  // nothing in the app ever wrote it, so those rows were permanently empty).
+  const [compDraft, setCompDraft] = useState({
+    base_salary: "",
+    equity: "",
+    bonus: "",
+    total_comp: "",
+    benefits: "",
+  });
+  useEffect(() => {
+    const c = job?.comp_details;
+    setCompDraft({
+      base_salary: c?.base_salary ?? "",
+      equity: c?.equity ?? "",
+      bonus: c?.bonus ?? "",
+      total_comp: c?.total_comp ?? "",
+      benefits: (c?.benefits ?? []).join(", "),
+    });
+    // Intentionally keyed on job id only: syncing on comp_details would
+    // overwrite the draft while the user is typing.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [job?.id]);
+  const saveCompDraft = () => {
+    if (!job) return;
+    const trim = (s: string) => s.trim();
+    updateJob(job.id, {
+      comp_details: {
+        base_salary: trim(compDraft.base_salary) || undefined,
+        equity: trim(compDraft.equity) || undefined,
+        bonus: trim(compDraft.bonus) || undefined,
+        total_comp: trim(compDraft.total_comp) || undefined,
+        benefits: compDraft.benefits.split(",").map((b) => b.trim()).filter(Boolean),
+      },
+    });
+  };
 
   const handleGenerateOutreach = () => {
   if (!job) return;
@@ -479,7 +515,50 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  </div>
  )}
 
- {/* Timeline */}
+  {/* Compensation — feeds the compare page (Equity/Bonus/Total rows) */}
+  <div className="card-editorial space-y-3">
+  <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
+  <CurrencyDollar weight="bold" className="w-4 h-4 text-surface-400" />
+  Compensation
+  </h2>
+  <div className="grid grid-cols-2 gap-2.5">
+  {([
+  { key: "base_salary", label: "Base salary" },
+  { key: "equity", label: "Equity" },
+  { key: "bonus", label: "Bonus" },
+  { key: "total_comp", label: "Total comp" },
+  ] as const).map((field) => (
+  <label key={field.key} className="block">
+  <span className="block text-[10px] font-mono font-bold uppercase tracking-wider text-surface-300 mb-1">
+  {field.label}
+  </span>
+  <input
+  type="text"
+  value={compDraft[field.key]}
+  onChange={(e) => setCompDraft((d) => ({ ...d, [field.key]: e.target.value }))}
+  onBlur={saveCompDraft}
+  placeholder="—"
+  className="w-full px-3 py-2 rounded-lg bg-surface-50 border border-surface-200 text-xs text-surface-400 focus:outline-none focus:border-surface-400 font-mono placeholder:text-surface-300"
+  />
+  </label>
+  ))}
+  </div>
+  <label className="block">
+  <span className="block text-[10px] font-mono font-bold uppercase tracking-wider text-surface-300 mb-1">
+  Benefits (comma-separated)
+  </span>
+  <input
+  type="text"
+  value={compDraft.benefits}
+  onChange={(e) => setCompDraft((d) => ({ ...d, benefits: e.target.value }))}
+  onBlur={saveCompDraft}
+  placeholder="—"
+  className="w-full px-3 py-2 rounded-lg bg-surface-50 border border-surface-200 text-xs text-surface-400 focus:outline-none focus:border-surface-400 font-sans placeholder:text-surface-300"
+  />
+  </label>
+  </div>
+
+  {/* Timeline */}
  <div className="card-editorial space-y-3">
  <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
  <Calendar weight="bold" className="w-4 h-4 text-surface-400" />

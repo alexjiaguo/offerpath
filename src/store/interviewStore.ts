@@ -33,9 +33,10 @@ export interface InterviewState {
  deleteStory: (id: string) => void;
  incrementStoryUsage: (id: string) => void;
 
- // Prep Actions
- addPrep: (prep: Omit<InterviewPrep, "id" | "user_id" | "created_at" | "updated_at">) => string;
- updatePrep: (id: string, updates: Partial<InterviewPrep>) => void;
+  // Prep Actions
+  addPrep: (prep: Omit<InterviewPrep, "id" | "user_id" | "created_at" | "updated_at">) => string;
+  updatePrep: (id: string, updates: Partial<InterviewPrep>) => void;
+  deletePrep: (jobId: string) => void;
  generatePrepForJob: (jobId: string, jobTitle: string, companyName: string, description: string) => string;
  generateAIPrepForJob: (
  jobId: string,
@@ -335,33 +336,56 @@ const MOCK_INTERVIEW_QUESTIONS = [
 
 // ── Helpers ─────────────────────────────────────────
 
-function generateHeuristicFeedback(): MockFeedback {
- return {
- engine: "heuristic",
- overall_score: 3.8,
- strengths: [
- "Clear and structured responses",
- "Good use of quantified examples",
- "Demonstrated product thinking",
- ],
- improvements: [
- "Could provide more specific metrics",
- "Consider addressing edge cases in your answers",
- "Practice more concise delivery",
- ],
- tips: [
- "Start each answer with a brief headline",
- "Use the STAR framework consistently",
- "End answers with measurable impact",
- ],
- category_scores: {
- "Technical Depth": 3.8,
- "Strategic Thinking": 3.8,
- "Communication": 3.8,
- "Domain Knowledge": 3.8,
- "Leadership Signals": 3.8,
- },
- };
+function generateHeuristicFeedback(transcript: MockMessage[] = []): MockFeedback {
+  // Transcript-derived practice signal — never a fixed 3.8. Scores move with
+  // answer depth (length), quantification (numbers), and STAR structure.
+  const answers = transcript.filter((m) => m.role === "candidate");
+  const wordCounts = answers.map((a) => a.message.trim().split(/\s+/).filter(Boolean).length);
+  const avgWords = wordCounts.length > 0 ? wordCounts.reduce((a, b) => a + b, 0) / wordCounts.length : 0;
+  const withNumbers = answers.filter((a) => /\d/.test(a.message)).length;
+  const starWords = ["situation", "task", "action", "result", "because", "led", "built", "shipped", "grew", "reduced", "increased"];
+  const withStar = answers.filter((a) => {
+    const lower = a.message.toLowerCase();
+    return starWords.some((w) => lower.includes(w));
+  }).length;
+
+  const clamp1to5 = (n: number) => Math.max(1, Math.min(5, Math.round(n * 10) / 10));
+  // Base 2.2; depth up to +1.2 (>=120 words avg), quantification up to +0.8,
+  // STAR structure up to +0.8.
+  const depth = Math.min(1.2, (avgWords / 120) * 1.2);
+  const quant = answers.length > 0 ? Math.min(0.8, (withNumbers / answers.length) * 0.8) : 0;
+  const star = answers.length > 0 ? Math.min(0.8, (withStar / answers.length) * 0.8) : 0;
+  const overall = clamp1to5(2.2 + depth + quant + star);
+
+  const strengths: string[] = [];
+  const improvements: string[] = [];
+  if (avgWords >= 80) strengths.push("Substantive, well-developed answers");
+  else improvements.push("Expand answers — aim for 1–2 minutes of structured content each");
+  if (answers.length > 0 && withNumbers / answers.length >= 0.5) strengths.push("Good use of quantified examples");
+  else improvements.push("Quantify impact with specific metrics and numbers");
+  if (answers.length > 0 && withStar / answers.length >= 0.5) strengths.push("Clear STAR structure with action verbs");
+  else improvements.push("Use the STAR framework: situation, task, action, result");
+  if (strengths.length === 0) strengths.push("Completed the practice session");
+  if (answers.length === 0) improvements.push("Answer at least one question to receive meaningful feedback");
+
+  return {
+    engine: "heuristic",
+    overall_score: overall,
+    strengths,
+    improvements,
+    tips: [
+      "Start each answer with a brief headline",
+      "Use the STAR framework consistently",
+      "End answers with measurable impact",
+    ],
+    category_scores: {
+      "Technical Depth": clamp1to5(overall - 0.2 + quant * 0.25),
+      "Strategic Thinking": clamp1to5(overall - 0.1 + depth * 0.2),
+      "Communication": clamp1to5(overall + (avgWords >= 60 && avgWords <= 200 ? 0.2 : -0.2)),
+      "Domain Knowledge": clamp1to5(overall - 0.2),
+      "Leadership Signals": clamp1to5(overall - 0.1 + star * 0.25),
+    },
+  };
 }
 
 // ── Store ───────────────────────────────────────────
@@ -426,13 +450,19 @@ export const useInterviewStore = create<InterviewState>()(
  return id;
  },
 
- updatePrep: (id, updates) => {
- set((state) => ({
- preps: state.preps.map((p) =>
- p.id === id ? { ...p, ...updates, updated_at: new Date().toISOString() } : p
- ),
- }));
- },
+  updatePrep: (id, updates) => {
+  set((state) => ({
+  preps: state.preps.map((p) =>
+  p.id === id ? { ...p, ...updates, updated_at: new Date().toISOString() } : p
+  ),
+  }));
+  },
+
+  deletePrep: (jobId) => {
+  set((state) => ({
+  preps: state.preps.filter((p) => p.job_id !== jobId),
+  }));
+  },
 
  generatePrepForJob: (jobId, jobTitle, companyName, description) => {
  const existingPrep = get().preps.find((p) => p.job_id === jobId);
@@ -585,24 +615,26 @@ export const useInterviewStore = create<InterviewState>()(
  };
  const transcript = [...s.transcript, newMessage];
 
- // If candidate just responded, add a follow-up interviewer question
- if (role === "candidate") {
- const pool = s.questionPool ?? MOCK_INTERVIEW_QUESTIONS;
- const questionIndex = Math.floor(transcript.filter((m) => m.role === "interviewer").length);
- if (questionIndex < pool.length) {
- transcript.push({
- role: "interviewer",
- message: pool[questionIndex],
- timestamp: new Date(Date.now() + 2000).toISOString(),
- });
- } else {
- transcript.push({
- role: "interviewer",
- message: "Thank you for your time. Do you have any questions for me about the role or the team?",
- timestamp: new Date(Date.now() + 2000).toISOString(),
- });
- }
- }
+  // If candidate just responded, add a follow-up interviewer question
+  if (role === "candidate") {
+  const pool = s.questionPool ?? MOCK_INTERVIEW_QUESTIONS;
+  const questionIndex = Math.floor(transcript.filter((m) => m.role === "interviewer").length);
+  // Timestamp = now (the message renders after the UI typing delay).
+  const now = new Date().toISOString();
+  if (questionIndex < pool.length) {
+  transcript.push({
+  role: "interviewer",
+  message: pool[questionIndex],
+  timestamp: now,
+  });
+  } else {
+  transcript.push({
+  role: "interviewer",
+  message: "Thank you for your time. Do you have any questions for me about the role or the team?",
+  timestamp: now,
+  });
+  }
+  }
 
  return { ...s, transcript };
  }),
@@ -615,7 +647,7 @@ export const useInterviewStore = create<InterviewState>()(
  (Date.now() - new Date(session?.created_at ?? Date.now()).getTime()) / 1000
  );
 
- let feedback = generateHeuristicFeedback();
+  let feedback = generateHeuristicFeedback(session?.transcript ?? []);
  try {
  const { getLLMConfig, evaluateMockInterview } = await import("@/lib/aiService");
  if (getLLMConfig() && session) {
@@ -630,9 +662,9 @@ export const useInterviewStore = create<InterviewState>()(
  transcript: session.transcript,
  });
  }
- } catch {
- feedback = generateHeuristicFeedback();
- }
+  } catch {
+  feedback = generateHeuristicFeedback(session?.transcript ?? []);
+  }
 
  set((state) => ({
  mockSessions: state.mockSessions.map((s) => {
@@ -662,8 +694,14 @@ export const useInterviewStore = create<InterviewState>()(
  getMocksByJobId: (jobId) =>
  get().mockSessions.filter((m) => m.job_id === jobId),
 
- getActiveMockSession: () =>
- get().mockSessions.find((m) => !m.feedback),
+  getActiveMockSession: () => {
+  // Sessions abandoned >24h without feedback are expired, not "active" —
+  // otherwise a stale session blocks the active slot forever.
+  const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  return get().mockSessions.find(
+  (m) => !m.feedback && Date.parse(m.created_at) >= dayAgo
+  );
+  },
 
  getAllCompetencies: () => {
  const { stories } = get();

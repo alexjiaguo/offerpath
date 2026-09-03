@@ -5,8 +5,9 @@ import { Sparkle, ArrowsClockwise, CheckCircle, X, Target, Warning } from "@phos
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { ResumeData } from "@/types";
-import { tailorResume, type TailorResult, type ATSResult } from "@/lib/aiService";
+import { tailorResume, getLLMConfig, type TailorResult, type ATSResult } from "@/lib/aiService";
 import { evaluateLocalAts } from "@/lib/localAts";
+import { useProfileStore } from "@/store/profileStore";
 import { useTranslation } from "@/i18n";
 
 interface AITailoringCardProps {
@@ -24,7 +25,7 @@ export default function AITailoringCard({
   onApply,
   saveToHistory,
 }: AITailoringCardProps) {
-  const { t } = useTranslation();
+  const { t, isZh } = useTranslation();
   const [showModal, setShowModal] = useState(false);
   const [tailorJD, setTailorJD] = useState("");
   const [tailorJobTitle, setTailorJobTitle] = useState("");
@@ -32,11 +33,15 @@ export default function AITailoringCard({
   const [processing, setProcessing] = useState(false);
   const [draftResult, setDraftResult] = useState<TailorResult | null>(null);
   const [atsResult, setAtsResult] = useState<ATSResult | null>(null);
+  const [usedMock, setUsedMock] = useState(false);
+  // Re-render when keys change so the demo badge tracks reality.
+  useProfileStore((s) => s.apiKeys);
+  const aiAvailable = Boolean(getLLMConfig());
 
   useEffect(() => {
     if (!showModal) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { setShowModal(false); setDraftResult(null); setAtsResult(null); }
+      if (e.key === "Escape") { setShowModal(false); setDraftResult(null); setAtsResult(null); setUsedMock(false); }
     };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
@@ -46,6 +51,9 @@ export default function AITailoringCard({
   const handleTailor = async () => {
     if (!tailorJD.trim()) return;
     setProcessing(true);
+    // Without an API key tailorResume() fabricates a local demo draft —
+    // badge it as such instead of presenting it as AI output.
+    setUsedMock(!getLLMConfig());
     try {
       const tailorRes = await tailorResume({
         baseResume: resumeData,
@@ -96,6 +104,7 @@ export default function AITailoringCard({
     onApply(draftResult);
     setDraftResult(null);
     setAtsResult(null);
+    setUsedMock(false);
     setShowModal(false);
     setTailorJD("");
   };
@@ -141,6 +150,11 @@ export default function AITailoringCard({
               {atsResult.score}
             </span>
           )}
+          {!aiAvailable && !hasResult && (
+            <span className="px-2 py-0.5 rounded-md bg-surface-100 border border-surface-200 text-[9px] font-mono font-bold uppercase tracking-wider text-surface-300">
+              {isZh ? "演示" : "Demo"}
+            </span>
+          )}
           <span className="px-2.5 py-1 rounded-lg bg-brand-500 text-white text-[10px] font-bold uppercase tracking-widest group-hover:bg-brand-400 transition-colors">
             {t("resumeStudio.aiActions.start") || "Start"}
           </span>
@@ -150,7 +164,7 @@ export default function AITailoringCard({
       {showModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-4"
-          onClick={() => { setShowModal(false); setDraftResult(null); setAtsResult(null); }}
+          onClick={() => { setShowModal(false); setDraftResult(null); setAtsResult(null); setUsedMock(false); }}
         >
           <div
             className="bg-surface-50 border border-white/[0.08] rounded-[32px] w-full max-w-2xl mx-4 p-8 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto"
@@ -170,13 +184,20 @@ export default function AITailoringCard({
                   </p>
                 </div>
               </div>
-              <button onClick={() => { setShowModal(false); setDraftResult(null); setAtsResult(null); }} className="p-2 rounded-xl text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all">
+              <button onClick={() => { setShowModal(false); setDraftResult(null); setAtsResult(null); setUsedMock(false); }} className="p-2 rounded-xl text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {!hasResult ? (
               <div className="space-y-6">
+                {!aiAvailable && (
+                  <div className="p-3 rounded-xl bg-surface-100 border border-surface-200 text-[11px] text-surface-300 leading-relaxed">
+                    {isZh
+                      ? "未连接 API Key：将生成本地演示草稿。在设置 → API Keys 中连接密钥即可获得 AI 定制。"
+                      : "No API key connected: this produces a local demo draft. Connect a key in Settings → API Keys for AI tailoring."}
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="block text-[10px] font-bold text-surface-300 uppercase tracking-widest ml-1">
@@ -208,6 +229,13 @@ export default function AITailoringCard({
               </div>
             ) : (
               <div className="space-y-6 animate-fade-in">
+                {usedMock && (
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] text-amber-700 leading-relaxed">
+                    {isZh
+                      ? "演示草稿（本地规则生成，非 AI 输出）。连接 API Key 后可获得真正的 AI 定制。"
+                      : "Demo draft (rule-based, not AI output). Connect an API key for real AI tailoring."}
+                  </div>
+                )}
                 {/* ATS Score - prominent at top */}
                 {atsResult && (
                   <div className={cn("p-5 rounded-2xl border flex items-center gap-6", scoreBg(atsResult.score))}>
@@ -318,7 +346,7 @@ export default function AITailoringCard({
                 )}
 
                 <div className="flex gap-4">
-                  <button onClick={() => { setDraftResult(null); setAtsResult(null); }} className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-surface-300 bg-surface-100 border border-surface-200 hover:bg-surface-200 transition-all uppercase tracking-widest">
+                  <button onClick={() => { setDraftResult(null); setAtsResult(null); setUsedMock(false); }} className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-surface-300 bg-surface-100 border border-surface-200 hover:bg-surface-200 transition-all uppercase tracking-widest">
                     {t("resumeStudio.aiActions.discard") || "Discard"}
                   </button>
                   <button onClick={applyDraft} disabled={!draftResult} className={cn("flex-[2] px-6 py-3.5 rounded-2xl text-sm font-bold transition-all shadow-xl uppercase tracking-widest", draftResult ? "bg-surface-400 text-white hover:bg-surface-400 shadow-white/5" : "bg-surface-200 text-surface-300 cursor-not-allowed")}>

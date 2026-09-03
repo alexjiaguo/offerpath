@@ -14,8 +14,8 @@ export interface Profile {
  email: string;
  avatar_url?: string;
  tier: Tier;
- ai_uses_this_week: number;
- week_reset_at: string;
+  ai_uses_this_month: number;
+  month_reset_at: string;
  stripe_customer_id?: string;
  stripe_subscription_id?: string;
  preferences: UserPreferences;

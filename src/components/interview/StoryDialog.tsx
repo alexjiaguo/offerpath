@@ -38,7 +38,7 @@ interface StoryDialogProps {
 }
 
 export default function StoryDialog({ open, onClose, editingStoryId }: StoryDialogProps) {
-  const { t, isZh } = useTranslation();
+  const { t } = useTranslation();
   const { addStory, updateStory, getStoryById } = useInterviewStore();
 
   const [title, setTitle] = useState("");
@@ -116,7 +116,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
         {/* Header */}
         <div className="sticky top-0 bg-surface-0 border-b border-surface-200 px-6 py-4 flex items-center justify-between z-10">
           <h2 className="text-base font-display font-bold text-surface-400">
-            {editingStoryId ? (isZh ? "编辑 STAR 故事" : "Edit Story") : (isZh ? "新增 STAR 故事" : "Add New Story")}
+            {editingStoryId ? t.stories.dialog.editTitle : t.stories.dialog.addTitle}
           </h2>
           <button
             onClick={onClose}
@@ -132,13 +132,13 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
           {/* Title */}
           <div>
             <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
-              {isZh ? "故事标题 *" : "Story Title *"}
+              {t.stories.dialog.storyTitle}
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={isZh ? "例如：主导广告平台营收实现 3 倍增长" : "e.g., Led ad platform revenue growth 3x"}
+              placeholder={t.stories.dialog.storyTitlePlaceholder}
               className="w-full px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-400 font-sans"
             />
           </div>
@@ -146,7 +146,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
           {/* Competency */}
           <div>
             <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
-              {isZh ? "核心能力考察点" : "Competency"}
+              {t.stories.dialog.competency}
             </label>
             <div className="flex flex-wrap gap-1.5">
               {COMPETENCY_OPTIONS.map((c) => (
@@ -169,10 +169,10 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
           {/* STAR Fields */}
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              { label: t.stories.situation, value: situation, setter: setSituation, placeholder: isZh ? "设定背景 — 当时面临的业务挑战或关键机遇是什么？" : "Set the context — what was the challenge or opportunity?" },
-              { label: t.stories.task, value: task, setter: setTask, placeholder: isZh ? "你承担的具体职责和目标是什么？" : "What was your specific responsibility?" },
-              { label: t.stories.action, value: action, setter: setAction, placeholder: isZh ? "你具体采取了哪些行动和步骤？请详述关键决策。" : "What steps did you take? Be specific." },
-              { label: t.stories.result, value: result, setter: setResult, placeholder: isZh ? "最终取得了什么成效与回报？请包含量化数字。" : "What was the outcome? Include numbers." },
+              { label: t.stories.dialog.situation, value: situation, setter: setSituation, placeholder: t.stories.dialog.situationPlaceholder },
+              { label: t.stories.dialog.task, value: task, setter: setTask, placeholder: t.stories.dialog.taskPlaceholder },
+              { label: t.stories.dialog.action, value: action, setter: setAction, placeholder: t.stories.dialog.actionPlaceholder },
+              { label: t.stories.dialog.result, value: result, setter: setResult, placeholder: t.stories.dialog.resultPlaceholder },
             ].map((field) => (
               <div key={field.label}>
                 <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
@@ -192,13 +192,13 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
           {/* Metrics */}
           <div>
             <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
-              {isZh ? "关键量化成果 (Metrics)" : "Key Metrics"}
+              {t.stories.dialog.metrics}
             </label>
             <input
               type="text"
               value={metrics}
               onChange={(e) => setMetrics(e.target.value)}
-              placeholder={isZh ? "例如：营收提升 300%，点击率优化 40%" : "e.g., 3x revenue growth, 40% CTR improvement"}
+              placeholder={t.stories.dialog.metricsPlaceholder}
               className="w-full px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-400 font-sans"
             />
           </div>
@@ -206,13 +206,13 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
           {/* Tags */}
           <div>
             <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
-              {isZh ? "标签 (使用逗号分隔)" : "Tags (comma-separated)"}
+              {t.stories.dialog.tags}
             </label>
             <input
               type="text"
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
-              placeholder="e.g., revenue, growth, ad-tech"
+              placeholder={t.stories.dialog.tagsPlaceholder}
               className="w-full px-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-400 font-sans"
             />
           </div>
@@ -231,7 +231,7 @@ export default function StoryDialog({ open, onClose, editingStoryId }: StoryDial
             disabled={!title.trim()}
             className="btn-editorial-primary disabled:opacity-40"
           >
-            {editingStoryId ? t.common.save : t.stories.addStoryBtn}
+            {editingStoryId ? t.stories.dialog.submitSave : t.stories.dialog.submitAdd}
           </button>
         </div>
       </div>

@@ -92,6 +92,8 @@ export default function ApiKeysPage() {
     removeApiKey,
     updateApiKeyConfig,
     updateApiKeyStatus,
+    defaultProvider,
+    setDefaultProvider,
   } = useProfileStore();
 
   const [showAddForm, setShowAddForm] = useState(false);
@@ -149,7 +151,12 @@ export default function ApiKeysPage() {
   };
 
   const handleDelete = (id: string) => {
+    const entry = apiKeys.find((k) => k.id === id);
     removeApiKey(id);
+    // Don't leave the preference pointing at a deleted key.
+    if (entry && defaultProvider === entry.provider && !apiKeys.some((k) => k.id !== id && k.provider === entry.provider && k.status === "active")) {
+      setDefaultProvider(null);
+    }
     toast.info(isZh ? "AI 配置已移除" : "AI configuration removed");
   };
 
@@ -233,8 +240,39 @@ export default function ApiKeysPage() {
         <div>
           <p className="text-sm font-medium mb-1">{t.apiKeys.byoTitle}</p>
           <p className="text-xs text-surface-300 leading-relaxed">{t.apiKeys.byoDesc}</p>
+          <p className="text-xs text-surface-300 leading-relaxed mt-1.5">
+            {isZh
+              ? "密钥仅保存在当前浏览器的本地存储中，不会上传到服务器。更换设备或清除浏览器数据后需要重新添加。"
+              : "Keys are stored only in this browser's local storage and never uploaded to our servers. Re-add them if you switch devices or clear browser data."}
+          </p>
         </div>
       </div>
+
+      {apiKeys.some((k) => k.status === "active") && (
+        <div className="card-editorial rounded-xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex-1">
+            <p className="text-sm font-medium">{isZh ? "首选 AI 服务商" : "Preferred AI provider"}</p>
+            <p className="text-xs text-surface-300 mt-0.5">
+              {isZh ? "存在多个可用密钥时优先使用此服务商。不选择则按默认顺序自动选择。" : "Used first when multiple active keys exist. Automatic order applies when unset."}
+            </p>
+          </div>
+          <select
+            value={defaultProvider ?? ""}
+            onChange={(e) => {
+              const v = e.target.value as LLMProvider | "";
+              setDefaultProvider(v === "" ? null : v);
+              toast.success(isZh ? "首选服务商已保存" : "Preferred provider saved");
+            }}
+            className="px-3 py-2 rounded-lg bg-surface-100 border border-surface-200 text-sm text-surface-400 focus:outline-none focus:border-brand-500/40 cursor-pointer"
+            aria-label={isZh ? "首选 AI 服务商" : "Preferred AI provider"}
+          >
+            <option value="">{isZh ? "自动选择" : "Automatic"}</option>
+            {LLM_PROVIDERS.filter((p) => apiKeys.some((k) => k.provider === p && k.status === "active")).map((p) => (
+              <option key={p} value={p}>{LLM_PROVIDER_CONFIG[p].name}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="space-y-3 mb-6">
         {apiKeys.map((entry) => {

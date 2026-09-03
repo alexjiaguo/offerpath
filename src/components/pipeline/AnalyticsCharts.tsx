@@ -61,14 +61,18 @@ export default function AnalyticsCharts() {
 
  // ── Chart Data ──
 
- const funnelData = useMemo(() => [
- { name: "New", count: stats.byStatus.new || 0, color: STATUS_COLORS.new },
- { name: "Evaluated", count: stats.byStatus.evaluated || 0, color: STATUS_COLORS.evaluated },
- { name: "Applied", count: stats.byStatus.applied || 0, color: STATUS_COLORS.applied },
- { name: "Interviewing", count: stats.byStatus.interviewing || 0, color: STATUS_COLORS.interviewing },
- { name: "Offered", count: stats.byStatus.offered || 0, color: STATUS_COLORS.offered },
- { name: "Rejected", count: stats.byStatus.rejected || 0, color: STATUS_COLORS.rejected },
- ], [stats]);
+  const funnelData = useMemo(() => [
+  { name: "New", count: stats.byStatus.new || 0, color: STATUS_COLORS.new },
+  { name: "Evaluated", count: stats.byStatus.evaluated || 0, color: STATUS_COLORS.evaluated },
+  { name: "Applied", count: stats.byStatus.applied || 0, color: STATUS_COLORS.applied },
+  { name: "Interviewing", count: stats.byStatus.interviewing || 0, color: STATUS_COLORS.interviewing },
+  { name: "Offered", count: stats.byStatus.offered || 0, color: STATUS_COLORS.offered },
+  { name: "Rejected", count: stats.byStatus.rejected || 0, color: STATUS_COLORS.rejected },
+  // Previously omitted: discarded/archived counted in Total but vanished
+  // from the funnel, so the bars never reconciled with the total.
+  { name: "Discarded", count: stats.byStatus.discarded || 0, color: STATUS_COLORS.discarded },
+  { name: "Archived", count: stats.byStatus.archived || 0, color: STATUS_COLORS.archived },
+  ], [stats]);
 
  const scoreDistribution = useMemo(() => {
  const scoredJobs = jobs.filter((j) => j.score !== undefined);

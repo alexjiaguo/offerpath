@@ -9,13 +9,14 @@
 
 import { logger } from "@/lib/logger";
 import { useEffect, useRef, useCallback, useState } from "react";
-import { isSupabaseConfigured } from "@/lib/supabase";
+import { isSupabaseConfigured, createClient } from "@/lib/supabase";
 import {
   loadFromSupabase,
   syncStoreToSupabase,
   type StoreName,
 } from "@/lib/supabase-sync";
 import { usePipelineStore } from "@/store/pipelineStore";
+import { isLLMProvider } from "@/lib/llmProviders";
 import { useResumeStore, type ATSEvaluation } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
@@ -110,7 +111,12 @@ function getStoreAdapter(storeName: StoreName) {
       return {
         subscribe: (listener: () => void) =>
           useProfileStore.subscribe(listener),
-        getSnapshot: () => useProfileStore.getState().profile,
+        // defaultProvider lives beside profile in the store; merge it in so
+        // supabase-sync packs it into preferences.
+        getSnapshot: () => ({
+          ...useProfileStore.getState().profile,
+          defaultProvider: useProfileStore.getState().defaultProvider,
+        }),
         hydrate: (data: unknown) => {
           if (!data || typeof data !== "object") return;
           const row = data as Record<string, unknown>;
@@ -142,8 +148,20 @@ function getStoreAdapter(storeName: StoreName) {
               disclosures: prefs.disclosures && typeof prefs.disclosures === "object"
                 ? { ...current.disclosures, ...(prefs.disclosures as UserProfile["disclosures"]) }
                 : current.disclosures,
+              notificationsEnabled: typeof prefs.notificationsEnabled === "boolean"
+                ? (prefs.notificationsEnabled as boolean)
+                : current.notificationsEnabled,
+              weeklyDigest: typeof prefs.weeklyDigest === "boolean"
+                ? (prefs.weeklyDigest as boolean)
+                : current.weeklyDigest,
+              defaultTemplate: typeof prefs.defaultTemplate === "string"
+                ? (prefs.defaultTemplate as string)
+                : current.defaultTemplate,
             },
           });
+          if (typeof prefs.defaultProvider === "string" && isLLMProvider(prefs.defaultProvider)) {
+            useProfileStore.getState().setDefaultProvider(prefs.defaultProvider);
+          }
         },
       };
 
@@ -215,6 +233,10 @@ export function useSupabaseSync(): SyncState {
   // Track whether initial hydration has been done to avoid
   // re-syncing the data we just loaded back to Supabase.
   const hydratedRef = useRef(false);
+  // The user hydration belongs to. Account switches must reset the gate —
+  // otherwise the second account reuses the first account's hydratedRef and
+  // either skips hydration or syncs stale slices into the wrong account.
+  const hydratedUserIdRef = useRef<string | null>(null);
   const debounceTimers = useRef<Map<StoreName, ReturnType<typeof setTimeout>>>(
     new Map()
   );
@@ -256,8 +278,20 @@ export function useSupabaseSync(): SyncState {
     ];
     const unsubscribers: (() => void)[] = [];
 
+    async function currentUserId(): Promise<string | null> {
+      try {
+        const sb = createClient();
+        if (!sb) return null;
+        const { data: { user } } = await sb.auth.getUser();
+        return user?.id ?? null;
+      } catch {
+        return null;
+      }
+    }
+
     async function hydrateAll() {
       setState((s) => ({ ...s, isSyncing: true }));
+      hydratedUserIdRef.current = await currentUserId();
 
       for (const name of storeNames) {
         if (cancelled) break;
@@ -300,10 +334,38 @@ export function useSupabaseSync(): SyncState {
 
     hydrateAll();
 
+    // Account switch / sign-out inside a live session: drop the gate and
+    // re-hydrate so the new identity never inherits the old account's data.
+    let authUnsub: (() => void) | undefined;
+    try {
+      const sb = createClient();
+      if (sb) {
+        const { data } = sb.auth.onAuthStateChange(async (event, session) => {
+          if (cancelled) return;
+          if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+          const nextId = session?.user?.id ?? null;
+          if (nextId === hydratedUserIdRef.current) return;
+          hydratedRef.current = false;
+          setState({ isSynced: false, isSyncing: false });
+          debounceTimers.current.forEach((timer) => clearTimeout(timer));
+          debounceTimers.current.clear();
+          unsubscribers.forEach((unsub) => unsub());
+          unsubscribers.length = 0;
+          await hydrateAll();
+        });
+        authUnsub = () => data.subscription.unsubscribe();
+      }
+    } catch (err) {
+      logger.error("[useSupabaseSync] auth listener failed:", err);
+    }
+
     const timers = debounceTimers;
 
     return () => {
       cancelled = true;
+      authUnsub?.();
+      hydratedRef.current = false;
+      hydratedUserIdRef.current = null;
       unsubscribers.forEach((unsub) => unsub());
       timers.current.forEach((timer) => clearTimeout(timer));
       timers.current.clear();
