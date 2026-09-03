@@ -2,8 +2,6 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ProjectEntryContent } from "@/components/resume/editable/EditableText";
 import ATSExecutive from "@/components/resume/templates/ATSExecutive";
-import Academic from "@/components/resume/templates/Academic";
-import ClassicMinimal from "@/components/resume/templates/ClassicMinimal";
 import type { ResumeData, ResumeTheme, SectionKey } from "@/types";
 
 const baseTheme: ResumeTheme = {

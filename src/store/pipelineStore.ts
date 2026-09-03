@@ -92,6 +92,23 @@ export interface PipelineStats {
  appliedThisWeek: number;
 }
 
+// ── Shared job comparator (single source for board + filtered views) ──
+
+function compareJobs(a: Job, b: Job, sortField: SortField, sortDirection: SortDirection): number {
+  const dir = sortDirection === "asc" ? 1 : -1;
+  switch (sortField) {
+  case "score":
+  return ((a.score || 0) - (b.score || 0)) * dir;
+  case "title":
+  return a.title.localeCompare(b.title) * dir;
+  case "company":
+  return (a.company?.name || "").localeCompare(b.company?.name || "") * dir;
+  case "created_at":
+  default:
+  return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * dir;
+  }
+}
+
 // ── Default Filters ─────────────────────────────────
 
 const DEFAULT_FILTERS: PipelineFilters = {
@@ -384,13 +401,22 @@ export const usePipelineStore = create<PipelineState>()(
 
  // ── Computed ──
 
- getJobsByStatus: (status) => {
- const state = get();
- return state
- .getFilteredJobs()
- .filter((j) => j.status === status)
- .sort((a, b) => a.kanban_order - b.kanban_order);
- },
+  getJobsByStatus: (status) => {
+  const state = get();
+  const column = state
+  .getFilteredJobs()
+  .filter((j) => j.status === status);
+  // Manual drag order (kanban_order) rules while the sort is at its default.
+  // When the user picks an explicit sort, columns follow it — previously the
+  // sort control was dead because this always re-sorted by kanban_order.
+  const isDefaultSort = state.sortField === "created_at" && state.sortDirection === "desc";
+  if (isDefaultSort) {
+  return column.sort((a, b) => a.kanban_order - b.kanban_order);
+  }
+  return column.sort((a, b) =>
+  compareJobs(a, b, state.sortField, state.sortDirection)
+  );
+  },
 
  getFilteredJobs: () => {
  const { jobs, filters, sortField, sortDirection } = get();
@@ -433,24 +459,11 @@ export const usePipelineStore = create<PipelineState>()(
  filtered = filtered.filter((j) => j.score !== undefined && j.score <= filters.scoreMax!);
  }
 
- // Sort
- filtered.sort((a, b) => {
- const dir = sortDirection === "asc" ? 1 : -1;
- switch (sortField) {
- case "score":
- return ((a.score || 0) - (b.score || 0)) * dir;
- case "title":
- return a.title.localeCompare(b.title) * dir;
- case "company":
- return (a.company?.name || "").localeCompare(b.company?.name || "") * dir;
- case "created_at":
- default:
- return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * dir;
- }
- });
+  // Sort
+  filtered.sort((a, b) => compareJobs(a, b, sortField, sortDirection));
 
- return filtered;
- },
+  return filtered;
+  },
 
  getJobById: (id) => get().jobs.find((j) => j.id === id),
 

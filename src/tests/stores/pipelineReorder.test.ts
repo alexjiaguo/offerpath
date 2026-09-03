@@ -72,4 +72,24 @@ describe("pipelineStore - reorderJobs", () => {
     expect(moved.status).toBe("applied");
     expect(moved.kanban_order).toBe(1);
   });
+
+  it("respects sortField and sortDirection in getJobsByStatus when not default", () => {
+    const jobA = { ...makeJob("a", "new", 0), title: "Zebra PM", score: 50 };
+    const jobB = { ...makeJob("b", "new", 1), title: "Alpha PM", score: 95 };
+    usePipelineStore.setState({
+      jobs: [jobA, jobB],
+      sortField: "title",
+      sortDirection: "asc",
+    });
+
+    const byTitleAsc = usePipelineStore.getState().getJobsByStatus("new").map((j) => j.id);
+    expect(byTitleAsc).toEqual(["b", "a"]);
+
+    usePipelineStore.setState({
+      sortField: "score",
+      sortDirection: "desc",
+    });
+    const byScoreDesc = usePipelineStore.getState().getJobsByStatus("new").map((j) => j.id);
+    expect(byScoreDesc).toEqual(["b", "a"]);
+  });
 });

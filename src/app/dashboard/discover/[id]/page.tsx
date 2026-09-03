@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, BookmarkSimple, ArrowSquareOut, Briefcase, Buildings, Target, CheckCircle, CaretRight, Clock, MapPin, Globe, PaperPlaneRight, Star, Sparkle } from '@phosphor-icons/react';
 import { useDiscoveryStore } from "@/store/discoveryStore";
+import { useShallow } from "zustand/react/shallow";
 import { usePipelineStore } from "@/store/pipelineStore";
 import { cn } from "@/lib/utils";
 
@@ -20,12 +21,16 @@ export default function DiscoverJobDetailPage({
   const { id } = use(params);
   const router = useRouter();
   const job = useDiscoveryStore((s) => s.jobs.find((j) => j.id === id));
- const company = useDiscoveryStore((s) =>
-  job ? s.companies.find((c) => c.id === job.company_id) : undefined
- );
- const relatedJobs = useDiscoveryStore((s) =>
-  job ? s.jobs.filter((j) => j.company_id === job.company_id && j.id !== job.id) : []
- );
+  const company = useDiscoveryStore((s) =>
+   job ? s.companies.find((c) => c.id === job.company_id) : undefined
+  );
+  // Shallow-compared: a fresh filtered array every snapshot otherwise trips
+  // useSyncExternalStore into an infinite render loop (max update depth).
+  const relatedJobs = useDiscoveryStore(
+   useShallow((s) =>
+     job ? s.jobs.filter((j) => j.company_id === job.company_id && j.id !== job.id) : []
+   )
+  );
   const toggleSaved = useDiscoveryStore((s) => s.toggleSaved);
 
   // Same prefill + dialog flow as the discover list cards. The AddJobDialog

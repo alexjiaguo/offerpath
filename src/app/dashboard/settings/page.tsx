@@ -39,6 +39,22 @@ export default function SettingsPage() {
   const [defaultTemplate, setDefaultTemplate] = useState(
     profile.defaultTemplate ?? "classic-minimal"
   );
+  // The store hydrates AFTER first paint (skipHydration): useState above
+  // snapshots the empty default, so adopt store values once they arrive —
+  // but never after the user has touched a control (dirty flag), or edits
+  // would be clobbered mid-typing.
+  const prefsTouched = useRef(false);
+  useEffect(() => {
+    if (prefsTouched.current) return;
+    setNotificationsEnabled(profile.notificationsEnabled ?? true);
+    setWeeklyDigest(profile.weeklyDigest ?? true);
+    setDefaultTemplate(profile.defaultTemplate ?? "classic-minimal");
+  }, [profile.notificationsEnabled, profile.weeklyDigest, profile.defaultTemplate]);
+  // Wrapped setters mark user intent so the hydration effect above stops
+  // overwriting controls mid-edit.
+  const setNotificationsTouched = (v: boolean) => { prefsTouched.current = true; setNotificationsEnabled(v); };
+  const setDigestTouched = (v: boolean) => { prefsTouched.current = true; setWeeklyDigest(v); };
+  const setTemplateTouched = (v: string) => { prefsTouched.current = true; setDefaultTemplate(v); };
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [skillInput, setSkillInput] = useState("");
@@ -566,13 +582,13 @@ export default function SettingsPage() {
               label: t.settings.pushNotifications,
               description: t.settings.pushDesc,
               checked: notificationsEnabled,
-              setter: setNotificationsEnabled,
+              setter: setNotificationsTouched,
             },
             {
               label: t.settings.weeklyDigest,
               description: t.settings.weeklyDigestDesc,
               checked: weeklyDigest,
-              setter: setWeeklyDigest,
+              setter: setDigestTouched,
             },
           ].map((item) => (
             <div
@@ -633,7 +649,7 @@ export default function SettingsPage() {
             </label>
             <select
               value={defaultTemplate}
-              onChange={(e) => setDefaultTemplate(e.target.value)}
+              onChange={(e) => setTemplateTouched(e.target.value)}
               className="w-full max-w-xs px-3 py-2.5 rounded-xl bg-surface-100 border border-surface-200 text-sm text-surface-400 focus:outline-none focus:border-brand-500/40 focus:ring-1 focus:ring-brand-500/20 transition-all appearance-none cursor-pointer"
             >
               <option value="modern">{isZh ? "现代标准 (Modern)" : "Modern"}</option>
