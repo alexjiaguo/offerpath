@@ -9,15 +9,12 @@ export const ULTRA_TIER_MONTHLY_AI_USES = Number(
   process.env.ULTRA_TIER_MONTHLY_AI_USES ?? String(PRO_TIER_MONTHLY_AI_USES * 5)
 );
 
-// Legacy alias for backwards compatibility
-export const FREE_TIER_WEEKLY_AI_USES = FREE_TIER_AI_USES;
-
 const MONTH_MS = 30 * 24 * 60 * 60 * 1000;
 
 interface ProfileQuotaRow {
   tier: string | null;
-  ai_uses_this_week: number | null;
-  week_reset_at: string | null;
+  ai_uses_this_month: number | null;
+  month_reset_at: string | null;
 }
 
 export interface AiQuotaResult {
@@ -45,11 +42,13 @@ export async function consumeAiUse(
 ): Promise<AiQuotaResult> {
   const { data, error } = await supabase
     .from("profiles")
-    .select("tier, ai_uses_this_week, week_reset_at")
+    .select("tier, ai_uses_this_month, month_reset_at")
     .eq("id", userId)
     .single();
 
   if (error || !data) {
+    // Fail OPEN on read errors: a transient DB blip must not lock paying
+    // users out of AI. Abuse is bounded by the separate per-IP rate limiter.
     logger.warn("[aiQuota] profile read failed, failing open:", error);
     return { ok: true };
   }
@@ -63,7 +62,7 @@ export async function consumeAiUse(
       ok: false,
       remaining: 0,
       limit: 0,
-      used: profile.ai_uses_this_week ?? 0,
+      used: profile.ai_uses_this_month ?? 0,
       error:
         "Free plan requires bringing your own API key (BYOK) for AI features. Upgrade to Pro for managed AI credits or connect your API key in Settings.",
     };
@@ -71,9 +70,9 @@ export async function consumeAiUse(
 
   const limit = getTierQuotaLimit(tier);
   const now = Date.now();
-  const resetAt = profile.week_reset_at ? Date.parse(profile.week_reset_at) : NaN;
+  const resetAt = profile.month_reset_at ? Date.parse(profile.month_reset_at) : NaN;
   const windowExpired = Number.isNaN(resetAt) || now >= resetAt;
-  const used = windowExpired ? 0 : (profile.ai_uses_this_week ?? 0);
+  const used = windowExpired ? 0 : (profile.ai_uses_this_month ?? 0);
 
   if (used >= limit) {
     const isPro = tier === "pro";
@@ -93,17 +92,20 @@ export async function consumeAiUse(
   const nextUsed = used + 1;
   const nextResetAt = windowExpired
     ? new Date(now + MONTH_MS).toISOString()
-    : (profile.week_reset_at as string);
+    : (profile.month_reset_at as string);
 
   const { error: updateError } = await supabase
     .from("profiles")
     .update({
-      ai_uses_this_week: nextUsed,
-      week_reset_at: nextResetAt,
+      ai_uses_this_month: nextUsed,
+      month_reset_at: nextResetAt,
     })
     .eq("id", userId);
 
   if (updateError) {
+    // Fail open: the call was already quota-checked above; a failed counter
+    // write grants at most one extra use, while failing closed would punish
+    // the user for our DB error.
     logger.warn("[aiQuota] counter update failed, failing open:", updateError);
     return { ok: true, limit, remaining: limit - used };
   }

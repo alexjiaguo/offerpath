@@ -23,35 +23,59 @@ interface LLMConfig {
 }
 
 /**
- * Extracts a JSON block (object or array) from a string by finding
- * the first '{' or '[' and the matching last '}' or ']'.
+ * Extracts a JSON block (object or array) from a string. Finds the first
+ * '{' or '[' and scans forward with brace/depth tracking (string-aware, so
+ * braces inside quoted strings don't confuse it) instead of blindly slicing
+ * to the LAST closing bracket — trailing commentary after the JSON no longer
+ * corrupts the parse.
  */
 function extractJsonBlock(text: string): string {
- const firstBrace = text.indexOf("{");
- const firstBracket = text.indexOf("[");
- 
- let startIdx = -1;
- let isArray = false;
- 
- if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
- startIdx = firstBrace;
- isArray = false;
- } else if (firstBracket !== -1) {
- startIdx = firstBracket;
- isArray = true;
- }
- 
- if (startIdx === -1) {
- return text.trim();
- }
- 
- const endIdx = isArray ? text.lastIndexOf("]") : text.lastIndexOf("}");
- 
- if (endIdx === -1 || endIdx < startIdx) {
- return text.substring(startIdx).trim();
- }
- 
- return text.substring(startIdx, endIdx + 1).trim();
+  const firstBrace = text.indexOf("{");
+  const firstBracket = text.indexOf("[");
+
+  let startIdx = -1;
+  let open: string | null = null;
+  let close: string | null = null;
+
+  if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
+    startIdx = firstBrace;
+    open = "{";
+    close = "}";
+  } else if (firstBracket !== -1) {
+    startIdx = firstBracket;
+    open = "[";
+    close = "]";
+  }
+
+  if (startIdx === -1 || !open || !close) {
+    return text.trim();
+  }
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = startIdx; i < text.length; i++) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === "\\") escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    else if (ch === open) depth++;
+    else if (ch === close) {
+      depth--;
+      if (depth === 0) return text.substring(startIdx, i + 1).trim();
+    }
+  }
+
+  // Unbalanced — fall back to the old last-bracket heuristic.
+  const endIdx = open === "[" ? text.lastIndexOf("]") : text.lastIndexOf("}");
+  if (endIdx === -1 || endIdx < startIdx) {
+    return text.substring(startIdx).trim();
+  }
+  return text.substring(startIdx, endIdx + 1).trim();
 }
 
 async function callLLM(config: LLMConfig, systemPrompt: string, userPrompt: string): Promise<string> {
@@ -122,18 +146,31 @@ export function getLLMConfig(): LLMConfig | null {
  "openai-compatible",
  "anthropic-compatible",
  ];
- for (const p of priority) {
+ const findActiveKey = (p: LLMProvider) => {
  const key = store.apiKeys.find((k: { provider: string; status: string }) => k.provider === p && k.status === "active");
  const providerConfig = LLM_PROVIDER_CONFIG[p];
  const hasUsableKey = !!key?.key?.trim() || !providerConfig.apiKeyRequired;
- if (key && hasUsableKey) {
+ return key && hasUsableKey ? key : undefined;
+ };
+ const toConfig = (p: LLMProvider, key: NonNullable<ReturnType<typeof findActiveKey>>): LLMConfig => {
+ const providerConfig = LLM_PROVIDER_CONFIG[p];
  return {
  provider: p,
  apiKey: key.key?.trim() || undefined,
  baseUrl: key.baseUrl?.trim() || providerConfig.defaultBaseUrl,
  model: key.model?.trim() || providerConfig.defaultModel,
  };
+ };
+ // 0. Explicit user preference wins when it points at a usable key.
+ const preferred = store.defaultProvider;
+ if (preferred && priority.includes(preferred)) {
+ const key = findActiveKey(preferred);
+ if (key) return toConfig(preferred, key);
  }
+ // 1. Automatic priority order.
+ for (const p of priority) {
+ const key = findActiveKey(p);
+ if (key) return toConfig(p, key);
  }
     // 2. If user is on a paid plan (pro/ultra/team), allow server-managed AI
     const tier = store.profile?.tier;
@@ -554,10 +591,14 @@ Evaluate ATS compatibility.`;
  const jdKeywords = extractKeywords(req.jobDescription);
  const resumeText = JSON.stringify(req.resumeData).toLowerCase();
  
- const matched = jdKeywords.filter(kw => resumeText.includes(kw.toLowerCase()));
- const missing = jdKeywords.filter(kw => !resumeText.includes(kw.toLowerCase()));
- 
- const score = Math.min(100, Math.round((matched.length / Math.max(1, jdKeywords.length)) * 100) + 20);
+  const matched = jdKeywords.filter(kw => resumeText.includes(kw.toLowerCase()));
+  const missing = jdKeywords.filter(kw => !resumeText.includes(kw.toLowerCase()));
+
+  // Pure keyword-overlap percentage. (Previously +20 floor: a JD with zero
+  // overlap still scored ~20, masquerading as signal.)
+  const score = jdKeywords.length === 0
+    ? 0
+    : Math.min(100, Math.round((matched.length / jdKeywords.length) * 100));
 
  const feedback: { severity: "high" | "medium" | "low"; message: string }[] = [];
  

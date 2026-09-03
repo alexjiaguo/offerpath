@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import type { ResumeData, ExperienceEntry, EducationEntry, ProjectEntry, TechnicalSkillCategory } from "@/types";
 import dynamic from "next/dynamic";
 import type { EditorMode } from "@/components/resume/editor-helpers";
+import { stripPTags, ensureHtml } from "@/components/resume/editor-helpers";
 import { unwrapMarkdownBold } from "@/lib/markdownInline";
 import { cn } from "@/lib/utils";
 import { polishBulletPoint } from "@/lib/aiService";
@@ -147,12 +148,6 @@ export function ResumeSectionEditors({
 
   const isRichText = currentMode === "richtext";
   const stripHtml = (html: string) => html.replace(/<[^>]*>/g, '');
-  const stripPTags = (html: string) => html.replace(/<\/p>/g, '').replace(/<p>/g, '');
-  const ensureHtml = (content: string) => {
-    if (!content) return '<p></p>';
-    if (content.startsWith('<')) return content;
-    return `<p>${content}</p>`;
-  };
 
   return (
    <div className="card-editorial rounded-2xl p-5 animate-fade-in min-h-[500px]">
@@ -721,7 +716,9 @@ export function ResumeSectionEditors({
           updateResume(id, { data: { ...data, projects: next } });
         } else {
           const splitMatch = val.match(/^(.*?)[：:](.*)$/);
-          if (splitMatch && !proj.description) {
+          // Guard: don't split inside a bare URL pasted into the name field
+          // ("Site https://x.com:8080/a" must not split at "https:").
+          if (splitMatch && !proj.description && !splitMatch[1].includes("http")) {
             const next = [...(data.projects || [])];
             next[index] = {
               ...next[index],

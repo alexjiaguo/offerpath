@@ -139,9 +139,15 @@ const hasJobTitle = (item: TextItem) =>
   JOB_TITLES.some((jobTitle) =>
     item.text.split(/\s/).some((word) => word === jobTitle)
   );
+// CJK job titles have no word boundaries for the list above to match, so
+// match common title substrings directly (工程师, 经理, 总监, …).
+const CJK_JOB_TITLES = ['工程师', '经理', '总监', '主管', '专员', '助理', '架构师', '设计师', '分析师', '顾问', '科学家', '运营', '销售', '总裁', '董事', '合伙人', '研究员', '开发', '测试', '运维', '产品', '项目'];
+const hasCjkJobTitle = (item: TextItem) =>
+  CJK_JOB_TITLES.some((t) => item.text.includes(t));
 const hasMoreThan5Words = (item: TextItem) => item.text.split(/\s/).length > 5;
 const JOB_TITLE_FEATURE_SET: FeatureSet[] = [
   [hasJobTitle, 4],
+  [hasCjkJobTitle, 4],
   [hasNumber, -4],
   [hasMoreThan5Words, -2],
 ];

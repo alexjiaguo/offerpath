@@ -24,11 +24,43 @@ export function metaFor(key: string): SectionMeta {
   return SECTION_META.find((m) => m.key === key) ?? SECTION_META[0];
 }
 
+/** Shared rich-text helpers (single source of truth — RichTextField and
+ *  ResumeSectionEditors previously carried divergent copies). */
+export function stripPTags(html: string): string {
+  return html.replace(/<\/?p>/g, '');
+}
+
+export function ensureHtml(content: string): string {
+  if (!content) return '<p></p>';
+  if (content.startsWith('<')) return content;
+  return `<p>${content}</p>`;
+}
+
 export function isResumeEmpty(data: ResumeData): boolean {
-  const noName = !data.personal?.name?.trim();
-  const noSummary = !data.summary?.trim();
-  const noExperience = !data.experience || data.experience.length === 0;
-  return noName && noSummary && noExperience;
+  const d = data ?? {};
+  const has = (v: unknown) => {
+    if (v == null) return false;
+    if (typeof v === "string") return v.trim().length > 0;
+    if (Array.isArray(v)) return v.length > 0;
+    if (typeof v === "object") {
+      return Object.values(v as Record<string, unknown>).some(has);
+    }
+    return true;
+  };
+  // Check every content-bearing section — an education-only resume is NOT
+  // empty (the old check looked at name/summary/experience only, so the
+  // print path replaced real education data with placeholder).
+  return !(
+    has(d.personal) ||
+    has(d.summary) ||
+    has(d.experience) ||
+    has(d.education) ||
+    has(d.skills) ||
+    has(d.technicalSkills) ||
+    has(d.languages) ||
+    has(d.certifications) ||
+    has(d.projects)
+  );
 }
 
 export function useDebouncedValue<T>(value: T, delayMs: number): T {

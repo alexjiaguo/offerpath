@@ -7,23 +7,29 @@ import { usePathname } from "next/navigation";
 import MobileNav from "./MobileNav";
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
+import { useInterviewStore } from "@/store/interviewStore";
 import { useProfileStore } from "@/store/profileStore";
 import { useTranslation } from "@/i18n";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
 export default function Topbar() {
-  const { t } = useTranslation();
+  const { t, isZh } = useTranslation();
   const pathname = usePathname();
   const searchQuery = usePipelineStore((s) => s.filters.search);
   const discoveryQuery = useDiscoveryStore((s) => s.searchQuery);
+  const storyQuery = useInterviewStore((s) => s.storySearch);
   const setFilter = usePipelineStore((s) => s.setFilter);
   const setDiscoverySearchQuery = useDiscoveryStore((s) => s.setSearchQuery);
+  const setStorySearch = useInterviewStore((s) => s.setStorySearch);
   const setAddJobDialogOpen = usePipelineStore((s) => s.setAddJobDialogOpen);
   const fullName = useProfileStore((s) => s.profile.fullName);
-  const initials = fullName.split(" ").filter(Boolean).map((n) => n[0]).slice(0, 2).join("").toUpperCase() || "G";
+  const guestLabel = isZh ? "访客" : "Guest";
+  const displayName = fullName || guestLabel;
+  const initials = fullName.split(" ").filter(Boolean).map((n) => n[0]).slice(0, 2).join("").toUpperCase() || (isZh ? "访" : "G");
 
   const isDiscover = pathname.startsWith("/dashboard/discover");
-  const scopedValue = isDiscover ? discoveryQuery : searchQuery;
+  const isInterview = pathname.startsWith("/dashboard/interview");
+  const scopedValue = isDiscover ? discoveryQuery : isInterview ? storyQuery : searchQuery;
   const placeholder = isDiscover
     ? t.topbar.searchDiscovered
     : pathname.startsWith("/dashboard/resume")
@@ -32,17 +38,16 @@ export default function Topbar() {
     ? t.topbar.searchStories
     : t.topbar.searchApplications;
 
- useEffect(() => {
- document.documentElement.classList.remove("dark");
- }, []);
-
- const handleSearchChange = useCallback((value: string) => {
- if (pathname.startsWith("/dashboard/discover")) {
- setDiscoverySearchQuery(value);
- } else {
- setFilter({ search: value });
- }
- }, [pathname, setFilter, setDiscoverySearchQuery]);
+  const handleSearchChange = useCallback((value: string) => {
+  if (pathname.startsWith("/dashboard/discover")) {
+  setDiscoverySearchQuery(value);
+  } else if (pathname.startsWith("/dashboard/interview")) {
+  // Stories page reads storySearch from this store (its local input writes here too).
+  setStorySearch(value);
+  } else {
+  setFilter({ search: value });
+  }
+  }, [pathname, setFilter, setDiscoverySearchQuery, setStorySearch]);
 
  // Cmd+K keyboard shortcut
  useEffect(() => {
@@ -105,7 +110,7 @@ export default function Topbar() {
             {initials}
           </div>
           <div className="hidden lg:block text-left">
-            <div className="text-[11px] font-mono font-semibold tracking-tight text-surface-400 leading-none">{fullName}</div>
+            <div className="text-[11px] font-mono font-semibold tracking-tight text-surface-400 leading-none">{displayName}</div>
           </div>
         </Link>
       </div>

@@ -23,6 +23,17 @@ export function generateAtsPlainText(data: ResumeData): string {
   if (p?.location) contactParts.push(p.location);
   if (p?.linkedin) contactParts.push(p.linkedin);
   if (p?.website) contactParts.push(p.website);
+  if (p?.portfolio_url) {
+    contactParts.push(p.portfolio_label ? `${p.portfolio_label}: ${p.portfolio_url}` : p.portfolio_url);
+  }
+  if (p?.visa_status) {
+    contactParts.push(p.visa_label ? `${p.visa_label}: ${p.visa_status}` : p.visa_status);
+  }
+  for (const field of p?.custom_fields ?? []) {
+    if (field?.value) {
+      contactParts.push(field.label ? `${field.label}: ${field.value}` : String(field.value));
+    }
+  }
   if (contactParts.length) lines.push(contactParts.join(" | "));
 
   if (data.summary) {
@@ -61,6 +72,8 @@ export function generateAtsPlainText(data: ResumeData): string {
       if (edu.institution) parts.push(edu.institution);
       if (edu.degree) parts.push(edu.degree);
       if (edu.field) parts.push(edu.field);
+      if (edu.location) parts.push(edu.location);
+      if (edu.gpa) parts.push(`GPA: ${edu.gpa}`);
       const dates = [edu.start_date, edu.end_date].filter(Boolean).join(" - ");
       if (dates) parts.push(dates);
       if (parts.length) lines.push(parts.join(", "));

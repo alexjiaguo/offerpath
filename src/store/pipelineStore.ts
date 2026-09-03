@@ -8,9 +8,26 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Job, JobStatus, Company } from "@/types";
 import { generateId } from "@/lib/utils";
-import { createJobAction, updateJobStatusAction } from "@/app/actions/pipeline";
+import { createJobAction, updateJobStatusAction, updateJobAction } from "@/app/actions/pipeline";
+import { toast } from "sonner";
 
 // ── Filter & Sort Types ─────────────────────────────
+
+// ── Background sync error reporting ────────────────
+// Demo-expected failures (no Supabase / signed out) stay silent — the app is
+// local-first by design. Real errors (RLS, network, validation) surface once.
+const DEMO_EXPECTED_ERRORS = ["Supabase not configured", "Not authenticated"];
+function reportSyncError(context: string, result: { success: boolean; error?: string } | void, err?: unknown) {
+  if (err) {
+    logger.error(`Failed to sync ${context} to server`, err);
+    toast.error(`Couldn't save ${context} to the cloud. Your local copy is safe.`);
+    return;
+  }
+  if (result && !result.success && result.error && !DEMO_EXPECTED_ERRORS.includes(result.error)) {
+    logger.error(`Failed to sync ${context} to server: ${result.error}`);
+    toast.error(`Couldn't save ${context} to the cloud. Your local copy is safe.`);
+  }
+}
 
 export type SortField = "score" | "created_at" | "title" | "company";
 export type SortDirection = "asc" | "desc";
@@ -73,6 +90,23 @@ export interface PipelineStats {
  offerRate: number;
  addedThisWeek: number;
  appliedThisWeek: number;
+}
+
+// ── Shared job comparator (single source for board + filtered views) ──
+
+function compareJobs(a: Job, b: Job, sortField: SortField, sortDirection: SortDirection): number {
+  const dir = sortDirection === "asc" ? 1 : -1;
+  switch (sortField) {
+  case "score":
+  return ((a.score || 0) - (b.score || 0)) * dir;
+  case "title":
+  return a.title.localeCompare(b.title) * dir;
+  case "company":
+  return (a.company?.name || "").localeCompare(b.company?.name || "") * dir;
+  case "created_at":
+  default:
+  return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * dir;
+  }
 }
 
 // ── Default Filters ─────────────────────────────────
@@ -198,19 +232,27 @@ export const usePipelineStore = create<PipelineState>()(
  details: `Added ${jobData.title} at ${jobData.company?.name || 'Company'}`
  }]
  };
- set((state) => ({ jobs: [newJob, ...state.jobs] }));
- 
- // Background sync
- createJobAction(newJob).catch(err => logger.error("Failed to sync job creation to server", err));
- },
+  set((state) => ({ jobs: [newJob, ...state.jobs] }));
+  
+  // Background sync
+  createJobAction(newJob).then(
+    (result) => reportSyncError("job creation", result),
+    (err) => reportSyncError("job creation", undefined, err)
+  );
+  },
 
- updateJob: (id, updates) => {
- set((state) => ({
- jobs: state.jobs.map((j) =>
- j.id === id ? { ...j, ...updates, updated_at: new Date().toISOString() } : j
- ),
- }));
- },
+  updateJob: (id, updates) => {
+  set((state) => ({
+  jobs: state.jobs.map((j) =>
+  j.id === id ? { ...j, ...updates, updated_at: new Date().toISOString() } : j
+  ),
+  }));
+  // Background sync (previously local-only with zero server persistence).
+  updateJobAction(id, updates).then(
+  (result) => reportSyncError("job update", result),
+  (err) => reportSyncError("job update", undefined, err)
+  );
+  },
 
  deleteJob: (id) => {
  set((state) => ({ jobs: state.jobs.filter((j) => j.id !== id) }));
@@ -229,18 +271,25 @@ export const usePipelineStore = create<PipelineState>()(
  get().moveJobDirect(id, newStatus);
  },
 
-  moveJobDirect: (id, newStatus) => {
-    let appliedAt: string | undefined;
-    let interviewedAt: string | undefined;
-    let offeredAt: string | undefined;
+   moveJobDirect: (id, newStatus) => {
+     let appliedAt: string | undefined;
+     let interviewedAt: string | undefined;
+     let offeredAt: string | undefined;
 
-    set((state) => ({
-      jobs: state.jobs.map((j) => {
-        if (j.id !== id) return j;
-        const updates: Partial<Job> = {
-          status: newStatus,
-          updated_at: new Date().toISOString(),
-        };
+     set((state) => {
+       // Next order at the end of the target column (keeps getJobsByStatus sort stable)
+       const targetMax = state.jobs.reduce(
+         (max, j) => (j.id !== id && j.status === newStatus ? Math.max(max, j.kanban_order) : max),
+         -1
+       );
+       return {
+       jobs: state.jobs.map((j) => {
+         if (j.id !== id) return j;
+         const updates: Partial<Job> = {
+           status: newStatus,
+           kanban_order: targetMax + 1,
+           updated_at: new Date().toISOString(),
+         };
         // Set timestamps for lifecycle events
         if (newStatus === "applied" && !j.applied_at) {
           appliedAt = new Date().toISOString();
@@ -265,48 +314,53 @@ export const usePipelineStore = create<PipelineState>()(
         
         return { ...j, ...updates };
       }),
-    }));
+      };
+    });
     
     // Background sync
     updateJobStatusAction(id, newStatus, {
       applied_at: appliedAt,
       interviewed_at: interviewedAt,
       offered_at: offeredAt,
-    }).catch(err => logger.error("Failed to sync status update to server", err));
+    }).then(
+      (result) => reportSyncError("status update", result),
+      (err) => reportSyncError("status update", undefined, err)
+    );
   },
 
- reorderJobs: (activeId, overId, newStatus) => {
- set((state) => {
- const jobs = [...state.jobs];
- const activeIdx = jobs.findIndex((j) => j.id === activeId);
- if (activeIdx === -1) return state;
+  reorderJobs: (activeId, overId, newStatus) => {
+  set((state) => {
+  const remaining = state.jobs.filter((j) => j.id !== activeId);
+  const active = state.jobs.find((j) => j.id === activeId);
+  if (!active) return state;
 
- // Update status
- jobs[activeIdx] = {
- ...jobs[activeIdx],
- status: newStatus,
- updated_at: new Date().toISOString(),
- };
+  const moved: Job = {
+  ...active,
+  status: newStatus,
+  updated_at: new Date().toISOString(),
+  };
 
- // Reorder within column
- const columnJobs = jobs
- .filter((j) => j.status === newStatus)
- .sort((a, b) => a.kanban_order - b.kanban_order);
+  // Insert before the drop target (which lives in `remaining`).
+  // Dropping on empty column space passes the column id as overId,
+  // which matches no job → append at the end of that column.
+  const overIdx = remaining.findIndex((j) => j.id === overId);
+  let merged: Job[];
+  if (overIdx === -1) {
+  merged = [...remaining, moved];
+  } else {
+  merged = [...remaining.slice(0, overIdx), moved, ...remaining.slice(overIdx)];
+  }
 
- const overIdx = columnJobs.findIndex((j) => j.id === overId);
- if (overIdx !== -1) {
- // Place after the target
- columnJobs.forEach((j, i) => {
- const jobIdx = jobs.findIndex((jj) => jj.id === j.id);
- if (jobIdx !== -1) {
- jobs[jobIdx] = { ...jobs[jobIdx], kanban_order: i };
- }
- });
- }
+  // Renumber kanban_order within the target column so
+  // getJobsByStatus (sorted by kanban_order) reflects the drop position.
+  let order = 0;
+  const jobs = merged.map((j) =>
+  j.status === newStatus ? { ...j, kanban_order: order++ } : j
+  );
 
- return { jobs };
- });
- },
+  return { jobs };
+  });
+  },
 
  // ── Filters ──
 
@@ -347,13 +401,22 @@ export const usePipelineStore = create<PipelineState>()(
 
  // ── Computed ──
 
- getJobsByStatus: (status) => {
- const state = get();
- return state
- .getFilteredJobs()
- .filter((j) => j.status === status)
- .sort((a, b) => a.kanban_order - b.kanban_order);
- },
+  getJobsByStatus: (status) => {
+  const state = get();
+  const column = state
+  .getFilteredJobs()
+  .filter((j) => j.status === status);
+  // Manual drag order (kanban_order) rules while the sort is at its default.
+  // When the user picks an explicit sort, columns follow it — previously the
+  // sort control was dead because this always re-sorted by kanban_order.
+  const isDefaultSort = state.sortField === "created_at" && state.sortDirection === "desc";
+  if (isDefaultSort) {
+  return column.sort((a, b) => a.kanban_order - b.kanban_order);
+  }
+  return column.sort((a, b) =>
+  compareJobs(a, b, state.sortField, state.sortDirection)
+  );
+  },
 
  getFilteredJobs: () => {
  const { jobs, filters, sortField, sortDirection } = get();
@@ -396,24 +459,11 @@ export const usePipelineStore = create<PipelineState>()(
  filtered = filtered.filter((j) => j.score !== undefined && j.score <= filters.scoreMax!);
  }
 
- // Sort
- filtered.sort((a, b) => {
- const dir = sortDirection === "asc" ? 1 : -1;
- switch (sortField) {
- case "score":
- return ((a.score || 0) - (b.score || 0)) * dir;
- case "title":
- return a.title.localeCompare(b.title) * dir;
- case "company":
- return (a.company?.name || "").localeCompare(b.company?.name || "") * dir;
- case "created_at":
- default:
- return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * dir;
- }
- });
+  // Sort
+  filtered.sort((a, b) => compareJobs(a, b, sortField, sortDirection));
 
- return filtered;
- },
+  return filtered;
+  },
 
  getJobById: (id) => get().jobs.find((j) => j.id === id),
 

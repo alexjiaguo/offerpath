@@ -5,19 +5,14 @@ export function cn(...inputs: ClassValue[]) {
  return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: string | Date): string {
- return new Date(date).toLocaleDateString("en-US", {
+export function formatDate(date: string | Date, locale?: string): string {
+ // Default locale (undefined) follows the runtime instead of forcing en-US,
+ // so zh users see Chinese dates. Pass an explicit locale to pin output.
+ return new Date(date).toLocaleDateString(locale, {
  month: "short",
  day: "numeric",
  year: "numeric",
  });
-}
-
-export function scoreColor(score: number): string {
- if (score >= 4.5) return "text-emerald-400";
- if (score >= 3.5) return "text-blue-400";
- if (score >= 2.5) return "text-yellow-400";
- return "text-red-400";
 }
 
 export function statusColor(status: string): string {
@@ -34,15 +29,11 @@ export function statusColor(status: string): string {
  return colors[status] || colors.new;
 }
 
-export function tierLabel(tier: number): { label: string; color: string } {
- const tiers: Record<number, { label: string; color: string }> = {
- 1: { label: "Tier 1", color: "text-amber-400" },
- 2: { label: "Tier 2", color: "text-surface-300" },
- 3: { label: "Tier 3", color: "text-amber-700" },
- };
- return tiers[tier] || tiers[3];
-}
-
 export function generateId(): string {
+ // crypto.randomUUID throws on non-secure contexts / old browsers.
+ try {
  return crypto.randomUUID();
+ } catch {
+ return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+ }
 }

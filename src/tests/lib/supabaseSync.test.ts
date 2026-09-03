@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { isUUID, syncStoreToSupabase } from "@/lib/supabase-sync";
 import { createJobAction, updateJobStatusAction } from "@/app/actions/pipeline";
+import {
+  saveStoryAction,
+  deleteStoryAction,
+  savePrepAction,
+  deletePrepAction,
+  saveMockSessionAction,
+  deleteMockSessionAction,
+} from "@/app/actions/interview";
 import { useProfileStore } from "@/store/profileStore";
 
 // Mock supabase-server for server action tests
@@ -29,9 +37,16 @@ const mockUpdate = vi.fn().mockReturnValue({
   }),
 });
 
-const mockDelete = vi.fn().mockReturnValue({
-  in: vi.fn().mockResolvedValue({ error: null }),
-});
+const createDeleteMock = () => {
+  const del: Record<string, unknown> = {};
+  del.in = vi.fn().mockResolvedValue({ error: null });
+  del.eq = vi.fn().mockReturnValue(del);
+  // Support awaiting delete directly
+  del.then = (resolve: (val: { error: null }) => void) => Promise.resolve(resolve({ error: null }));
+  return del;
+};
+
+const mockDelete = vi.fn(() => createDeleteMock());
 
 const createQueryMock = () => {
   const query: Record<string, unknown> = {};
@@ -156,7 +171,7 @@ describe("Database & Sync Consistency Tests", () => {
   });
 
   describe("Profile Sync & Hydration Protection", () => {
-    it("does not overwrite server-authoritative tier or ai_uses_this_week during profile sync", async () => {
+    it("does not overwrite server-authoritative tier or ai_uses_this_month during profile sync", async () => {
       await syncStoreToSupabase("profile", {
         fullName: "Alex Chen",
         email: "alex@example.com",
@@ -167,11 +182,11 @@ describe("Database & Sync Consistency Tests", () => {
       });
 
       expect(mockFrom).toHaveBeenCalledWith("profiles");
-      // Must call update (not an upsert with tier="free" and ai_uses_this_week=0)
+      // Must call update (not an upsert with tier="free" and ai_uses_this_month=0)
       expect(mockUpdate).toHaveBeenCalled();
       const updatePayload = mockUpdate.mock.calls[0][0] as Record<string, unknown>;
       expect(updatePayload).not.toHaveProperty("tier");
-      expect(updatePayload).not.toHaveProperty("ai_uses_this_week");
+      expect(updatePayload).not.toHaveProperty("ai_uses_this_month");
       expect(updatePayload).toHaveProperty("preferences");
       const prefs = updatePayload.preferences as Record<string, unknown>;
       expect(prefs.phone).toBe("+1 555-0199");
@@ -205,9 +220,12 @@ describe("Database & Sync Consistency Tests", () => {
             {
               id: "exp-1",
               company: "Stripe",
+              role: "Lead PM",
               title: "Lead PM",
+              location: "San Francisco, CA",
               startDate: "2022-01",
               endDate: "Present",
+              isCurrent: true,
               description: "Led core payments",
             },
           ],
@@ -216,11 +234,17 @@ describe("Database & Sync Consistency Tests", () => {
               id: "edu-1",
               school: "Stanford",
               degree: "BS",
+              major: "Computer Science",
               fieldOfStudy: "Computer Science",
+              graduationDate: "2015",
               graduationYear: "2015",
             },
           ],
           disclosures: {
+            requiresSponsorship: false,
+            locationPreference: "hybrid" as const,
+            gender: "",
+            race: "",
             veteranStatus: "No",
             disabilityStatus: "No",
           },
@@ -289,7 +313,7 @@ describe("Database & Sync Consistency Tests", () => {
   });
 
   describe("Interview Preps Conflict Handling", () => {
-    it("upserts interview preps with onConflict: user_id,job_id", async () => {
+    it("upserts interview preps with onConflict: id (aligned with the id-based deletion sweep)", async () => {
       await syncStoreToSupabase("interview", {
         preps: [
           {
@@ -303,9 +327,97 @@ describe("Database & Sync Consistency Tests", () => {
 
       expect(mockFrom).toHaveBeenCalledWith("interview_preps");
       const prepUpsertCall = mockUpsert.mock.calls.find((call) => {
-        return (call[1] as { onConflict?: string })?.onConflict === "user_id,job_id";
+        return (call[1] as { onConflict?: string })?.onConflict === "id";
       });
       expect(prepUpsertCall).toBeDefined();
+    });
+  });
+
+  describe("Interview Hub Server Actions", () => {
+    it("saveStoryAction upserts valid UUID story row to Supabase", async () => {
+      const story = {
+        id: "11111111-2222-3333-4444-555555555555",
+        user_id: "user-12345678-0000-0000-0000-000000000000",
+        title: "Launched Payment Gateway",
+        competency: "leadership",
+        situation: "Legacy payment stack failing",
+        task: "Redesign core checkout",
+        action: "Led migration team of 6 engineers",
+        result: "Reduced failed transactions by 80%",
+        metrics: "80% reduction",
+        tags: ["fintech", "payments"],
+        used_count: 2,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const result = await saveStoryAction(story);
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("stories");
+      expect(mockUpsert).toHaveBeenCalled();
+    });
+
+    it("deleteStoryAction calls delete for valid UUID story", async () => {
+      const result = await deleteStoryAction("11111111-2222-3333-4444-555555555555");
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("stories");
+      expect(mockDelete).toHaveBeenCalled();
+    });
+
+    it("savePrepAction upserts valid UUID prep row", async () => {
+      const prep = {
+        id: "11111111-2222-3333-4444-555555555555",
+        user_id: "user-12345678-0000-0000-0000-000000000000",
+        job_id: "22222222-3333-4444-5555-666666666666",
+        company_research: "Fast growing tech firm",
+        role_analysis: "Lead PM role",
+        questions: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const result = await savePrepAction(prep);
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("interview_preps");
+      expect(mockUpsert).toHaveBeenCalled();
+    });
+
+    it("saveMockSessionAction upserts mock session with feedback and duration", async () => {
+      const session = {
+        id: "33333333-4444-5555-6666-777777777777",
+        user_id: "user-12345678-0000-0000-0000-000000000000",
+        job_id: "22222222-3333-4444-5555-666666666666",
+        transcript: [{ role: "candidate" as const, message: "Hello", timestamp: new Date().toISOString() }],
+        score: 4.5,
+        feedback: {
+          overall_score: 4.5,
+          strengths: ["Clear structure"],
+          improvements: ["Add metrics"],
+          tips: ["Stay concise"],
+        },
+        duration_seconds: 600,
+        questionPool: ["Tell me about yourself"],
+        created_at: new Date().toISOString(),
+      };
+
+      const result = await saveMockSessionAction(session);
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("mock_sessions");
+      expect(mockUpsert).toHaveBeenCalled();
+    });
+
+    it("deletePrepAction deletes prep row by job_id", async () => {
+      const result = await deletePrepAction("22222222-3333-4444-5555-666666666666");
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("interview_preps");
+      expect(mockDelete).toHaveBeenCalled();
+    });
+
+    it("deleteMockSessionAction deletes mock session row by id", async () => {
+      const result = await deleteMockSessionAction("33333333-4444-5555-6666-777777777777");
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("mock_sessions");
+      expect(mockDelete).toHaveBeenCalled();
     });
   });
 });

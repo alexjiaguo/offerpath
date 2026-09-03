@@ -94,35 +94,28 @@ export async function POST(req: Request) {
       const keyToUse = customKey ? apiKey.trim() : getEnvKey(provider);
       if (!keyToUse && providerConfig.apiKeyRequired) {
         return NextResponse.json(
-          { error: `${provider || "AI"} API key is not configured.` },
+          { error: `${provider || "AI"} API key is not configured. Connect your own key in Settings → API Keys, or contact support about managed credits.` },
           { status: 400 }
         );
       }
 
-      if (
-        !userPrompt ||
-        typeof userPrompt !== "string" ||
+      if (!userPrompt || typeof userPrompt !== "string") {
+        return NextResponse.json(
+          { error: "A user prompt string is required." },
+          { status: 400 }
+        );
+      }
+      // Truncate oversized prompts instead of hard-rejecting large resumes.
+      const trimmedUserPrompt =
         userPrompt.length > MAX_PROMPT_LENGTH
-      ) {
-        return NextResponse.json(
-          {
-            error: `A user prompt string of at most ${MAX_PROMPT_LENGTH} characters is required.`,
-          },
-          { status: 400 }
-        );
-      }
-
-      if (
-        typeof systemPrompt !== "undefined" &&
-        (typeof systemPrompt !== "string" || systemPrompt.length > MAX_PROMPT_LENGTH)
-      ) {
-        return NextResponse.json(
-          {
-            error: `System prompt must be a string of at most ${MAX_PROMPT_LENGTH} characters.`,
-          },
-          { status: 400 }
-        );
-      }
+          ? userPrompt.slice(0, MAX_PROMPT_LENGTH)
+          : userPrompt;
+      const trimmedSystemPrompt =
+        typeof systemPrompt === "string" && systemPrompt.length > MAX_PROMPT_LENGTH
+          ? systemPrompt.slice(0, MAX_PROMPT_LENGTH)
+          : typeof systemPrompt === "string"
+            ? systemPrompt
+            : "";
 
       if (!customKey && keyToUse) {
         if (!authed) {
@@ -143,7 +136,7 @@ export async function POST(req: Request) {
       }
 
       try {
-        const result = await serverCallLLM(provider, keyToUse ?? "", systemPrompt || "", userPrompt, {
+        const result = await serverCallLLM(provider, keyToUse ?? "", trimmedSystemPrompt, trimmedUserPrompt, {
           baseUrl: configuredBaseUrl,
           model: configuredModel,
           serverManagedKey: usingServerKey,

@@ -344,7 +344,7 @@ export function InterviewPackPreview() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="bg-surface-50 rounded-2xl rounded-tl-sm p-4 border border-surface-200/50 max-w-md flex items-start gap-3"
         >
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-ember-400 to-ember-600 flex items-center justify-center shrink-0 mt-0.5">
+          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-ember-500 to-ember-600 flex items-center justify-center shrink-0 mt-0.5">
             <Star weight="fill" className="w-3 h-3 text-white" />
           </div>
           <div>

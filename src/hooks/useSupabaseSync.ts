@@ -9,13 +9,14 @@
 
 import { logger } from "@/lib/logger";
 import { useEffect, useRef, useCallback, useState } from "react";
-import { isSupabaseConfigured } from "@/lib/supabase";
+import { isSupabaseConfigured, createClient } from "@/lib/supabase";
 import {
   loadFromSupabase,
   syncStoreToSupabase,
   type StoreName,
 } from "@/lib/supabase-sync";
 import { usePipelineStore } from "@/store/pipelineStore";
+import { isLLMProvider } from "@/lib/llmProviders";
 import { useResumeStore, type ATSEvaluation } from "@/store/resumeStore";
 import { useProfileStore } from "@/store/profileStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
@@ -51,6 +52,11 @@ function getStoreAdapter(storeName: StoreName) {
           if (!Array.isArray(data)) return;
           // data is an array of jobs with nested companies from the join
           const jobs = data as Record<string, unknown>[];
+          // Never clobber local state with an empty server payload: persist
+          // writes through to localStorage, so overwriting with [] would
+          // destroy guest work before migrateGuestDataToSupabase() can push
+          // it up. An empty server simply means "nothing to pull".
+          if (jobs.length === 0) return;
           const companiesMap = new Map<string, Record<string, unknown>>();
           const mappedJobs = jobs.map((j) => {
             if (j.companies && typeof j.companies === "object") {
@@ -83,6 +89,9 @@ function getStoreAdapter(storeName: StoreName) {
         hydrate: (data: unknown) => {
           if (!Array.isArray(data)) return;
           const resumes = data as (Resume & { ats_evaluations?: Record<string, ATSEvaluation> })[];
+          // Same empty-payload guard as pipeline: don't wipe local resumes
+          // when the server has nothing (see comment above).
+          if (resumes.length === 0) return;
           const atsEvals: Record<string, ATSEvaluation> = {};
           for (const r of resumes) {
             if (r.ats_evaluations && typeof r.ats_evaluations === "object") {
@@ -102,7 +111,12 @@ function getStoreAdapter(storeName: StoreName) {
       return {
         subscribe: (listener: () => void) =>
           useProfileStore.subscribe(listener),
-        getSnapshot: () => useProfileStore.getState().profile,
+        // defaultProvider lives beside profile in the store; merge it in so
+        // supabase-sync packs it into preferences.
+        getSnapshot: () => ({
+          ...useProfileStore.getState().profile,
+          defaultProvider: useProfileStore.getState().defaultProvider,
+        }),
         hydrate: (data: unknown) => {
           if (!data || typeof data !== "object") return;
           const row = data as Record<string, unknown>;
@@ -134,8 +148,20 @@ function getStoreAdapter(storeName: StoreName) {
               disclosures: prefs.disclosures && typeof prefs.disclosures === "object"
                 ? { ...current.disclosures, ...(prefs.disclosures as UserProfile["disclosures"]) }
                 : current.disclosures,
+              notificationsEnabled: typeof prefs.notificationsEnabled === "boolean"
+                ? (prefs.notificationsEnabled as boolean)
+                : current.notificationsEnabled,
+              weeklyDigest: typeof prefs.weeklyDigest === "boolean"
+                ? (prefs.weeklyDigest as boolean)
+                : current.weeklyDigest,
+              defaultTemplate: typeof prefs.defaultTemplate === "string"
+                ? (prefs.defaultTemplate as string)
+                : current.defaultTemplate,
             },
           });
+          if (typeof prefs.defaultProvider === "string" && isLLMProvider(prefs.defaultProvider)) {
+            useProfileStore.getState().setDefaultProvider(prefs.defaultProvider);
+          }
         },
       };
 
@@ -178,9 +204,11 @@ function getStoreAdapter(storeName: StoreName) {
             preps: InterviewPrep[];
             mockSessions: MockSession[];
           }> = {};
-          if (Array.isArray(d.stories)) patch.stories = d.stories as Story[];
-          if (Array.isArray(d.preps)) patch.preps = d.preps as InterviewPrep[];
-          if (Array.isArray(d.mockSessions)) {
+          // Only patch non-empty arrays: an empty server table must not
+          // wipe local guest stories/preps/sessions before migration.
+          if (Array.isArray(d.stories) && d.stories.length > 0) patch.stories = d.stories as Story[];
+          if (Array.isArray(d.preps) && d.preps.length > 0) patch.preps = d.preps as InterviewPrep[];
+          if (Array.isArray(d.mockSessions) && d.mockSessions.length > 0) {
             patch.mockSessions = (d.mockSessions as Record<string, unknown>[]).map((m) => ({
               ...m,
               questionPool: Array.isArray(m.question_pool)
@@ -205,6 +233,10 @@ export function useSupabaseSync(): SyncState {
   // Track whether initial hydration has been done to avoid
   // re-syncing the data we just loaded back to Supabase.
   const hydratedRef = useRef(false);
+  // The user hydration belongs to. Account switches must reset the gate —
+  // otherwise the second account reuses the first account's hydratedRef and
+  // either skips hydration or syncs stale slices into the wrong account.
+  const hydratedUserIdRef = useRef<string | null>(null);
   const debounceTimers = useRef<Map<StoreName, ReturnType<typeof setTimeout>>>(
     new Map()
   );
@@ -246,8 +278,20 @@ export function useSupabaseSync(): SyncState {
     ];
     const unsubscribers: (() => void)[] = [];
 
+    async function currentUserId(): Promise<string | null> {
+      try {
+        const sb = createClient();
+        if (!sb) return null;
+        const { data: { user } } = await sb.auth.getUser();
+        return user?.id ?? null;
+      } catch {
+        return null;
+      }
+    }
+
     async function hydrateAll() {
       setState((s) => ({ ...s, isSyncing: true }));
+      hydratedUserIdRef.current = await currentUserId();
 
       for (const name of storeNames) {
         if (cancelled) break;
@@ -290,10 +334,38 @@ export function useSupabaseSync(): SyncState {
 
     hydrateAll();
 
+    // Account switch / sign-out inside a live session: drop the gate and
+    // re-hydrate so the new identity never inherits the old account's data.
+    let authUnsub: (() => void) | undefined;
+    try {
+      const sb = createClient();
+      if (sb) {
+        const { data } = sb.auth.onAuthStateChange(async (event, session) => {
+          if (cancelled) return;
+          if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+          const nextId = session?.user?.id ?? null;
+          if (nextId === hydratedUserIdRef.current) return;
+          hydratedRef.current = false;
+          setState({ isSynced: false, isSyncing: false });
+          debounceTimers.current.forEach((timer) => clearTimeout(timer));
+          debounceTimers.current.clear();
+          unsubscribers.forEach((unsub) => unsub());
+          unsubscribers.length = 0;
+          await hydrateAll();
+        });
+        authUnsub = () => data.subscription.unsubscribe();
+      }
+    } catch (err) {
+      logger.error("[useSupabaseSync] auth listener failed:", err);
+    }
+
     const timers = debounceTimers;
 
     return () => {
       cancelled = true;
+      authUnsub?.();
+      hydratedRef.current = false;
+      hydratedUserIdRef.current = null;
       unsubscribers.forEach((unsub) => unsub());
       timers.current.forEach((timer) => clearTimeout(timer));
       timers.current.clear();

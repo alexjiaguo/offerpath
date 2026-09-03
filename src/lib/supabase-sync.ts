@@ -62,7 +62,7 @@ export async function loadFromSupabase(
           .from("jobs")
           .select("*, companies(*)")
           .eq("user_id", user.id)
-          .order("kanban_order");
+          .order("kanban_order", { ascending: true });
         return jobs ?? null;
       }
 
@@ -115,6 +115,11 @@ export async function syncStoreToSupabase(
   } = await supabase.auth.getUser();
   if (!user) return;
 
+  // Null/undefined payloads (e.g. a missing guest profile slice) must not
+  // reach the per-store writers — profile[field] on null throws, fails the
+  // whole batch, and retries on every mount.
+  if (data == null) return;
+
   try {
     switch (storeName) {
       case "profile": {
@@ -129,12 +134,13 @@ export async function syncStoreToSupabase(
           "salaryExpectation", "workAuthorization",
           "workExperience", "education", "disclosures",
           "notificationsEnabled", "weeklyDigest", "defaultTemplate",
+          "defaultProvider",
         ];
         for (const field of packedFields) {
           if (profile[field] !== undefined) prefs[field] = profile[field];
         }
 
-        // Update existing profile row (preserves server-authoritative tier & ai_uses_this_week)
+        // Update existing profile row (preserves server-authoritative tier & ai_uses_this_month)
         const { data: updated, error: updateError } = await supabase
           .from("profiles")
           .update({
@@ -156,8 +162,8 @@ export async function syncStoreToSupabase(
               email: profile.email,
               avatar_url: profile.avatarUrl,
               tier: "free",
-              ai_uses_this_week: 0,
-              week_reset_at: new Date().toISOString(),
+              ai_uses_this_month: 0,
+              month_reset_at: new Date().toISOString(),
               onboarding_completed: false,
               preferences: prefs,
             },
@@ -331,7 +337,10 @@ export async function syncStoreToSupabase(
           }, { onConflict: "id" });
         }
 
-        // Interview preps: active deletion + upsert with onConflict "user_id,job_id"
+        // Interview preps: active deletion + upsert. Both keyed by prep id
+        // (previously the sweep deleted by id while the upsert conflicted on
+        // user_id+job_id — a duplicate-job row could be deleted and then fail
+        // to reinsert when the PK id differed from the conflicting row).
         const { data: dbPreps } = await supabase.from("interview_preps").select("id").eq("user_id", user.id);
         if (dbPreps) {
           const toDelete = dbPreps.map((p) => p.id).filter((id) => !preps.some((p) => p.id === id));
@@ -344,7 +353,7 @@ export async function syncStoreToSupabase(
               id: prep.id, user_id: user.id, job_id: prep.job_id,
               company_research: prep.company_research ?? null, role_analysis: prep.role_analysis ?? null,
               questions: prep.questions ?? [],
-            }, { onConflict: "user_id,job_id" });
+            }, { onConflict: "id" });
           } catch (err) {
             logger.warn(`[supabase-sync] prep upsert failed for job ${prep.job_id}:`, err);
           }

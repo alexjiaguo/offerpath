@@ -15,12 +15,12 @@ import { useState } from "react";
 
 export default function ResumePicker() {
  const {
- resumePickerOpen,
- resumePickerJobId,
- setResumePickerOpen,
- linkResumeToJob,
- moveJob,
- getJobById,
+  resumePickerOpen,
+  resumePickerJobId,
+  setResumePickerOpen,
+  linkResumeToJob,
+  moveJobDirect,
+  getJobById,
  } = usePipelineStore();
 
  const { resumes, getATSScoreView } = useResumeStore();
@@ -35,20 +35,22 @@ export default function ResumePicker() {
  setSelectedId(resumeId);
  };
 
- const handleConfirm = () => {
- if (selectedId) {
- linkResumeToJob(resumePickerJobId, selectedId);
- }
- // Complete the move to applied
- moveJob(resumePickerJobId, "applied");
- handleClose();
- };
+  const handleConfirm = () => {
+  if (selectedId) {
+  linkResumeToJob(resumePickerJobId, selectedId);
+  }
+  // Complete the move to applied. linkResumeToJob sets resume_id above,
+  // and moveJobDirect bypasses the no-resume intercept entirely.
+  moveJobDirect(resumePickerJobId, "applied");
+  handleClose();
+  };
 
- const handleSkip = () => {
- // Move without linking a resume
- moveJob(resumePickerJobId, "applied");
- handleClose();
- };
+  const handleSkip = () => {
+  // Move without linking a resume — must bypass the moveJob() intercept
+  // (which re-opens this picker when the job has no resume_id).
+  moveJobDirect(resumePickerJobId, "applied");
+  handleClose();
+  };
 
  const handleClose = () => {
  setSelectedId(null);

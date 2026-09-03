@@ -10,6 +10,7 @@ import { useUIStore } from "@/store/uiStore";
 import { usePersistHydration } from "@/hooks/usePersistHydration";
 
 const AddJobDialog = dynamic(() => import("@/components/pipeline/AddJobDialog"), { ssr: false });
+const ResumePicker = dynamic(() => import("@/components/pipeline/ResumePicker"), { ssr: false });
 
 export default function DashboardLayout({
  children,
@@ -35,7 +36,11 @@ export default function DashboardLayout({
  {children}
  </main>
  </div>
- <Suspense fallback={null}><AddJobDialog /></Suspense>
+  <Suspense fallback={null}><AddJobDialog /></Suspense>
+  {/* Global mount: moveJob("applied") intercept can fire from anywhere
+      (kanban drag, JobDetail status change) — the picker must exist
+      outside the kanban page to complete those moves. */}
+  <Suspense fallback={null}><ResumePicker /></Suspense>
  </div>
  );
 }

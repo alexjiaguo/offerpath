@@ -22,7 +22,7 @@ export async function saveResumeAction(resumeId: string, resumeData: Partial<Res
  user_id: user.id,
  title: resumeData.title,
  data: resumeData.data ?? {},
- template: resumeData.template ?? "classic",
+  template: resumeData.template ?? "classic-minimal",
  theme: resumeData.theme ?? {},
  is_base: resumeData.is_base ?? false,
  section_order: resumeData.section_order ?? [],

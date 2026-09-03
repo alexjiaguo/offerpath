@@ -1,11 +1,8 @@
 import { expect, test } from "@playwright/test";
+import path from "node:path";
 
-test.use({
-  launchOptions: {
-    executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  },
-});
-
+// Portable: use the bundled Chromium (no absolute Chrome path) and write
+// screenshots into the repo's test-results dir (no absolute user paths).
 test.describe("BYOK and Register UI verification", () => {
   test("register page renders shortened center-aligned bullet points", async ({ page }) => {
     await page.goto("/register");
@@ -15,7 +12,7 @@ test.describe("BYOK and Register UI verification", () => {
     await expect(page.getByText("No credit card needed")).toBeVisible();
 
     await page.screenshot({
-      path: "/Users/boss/.gemini/antigravity/brain/30a1ca36-ea64-4595-9c81-16f6caf8ea14/register_preview.png",
+      path: path.join("test-results", "register_preview.png"),
     });
   });
 
@@ -29,7 +26,7 @@ test.describe("BYOK and Register UI verification", () => {
     await expect(page.getByRole("button", { name: /Anthropic Compatible/i })).toBeVisible();
 
     await page.screenshot({
-      path: "/Users/boss/.gemini/antigravity/brain/30a1ca36-ea64-4595-9c81-16f6caf8ea14/api_keys_preview.png",
+      path: path.join("test-results", "api_keys_preview.png"),
     });
   });
 });

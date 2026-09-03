@@ -38,11 +38,11 @@ export default function AuthLayout({
         {/* Footer */}
         <div className="mt-8 text-center text-xs text-surface-300">
           {t.auth.termsAgreement}{" "}
-          <Link href="/terms" className="text-ember-700 hover:text-ember-800 underline underline-offset-2">
+          <Link href="/terms" className="text-ember-700 hover:text-ember-700 underline underline-offset-2">
             {t.auth.termsLink}
           </Link>
           {" "}&{" "}
-          <Link href="/privacy" className="text-ember-700 hover:text-ember-800 underline underline-offset-2">
+          <Link href="/privacy" className="text-ember-700 hover:text-ember-700 underline underline-offset-2">
             {t.auth.privacyLink}
           </Link>
         </div>

@@ -6,7 +6,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { LLMProvider } from "@/lib/llmProviders";
-
 // ── Types ───────────────────────────────────────────
 
 export interface WorkExperienceEntry {
@@ -58,9 +57,13 @@ export interface UserProfile {
  workAuthorization: string;
  workExperience: WorkExperienceEntry[];
  education: EducationEntry[];
- disclosures: EmploymentDisclosures;
- tier?: "free" | "pro" | "ultra" | "team";
- aiUsesThisMonth?: number;
+  disclosures: EmploymentDisclosures;
+  tier?: "free" | "pro" | "ultra" | "team";
+  aiUsesThisMonth?: number;
+  // User preferences (persisted locally, synced to profiles.preferences).
+  notificationsEnabled?: boolean;
+  weeklyDigest?: boolean;
+  defaultTemplate?: string;
 }
 
 export interface UploadedResume {
@@ -86,6 +89,9 @@ export interface ProfileState {
  profile: UserProfile;
  uploadedResume: UploadedResume | null;
  apiKeys: ApiKeyEntry[];
+ // Preferred AI provider for getLLMConfig (null = automatic priority order).
+ defaultProvider: LLMProvider | null;
+ setDefaultProvider: (provider: LLMProvider | null) => void;
  updateProfile: (updates: Partial<UserProfile>) => void;
  addSkill: (skill: string) => void;
  removeSkill: (skill: string) => void;
@@ -140,15 +146,20 @@ export function createEmptyProfile(fullName: string, email: string): UserProfile
     },
     tier: "free",
     aiUsesThisMonth: 0,
+    notificationsEnabled: true,
+    weeklyDigest: true,
+    defaultTemplate: "classic-minimal",
   };
 }
 
 export const useProfileStore = create<ProfileState>()(
  persist(
- (set, get) => ({
- profile: createEmptyProfile("", ""),
- uploadedResume: null,
- apiKeys: [],
+  (set, get) => ({
+  profile: createEmptyProfile("", ""),
+  uploadedResume: null,
+  apiKeys: [],
+  defaultProvider: null,
+  setDefaultProvider: (provider) => set({ defaultProvider: provider }),
  updateProfile: (updates) => {
  set((state) => ({ profile: { ...state.profile, ...updates } }));
  },
@@ -161,19 +172,32 @@ export const useProfileStore = create<ProfileState>()(
  removeSkill: (skill) => {
  set((state) => ({ profile: { ...state.profile, keySkills: state.profile.keySkills.filter((s) => s !== skill) } }));
  },
- uploadResume: async (file: File) => {
- const { parseUploadedResume } = await import("@/lib/resumeUploadPipeline");
- const result = await parseUploadedResume(file);
- if (!result.ok) {
- throw new Error(result.error);
- }
- const fileType = file.name.endsWith(".pdf") ? "pdf" : file.name.endsWith(".docx") ? "docx" : "txt";
- const parsedText = [
- result.data.personal?.name,
- result.data.personal?.title,
- result.data.personal?.email,
- result.data.summary,
- ].filter(Boolean).join("\n");
+  uploadResume: async (file: File) => {
+  const { parseUploadedResume } = await import("@/lib/resumeUploadPipeline");
+  const result = await parseUploadedResume(file);
+  if (!result.ok) {
+  throw new Error(result.error);
+  }
+  const lowerName = file.name.toLowerCase();
+  const fileType = lowerName.endsWith(".pdf") ? "pdf" : lowerName.endsWith(".docx") ? "docx" : "txt";
+  // Full-fidelity text for AI context consumers (was: name/title/email/
+  // summary only — experience, education and skills never reached the LLM).
+  const stripTags = (s: string) => s.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const parsedText = [
+  result.data.personal?.name,
+  result.data.personal?.title,
+  result.data.personal?.email,
+  result.data.summary ? stripTags(result.data.summary) : "",
+  ...(result.data.experience ?? []).flatMap((e) => [
+  [e.title, e.company].filter(Boolean).join(" @ "),
+  ...(e.bullets ?? []).map(stripTags),
+  ]),
+  ...(result.data.education ?? []).map((e) =>
+  [e.degree, e.field, e.institution].filter(Boolean).join(" "),
+  ),
+  (result.data.skills ?? []).map((s) => (typeof s === "string" ? s : s.name)).join(", "),
+  (result.data.technicalSkills ?? []).map((t) => `${t.category}: ${t.skills}`).join("; "),
+  ].filter((s) => s && s.trim()).join("\n");
  const uploaded: UploadedResume = {
  fileName: file.name,
  fileSize: file.size,
@@ -198,30 +222,36 @@ export const useProfileStore = create<ProfileState>()(
  if (result.data.summary) {
    profileUpdates.targetRoleSummary = result.data.summary;
  }
- if (result.data.experience && result.data.experience.length > 0) {
-   if (!profileUpdates.currentCompany && result.data.experience[0].company) {
-     profileUpdates.currentCompany = result.data.experience[0].company;
-   }
-   profileUpdates.workExperience = result.data.experience.map((exp, i) => ({
-     id: `exp-${Date.now()}-${i}`,
-     company: exp.company || "",
-     role: exp.title || "",
-     location: exp.location || "",
-     startDate: exp.start_date || "",
-     endDate: exp.end_date || "",
-     isCurrent: !!exp.current,
-     description: (exp.bullets || []).join("\n"),
-   }));
- }
- if (result.data.education && result.data.education.length > 0) {
-   profileUpdates.education = result.data.education.map((edu, i) => ({
-     id: `edu-${Date.now()}-${i}`,
-     school: edu.institution || "",
-     degree: edu.degree || "",
-     major: edu.field || "",
-     graduationDate: edu.end_date || "",
-   }));
- }
+  if (result.data.experience && result.data.experience.length > 0) {
+    if (!profileUpdates.currentCompany && result.data.experience[0].company) {
+      profileUpdates.currentCompany = result.data.experience[0].company;
+    }
+    // Merge, don't overwrite: a re-upload must not destroy user-edited
+    // entries. Only adopt parsed experience when the profile has none.
+    if (currentProfile.workExperience.length === 0) {
+    profileUpdates.workExperience = result.data.experience.map((exp, i) => ({
+      id: `exp-${Date.now()}-${i}`,
+      company: exp.company || "",
+      role: exp.title || "",
+      location: exp.location || "",
+      startDate: exp.start_date || "",
+      endDate: exp.end_date || "",
+      isCurrent: !!exp.current,
+      description: (exp.bullets || []).join("\n"),
+    }));
+    }
+  }
+  if (result.data.education && result.data.education.length > 0) {
+    if (currentProfile.education.length === 0) {
+    profileUpdates.education = result.data.education.map((edu, i) => ({
+      id: `edu-${Date.now()}-${i}`,
+      school: edu.institution || "",
+      degree: edu.degree || "",
+      major: edu.field || "",
+      graduationDate: edu.end_date || "",
+    }));
+    }
+  }
  if (result.data.skills && result.data.skills.length > 0) {
    const extractedSkills = result.data.skills
      .map((s) => (typeof s === "string" ? s : s.name))
@@ -239,18 +269,28 @@ export const useProfileStore = create<ProfileState>()(
  clearResume: () => {
  set({ uploadedResume: null });
  },
- getProfileSummary: () => {
- const { profile, uploadedResume } = get();
- const parts = [
- `Name: ${profile.fullName}`,
- `Headline: ${profile.headline}`,
- `Experience: ${profile.yearsOfExperience} years`,
- `Current: ${profile.currentTitle} at ${profile.currentCompany}`,
- `Skills: ${profile.keySkills.join(", ")}`,
- ];
- if (uploadedResume) parts.push(`Resume: ${uploadedResume.fileName}`);
- return parts.join("\n");
- },
+  getProfileSummary: () => {
+  const { profile, uploadedResume } = get();
+  const parts = [
+  `Name: ${profile.fullName}`,
+  `Headline: ${profile.headline}`,
+  `Experience: ${profile.yearsOfExperience} years`,
+  `Current: ${profile.currentTitle} at ${profile.currentCompany}`,
+  `Skills: ${profile.keySkills.join(", ")}`,
+  ];
+  if (profile.careerGoals) parts.push(`Career goals: ${profile.careerGoals}`);
+  for (const w of profile.workExperience.slice(0, 5)) {
+  parts.push(
+  `Work: ${w.role} at ${w.company}${w.location ? ` (${w.location})` : ""}` +
+  (w.description ? ` — ${w.description.slice(0, 300)}` : "")
+  );
+  }
+  for (const e of profile.education.slice(0, 3)) {
+  parts.push(`Education: ${[e.degree, e.major, e.school].filter(Boolean).join(" ")}`);
+  }
+  if (uploadedResume) parts.push(`Resume: ${uploadedResume.fileName}`);
+  return parts.join("\n");
+  },
  addApiKey: (entry) => {
  set((state) => ({ apiKeys: [...state.apiKeys, entry] }));
  },

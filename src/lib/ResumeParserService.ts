@@ -66,9 +66,11 @@ export class ResumeParserService {
     // 1. First try splitting on separator surrounded by spaces (e.g., "Jan 2020 - Present", "2020-03 - 2021-05")
     let parts = clean.split(/\s+(?:–|—|-|to|~|至)\s+/i);
 
-    // 2. If not split, try unicode dashes or tilde or 至 with optional spaces (e.g., "2020–Present", "2020~2023", "2020至2023")
+    // 2. If not split, try unicode dashes or tilde with optional spaces
+    // (e.g., "2020–Present", "2020~2023"). 至 only splits between digits
+    // ("2020至2023") — a bare 至 inside words ("截至2023") must not split.
     if (parts.length === 1) {
-      parts = clean.split(/\s*[–—~至]\s*/);
+      parts = clean.split(/\s*[–—~]\s*|(?<=\d)\s*至\s*(?=\d)/);
     }
 
     // 3. If still not split, try "to" with optional spaces
@@ -155,21 +157,32 @@ export class ResumeParserService {
       const linkMatch = line.match(
         /^[-*•]?\s*(?:\*\*)?\[([^\]]+)\]\((https?:\/\/[^)]+)\)(?:\*\*)?[：:][\s\u3000–-]*(.*)/,
       );
-      const colonLine = linkMatch ?? line.match(
+      // Bare link with no trailing colon/description: "[Name](https://…)" must
+      // still become a project (name + url) instead of being dropped.
+      const bareLinkMatch = !linkMatch
+        ? line.match(/^[-*•]?\s*(?:\*\*)?\[([^\]]+)\]\((https?:\/\/[^)]+)\)(?:\*\*)?\s*$/)
+        : null;
+      const colonLine = linkMatch ?? bareLinkMatch ?? line.match(
         /^[-*•]?\s*([^：:(]+?)[：:][\s\u3000]*(.*)/,
       );
       if (colonLine) {
         if (current) projects.push(current);
+        // Strip markdown bold markers: the bullet prefix ([-*•]?) may eat one
+        // "*", leaving a stray ("*OfferPath**"), so remove all of them —
+        // asterisks are never legitimate project-name content here.
+        const name = (linkMatch ? linkMatch[1] : bareLinkMatch ? bareLinkMatch[1] : colonLine[1])
+          .replace(/\*/g, '')
+          .trim();
         current = {
-          name: (linkMatch ? linkMatch[1] : colonLine[1]).trim(),
-          url: linkMatch ? linkMatch[2].trim() : undefined,
+          name,
+          url: linkMatch ? linkMatch[2].trim() : bareLinkMatch ? bareLinkMatch[2].trim() : undefined,
           description: (linkMatch ? linkMatch[3] : colonLine[2] || '').trim(),
         };
         continue;
       }
 
       // Check for bold or colon format: **OfferPath**: Description or OfferPath: Description
-      const colonMatch = line.match(/^[-*•]?\s*\*\*([^*]+)\*\*[:\s–—-]*(.*)/) || line.match(/^[-*•]?\s*([^:(]+)(?:\((https?:\/\/[^)]+)\))?:\s*(.+)/);
+      const colonMatch = line.match(/^[-*•]?\s*\*\*([^*]+)\*\*[：:\s–—-]*(.*)/) || line.match(/^[-*•]?\s*([^:(]+)(?:\((https?:\/\/[^)]+)\))?:\s*(.+)/);
       if (colonMatch && !line.match(/^#{1,2}\s/)) {
         if (current) projects.push(current);
         current = {

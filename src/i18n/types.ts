@@ -81,11 +81,11 @@ export interface TranslationSchema {
     trustFourTools: string;
     trustOneWorkspace: string;
     trustAiData: string;
-    templatesEyebrow?: string;
-    templatesTitle?: string;
-    templatesHighlight?: string;
-    templatesSubtitle?: string;
-    templatesViewAll?: string;
+    templatesEyebrow: string;
+    templatesTitle: string;
+    templatesHighlight: string;
+    templatesSubtitle: string;
+    templatesViewAll: string;
     pasteDemoTabUrl: string;
     pasteDemoTabResume: string;
     pasteDemoPlaceholderUrl: string;
@@ -226,10 +226,17 @@ export interface TranslationSchema {
       title: string;
       stepsRemaining: string;
       allConfigured: string;
-      stepAddJob: string;
+      stepProfile: string;
       stepBuildResume: string;
+      stepAddJob: string;
       stepAddStory: string;
+      stepTrackCompany: string;
       stepConfigureAi: string;
+      timeSavedLabel: string;
+      timeSavedUnit: string;
+      timeSavedDesc: string;
+      hideChecklist: string;
+      showChecklist: string;
       badges: {
         pro: string;
         explorer: string;
@@ -252,9 +259,7 @@ export interface TranslationSchema {
     addJob: string;
     searchPlaceholder: string;
     exportCsv: string;
-    exportCSV: string;
     importCsv: string;
-    importCSV: string;
     analyticsBtn: string;
     filterBtn: string;
     filterTitle: string;
@@ -284,6 +289,14 @@ export interface TranslationSchema {
     columnEmpty: string;
     dragDropHint: string;
     score: string;
+    statusNew: string;
+    statusEvaluated: string;
+    statusApplied: string;
+    statusInterviewing: string;
+    statusOffered: string;
+    statusRejected: string;
+    statusDiscarded: string;
+    statusArchived: string;
     toastExportSuccess: string;
     toastExportFailed: string;
     toastImportSuccess: string;
@@ -469,9 +482,9 @@ export interface TranslationSchema {
     exportDocx: string;
     exportTxt: string;
     exportJson: string;
-    printReady?: string;
-    editableDoc?: string;
-    downloaded?: string;
+    printReady: string;
+    editableDoc: string;
+    downloaded: string;
     modes: {
       form: string;
       design: string;
@@ -743,12 +756,6 @@ export interface TranslationSchema {
     runScan: string;
     runScanBtn: string;
     scanning: string;
-    stats: {
-      jobsFound: string;
-      saved: string;
-      companies: string;
-      avgMatch: string;
-    };
     statsJobs: string;
     statsSaved: string;
     statsCompanies: string;
@@ -820,12 +827,6 @@ export interface TranslationSchema {
     title: string;
     subtitle: string;
     starStoriesBtn: string;
-    stats: {
-      activePreps: string;
-      starStories: string;
-      mockSessions: string;
-      avgScore: string;
-    };
     statsActivePreps: string;
     statsStories: string;
     statsMockSessions: string;
@@ -844,6 +845,56 @@ export interface TranslationSchema {
     bestScore: string;
     recentMocks: string;
     score: string;
+    mockFallback: string;
+    minLabel: string;
+    prep: {
+      backToPrep: string;
+      jobNotFound: string;
+      jobNotFoundDesc: string;
+      backToPipeline: string;
+      generateTitle: string;
+      generateDesc: string;
+      generating: string;
+      generateBtn: string;
+      researchTab: string;
+      questionsTab: string;
+      companyResearch: string;
+      roleAnalysis: string;
+      suggestedApproach: string;
+      mockTitle: string;
+      startMock: string;
+      noMocks: string;
+      completedSession: string;
+      inProgressSession: string;
+      scoreLabel: string;
+      regenerate: string;
+      deletePrep: string;
+      deletePrepConfirm: string;
+      standardPrepNote: string;
+      unknownCompany: string;
+    };
+    mock: {
+      title: string;
+      endSession: string;
+      readyTitle: string;
+      readyDesc: string;
+      startBtn: string;
+      preparing: string;
+      overallScore: string;
+      practiceMode: string;
+      aiAnalyzed: string;
+      outOf: string;
+      categoryBreakdown: string;
+      strengths: string;
+      improvements: string;
+      tipsTitle: string;
+      backToPrep: string;
+      answerPlaceholder: string;
+      sessionNotFound: string;
+      sessionNotFoundDesc: string;
+      youLabel: string;
+      interviewerLabel: string;
+    };
   };
   stories: {
     title: string;

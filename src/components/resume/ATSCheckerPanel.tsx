@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import { ArrowsClockwise, Target, CheckCircle, CaretRight, Warning, Sparkle, XCircle, X } from '@phosphor-icons/react';
 import type { ResumeData } from "@/types";
 import { cn } from "@/lib/utils";
-import { evaluateATS } from "@/lib/aiService";
+import { evaluateATS, getLLMConfig } from "@/lib/aiService";
+import { useProfileStore } from "@/store/profileStore";
 import { useTranslation } from "@/i18n";
 
 interface ATSResult {
@@ -25,6 +26,9 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [usedMock, setUsedMock] = useState(false);
+  // Re-render when keys change so the badge tracks reality.
+  useProfileStore((s) => s.apiKeys);
 
   const c = t.resumeStudio.atsChecker;
 
@@ -49,6 +53,9 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
     }
     setLoading(true);
     setError(null);
+    // Without an API key evaluateATS() runs the local keyword mock —
+    // badge the result instead of presenting it as an AI diagnosis.
+    setUsedMock(!getLLMConfig());
     try {
       const raw = await evaluateATS({
         resumeData,
@@ -155,6 +162,11 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
 
               {result && (
                 <div className="space-y-6">
+                  {usedMock && (
+                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[10px] font-bold uppercase tracking-widest text-amber-700">
+                      {isZh ? "本地关键词估算（演示） — 连接 API Key 获得 AI 诊断" : "Local keyword estimate (demo) — connect an API key for AI diagnosis"}
+                    </div>
+                  )}
                   {/* Score */}
                   <div className={cn("p-6 rounded-[24px] border flex items-center gap-6", scoreBg(result.score))}>
                     <div className="relative w-16 h-16 flex-shrink-0">
@@ -239,7 +251,7 @@ export default function ATSCheckerPanel({ resumeData }: ATSCheckerPanelProps) {
                   </div>
 
                   <button
-                    onClick={() => { setResult(null); setJobDescription(""); }}
+                    onClick={() => { setResult(null); setJobDescription(""); setUsedMock(false); }}
                     className="w-full py-3 rounded-xl border border-surface-200 text-[10px] font-bold uppercase tracking-widest text-surface-300 hover:text-surface-400 transition-all"
                   >
                     {c.resetAnalysis}

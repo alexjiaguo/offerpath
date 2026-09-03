@@ -68,7 +68,13 @@ export class FileParserService {
       throw new Error(`Unsupported file type: .${extension}. Supported: PDF, DOCX, DOC, TXT, MD.`);
     }
 
-    if (file.type && MIME_MAP[extension] && !GENERIC_MIMES.has(file.type) && !file.type.startsWith('text/')) {
+    // text/* bypasses validation ONLY for genuinely text-based extensions.
+    // A ".pdf" served as text/plain is a spoof (or a mislabeled file) and
+    // must fail fast here instead of dying later as "PDF parsing failed".
+    const TEXT_EXTENSIONS = new Set(["txt", "md"]);
+    const isTextBypass =
+      file.type.startsWith("text/") && TEXT_EXTENSIONS.has(extension);
+    if (file.type && MIME_MAP[extension] && !GENERIC_MIMES.has(file.type) && !isTextBypass) {
       const validMimes = MIME_MAP[extension];
       if (!validMimes.includes(file.type)) {
         throw new Error(`File MIME type (${file.type}) doesn't match expected type for .${extension} files.`);

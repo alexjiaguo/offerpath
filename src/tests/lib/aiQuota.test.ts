@@ -10,8 +10,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 function createMockSupabase(profileData: {
   tier: string | null;
-  ai_uses_this_week: number | null;
-  week_reset_at: string | null;
+  ai_uses_this_month: number | null;
+  month_reset_at: string | null;
 } | null, updateError: Error | null = null) {
   const updateMock = vi.fn().mockReturnValue({
     eq: vi.fn().mockResolvedValue({ error: updateError }),
@@ -49,8 +49,8 @@ describe("aiQuota", () => {
   it("blocks Free tier users from consuming managed AI credits (requires BYOK)", async () => {
     const supabase = createMockSupabase({
       tier: "free",
-      ai_uses_this_week: 0,
-      week_reset_at: new Date(Date.now() + 86400000).toISOString(),
+      ai_uses_this_month: 0,
+      month_reset_at: new Date(Date.now() + 86400000).toISOString(),
     });
 
     const result = await consumeAiUse(supabase, "user-free-1");
@@ -63,8 +63,8 @@ describe("aiQuota", () => {
   it("allows Pro tier users to consume managed AI credits up to limit (50)", async () => {
     const supabase = createMockSupabase({
       tier: "pro",
-      ai_uses_this_week: 10,
-      week_reset_at: new Date(Date.now() + 86400000).toISOString(),
+      ai_uses_this_month: 10,
+      month_reset_at: new Date(Date.now() + 86400000).toISOString(),
     });
 
     const result = await consumeAiUse(supabase, "user-pro-1");
@@ -77,8 +77,8 @@ describe("aiQuota", () => {
   it("blocks Pro tier users when 50 quota is exhausted and suggests Ultra / BYOK", async () => {
     const supabase = createMockSupabase({
       tier: "pro",
-      ai_uses_this_week: 50,
-      week_reset_at: new Date(Date.now() + 86400000).toISOString(),
+      ai_uses_this_month: 50,
+      month_reset_at: new Date(Date.now() + 86400000).toISOString(),
     });
 
     const result = await consumeAiUse(supabase, "user-pro-exhausted");
@@ -91,8 +91,8 @@ describe("aiQuota", () => {
   it("allows Ultra tier users to consume managed AI credits up to 250 (5x Pro)", async () => {
     const supabase = createMockSupabase({
       tier: "ultra",
-      ai_uses_this_week: 200,
-      week_reset_at: new Date(Date.now() + 86400000).toISOString(),
+      ai_uses_this_month: 200,
+      month_reset_at: new Date(Date.now() + 86400000).toISOString(),
     });
 
     const result = await consumeAiUse(supabase, "user-ultra-1");
@@ -105,8 +105,8 @@ describe("aiQuota", () => {
   it("blocks Ultra tier users when 250 quota is exhausted", async () => {
     const supabase = createMockSupabase({
       tier: "ultra",
-      ai_uses_this_week: 250,
-      week_reset_at: new Date(Date.now() + 86400000).toISOString(),
+      ai_uses_this_month: 250,
+      month_reset_at: new Date(Date.now() + 86400000).toISOString(),
     });
 
     const result = await consumeAiUse(supabase, "user-ultra-exhausted");
@@ -119,8 +119,8 @@ describe("aiQuota", () => {
     const pastDate = new Date(Date.now() - 86400000).toISOString();
     const supabase = createMockSupabase({
       tier: "pro",
-      ai_uses_this_week: 50, // previously exhausted in expired window
-      week_reset_at: pastDate,
+      ai_uses_this_month: 50, // previously exhausted in expired window
+      month_reset_at: pastDate,
     });
 
     const result = await consumeAiUse(supabase, "user-pro-reset");

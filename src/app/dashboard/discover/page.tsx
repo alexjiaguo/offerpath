@@ -331,12 +331,21 @@ export default function DiscoverPage() {
     setShowAddCompany(false);
   };
 
-  const filteredJobs = getFilteredJobs();
-  const savedJobs = getSavedJobs();
-  const topCompanies = getTopCompanies(30);
-  const industries = getUniqueIndustries();
-  const locations = getUniqueLocations();
-  const levels = getUniqueLevels();
+  // Memoized derivations: fresh arrays every render retrigger downstream
+  // effects/store subscriptions and caused max-update-depth crashes.
+  // Dependencies track the underlying store slices read by the getter methods.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const filteredJobs = useMemo(() => getFilteredJobs(), [getFilteredJobs, jobs, searchQuery, sortBy, filterIndustry, filterLocation, filterLevel, filterMinScore, activeTab]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const savedJobs = useMemo(() => getSavedJobs(), [getSavedJobs, jobs]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const topCompanies = useMemo(() => getTopCompanies(30), [getTopCompanies, companies, jobs]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const industries = useMemo(() => getUniqueIndustries(), [getUniqueIndustries, companies, jobs]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const locations = useMemo(() => getUniqueLocations(), [getUniqueLocations, jobs]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const levels = useMemo(() => getUniqueLevels(), [getUniqueLevels, jobs]);
   const latestScan = scanRuns[0];
 
   return (
@@ -378,11 +387,17 @@ export default function DiscoverPage() {
               ? "实时模式：扫描会直接读取已跟踪公司官网 / Greenhouse / Lever / Ashby / Workable 的公开职位数据。"
               : "Live mode: scans read public openings from tracked companies' Greenhouse / Lever / Ashby / Workable boards and career pages."}
           </p>
+        ) : companies.length === 0 ? (
+          <p>
+            {isZh
+              ? "还没有追踪的公司 — 在下方添加公司并填写招聘页地址（支持 Greenhouse / Lever / Ashby / Workable），再点击“运行实时扫描”拉取真实职位。"
+              : "No tracked companies yet — add one below with its career URL (Greenhouse / Lever / Ashby / Workable supported), then Run live scan pulls real openings."}
+          </p>
         ) : (
           <p>
             {isZh
-              ? "演示模式：当前列表为示例数据。为公司在设置中填写招聘页地址（支持 Greenhouse / Lever / Ashby / Workable），点击“运行实时扫描”即可拉取真实职位。"
-              : "Demo preview: listings below are sample data. Set each company's career URL (Greenhouse / Lever / Ashby / Workable supported), then Run demo scan becomes a live pull."}
+              ? "为公司填写招聘页地址（支持 Greenhouse / Lever / Ashby / Workable），点击“运行实时扫描”即可拉取真实职位。"
+              : "Set each company's career URL (Greenhouse / Lever / Ashby / Workable supported), then Run live scan pulls real openings."}
           </p>
         )}
       </div>

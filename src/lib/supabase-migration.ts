@@ -151,12 +151,44 @@ export async function migrateGuestDataToSupabase(): Promise<boolean> {
   };
 
   // If no store has any data, mark migrated and bail — there's nothing to push.
-  const hasAnyData = Object.values(slices).some((s) => {
-    if (s == null) return false;
-    if (Array.isArray(s)) return s.length > 0;
-    if (typeof s === "object") return Object.keys(s as object).length > 0;
+  // NOTE: { jobs: [], companies: [] } counts as EMPTY (nested arrays checked),
+  // otherwise empty stores trigger pointless sync calls on every fresh account.
+  // A default/blank guest profile (all "" / [] / defaults) likewise counts as
+  // empty: the profiles row is created at signup/login, and later edits sync
+  // back through the normal debounced path. Only curated user-content fields
+  // count — tier/aiUsesThisMonth/disclosure defaults are always present and
+  // must not trigger a migration by themselves.
+  const isNonBlank = (v: unknown): boolean => {
+    if (v == null) return false;
+    if (typeof v === "boolean" || typeof v === "number") return false;
+    if (Array.isArray(v)) return v.length > 0;
+    if (typeof v === "string") return v.trim().length > 0;
+    if (typeof v === "object") {
+      return Object.values(v as Record<string, unknown>).some(isNonBlank);
+    }
     return true;
-  });
+  };
+  const PROFILE_CONTENT_FIELDS = [
+    "fullName", "email", "phone", "location", "linkedin", "website",
+    "avatarUrl", "headline", "yearsOfExperience", "targetRoleSummary",
+    "currentCompany", "currentTitle", "keySkills", "careerGoals",
+    "preferredIndustries", "preferredLocations", "salaryExpectation",
+    "workAuthorization", "workExperience", "education",
+  ];
+  const profileSlice = slices.profile as Record<string, unknown> | null;
+  const profileHasData =
+    !!profileSlice &&
+    PROFILE_CONTENT_FIELDS.some((f) => isNonBlank(profileSlice[f]));
+  const hasAnyData =
+    profileHasData ||
+    (Object.entries(slices) as [StoreName, unknown][]).some(([name, s]) => {
+      if (name === "profile" || s == null) return false;
+      if (Array.isArray(s)) return s.length > 0;
+      if (typeof s === "object") {
+        return Object.values(s as Record<string, unknown>).some(isNonBlank);
+      }
+      return true;
+    });
 
   if (!hasAnyData) {
     window.localStorage.setItem(MIGRATION_FLAG, "1");
@@ -174,9 +206,83 @@ export async function migrateGuestDataToSupabase(): Promise<boolean> {
     return false;
   }
 
+  // Adopt the remapped UUIDs in the LIVE zustand stores. Without this, the
+  // in-memory jobs/resumes/stories keep their legacy ids (s1, exp-..., ...)
+  // while localStorage was just cleared — the next debounced sync would push
+  // stale ids that supabase-sync silently skips as non-UUID.
+  remapLiveStoreIds(idMap);
+
   clearStorageKeys();
   window.localStorage.setItem(MIGRATION_FLAG, "1");
   return true;
+}
+
+/**
+ * Rewrite legacy guest ids to their migrated UUIDs inside the LIVE zustand
+ * stores (idMap built by toUUID above). Called once after a successful
+ * migration so subsequent debounced syncs reference server-side rows.
+ * Dynamic imports avoid hard module cycles with the stores.
+ */
+async function remapLiveStoreIds(idMap: Map<string, string>): Promise<void> {
+  if (idMap.size === 0) return;
+  const mapped = (id: unknown) =>
+    typeof id === "string" && idMap.has(id) ? (idMap.get(id) as string) : id;
+  try {
+    const { usePipelineStore } = await import("@/store/pipelineStore");
+    usePipelineStore.setState((s) => ({
+      jobs: s.jobs.map((j) => {
+        const raw = j as unknown as Record<string, unknown>;
+        const companyId = mapped(raw.company_id);
+        const resumeId = mapped(raw.resume_id);
+        return {
+          ...j,
+          id: mapped(j.id) as string,
+          // Job.company_id / resume_id are optional strings (not null).
+          ...(typeof companyId === "string" ? { company_id: companyId } : {}),
+          ...(typeof resumeId === "string" ? { resume_id: resumeId } : {}),
+          company: j.company ? { ...j.company, id: mapped(j.company.id) as string } : j.company,
+        };
+      }),
+      companies: s.companies.map((c) => ({ ...c, id: mapped(c.id) as string })),
+    }));
+  } catch (err) {
+    logger.error("[supabase-migration] pipeline id remap failed:", err);
+  }
+  try {
+    const { useResumeStore } = await import("@/store/resumeStore");
+    useResumeStore.setState((s) => ({
+      resumes: s.resumes.map((r) => ({ ...r, id: mapped(r.id) as string })),
+    }));
+  } catch (err) {
+    logger.error("[supabase-migration] resume id remap failed:", err);
+  }
+  try {
+    const { useDiscoveryStore } = await import("@/store/discoveryStore");
+    useDiscoveryStore.setState((s) => ({
+      companies: s.companies.map((c) => ({ ...c, id: mapped(c.id) as string })),
+      jobs: s.jobs.map((j) => ({ ...j, company_id: mapped(j.company_id) as string })),
+    }));
+  } catch (err) {
+    logger.error("[supabase-migration] discovery id remap failed:", err);
+  }
+  try {
+    const { useInterviewStore } = await import("@/store/interviewStore");
+    useInterviewStore.setState((s) => ({
+      stories: s.stories.map((st) => ({ ...st, id: mapped(st.id) as string })),
+      preps: s.preps.map((p) => ({
+        ...p,
+        id: mapped(p.id) as string,
+        job_id: mapped(p.job_id) as string,
+      })),
+      mockSessions: s.mockSessions.map((m) => ({
+        ...m,
+        id: mapped(m.id) as string,
+        job_id: mapped(m.job_id) as string,
+      })),
+    }));
+  } catch (err) {
+    logger.error("[supabase-migration] interview id remap failed:", err);
+  }
 }
 
 export function isMigrationDone(): boolean {

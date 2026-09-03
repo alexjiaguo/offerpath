@@ -115,7 +115,9 @@ export async function POST(request: Request) {
     }
 
     const parsedJob = extractFallbackJob(text);
-    return NextResponse.json({ job: parsedJob });
+    // Flag keyword-guess output so the client doesn't celebrate it as a
+    // successful extraction.
+    return NextResponse.json({ job: parsedJob, fallback: true });
   } catch (error) {
     logger.error("Job parse error:", error);
     return NextResponse.json({ error: "Failed to parse job description" }, { status: 500 });

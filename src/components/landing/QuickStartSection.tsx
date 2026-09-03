@@ -97,7 +97,7 @@ export function QuickStartSection() {
                 href="/preview-templates"
                 className="ds-btn-primary w-full text-xs font-semibold py-3 flex items-center justify-center gap-2"
               >
-                <span>{isZh ? "立即在线体验简历工坊" : "Launch Web Studio"}</span>
+                <span>{isZh ? "浏览简历模板" : "Browse Templates"}</span>
                 <ArrowRight weight="bold" className="w-3.5 h-3.5" />
               </Link>
             </div>

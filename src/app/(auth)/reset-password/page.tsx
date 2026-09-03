@@ -31,8 +31,20 @@ export default function ResetPasswordPage() {
         if (active) setStatus("no-session");
         return;
       }
-      // Supabase detects the recovery hash in the URL and establishes a
-      // session automatically (detectSessionInUrl defaults to true).
+      // New-style Supabase links deliver ?code=... (PKCE) and require an
+      // explicit code exchange; legacy links carry a #access_token hash
+      // that the client picks up automatically (detectSessionInUrl).
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      if (code) {
+        const { error } = await sb.auth.exchangeCodeForSession(code);
+        if (error) {
+          if (active) setStatus("no-session");
+          return;
+        }
+        // Drop the single-use code from the URL so refresh/retry can't replay it.
+        window.history.replaceState(null, "", window.location.pathname);
+      }
       const {
         data: { user },
       } = await sb.auth.getUser();

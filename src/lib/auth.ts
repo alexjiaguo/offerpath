@@ -50,6 +50,7 @@ function resetAllStores(fullName: string, email: string): void {
     profile: createEmptyProfile(fullName, email),
     uploadedResume: null,
     apiKeys: [],
+    defaultProvider: null,
   });
   usePipelineStore.setState({ jobs: [], companies: [] });
   useResumeStore.setState({
@@ -105,8 +106,8 @@ async function ensureProfileRow(
         email,
         avatar_url: "",
         tier: "free",
-        ai_uses_this_week: 0,
-        week_reset_at: new Date().toISOString(),
+        ai_uses_this_month: 0,
+        month_reset_at: new Date().toISOString(),
         onboarding_completed: false,
         preferences: {},
       },
@@ -143,7 +144,7 @@ export async function signInWithEmail(email: string, password: string): Promise<
   setMockAuthSession(email);
 }
 
-export async function signUpWithEmail(email: string, password: string, metadata?: { full_name?: string }): Promise<void> {
+export async function signUpWithEmail(email: string, password: string, metadata?: { full_name?: string }): Promise<{ needsConfirmation: boolean }> {
   const fullName = metadata?.full_name ?? "";
 
   if (isSupabaseConfigured()) {
@@ -164,11 +165,14 @@ export async function signUpWithEmail(email: string, password: string, metadata?
 
     // Brand-new account: clean slate with the user's info.
     resetAllStores(authName, authEmail);
-    return;
+    // No session + a user means Supabase is waiting on email confirmation —
+    // callers must NOT push to /dashboard as if signed in.
+    return { needsConfirmation: !data.session };
   }
   // Mock auth: brand-new account, clean slate.
   resetAllStores(fullName, email);
   setMockAuthSession(email);
+  return { needsConfirmation: false };
 }
 
 export async function signOut(): Promise<void> {
@@ -179,4 +183,31 @@ export async function signOut(): Promise<void> {
   clearMockAuthSession();
   // After signing out, treat the visitor as a guest again.
   setGuestSession();
+}
+
+/**
+ * Permanently deletes everything OfferPath holds for this browser identity:
+ * all stores, persisted localStorage slices, and the Supabase session/token.
+ * The Supabase Auth user row itself cannot be deleted client-side (that needs
+ * the service-role key), so the settings UI labels this "Delete my data",
+ * not "Delete my account".
+ */
+export async function deleteLocalAccountData(): Promise<void> {
+  resetAllStores("", "");
+  useInterviewStore.setState({ stories: [], preps: [], mockSessions: [], storySearch: "" });
+  if (typeof window !== "undefined") {
+    const keys: string[] = [];
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const k = window.localStorage.key(i);
+      if (k && (k.startsWith("offerpath") || k === "offerpath-locale")) keys.push(k);
+    }
+    for (const k of keys) {
+      try {
+        window.localStorage.removeItem(k);
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  await signOut();
 }

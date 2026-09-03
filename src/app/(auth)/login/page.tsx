@@ -128,7 +128,7 @@ function LoginForm() {
               else setInfo(t.auth.resetPasswordSent);
             } catch (err) { setError(err instanceof Error ? err.message : "Failed to send reset email."); }
           }}
-          className="text-xs text-ember-700 hover:text-ember-800 transition-colors block text-right"
+          className="text-xs text-ember-700 hover:text-ember-700 transition-colors block text-right"
         >
           {t.auth.forgotPassword}
         </a>
@@ -165,7 +165,7 @@ function LoginForm() {
         {t.auth.dontHaveAccount}{" "}
         <Link
           href="/register"
-          className="text-ember-700 hover:text-ember-800 font-semibold transition-colors"
+          className="text-ember-700 hover:text-ember-700 font-semibold transition-colors"
         >
           {t.auth.signUpFree}
         </Link>

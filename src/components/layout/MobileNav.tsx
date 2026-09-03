@@ -22,13 +22,18 @@ import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
  ═══════════════════════════════════════════════════ */
 
 export default function MobileNav() {
-  const { t } = useTranslation();
+  const { t, isZh } = useTranslation();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const fullName = useProfileStore((s) => s.profile.fullName);
   const email = useProfileStore((s) => s.profile.email);
   const navSections = getNavItems(t);
+  const initials =
+    fullName.split(" ").filter(Boolean).map((n) => n[0]).slice(0, 2).join("").toUpperCase() ||
+    (isZh ? "访" : "G");
+  const displayName = fullName || (isZh ? "访客" : "Guest");
+  const displayEmail = email || (isZh ? "未登录" : "Not signed in");
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -83,13 +88,13 @@ export default function MobileNav() {
               />
             </div>
             <span className="text-base font-bold tracking-tight text-surface-400">
-              Offer<span className="text-ember-600">Path</span>
+              OfferPath
             </span>
           </Link>
           <button
             onClick={() => setIsOpen(false)}
             className="p-1.5 rounded-md text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all"
-            aria-label="Close navigation menu"
+            aria-label={isZh ? "关闭导航菜单" : "Close navigation menu"}
           >
             <X className="w-5 h-5" />
           </button>
@@ -171,13 +176,13 @@ export default function MobileNav() {
         {/* Footer */}
         <div className="p-4 border-t border-surface-200">
           <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-8 h-8 rounded-md bg-surface-400 flex items-center justify-center text-xs font-bold text-white">
-              U
+            <div className="w-8 h-8 rounded-md bg-surface-400 flex items-center justify-center text-xs font-bold text-white uppercase">
+              {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{fullName || "Guest"}</p>
+              <p className="text-sm font-medium truncate">{displayName}</p>
               <p className="text-[10px] text-surface-300 truncate">
-                {email || "Not signed in"}
+                {displayEmail}
               </p>
             </div>
           </div>
@@ -189,11 +194,11 @@ export default function MobileNav() {
  return (
  <>
  {/* Hamburger Button — stays in place inside the Topbar */}
- <button
- onClick={() => setIsOpen(true)}
- className="md:hidden p-2 rounded-md text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all"
- aria-label="Open navigation menu"
- >
+  <button
+  onClick={() => setIsOpen(true)}
+  className="md:hidden p-2 rounded-md text-surface-300 hover:text-surface-400 hover:bg-surface-100 transition-all"
+  aria-label={isZh ? "打开导航菜单" : "Open navigation menu"}
+  >
  <List className="w-5 h-5" />
  </button>
 

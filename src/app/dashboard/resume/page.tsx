@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { ArrowLeft, Briefcase, CaretRight, Clock, Copy, FileText, MapPin, Plus, Star, Sparkle, Trash, UploadSimple } from '@phosphor-icons/react';
+import { useRouter, useSearchParams } from "next/navigation";
+import { ArrowLeft, Briefcase, CaretRight, Clock, Copy, FileText, MagnifyingGlass, MapPin, Plus, Star, Sparkle, Trash, UploadSimple } from '@phosphor-icons/react';
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
 import { useResumeStore } from "@/store/resumeStore";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { ATSScoreInline } from "@/components/pipeline/ATSScoreBadge";
 import { TEMPLATE_CONFIGS } from "@/components/resume/templates/config";
 import { Suspense, useState } from "react";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
 import Image from "next/image";
@@ -30,20 +31,22 @@ function TemplateThumbnail({ templateId, thumbnail }: { templateId: string; thum
 
 function ResumePageContent() {
   const { t, isZh } = useTranslation();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const tailorForJobId = searchParams.get("tailorFor");
 
   const { getJobById: getPipelineJob } = usePipelineStore();
   const { getJobById: getDiscoveryJob } = useDiscoveryStore();
   const { resumes, getATSScoreView, duplicateResume, deleteResume } = useResumeStore();
-  const searchQuery = usePipelineStore((s) => s.filters.search);
+  // Local search — the pipeline Topbar filter must not drive this list.
+  const [resumeSearch, setResumeSearch] = useState("");
 
   const filteredResumes = resumes.filter(
     (resume) =>
-      !searchQuery ||
-      resume.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      !resumeSearch ||
+      resume.title.toLowerCase().includes(resumeSearch.toLowerCase()) ||
       (resume.data.personal?.name &&
-        resume.data.personal.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        resume.data.personal.name.toLowerCase().includes(resumeSearch.toLowerCase()))
   );
 
   // Check both pipeline and discovery stores for the tailor job
@@ -64,7 +67,13 @@ function ResumePageContent() {
   const handleUseAsBase = (resumeId: string) => {
     if (!tailorForJobId || !tailorJob) return;
     const newTitle = [tailorJob.company?.name, tailorJob.title].filter(Boolean).join(" — ");
-    duplicateResume(resumeId, newTitle);
+    // duplicateResume returns the new id — take the user straight to the
+    // tailored copy instead of silently dropping it into the list.
+    const newId = duplicateResume(resumeId, newTitle);
+    if (newId) {
+      toast.success(isZh ? `已创建定制副本：${newTitle}` : `Tailored copy created: ${newTitle}`);
+      router.push(`/dashboard/resume/${newId}`);
+    }
   };
 
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -144,13 +153,26 @@ function ResumePageContent() {
       {/* Existing Assets Grid */}
       {resumes.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400">
-            {tailorJob ? (isZh ? "可用于定制的基础简历" : "Resumes you can tailor") : (isZh ? "我的简历库" : "Your resumes")}
-          </h3>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400">
+              {tailorJob ? (isZh ? "可用于定制的基础简历" : "Resumes you can tailor") : (isZh ? "我的简历库" : "Your resumes")}
+            </h3>
+            <div className="relative sm:w-64">
+              <MagnifyingGlass weight="regular" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-300" />
+              <input
+                type="text"
+                value={resumeSearch}
+                onChange={(e) => setResumeSearch(e.target.value)}
+                placeholder={isZh ? "搜索简历…" : "Search resumes…"}
+                aria-label={isZh ? "搜索简历" : "Search resumes"}
+                className="w-full pl-9 pr-3 py-1.5 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 placeholder:text-surface-300 focus:outline-none focus:border-surface-400 transition-all font-sans"
+              />
+            </div>
+          </div>
           {filteredResumes.length === 0 ? (
             <div className="card-editorial p-10 text-center">
               <p className="text-xs font-mono text-surface-300">
-                {isZh ? `未找到匹配 “${searchQuery}” 的简历` : `No resumes matching "${searchQuery}" found.`}
+                {isZh ? `未找到匹配 “${resumeSearch}” 的简历` : `No resumes matching "${resumeSearch}" found.`}
               </p>
             </div>
           ) : (
@@ -206,17 +228,14 @@ function ResumePageContent() {
                         </button>
                       ) : (
                         <>
-                          <Link
-                            href={`/dashboard/resume/${resume.id}`}
-                            className="btn-editorial-secondary flex-1 text-center"
-                          >
-                            {t.resume.editBtn}
-                          </Link>
+                          {/* Single entry point: the studio contains both the
+                              editor and the live preview (the old Edit/Preview
+                              buttons linked to the identical URL). */}
                           <Link
                             href={`/dashboard/resume/${resume.id}`}
                             className="btn-editorial-primary flex-1 text-center"
                           >
-                            {t.resume.previewBtn}
+                            {t.resume.editBtn}
                           </Link>
                           <button
                             onClick={() => setConfirmDeleteId(resume.id)}

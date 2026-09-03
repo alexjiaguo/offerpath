@@ -96,7 +96,13 @@ export default function AddJobDialog() {
     }
     const data = await res.json();
     if (data.job && applyParsedJob(data.job)) {
-      toast.success(isZh ? "岗位信息提取成功！" : "Job details extracted!");
+      if (data.fallback) {
+        toast.message(
+          isZh ? "仅做了关键词猜测，请核对并补全岗位信息。" : "Only keyword guesses found — please review and complete the fields."
+        );
+      } else {
+        toast.success(isZh ? "岗位信息提取成功！" : "Job details extracted!");
+      }
     } else {
       toast.error(isZh ? "未能在文本中找到有效职位字段。" : "No job fields found in that text.");
     }
@@ -105,8 +111,10 @@ export default function AddJobDialog() {
   const handleEvaluate = async () => {
     if (mode === "url") {
       const trimmedUrl = url.trim();
-      if (!/^https?:\/\/.+/.test(trimmedUrl)) {
-        toast.error(isZh ? "请输入以 http:// 或 https:// 开头的有效网址" : "Please enter a valid URL starting with http:// or https://");
+      // The fetch endpoint only allows public HTTPS (SSRF guard) — reject
+      // anything else up front instead of failing server-side.
+      if (!/^https:\/\/.+/.test(trimmedUrl)) {
+        toast.error(isZh ? "请输入以 https:// 开头的有效网址" : "Please enter a valid URL starting with https://");
         return;
       }
       setIsEvaluating(true);
@@ -149,8 +157,8 @@ export default function AddJobDialog() {
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    if (url.trim() && !/^https?:\/\/.+/.test(url.trim())) {
-      toast.error(isZh ? "请输入以 http:// 或 https:// 开头的有效网址" : "Please enter a valid URL starting with http:// or https://");
+    if (url.trim() && !/^https:\/\/.+/.test(url.trim())) {
+      toast.error(isZh ? "请输入以 https:// 开头的有效网址" : "Please enter a valid URL starting with https://");
       return;
     }
 
