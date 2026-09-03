@@ -11,37 +11,38 @@
 - **Project path**: `/Volumes/Download/ai-projects/side-hustles/job-hunt-os/products/offerpath`
 - **From agent**: Antigravity
 - **To agent**: any
-- **Date**: 2026-09-03 21:09 CST
-- **Session summary**: Successfully audited and resolved OpenCode in-progress changes, implemented Option B (Interview Hub Supabase Sync), implemented Option C (Gamified Onboarding Checklist Widget on Dashboard with 5 milestones, tier badges, estimated time-saved metric, and persistence), added unit tests (257/257 passing), verified production build (`npm run build`), and committed changes to `audit/fix-batch-1` without merging.
+- **Date**: 2026-09-03 22:39 CST
+- **Session summary**: Successfully audited and resolved OpenCode in-progress changes, implemented Option B (Interview Hub Supabase Sync), implemented Option C (Gamified Onboarding Checklist Widget on Dashboard with 5 milestones, tier badges, estimated time-saved metric, and persistence), ran full 62-feature audit, merged `audit/fix-batch-1` into `main`, verified 257/257 tests pass, and pushed `main` to `origin/main` triggering Vercel production deployment.
 
 ## Git State (verified against actual `git status`)
 
-- **Branch**: `audit/fix-batch-1`
-- **HEAD commit**: `5decf82` (`feat(interview,dashboard): add interview supabase sync and gamified onboarding widget`)
-- **Prior commit**: `82e72c7` (`fix(pipeline): resolve re-render loops, settings hydration race, and kanban sorting`)
-- **Remote**: Not merged to `main` yet per user instructions ("Please commit the changes but don't merge yet").
+- **Branch**: `main`
+- **HEAD commit**: Merge commit of `audit/fix-batch-1` into `main`
+- **Remote**: Pushing to `origin/main` (triggers Vercel production deployment at `https://offerpath.cc.cd`)
 - **Working Tree**: Clean (`nothing to commit, working tree clean`).
 - **Stashes**: `stash@{0}: On main: main branch uncommitted changes (favicon.svg, logo-mark.svg deletion)` — pre-existing, untouched.
 
 ### Verified vs. Assumed
 
 - **Verified**:
-  - `git branch --show-current` returns `audit/fix-batch-1`.
+  - `git branch --show-current` returns `main`.
   - `git status` shows clean working tree.
-  - `npm test` runs 34 test suites and passes 257/257 tests.
+  - `npm test` runs 34 test suites and passes 257/257 tests on `main`.
   - `npx tsc --noEmit` exits clean with 0 errors.
   - `npm run lint` exits clean with 0 errors and 0 warnings.
   - `npm run build` compiles clean with all 31 routes generated.
+  - Pre-publish security sweep scanned zero secrets in diff or tracked files.
 - **Assumed**:
-  - Merge into `main` will be performed when the user instructs to do so.
+  - Vercel GitHub CI integration automatically builds and deploys `origin/main` upon git push.
 
 ## What Was Done
 
 1. Completed and verified OpenCode batch 1 & 2 fixes: resolved re-render loops in `/dashboard/discover`, fixed hydration race on settings page, and verified custom Kanban sorting in pipeline store.
 2. Built **Option B**: Created `src/app/actions/interview.ts` with authenticated Supabase server actions for stories, preps, and mock sessions. Wired them into `src/store/interviewStore.ts` with non-blocking error handling and added unit tests in `src/tests/lib/supabaseSync.test.ts`.
 3. Built **Option C**: Created `src/components/dashboard/OnboardingChecklistWidget.tsx` featuring 5-step milestone tracking, dynamic time-saved metric, tiered status badges, collapse state persistence, and full bilingual i18n support. Replaced hardcoded inline checklist in `src/app/dashboard/page.tsx` and added unit test suite `src/tests/components/OnboardingChecklist.test.tsx`.
-4. Kept Stripe checkout untouched as requested.
-5. Committed all changes to branch `audit/fix-batch-1` with commit `5decf82` without merging.
+4. Performed comprehensive 62-feature audit documented in `.sessions/feature-audit_session_2026-09-03.md`.
+5. Merged branch `audit/fix-batch-1` into `main` with approval.
+6. Pushed `main` to `origin/main` to publish the project to Vercel.
 
 ## In Progress
 
@@ -49,8 +50,8 @@
 
 ## Dead Ends & Ruled-Out Approaches
 
-- Do not auto-commit without explicit user approval (Git Protocol).
-- Do not bypass sandbox on commands that don't need network/system access, except Git operations on this external `/Volumes/Download` drive which require `BypassSandbox: true` due to filesystem lock restrictions.
+- Do NOT attempt to run `vercel` CLI directly without credentials; pushing to `origin/main` automatically triggers Vercel CI/CD via GitHub integration.
+- Do not auto-commit or merge without explicit user approval (Git Protocol).
 
 ## Do Not Touch
 
@@ -61,13 +62,12 @@
 
 ## Next Steps
 
-1. Merge `audit/fix-batch-1` into `main` when approved by the user.
-2. Review deployment on Vercel once pushed to `origin/main`.
-3. Plan next backlog items (e.g. Stripe checkout / billing integration when ready).
+1. Verify live Vercel production deployment at `https://offerpath.cc.cd` completes successfully.
+2. Future backlog: Stripe billing checkout integration for Pro/Ultra subscriptions when user requests.
 
 ## Decisions Made
 
-- Committed changes to current feature branch `audit/fix-batch-1` and withheld merging to `main` until explicitly requested.
+- Merged `audit/fix-batch-1` cleanly into `main` with merge commit and pushed to `origin/main` to trigger Vercel deployment.
 
 ## Environment Notes
 
@@ -77,7 +77,7 @@
 - **Node version**: `v25.6.0`
 - **Framework**: Next.js 15.5.15 (App Router)
 - **Database**: Supabase PostgreSQL
-- **Hosting**: Vercel
+- **Hosting**: Vercel (`https://offerpath.cc.cd`)
 
 ## Known Issues / Blockers
 
