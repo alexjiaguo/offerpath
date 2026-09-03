@@ -79,7 +79,7 @@ export function PasteDemo() {
     <div className="w-full max-w-2xl mx-auto">
       <form
         onSubmit={handleSubmit}
-        className="relative flex items-center gap-2 p-2 rounded-md bg-white border border-surface-200 shadow-[0_18px_40px_-20px_rgba(15,23,42,0.18)] focus-within:border-ember-300 focus-within:shadow-[0_18px_40px_-18px_rgba(194,65,12,0.28)] transition-all"
+        className="relative flex items-center gap-2 p-2 rounded-md bg-white border border-surface-200 shadow-[0_18px_40px_-20px_rgba(15,23,42,0.18)] focus-within:border-ember-200 focus-within:shadow-[0_18px_40px_-18px_rgba(194,65,12,0.28)] transition-all"
       >
         <div className="pl-4 pr-2 text-surface-300">
           {input.startsWith("http") ? <LinkIcon weight="bold" className="w-4 h-4" /> : <TextT weight="bold" className="w-4 h-4" />}

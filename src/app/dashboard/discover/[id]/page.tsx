@@ -2,8 +2,10 @@
 
 import { use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, BookmarkSimple, ArrowSquareOut, Briefcase, Buildings, Target, CheckCircle, CaretRight, Clock, MapPin, Globe, PaperPlaneRight, Star, Sparkle } from '@phosphor-icons/react';
 import { useDiscoveryStore } from "@/store/discoveryStore";
+import { usePipelineStore } from "@/store/pipelineStore";
 import { cn } from "@/lib/utils";
 
 /* ═══════════════════════════════════════════════════
@@ -15,15 +17,40 @@ export default function DiscoverJobDetailPage({
 }: {
  params: Promise<{ id: string }>;
 }) {
- const { id } = use(params);
- const job = useDiscoveryStore((s) => s.jobs.find((j) => j.id === id));
+  const { id } = use(params);
+  const router = useRouter();
+  const job = useDiscoveryStore((s) => s.jobs.find((j) => j.id === id));
  const company = useDiscoveryStore((s) =>
   job ? s.companies.find((c) => c.id === job.company_id) : undefined
  );
  const relatedJobs = useDiscoveryStore((s) =>
   job ? s.jobs.filter((j) => j.company_id === job.company_id && j.id !== job.id) : []
  );
- const toggleSaved = useDiscoveryStore((s) => s.toggleSaved);
+  const toggleSaved = useDiscoveryStore((s) => s.toggleSaved);
+
+  // Same prefill + dialog flow as the discover list cards. The AddJobDialog
+  // is mounted globally in dashboard/layout.tsx, so opening it here and
+  // navigating to the pipeline lands with the dialog ready to confirm.
+  const trackDiscoveredJob = () => {
+  if (!job) return;
+  const { setAddJobPrefill, setAddJobDialogOpen } = usePipelineStore.getState();
+  setAddJobPrefill({
+  title: job.title,
+  company: {
+  id: `prefill-${job.id}`,
+  user_id: "demo",
+  name: job.company_name,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  },
+  location: job.location,
+  url: job.url || undefined,
+  salary_range: job.salary_range || undefined,
+  description: job.description || undefined,
+  });
+  setAddJobDialogOpen(true);
+  router.push("/dashboard/pipeline");
+  };
 
  if (!job) {
  return (
@@ -136,12 +163,12 @@ export default function DiscoverJobDetailPage({
  >
  <ArrowSquareOut className="w-4 h-4" /> View Original
  </a>
- <Link
- href={`/dashboard/pipeline?addJob=${encodeURIComponent(job.title)}&company=${encodeURIComponent(job.company_name)}`}
- className="flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity ml-auto"
- >
- <PaperPlaneRight className="w-4 h-4" /> Add to Pipeline
- </Link>
+  <button
+  onClick={trackDiscoveredJob}
+  className="flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 transition-opacity ml-auto"
+  >
+  <PaperPlaneRight className="w-4 h-4" /> Add to Pipeline
+  </button>
  </div>
  </div>
 

@@ -167,7 +167,7 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => avatarInputRef.current?.click()}
-              className="text-xs text-ember-700 hover:text-ember-800 mt-1 transition-colors underline font-medium"
+              className="text-xs text-ember-700 hover:text-ember-700 mt-1 transition-colors underline font-medium"
             >
               {t.settings.uploadPhotoBtn}
             </button>

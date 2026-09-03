@@ -23,6 +23,9 @@ export interface InterviewState {
  stories: Story[];
  preps: InterviewPrep[];
  mockSessions: MockSession[];
+ // Global story-bank search, driven by the Topbar on /dashboard/interview routes.
+ storySearch: string;
+ setStorySearch: (query: string) => void;
 
  // Story Bank Actions
  addStory: (story: Omit<Story, "id" | "user_id" | "used_count" | "created_at" | "updated_at">) => string;
@@ -365,10 +368,12 @@ function generateHeuristicFeedback(): MockFeedback {
 
 export const useInterviewStore = create<InterviewState>()(
  persist(
- (set, get) => ({
- stories: [],
- preps: [],
- mockSessions: [],
+  (set, get) => ({
+  stories: [],
+  preps: [],
+  mockSessions: [],
+  storySearch: "",
+  setStorySearch: (query) => set({ storySearch: query }),
 
  // ── Story Bank CRUD ──
 
@@ -632,12 +637,14 @@ export const useInterviewStore = create<InterviewState>()(
  set((state) => ({
  mockSessions: state.mockSessions.map((s) => {
  if (s.id !== sessionId) return s;
- return {
- ...s,
- score: feedback.overall_score,
- feedback,
- duration_seconds: Math.max(duration, 300),
- };
+  return {
+  ...s,
+  score: feedback.overall_score,
+  feedback,
+  // Record the real elapsed time. (Previously Math.max(duration, 300),
+  // which reported every 30-second session as 5 minutes.)
+  duration_seconds: Math.max(duration, 0),
+  };
  }),
  }));
  },
@@ -670,11 +677,12 @@ export const useInterviewStore = create<InterviewState>()(
  {
  name: "offerpath-interview",
  skipHydration: true,
- partialize: (state) => ({
- stories: state.stories,
- preps: state.preps,
- mockSessions: state.mockSessions,
- }),
+  partialize: (state) => ({
+  stories: state.stories,
+  preps: state.preps,
+  mockSessions: state.mockSessions,
+  // storySearch intentionally transient — no stale query after reload.
+  }),
  }
  )
 );

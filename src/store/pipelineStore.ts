@@ -229,18 +229,25 @@ export const usePipelineStore = create<PipelineState>()(
  get().moveJobDirect(id, newStatus);
  },
 
-  moveJobDirect: (id, newStatus) => {
-    let appliedAt: string | undefined;
-    let interviewedAt: string | undefined;
-    let offeredAt: string | undefined;
+   moveJobDirect: (id, newStatus) => {
+     let appliedAt: string | undefined;
+     let interviewedAt: string | undefined;
+     let offeredAt: string | undefined;
 
-    set((state) => ({
-      jobs: state.jobs.map((j) => {
-        if (j.id !== id) return j;
-        const updates: Partial<Job> = {
-          status: newStatus,
-          updated_at: new Date().toISOString(),
-        };
+     set((state) => {
+       // Next order at the end of the target column (keeps getJobsByStatus sort stable)
+       const targetMax = state.jobs.reduce(
+         (max, j) => (j.id !== id && j.status === newStatus ? Math.max(max, j.kanban_order) : max),
+         -1
+       );
+       return {
+       jobs: state.jobs.map((j) => {
+         if (j.id !== id) return j;
+         const updates: Partial<Job> = {
+           status: newStatus,
+           kanban_order: targetMax + 1,
+           updated_at: new Date().toISOString(),
+         };
         // Set timestamps for lifecycle events
         if (newStatus === "applied" && !j.applied_at) {
           appliedAt = new Date().toISOString();
@@ -265,7 +272,8 @@ export const usePipelineStore = create<PipelineState>()(
         
         return { ...j, ...updates };
       }),
-    }));
+      };
+    });
     
     // Background sync
     updateJobStatusAction(id, newStatus, {
@@ -275,38 +283,39 @@ export const usePipelineStore = create<PipelineState>()(
     }).catch(err => logger.error("Failed to sync status update to server", err));
   },
 
- reorderJobs: (activeId, overId, newStatus) => {
- set((state) => {
- const jobs = [...state.jobs];
- const activeIdx = jobs.findIndex((j) => j.id === activeId);
- if (activeIdx === -1) return state;
+  reorderJobs: (activeId, overId, newStatus) => {
+  set((state) => {
+  const remaining = state.jobs.filter((j) => j.id !== activeId);
+  const active = state.jobs.find((j) => j.id === activeId);
+  if (!active) return state;
 
- // Update status
- jobs[activeIdx] = {
- ...jobs[activeIdx],
- status: newStatus,
- updated_at: new Date().toISOString(),
- };
+  const moved: Job = {
+  ...active,
+  status: newStatus,
+  updated_at: new Date().toISOString(),
+  };
 
- // Reorder within column
- const columnJobs = jobs
- .filter((j) => j.status === newStatus)
- .sort((a, b) => a.kanban_order - b.kanban_order);
+  // Insert before the drop target (which lives in `remaining`).
+  // Dropping on empty column space passes the column id as overId,
+  // which matches no job → append at the end of that column.
+  const overIdx = remaining.findIndex((j) => j.id === overId);
+  let merged: Job[];
+  if (overIdx === -1) {
+  merged = [...remaining, moved];
+  } else {
+  merged = [...remaining.slice(0, overIdx), moved, ...remaining.slice(overIdx)];
+  }
 
- const overIdx = columnJobs.findIndex((j) => j.id === overId);
- if (overIdx !== -1) {
- // Place after the target
- columnJobs.forEach((j, i) => {
- const jobIdx = jobs.findIndex((jj) => jj.id === j.id);
- if (jobIdx !== -1) {
- jobs[jobIdx] = { ...jobs[jobIdx], kanban_order: i };
- }
- });
- }
+  // Renumber kanban_order within the target column so
+  // getJobsByStatus (sorted by kanban_order) reflects the drop position.
+  let order = 0;
+  const jobs = merged.map((j) =>
+  j.status === newStatus ? { ...j, kanban_order: order++ } : j
+  );
 
- return { jobs };
- });
- },
+  return { jobs };
+  });
+  },
 
  // ── Filters ──
 

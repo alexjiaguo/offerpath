@@ -23,6 +23,14 @@ const COMPETENCY_OPTIONS = [
   "problem-solving",
 ];
 
+export const DEFAULT_COMPETENCY = "leadership";
+
+export function normalizeCompetency(value: unknown): string {
+  return typeof value === "string" && COMPETENCY_OPTIONS.includes(value)
+    ? value
+    : DEFAULT_COMPETENCY;
+}
+
 interface StoryDialogProps {
   open: boolean;
   onClose: () => void;

@@ -14,6 +14,7 @@ const HEADERS = [
  "Tier",
  "Salary Range",
  "Notes",
+ "Description",
  "Date Added"
 ];
 
@@ -39,9 +40,10 @@ export function exportJobsToCSV(jobs: Job[]): string {
  escapeCSVValue(job.status),
  escapeCSVValue(job.score || ""),
  escapeCSVValue(job.tier || ""),
- escapeCSVValue(job.salary_range || ""),
- escapeCSVValue(job.notes || ""),
- escapeCSVValue(job.created_at)
+  escapeCSVValue(job.salary_range || ""),
+  escapeCSVValue(job.notes || ""),
+  escapeCSVValue(job.description || ""),
+  escapeCSVValue(job.created_at)
  ];
  lines.push(row.join(","));
  }
@@ -75,8 +77,38 @@ export function parseCSVLine(line: string): string[] {
  return result;
 }
 
+// Split raw CSV text into records, respecting quoted fields that may
+// contain embedded newlines. (Naive text.split("\n") corrupts any row
+// whose notes/description contain a line break.)
+export function splitCSVRecords(csvText: string): string[] {
+ const records: string[] = [];
+ let current = "";
+ let inQuotes = false;
+
+ for (let i = 0; i < csvText.length; i++) {
+ const char = csvText[i];
+ if (char === '"') {
+ if (inQuotes && csvText[i + 1] === '"') {
+ current += '""';
+ i++; // keep escaped quote verbatim for parseCSVLine
+ } else {
+ inQuotes = !inQuotes;
+ current += char;
+ }
+ } else if ((char === "\n" || char === "\r") && !inQuotes) {
+ if (char === "\r" && csvText[i + 1] === "\n") i++;
+ records.push(current);
+ current = "";
+ } else {
+ current += char;
+ }
+ }
+ records.push(current);
+ return records.filter((r) => r.trim().length > 0);
+}
+
 export function importJobsFromCSV(csvText: string): Omit<Job, "id" | "user_id" | "kanban_order" | "created_at" | "updated_at">[] {
- const lines = csvText.split(/\r?\n/).filter(line => line.trim().length > 0);
+ const lines = splitCSVRecords(csvText);
  if (lines.length <= 1) return [];
 
  // Parse header to map columns
@@ -109,10 +141,21 @@ export function importJobsFromCSV(csvText: string): Omit<Job, "id" | "user_id" |
  statusVal = "offered";
  }
 
- const scoreVal = parseFloat(row[headerIndices["score"]] || row[headerIndices["match score"]] || row[5] || "") || undefined;
- const tierVal = parseInt(row[headerIndices["tier"]] || row[6] || "") || undefined;
- const salaryVal = row[headerIndices["salary range"]] || row[headerIndices["salary_range"]] || row[headerIndices["salary"]] || row[7] || "";
- const notesVal = row[headerIndices["notes"]] || row[8] || "";
+  const rawScore = (row[headerIndices["score"]] || row[headerIndices["match score"]] || row[5] || "").trim();
+  // parseFloat(...) || undefined drops a legitimate score of 0 (falsy).
+  const parsedScore = rawScore === "" ? NaN : parseFloat(rawScore);
+  const scoreVal = Number.isFinite(parsedScore) ? parsedScore : undefined;
+  const rawTier = (row[headerIndices["tier"]] || row[6] || "").trim();
+  const parsedTier = rawTier === "" ? NaN : parseInt(rawTier, 10);
+  // Clamp to the valid 1-3 tier range so JobCard never renders "T99".
+  const tierVal = Number.isFinite(parsedTier)
+  ? Math.min(3, Math.max(1, parsedTier))
+  : undefined;
+  const salaryVal = row[headerIndices["salary range"]] || row[headerIndices["salary_range"]] || row[headerIndices["salary"]] || row[7] || "";
+  const notesVal = row[headerIndices["notes"]] || row[8] || "";
+  // "Description" is the newest column; fall back to positional index 9 so
+  // both new exports and hand-written CSVs resolve correctly.
+  const descriptionVal = row[headerIndices["description"]] || row[9] || "";
 
  parsedJobs.push({
  title: titleVal,
@@ -128,9 +171,10 @@ export function importJobsFromCSV(csvText: string): Omit<Job, "id" | "user_id" |
  status: statusVal,
  score: scoreVal,
  tier: tierVal,
- salary_range: salaryVal,
- notes: notesVal
- });
+  salary_range: salaryVal,
+  notes: notesVal,
+  description: descriptionVal || undefined
+  });
  }
 
  return parsedJobs;

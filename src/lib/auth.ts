@@ -143,7 +143,7 @@ export async function signInWithEmail(email: string, password: string): Promise<
   setMockAuthSession(email);
 }
 
-export async function signUpWithEmail(email: string, password: string, metadata?: { full_name?: string }): Promise<void> {
+export async function signUpWithEmail(email: string, password: string, metadata?: { full_name?: string }): Promise<{ needsConfirmation: boolean }> {
   const fullName = metadata?.full_name ?? "";
 
   if (isSupabaseConfigured()) {
@@ -164,11 +164,14 @@ export async function signUpWithEmail(email: string, password: string, metadata?
 
     // Brand-new account: clean slate with the user's info.
     resetAllStores(authName, authEmail);
-    return;
+    // No session + a user means Supabase is waiting on email confirmation —
+    // callers must NOT push to /dashboard as if signed in.
+    return { needsConfirmation: !data.session };
   }
   // Mock auth: brand-new account, clean slate.
   resetAllStores(fullName, email);
   setMockAuthSession(email);
+  return { needsConfirmation: false };
 }
 
 export async function signOut(): Promise<void> {

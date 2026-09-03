@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { generateDocx } from "@/lib/exportDocx";
+import { generateDocx, stripHtmlForDocx } from "@/lib/exportDocx";
 import type { ResumeData } from "@/types";
 
 vi.mock("file-saver", () => ({
@@ -83,5 +83,26 @@ describe("exportDocx", () => {
 
     await generateDocx(minimalData, "Minimal");
     expect(saveAs).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps CJK characters in the exported filename", async () => {
+    const { saveAs } = await import("file-saver");
+    vi.mocked(saveAs).mockClear();
+
+    await generateDocx({ personal: { name: "王小明" } }, "王小明 - 简历");
+    const [, filename] = vi.mocked(saveAs).mock.calls[0];
+    expect(filename).toBe("王小明_-_简历.docx");
+  });
+});
+
+describe("stripHtmlForDocx", () => {
+  it("strips inline tags and decodes entities", () => {
+    expect(stripHtmlForDocx("<strong>$50M+ ARR</strong> growth")).toBe("$50M+ ARR growth");
+    expect(stripHtmlForDocx("Led <em>core</em> payments &amp; infra")).toBe("Led core payments & infra");
+  });
+
+  it("returns empty string for empty input", () => {
+    expect(stripHtmlForDocx("")).toBe("");
+    expect(stripHtmlForDocx(undefined)).toBe("");
   });
 });

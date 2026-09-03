@@ -362,7 +362,7 @@ export function DeepSeekHero() {
                     >
                       <div className="flex items-center justify-between text-[11px] font-mono text-white/40 mb-2">
                         <span>DIRECT_RADAR_FEED</span>
-                        <span className="text-emerald-400">● LIVE (3/142)</span>
+                        <span className="text-white/40">○ DEMO DATA</span>
                       </div>
 
                       {radarJobs.map((j) => (

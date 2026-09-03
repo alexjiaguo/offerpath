@@ -51,6 +51,11 @@ function getStoreAdapter(storeName: StoreName) {
           if (!Array.isArray(data)) return;
           // data is an array of jobs with nested companies from the join
           const jobs = data as Record<string, unknown>[];
+          // Never clobber local state with an empty server payload: persist
+          // writes through to localStorage, so overwriting with [] would
+          // destroy guest work before migrateGuestDataToSupabase() can push
+          // it up. An empty server simply means "nothing to pull".
+          if (jobs.length === 0) return;
           const companiesMap = new Map<string, Record<string, unknown>>();
           const mappedJobs = jobs.map((j) => {
             if (j.companies && typeof j.companies === "object") {
@@ -83,6 +88,9 @@ function getStoreAdapter(storeName: StoreName) {
         hydrate: (data: unknown) => {
           if (!Array.isArray(data)) return;
           const resumes = data as (Resume & { ats_evaluations?: Record<string, ATSEvaluation> })[];
+          // Same empty-payload guard as pipeline: don't wipe local resumes
+          // when the server has nothing (see comment above).
+          if (resumes.length === 0) return;
           const atsEvals: Record<string, ATSEvaluation> = {};
           for (const r of resumes) {
             if (r.ats_evaluations && typeof r.ats_evaluations === "object") {
@@ -178,9 +186,11 @@ function getStoreAdapter(storeName: StoreName) {
             preps: InterviewPrep[];
             mockSessions: MockSession[];
           }> = {};
-          if (Array.isArray(d.stories)) patch.stories = d.stories as Story[];
-          if (Array.isArray(d.preps)) patch.preps = d.preps as InterviewPrep[];
-          if (Array.isArray(d.mockSessions)) {
+          // Only patch non-empty arrays: an empty server table must not
+          // wipe local guest stories/preps/sessions before migration.
+          if (Array.isArray(d.stories) && d.stories.length > 0) patch.stories = d.stories as Story[];
+          if (Array.isArray(d.preps) && d.preps.length > 0) patch.preps = d.preps as InterviewPrep[];
+          if (Array.isArray(d.mockSessions) && d.mockSessions.length > 0) {
             patch.mockSessions = (d.mockSessions as Record<string, unknown>[]).map((m) => ({
               ...m,
               questionPool: Array.isArray(m.question_pool)

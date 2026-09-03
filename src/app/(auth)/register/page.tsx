@@ -18,6 +18,7 @@ export default function RegisterPage() {
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   const benefits = useMemo(() => {
     if (isZh) {
@@ -67,7 +68,14 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      await signUpWithEmail(email, password, { full_name: name });
+      const { needsConfirmation } = await signUpWithEmail(email, password, { full_name: name });
+      if (needsConfirmation) {
+        // Supabase requires email confirmation: there is no session yet,
+        // so pushing to /dashboard would land as a guest. Show the
+        // check-your-email state instead.
+        setConfirmationSent(true);
+        return;
+      }
       router.refresh();
       router.push("/dashboard");
     } catch (err) {
@@ -79,6 +87,27 @@ export default function RegisterPage() {
 
   return (
     <>
+      {confirmationSent ? (
+        <div className="text-center py-6">
+          <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-4" weight="fill" />
+          <h1 className="text-2xl font-bold mb-2 font-display text-surface-400">
+            {isZh ? "请查收验证邮件" : "Check your email"}
+          </h1>
+          <p className="text-sm text-surface-300 leading-relaxed mb-6">
+            {isZh
+              ? `我们已向 ${email} 发送了验证链接，点击链接后即可进入工作台。`
+              : `We sent a verification link to ${email}. Click the link to activate your workspace.`}
+          </p>
+          <Link
+            href="/login"
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-surface-100 hover:bg-surface-200 border border-surface-200 text-sm font-medium text-surface-400 transition-all"
+          >
+            {t.auth.logInLink}
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      ) : (
+      <>
       <div className="text-center mb-6">
         <h1 className="text-2xl font-bold mb-2 font-display text-surface-400">{t.auth.createAccount}</h1>
         <p className="text-sm text-surface-300">
@@ -198,11 +227,11 @@ export default function RegisterPage() {
           />
           <span className="text-xs text-surface-300 leading-relaxed">
             {t.auth.termsAgreement}{" "}
-            <Link href="/terms" className="text-ember-700 hover:text-ember-800 underline">
+            <Link href="/terms" className="text-ember-700 hover:text-ember-700 underline">
               {t.auth.termsLink}
             </Link>{" "}
             &{" "}
-            <Link href="/privacy" className="text-ember-700 hover:text-ember-800 underline">
+            <Link href="/privacy" className="text-ember-700 hover:text-ember-700 underline">
               {t.auth.privacyLink}
             </Link>
           </span>
@@ -251,11 +280,13 @@ export default function RegisterPage() {
         {t.auth.alreadyHaveAccount}{" "}
         <Link
           href="/login"
-          className="text-ember-700 hover:text-ember-800 font-semibold transition-colors"
+          className="text-ember-700 hover:text-ember-700 font-semibold transition-colors"
         >
           {t.auth.logInLink}
         </Link>
       </p>
+      </>
+      )}
     </>
   );
 }

@@ -106,8 +106,10 @@ const PremiumHeadshot: React.FC<TemplateProps> = ({ data, theme, sectionOrder, s
  ) : <AddEntryButton section="experience" label="Add experience" />,
  };
 
- const sidebarKeys = new Set(['education', 'skills', 'languages', 'technicalSkills', 'certifications']);
- const mainKeys = new Set(['summary', 'experience']);
+  const sidebarKeys = new Set(['education', 'skills', 'languages', 'technicalSkills', 'certifications']);
+  // Projects live in the main column (sidebar is too narrow for entries).
+  // Previously omitted from BOTH sets, so projects silently vanished here.
+  const mainKeys = new Set(['summary', 'experience', 'projects']);
  const contactItems = getStructuredContactItems(data, sectionVisibility);
  const sbWidthCss = theme.sidebarWidth ? (theme.sidebarWidth <= 50 ? `${theme.sidebarWidth}%` : `${theme.sidebarWidth}px`) : '218px';
 

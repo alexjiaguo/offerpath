@@ -16,7 +16,10 @@ const ALLOWED_ATTR: string[] = ['href', 'target', 'rel'];
 export function sanitizeHtml(html: string): string {
  const withEmphasis = markdownInlineToHtml(html);
  if (typeof window === 'undefined') {
- return withEmphasis;
+ // SSR / print path: no DOMPurify available. Strip tags entirely rather
+ // than injecting unsanitized markup into dangerouslySetInnerHTML —
+ // uploaded <script> content must never reach print HTML.
+ return withEmphasis.replace(/<[^>]*>/g, '');
  }
  const purify = (DOMPurify as unknown as { default?: typeof DOMPurify }).default || DOMPurify;
  if (purify && typeof purify.sanitize === 'function') {

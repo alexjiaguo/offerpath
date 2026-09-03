@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Briefcase, CaretRight, Clock, Copy, FileText, MapPin, Plus, Star, Sparkle, Trash, UploadSimple } from '@phosphor-icons/react';
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { ATSScoreInline } from "@/components/pipeline/ATSScoreBadge";
 import { TEMPLATE_CONFIGS } from "@/components/resume/templates/config";
 import { Suspense, useState } from "react";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/i18n";
 import Image from "next/image";
@@ -30,6 +31,7 @@ function TemplateThumbnail({ templateId, thumbnail }: { templateId: string; thum
 
 function ResumePageContent() {
   const { t, isZh } = useTranslation();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const tailorForJobId = searchParams.get("tailorFor");
 
@@ -64,7 +66,13 @@ function ResumePageContent() {
   const handleUseAsBase = (resumeId: string) => {
     if (!tailorForJobId || !tailorJob) return;
     const newTitle = [tailorJob.company?.name, tailorJob.title].filter(Boolean).join(" — ");
-    duplicateResume(resumeId, newTitle);
+    // duplicateResume returns the new id — take the user straight to the
+    // tailored copy instead of silently dropping it into the list.
+    const newId = duplicateResume(resumeId, newTitle);
+    if (newId) {
+      toast.success(isZh ? `已创建定制副本：${newTitle}` : `Tailored copy created: ${newTitle}`);
+      router.push(`/dashboard/resume/${newId}`);
+    }
   };
 
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);

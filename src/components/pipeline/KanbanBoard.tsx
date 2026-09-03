@@ -14,7 +14,6 @@ import {
 import { usePipelineStore } from "@/store/pipelineStore";
 import KanbanColumn, { KANBAN_COLUMNS } from "./KanbanColumn";
 import { JobCardOverlay } from "./JobCard";
-import ResumePicker from "./ResumePicker";
 import type { Job, JobStatus } from "@/types";
 
 /* ═══════════════════════════════════════════════════
@@ -22,7 +21,7 @@ import type { Job, JobStatus } from "@/types";
  ═══════════════════════════════════════════════════ */
 
 export default function KanbanBoard() {
- const { getJobsByStatus, moveJob, setAddJobDialogOpen, jobs, filters } = usePipelineStore();
+  const { getJobsByStatus, moveJob, reorderJobs, setAddJobDialogOpen, jobs, filters } = usePipelineStore();
  const [activeJob, setActiveJob] = useState<Job | null>(null);
 
  // Memoize column jobs to prevent unnecessary re-renders
@@ -73,14 +72,27 @@ export default function KanbanBoard() {
  targetStatus = over.data.current.status as JobStatus;
  }
 
- if (targetStatus) {
- const currentJob = usePipelineStore.getState().getJobById(activeId);
- if (currentJob && currentJob.status !== targetStatus) {
- moveJob(activeId, targetStatus);
- }
- }
- },
- [moveJob]
+  if (targetStatus) {
+  const currentJob = usePipelineStore.getState().getJobById(activeId);
+  if (!currentJob) return;
+  const droppedOnCard = typeof over.id === "string" && !over.id.startsWith("column-");
+  if (currentJob.status !== targetStatus) {
+  if (targetStatus === "applied") {
+  // Route through moveJob so the no-resume ResumePicker intercept fires.
+  moveJob(activeId, targetStatus);
+  } else if (droppedOnCard) {
+  // Cross-column move onto a specific card → insert at that position.
+  reorderJobs(activeId, over.id as string, targetStatus);
+  } else {
+  moveJob(activeId, targetStatus);
+  }
+  } else if (droppedOnCard && over.id !== activeId) {
+  // Same-column reorder (previously a no-op).
+  reorderJobs(activeId, over.id as string, targetStatus);
+  }
+  }
+  },
+  [moveJob, reorderJobs]
  );
 
  return (
@@ -106,8 +118,8 @@ export default function KanbanBoard() {
  {activeJob ? <JobCardOverlay job={activeJob} /> : null}
  </DragOverlay>
 
- {/* Resume Picker — triggered when dragging a job to "Applied" */}
- <ResumePicker />
- </DndContext>
+  {/* Resume Picker is mounted globally in dashboard/layout.tsx so the
+      "applied" intercept works from every surface, not just the board. */}
+  </DndContext>
  );
 }

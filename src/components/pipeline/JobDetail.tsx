@@ -2,6 +2,7 @@
 
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
+import { useProfileStore } from "@/store/profileStore";
 import { cn } from "@/lib/utils";
 import ATSScoreBadge from "./ATSScoreBadge";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
@@ -20,79 +21,98 @@ function generateSimulatedOutreach(
  type: string,
  jobTitle: string,
  companyName: string,
- recipientName: string
+ recipientName: string,
+ sender: { name: string; email: string; title: string },
+ tone: string
 ): string {
  const recipient = recipientName.trim() || "Hiring Team";
- 
+ const senderName = sender.name.trim() || "Your Name";
+ const senderEmail = sender.email.trim() || "you@email.com";
+ const senderTitle = sender.title.trim() || "Product Manager";
+
+ const greetings: Record<string, string> = {
+ "Professional & Polished": "I hope you're having a great week!",
+ "Short & Punchy": "I'll keep this brief.",
+ "Warm & Conversational": "Hope you're doing well!",
+ "Metrics-Driven": "I hope you're having a great week!",
+ };
+ const signoffs: Record<string, string> = {
+ "Professional & Polished": "Best regards,",
+ "Short & Punchy": "Best,",
+ "Warm & Conversational": "Warm regards,",
+ "Metrics-Driven": "Best regards,",
+ };
+ const greeting = greetings[tone] ?? greetings["Professional & Polished"];
+ const signoff = signoffs[tone] ?? signoffs["Professional & Polished"];
+
  switch(type) {
  case "referral":
- return `Subject: PM Connection & Discussion - ${jobTitle} at ${companyName}
+ return `Subject: Connection & Discussion - ${jobTitle} at ${companyName}
 
 Hi ${recipient},
 
-I hope you're having a great week! 
+${greeting}
 
-My name is Brouard Madan, and I've been following ${companyName}'s impressive growth in the PropTech space. I noticed an open role for a ${jobTitle} on your team and felt a strong alignment with my background. 
+My name is ${senderName}, and I've been following ${companyName}'s growth. I noticed an open role for a ${jobTitle} on your team and felt a strong alignment with my background as a ${senderTitle}.
 
-For context, I recently led a core PropTech product portfolio at my previous firm where we scaled active listings by 3x and drove a 45% increase in user conversion through AI-powered optimization. Given ${companyName}'s current initiatives, I believe my experience in high-growth marketplace products could bring immediate value.
+For context, I recently led a core product portfolio at my previous firm where we scaled key metrics significantly through data-driven optimization. Given ${companyName}'s current initiatives, I believe my experience could bring immediate value.
 
-I would love to learn more about your journey at ${companyName} and how the team is approaching these challenges. Would you be open to a brief 10-minute virtual coffee next week? I'd be incredibly grateful for your perspective.
+I would love to learn more about your journey at ${companyName} and how the team is approaching these challenges. Would you be open to a brief 10-minute virtual coffee next week? I'd be grateful for your perspective.
 
 Thank you so much for your time and consideration!
 
-Best regards,
-Brouard Madan
-brouard.madan@email.com`;
+${signoff}
+${senderName}
+${senderEmail}`;
 
  case "thankyou":
  return `Subject: Thank you! - ${jobTitle} Interview
 
 Hi ${recipient},
 
-Thank you so much for taking the time to speak with me today about the ${jobTitle} position at ${companyName}. I thoroughly enjoyed our conversation and learning more about how the team is scaling its platform architecture.
+Thank you so much for taking the time to speak with me today about the ${jobTitle} position at ${companyName}. I thoroughly enjoyed our conversation and learning more about how the team operates.
 
-Our discussion about the upcoming product roadmap further energized me about this opportunity. I am confident that my background in product metrics, AI integration, and cross-functional leadership will allow me to hit the ground running and make a meaningful impact.
+Our discussion about the upcoming product roadmap further energized me about this opportunity. I am confident that my background will allow me to hit the ground running and make a meaningful impact.
 
 Please let me know if you need any additional information from my end. I look forward to hearing about the next steps!
 
-Warm regards,
-Brouard Madan
-brouard.madan@email.com`;
+${signoff}
+${senderName}
+${senderEmail}`;
 
  case "followup":
  return `Subject: Follow-up: ${jobTitle} Application Status
 
 Hi ${recipient},
 
-I hope this email finds you well! 
+${greeting}
 
-I'm writing to check in on the status of my application for the ${jobTitle} role at ${companyName}. I had a wonderful time speaking with the team two weeks ago and remain highly enthusiastic about the opportunity to contribute to your current projects.
+I'm writing to check in on the status of my application for the ${jobTitle} role at ${companyName}. I had a wonderful time speaking with the team and remain highly enthusiastic about the opportunity.
 
-Since we last spoke, I've continued to follow ${companyName}'s updates and am even more convinced that my experience in marketplace optimization and scale matches your needs perfectly.
+Since we last spoke, I've continued to follow ${companyName}'s updates and am even more convinced that my experience matches your needs.
 
-Please let me know if there are any updates you can share or if there is any other information I can provide to assist in your decision-making process.
+Please let me know if there are any updates you can share or if there is any other information I can provide.
 
 Thank you again for your time and continued consideration!
 
-Best,
-Brouard Madan
-brouard.madan@email.com`;
+${signoff}
+${senderName}`;
 
  case "negotiation":
- return `Subject: ${jobTitle} Offer - Compensation Discussion - Brouard Madan
+ return `Subject: ${jobTitle} Offer - Compensation Discussion - ${senderName}
 
 Hi ${recipient},
 
-Thank you so much for extending the offer for the ${jobTitle} position at ${companyName}! I am absolutely thrilled about the prospect of joining the team and helping drive your product roadmap forward.
+Thank you so much for extending the offer for the ${jobTitle} position at ${companyName}! I am thrilled about the prospect of joining the team.
 
-Before I sign the agreement, I wanted to discuss the compensation package. Given my 8+ years of specialized experience in PropTech product leadership and the immediate impact I plan to deliver on your conversion metrics, I was hoping we could explore a small adjustment to the base salary. 
+Before I sign the agreement, I wanted to discuss the compensation package. Given my experience as a ${senderTitle} and the immediate impact I plan to deliver, I was hoping we could explore a small adjustment to the base salary.
 
-Would it be possible to bring the base salary to $235,000 to align more closely with industry standards for this depth of experience? Alternatively, I'd be open to discussing an adjustment in equity or a sign-on bonus to bridge the gap.
+Would it be possible to bring the base salary to [YOUR TARGET] to align more closely with industry standards? Alternatively, I'd be open to discussing an adjustment in equity or a sign-on bonus to bridge the gap.
 
-I am incredibly excited about joining ${companyName} and am confident we can find a mutually agreeable starting point. Thank you so much for your support and guidance throughout this process!
+I am excited about joining ${companyName} and am confident we can find a mutually agreeable starting point. Thank you for your support throughout this process!
 
-Warmly,
-Brouard Madan`;
+${signoff}
+${senderName}`;
  default:
  return "";
  }
@@ -226,21 +246,28 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  const [isGeneratingOutreach, setIsGeneratingOutreach] = useState(false);
  const [copied, setCopied] = useState(false);
 
- const handleGenerateOutreach = () => {
- if (!job) return;
- setIsGeneratingOutreach(true);
- setTimeout(() => {
- const email = generateSimulatedOutreach(
- outreachType,
- job.title,
- job.company?.name || "Target Company",
- recipientName
- );
- setGeneratedOutreach(email);
- setIsGeneratingOutreach(false);
- toast.success("AI Outreach email tailored successfully!");
- }, 850);
- };
+  const handleGenerateOutreach = () => {
+  if (!job) return;
+  setIsGeneratingOutreach(true);
+  // Template-based draft (no AI call): personalize from the user's profile
+  // and honor the selected tone. Rendered in an editable textarea below.
+  const profile = useProfileStore.getState().profile;
+  const email = generateSimulatedOutreach(
+  outreachType,
+  job.title,
+  job.company?.name || "Target Company",
+  recipientName,
+  {
+  name: profile.fullName,
+  email: profile.email,
+  title: profile.currentTitle || profile.headline,
+  },
+  outreachTone
+  );
+  setGeneratedOutreach(email);
+  setIsGeneratingOutreach(false);
+  toast.success("Outreach draft ready — review and edit before sending.");
+  };
 
  const handleCopyOutreach = () => {
  navigator.clipboard.writeText(generatedOutreach);
@@ -716,8 +743,8 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  disabled={isGeneratingOutreach}
  className="btn-editorial-primary w-full flex items-center justify-center gap-2"
  >
- <Sparkle weight="bold" className="w-3.5 h-3.5" />
- {isGeneratingOutreach ? "Tailoring Outreach Email..." : "Generate AI Outreach Email"}
+  <Sparkle weight="bold" className="w-3.5 h-3.5" />
+  {isGeneratingOutreach ? "Drafting Outreach Email..." : "Generate Outreach Draft"}
  </button>
  </div>
 

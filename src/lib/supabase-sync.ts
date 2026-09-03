@@ -115,6 +115,11 @@ export async function syncStoreToSupabase(
   } = await supabase.auth.getUser();
   if (!user) return;
 
+  // Null/undefined payloads (e.g. a missing guest profile slice) must not
+  // reach the per-store writers — profile[field] on null throws, fails the
+  // whole batch, and retries on every mount.
+  if (data == null) return;
+
   try {
     switch (storeName) {
       case "profile": {

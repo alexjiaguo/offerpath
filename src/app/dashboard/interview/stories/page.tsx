@@ -7,6 +7,7 @@ import { useInterviewStore } from "@/store/interviewStore";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 const StoryDialog = dynamic(() => import("@/components/interview/StoryDialog"), { ssr: false });
+import { normalizeCompetency } from "@/components/interview/StoryDialog";
 import { toast } from "sonner";
 import { FileParserService } from "@/lib/FileParserService";
 import { extractStoriesFromFile } from "@/lib/aiService";
@@ -35,7 +36,10 @@ function getCompetencyStyle(competency: string) {
 export default function StoriesPage() {
   const { t, isZh } = useTranslation();
   const { stories, deleteStory, getAllCompetencies, addStory } = useInterviewStore();
-  const [search, setSearch] = useState("");
+  // Shared with the Topbar global search on /dashboard/interview routes —
+  // typing in either input filters this list.
+  const search = useInterviewStore((s) => s.storySearch);
+  const setSearch = useInterviewStore((s) => s.setStorySearch);
   const [filterCompetency, setFilterCompetency] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -58,7 +62,9 @@ export default function StoriesPage() {
       extractedStories.forEach(story => {
         addStory({
           title: story.title || (isZh ? "未命名故事" : "Untitled Story"),
-          competency: story.competency || "unspecified",
+          // File extraction returns free-form labels ("unspecified", ...);
+          // normalize to a known competency so no phantom filter chip appears.
+          competency: normalizeCompetency(story.competency),
           tags: story.tags || [],
           situation: story.situation,
           task: story.task,
@@ -82,11 +88,21 @@ export default function StoriesPage() {
   };
 
   const filteredStories = stories.filter((s) => {
-    const matchesSearch =
-      !search ||
-      s.title.toLowerCase().includes(search.toLowerCase()) ||
-      s.competency.toLowerCase().includes(search.toLowerCase()) ||
-      s.tags.some((tag) => tag.toLowerCase().includes(search.toLowerCase()));
+    // Search across STAR content, not just title/tags — the body is the point.
+    const haystack = [
+      s.title,
+      s.competency,
+      s.situation,
+      s.task,
+      s.action,
+      s.result,
+      s.metrics,
+      ...(s.tags || []),
+    ]
+      .filter(Boolean)
+      .join("\n")
+      .toLowerCase();
+    const matchesSearch = !search || haystack.includes(search.toLowerCase());
     const matchesCompetency = !filterCompetency || s.competency === filterCompetency;
     return matchesSearch && matchesCompetency;
   });

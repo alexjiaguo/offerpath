@@ -5,8 +5,10 @@ export function cn(...inputs: ClassValue[]) {
  return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: string | Date): string {
- return new Date(date).toLocaleDateString("en-US", {
+export function formatDate(date: string | Date, locale?: string): string {
+ // Default locale (undefined) follows the runtime instead of forcing en-US,
+ // so zh users see Chinese dates. Pass an explicit locale to pin output.
+ return new Date(date).toLocaleDateString(locale, {
  month: "short",
  day: "numeric",
  year: "numeric",
@@ -44,5 +46,10 @@ export function tierLabel(tier: number): { label: string; color: string } {
 }
 
 export function generateId(): string {
+ // crypto.randomUUID throws on non-secure contexts / old browsers.
+ try {
  return crypto.randomUUID();
+ } catch {
+ return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+ }
 }

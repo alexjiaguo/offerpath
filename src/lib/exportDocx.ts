@@ -14,6 +14,28 @@ import {
 import { saveAs } from "file-saver";
 import type { ResumeData } from "@/types";
 
+/**
+ * Bullets/summaries edited in the rich-text studio carry inline HTML
+ * (<strong>, <em>, ...). DOCX TextRun takes plain text — strip tags (and
+ * decode common entities) so literal "<strong>$50M+ ARR</strong>" never
+ * lands in the exported document.
+ */
+export function stripHtmlForDocx(value: string | undefined | null): string {
+ if (!value) return "";
+ return value
+ .replace(/<br\s*\/?>/gi, " ")
+ .replace(/<\/(p|div|li|h[1-6])>/gi, " ")
+ .replace(/<[^>]*>/g, "")
+ .replace(/&nbsp;/g, " ")
+ .replace(/&amp;/g, "&")
+ .replace(/&lt;/g, "<")
+ .replace(/&gt;/g, ">")
+ .replace(/&quot;/g, '"')
+ .replace(/&#39;/g, "'")
+ .replace(/\s+/g, " ")
+ .trim();
+}
+
 // ── Section Heading ──────────────────────────────────
 
 function sectionHeading(text: string): Paragraph {
@@ -104,19 +126,19 @@ export async function generateDocx(data: ResumeData, title: string) {
  // ── Summary ──
  if (data.summary) {
  children.push(sectionHeading("Professional Summary"));
- children.push(
- new Paragraph({
- spacing: { after: 120 },
- children: [
- new TextRun({
- text: data.summary,
- size: 20,
- font: "Calibri",
- color: "374151",
- }),
- ],
- })
- );
+  children.push(
+  new Paragraph({
+  spacing: { after: 120 },
+  children: [
+  new TextRun({
+  text: stripHtmlForDocx(data.summary),
+  size: 20,
+  font: "Calibri",
+  color: "374151",
+  }),
+  ],
+  })
+  );
  }
 
  // ── Experience ──
@@ -146,11 +168,12 @@ export async function generateDocx(data: ResumeData, title: string) {
  })
  );
 
- // Date + Location line
- const dateParts: string[] = [];
- if (exp.start_date) dateParts.push(exp.start_date);
- dateParts.push(exp.current ? "Present" : exp.end_date || "");
- const dateStr = dateParts.join(" — ");
+  // Date + Location line (omit the end part when empty — no trailing dash)
+  const dateParts: string[] = [];
+  if (exp.start_date) dateParts.push(exp.start_date);
+  const endPart = exp.current ? "Present" : exp.end_date || "";
+  if (endPart) dateParts.push(endPart);
+  const dateStr = dateParts.join(" — ");
  const locStr = exp.location ? ` | ${exp.location}` : "";
 
  children.push(
@@ -168,12 +191,13 @@ export async function generateDocx(data: ResumeData, title: string) {
  })
  );
 
- // Bullets
- for (const bullet of exp.bullets || []) {
- if (bullet.trim()) {
- children.push(bulletItem(bullet));
- }
- }
+  // Bullets
+  for (const bullet of exp.bullets || []) {
+  const plain = stripHtmlForDocx(bullet);
+  if (plain) {
+  children.push(bulletItem(plain));
+  }
+  }
  }
  }
 
@@ -300,21 +324,21 @@ export async function generateDocx(data: ResumeData, title: string) {
  })
  );
 
- if (proj.description) {
- children.push(
- new Paragraph({
- spacing: { after: 60 },
- children: [
- new TextRun({
- text: proj.description,
- size: 20,
- font: "Calibri",
- color: "374151",
- }),
- ],
- })
- );
- }
+  if (proj.description) {
+  children.push(
+  new Paragraph({
+  spacing: { after: 60 },
+  children: [
+  new TextRun({
+  text: stripHtmlForDocx(proj.description),
+  size: 20,
+  font: "Calibri",
+  color: "374151",
+  }),
+  ],
+  })
+  );
+  }
  }
  }
 
@@ -373,10 +397,15 @@ export async function generateDocx(data: ResumeData, title: string) {
  ],
  });
 
- // Generate and save
- const blob = await Packer.toBlob(doc);
- const filename = title.replace(/[^a-zA-Z0-9\s-]/g, "").replace(/\s+/g, "_");
- saveAs(blob, `${filename}.docx`);
+  // Generate and save
+  const blob = await Packer.toBlob(doc);
+  // \p{L} / \p{N} keep CJK (and other Unicode) letters — the old
+  // [a-zA-Z0-9] class stripped Chinese titles down to "_.docx".
+  const filename = (title || "resume")
+  .replace(/[^\p{L}\p{N}\s-]/gu, "")
+  .trim()
+  .replace(/\s+/g, "_") || "resume";
+  saveAs(blob, `${filename}.docx`);
 }
 
 // ── PDF Export (via browser print) ───────────────────
