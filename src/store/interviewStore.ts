@@ -16,6 +16,28 @@ import type {
 } from "@/types";
 import { generateId } from "@/lib/utils";
 import { usePipelineStore } from "@/store/pipelineStore";
+import { logger } from "@/lib/logger";
+import { toast } from "sonner";
+import {
+  saveStoryAction,
+  deleteStoryAction,
+  savePrepAction,
+  deletePrepAction,
+  saveMockSessionAction,
+} from "@/app/actions/interview";
+
+const DEMO_EXPECTED_ERRORS = ["Supabase not configured", "Not authenticated"];
+function reportSyncError(context: string, result: { success: boolean; error?: string } | void, err?: unknown) {
+  if (err) {
+    logger.error(`Failed to sync ${context} to server`, err);
+    toast.error(`Couldn't save ${context} to the cloud. Your local copy is safe.`);
+    return;
+  }
+  if (result && !result.success && result.error && !DEMO_EXPECTED_ERRORS.includes(result.error)) {
+    logger.error(`Failed to sync ${context} to server: ${result.error}`);
+    toast.error(`Couldn't save ${context} to the cloud. Your local copy is safe.`);
+  }
+}
 
 // ── Store Types ─────────────────────────────────────
 
@@ -401,39 +423,61 @@ export const useInterviewStore = create<InterviewState>()(
 
  // ── Story Bank CRUD ──
 
- addStory: (storyData) => {
- const id = generateId();
- const newStory: Story = {
- ...storyData,
- id,
- user_id: "demo",
- used_count: 0,
- created_at: new Date().toISOString(),
- updated_at: new Date().toISOString(),
- };
- set((state) => ({ stories: [newStory, ...state.stories] }));
- return id;
- },
+  addStory: (storyData) => {
+    const id = generateId();
+    const newStory: Story = {
+      ...storyData,
+      id,
+      user_id: "demo",
+      used_count: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    set((state) => ({ stories: [newStory, ...state.stories] }));
+    saveStoryAction(newStory).then(
+      (result) => reportSyncError("story", result),
+      (err) => reportSyncError("story", undefined, err)
+    );
+    return id;
+  },
 
- updateStory: (id, updates) => {
- set((state) => ({
- stories: state.stories.map((s) =>
- s.id === id ? { ...s, ...updates, updated_at: new Date().toISOString() } : s
- ),
- }));
- },
+  updateStory: (id, updates) => {
+    set((state) => ({
+      stories: state.stories.map((s) =>
+        s.id === id ? { ...s, ...updates, updated_at: new Date().toISOString() } : s
+      ),
+    }));
+    const updated = get().stories.find((s) => s.id === id);
+    if (updated) {
+      saveStoryAction(updated).then(
+        (result) => reportSyncError("story update", result),
+        (err) => reportSyncError("story update", undefined, err)
+      );
+    }
+  },
 
- deleteStory: (id) => {
- set((state) => ({ stories: state.stories.filter((s) => s.id !== id) }));
- },
+  deleteStory: (id) => {
+    set((state) => ({ stories: state.stories.filter((s) => s.id !== id) }));
+    deleteStoryAction(id).then(
+      (result) => reportSyncError("story deletion", result),
+      (err) => reportSyncError("story deletion", undefined, err)
+    );
+  },
 
- incrementStoryUsage: (id) => {
- set((state) => ({
- stories: state.stories.map((s) =>
- s.id === id ? { ...s, used_count: s.used_count + 1 } : s
- ),
- }));
- },
+  incrementStoryUsage: (id) => {
+    set((state) => ({
+      stories: state.stories.map((s) =>
+        s.id === id ? { ...s, used_count: s.used_count + 1 } : s
+      ),
+    }));
+    const updated = get().stories.find((s) => s.id === id);
+    if (updated) {
+      saveStoryAction(updated).then(
+        (result) => reportSyncError("story usage", result),
+        (err) => reportSyncError("story usage", undefined, err)
+      );
+    }
+  },
 
  // ── Prep Actions ──
 
@@ -451,17 +495,28 @@ export const useInterviewStore = create<InterviewState>()(
  },
 
   updatePrep: (id, updates) => {
-  set((state) => ({
-  preps: state.preps.map((p) =>
-  p.id === id ? { ...p, ...updates, updated_at: new Date().toISOString() } : p
-  ),
-  }));
+    set((state) => ({
+      preps: state.preps.map((p) =>
+        p.id === id ? { ...p, ...updates, updated_at: new Date().toISOString() } : p
+      ),
+    }));
+    const updated = get().preps.find((p) => p.id === id);
+    if (updated) {
+      savePrepAction(updated).then(
+        (result) => reportSyncError("interview prep update", result),
+        (err) => reportSyncError("interview prep update", undefined, err)
+      );
+    }
   },
 
   deletePrep: (jobId) => {
-  set((state) => ({
-  preps: state.preps.filter((p) => p.job_id !== jobId),
-  }));
+    set((state) => ({
+      preps: state.preps.filter((p) => p.job_id !== jobId),
+    }));
+    deletePrepAction(jobId).then(
+      (result) => reportSyncError("interview prep deletion", result),
+      (err) => reportSyncError("interview prep deletion", undefined, err)
+    );
   },
 
  generatePrepForJob: (jobId, jobTitle, companyName, description) => {
@@ -525,6 +580,10 @@ export const useInterviewStore = create<InterviewState>()(
  updated_at: new Date().toISOString(),
  };
  set((state) => ({ preps: [prep, ...state.preps] }));
+ savePrepAction(prep).then(
+  (result) => reportSyncError("interview prep", result),
+  (err) => reportSyncError("interview prep", undefined, err)
+ );
  return id;
  },
 
@@ -564,22 +623,30 @@ export const useInterviewStore = create<InterviewState>()(
  updated_at: new Date().toISOString(),
  };
  set((state) => ({ preps: [prep, ...state.preps] }));
+ savePrepAction(prep).then(
+  (result) => reportSyncError("interview prep", result),
+  (err) => reportSyncError("interview prep", undefined, err)
+ );
  return id;
  },
 
  // ── Mock Session Actions ──
 
- addMockSession: (sessionData) => {
- const id = generateId();
- const session: MockSession = {
- ...sessionData,
- id,
- user_id: "demo",
- created_at: new Date().toISOString(),
- };
- set((state) => ({ mockSessions: [session, ...state.mockSessions] }));
- return id;
- },
+  addMockSession: (sessionData) => {
+    const id = generateId();
+    const session: MockSession = {
+      ...sessionData,
+      id,
+      user_id: "demo",
+      created_at: new Date().toISOString(),
+    };
+    set((state) => ({ mockSessions: [session, ...state.mockSessions] }));
+    saveMockSessionAction(session).then(
+      (result) => reportSyncError("mock session", result),
+      (err) => reportSyncError("mock session", undefined, err)
+    );
+    return id;
+  },
 
  startMockSession: (jobId, questions) => {
  const id = generateId();
@@ -600,6 +667,10 @@ export const useInterviewStore = create<InterviewState>()(
  created_at: new Date().toISOString(),
  };
  set((state) => ({ mockSessions: [session, ...state.mockSessions] }));
+ saveMockSessionAction(session).then(
+   (result) => reportSyncError("mock session start", result),
+   (err) => reportSyncError("mock session start", undefined, err)
+ );
  return id;
  },
 
@@ -679,6 +750,13 @@ export const useInterviewStore = create<InterviewState>()(
   };
  }),
  }));
+ const endedSession = get().mockSessions.find((s) => s.id === sessionId);
+ if (endedSession) {
+   saveMockSessionAction(endedSession).then(
+     (result) => reportSyncError("mock session feedback", result),
+     (err) => reportSyncError("mock session feedback", undefined, err)
+   );
+ }
  },
 
   // ── Computed ──

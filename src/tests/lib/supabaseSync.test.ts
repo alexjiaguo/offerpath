@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { isUUID, syncStoreToSupabase } from "@/lib/supabase-sync";
 import { createJobAction, updateJobStatusAction } from "@/app/actions/pipeline";
+import {
+  saveStoryAction,
+  deleteStoryAction,
+  savePrepAction,
+  deletePrepAction,
+  saveMockSessionAction,
+  deleteMockSessionAction,
+} from "@/app/actions/interview";
 import { useProfileStore } from "@/store/profileStore";
 
 // Mock supabase-server for server action tests
@@ -29,9 +37,16 @@ const mockUpdate = vi.fn().mockReturnValue({
   }),
 });
 
-const mockDelete = vi.fn().mockReturnValue({
-  in: vi.fn().mockResolvedValue({ error: null }),
-});
+const createDeleteMock = () => {
+  const del: Record<string, unknown> = {};
+  del.in = vi.fn().mockResolvedValue({ error: null });
+  del.eq = vi.fn().mockReturnValue(del);
+  // Support awaiting delete directly
+  del.then = (resolve: (val: { error: null }) => void) => Promise.resolve(resolve({ error: null }));
+  return del;
+};
+
+const mockDelete = vi.fn(() => createDeleteMock());
 
 const createQueryMock = () => {
   const query: Record<string, unknown> = {};
@@ -315,6 +330,94 @@ describe("Database & Sync Consistency Tests", () => {
         return (call[1] as { onConflict?: string })?.onConflict === "id";
       });
       expect(prepUpsertCall).toBeDefined();
+    });
+  });
+
+  describe("Interview Hub Server Actions", () => {
+    it("saveStoryAction upserts valid UUID story row to Supabase", async () => {
+      const story = {
+        id: "11111111-2222-3333-4444-555555555555",
+        user_id: "user-12345678-0000-0000-0000-000000000000",
+        title: "Launched Payment Gateway",
+        competency: "leadership",
+        situation: "Legacy payment stack failing",
+        task: "Redesign core checkout",
+        action: "Led migration team of 6 engineers",
+        result: "Reduced failed transactions by 80%",
+        metrics: "80% reduction",
+        tags: ["fintech", "payments"],
+        used_count: 2,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const result = await saveStoryAction(story);
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("stories");
+      expect(mockUpsert).toHaveBeenCalled();
+    });
+
+    it("deleteStoryAction calls delete for valid UUID story", async () => {
+      const result = await deleteStoryAction("11111111-2222-3333-4444-555555555555");
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("stories");
+      expect(mockDelete).toHaveBeenCalled();
+    });
+
+    it("savePrepAction upserts valid UUID prep row", async () => {
+      const prep = {
+        id: "11111111-2222-3333-4444-555555555555",
+        user_id: "user-12345678-0000-0000-0000-000000000000",
+        job_id: "22222222-3333-4444-5555-666666666666",
+        company_research: "Fast growing tech firm",
+        role_analysis: "Lead PM role",
+        questions: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const result = await savePrepAction(prep);
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("interview_preps");
+      expect(mockUpsert).toHaveBeenCalled();
+    });
+
+    it("saveMockSessionAction upserts mock session with feedback and duration", async () => {
+      const session = {
+        id: "33333333-4444-5555-6666-777777777777",
+        user_id: "user-12345678-0000-0000-0000-000000000000",
+        job_id: "22222222-3333-4444-5555-666666666666",
+        transcript: [{ role: "candidate" as const, message: "Hello", timestamp: new Date().toISOString() }],
+        score: 4.5,
+        feedback: {
+          overall_score: 4.5,
+          strengths: ["Clear structure"],
+          improvements: ["Add metrics"],
+          tips: ["Stay concise"],
+        },
+        duration_seconds: 600,
+        questionPool: ["Tell me about yourself"],
+        created_at: new Date().toISOString(),
+      };
+
+      const result = await saveMockSessionAction(session);
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("mock_sessions");
+      expect(mockUpsert).toHaveBeenCalled();
+    });
+
+    it("deletePrepAction deletes prep row by job_id", async () => {
+      const result = await deletePrepAction("22222222-3333-4444-5555-666666666666");
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("interview_preps");
+      expect(mockDelete).toHaveBeenCalled();
+    });
+
+    it("deleteMockSessionAction deletes mock session row by id", async () => {
+      const result = await deleteMockSessionAction("33333333-4444-5555-6666-777777777777");
+      expect(result.success).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith("mock_sessions");
+      expect(mockDelete).toHaveBeenCalled();
     });
   });
 });

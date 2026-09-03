@@ -226,10 +226,17 @@ export interface TranslationSchema {
       title: string;
       stepsRemaining: string;
       allConfigured: string;
-      stepAddJob: string;
+      stepProfile: string;
       stepBuildResume: string;
+      stepAddJob: string;
       stepAddStory: string;
+      stepTrackCompany: string;
       stepConfigureAi: string;
+      timeSavedLabel: string;
+      timeSavedUnit: string;
+      timeSavedDesc: string;
+      hideChecklist: string;
+      showChecklist: string;
       badges: {
         pro: string;
         explorer: string;

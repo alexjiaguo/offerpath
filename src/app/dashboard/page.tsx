@@ -2,15 +2,13 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Pulse, ArrowRight, Briefcase, CheckCircle, CaretRight, Compass, FileText, TrendUp, Kanban, Star, Target, Trophy } from '@phosphor-icons/react';
+import { Pulse, Briefcase, CaretRight, Compass, FileText, TrendUp, Kanban, Star, Target } from '@phosphor-icons/react';
 import { useMemo } from "react";
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useResumeStore } from "@/store/resumeStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
-import { useInterviewStore } from "@/store/interviewStore";
-import { useProfileStore } from "@/store/profileStore";
 import NeedsTailoringWidget from "@/components/dashboard/NeedsTailoringWidget";
-import { cn } from "@/lib/utils";
+import OnboardingChecklistWidget from "@/components/dashboard/OnboardingChecklistWidget";
 import { useTranslation } from "@/i18n";
 
 /* ═══════════════════════════════════════════════════════
@@ -25,8 +23,6 @@ export default function DashboardPage() {
   const resumes = useResumeStore((s) => s.resumes);
   const discoveredJobs = useDiscoveryStore((s) => s.jobs);
   const discoveredCompanies = useDiscoveryStore((s) => s.companies);
-  const stories = useInterviewStore((s) => s.stories);
-  const apiKeys = useProfileStore((s) => s.apiKeys);
   const stats = getStats();
 
   const baseResumes = resumes.filter((r) => r.is_base).length;
@@ -186,102 +182,7 @@ export default function DashboardPage() {
 
         {/* System Onboarding & Weekly Goals */}
         <div className="lg:col-span-6 flex flex-col gap-6">
-          {/* Circular Onboarding Checklist */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
-            className="card-editorial space-y-4"
-          >
-            {/* Compute checklist */}
-            {(() => {
-              const onboardingSteps = [
-                {
-                  step: t.dashboard.onboarding.stepAddJob,
-                  href: "/dashboard/pipeline",
-                  done: stats.total > 0,
-                },
-                {
-                  step: t.dashboard.onboarding.stepBuildResume,
-                  href: "/dashboard/resume/new",
-                  done: resumes.length > 0,
-                },
-                {
-                  step: t.dashboard.onboarding.stepAddStory,
-                  href: "/dashboard/interview/stories",
-                  done: stories.length > 0,
-                },
-                {
-                  step: t.dashboard.onboarding.stepConfigureAi,
-                  href: "/dashboard/settings/api-keys",
-                  done: apiKeys.length > 0,
-                },
-              ];
-
-              const doneCount = onboardingSteps.filter((s) => s.done).length;
-              const percent = Math.round((doneCount / onboardingSteps.length) * 100);
-
-              const badgeTitle = (() => {
-                if (percent === 100) return t.dashboard.onboarding.badges.pro;
-                if (percent >= 75) return t.dashboard.onboarding.badges.explorer;
-                if (percent >= 50) return t.dashboard.onboarding.badges.navigator;
-                if (percent >= 25) return t.dashboard.onboarding.badges.apprentice;
-                return t.dashboard.onboarding.badges.newbie;
-              })();
-
-              return (
-                <>
-                  <div className="flex items-center justify-between pb-3 border-b border-surface-200">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-md bg-surface-100 border border-surface-200 flex flex-col items-center justify-center font-mono">
-                        <span className="text-xs font-bold text-surface-400">{percent}%</span>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-surface-400 font-sans">{t.dashboard.onboarding.title}</h3>
-                        <p className="text-xs text-surface-300">
-                          {doneCount === onboardingSteps.length
-                            ? t.dashboard.onboarding.allConfigured
-                            : `${onboardingSteps.length - doneCount} ${t.dashboard.onboarding.stepsRemaining}`}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="eyebrow-tag border border-surface-200 bg-surface-100 text-surface-400">
-                      <Trophy weight="bold" className="w-3 h-3 text-surface-400" />
-                      {badgeTitle}
-                    </span>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    {onboardingSteps.map((item) => (
-                      <Link
-                        key={item.step}
-                        href={item.href}
-                        className="flex items-center gap-3 p-2.5 rounded-md border border-surface-200 bg-surface-0 hover:bg-surface-100 transition-all group"
-                      >
-                        <div className={cn(
-                          "w-5 h-5 rounded flex items-center justify-center transition-all",
-                          item.done 
-                            ? "bg-surface-400 text-surface-0" 
-                            : "border border-surface-300 text-transparent"
-                        )}>
-                          {item.done && <CheckCircle className="w-3.5 h-3.5 text-surface-0" weight="bold" />}
-                        </div>
-                        <span
-                          className={cn(
-                            "text-xs font-medium tracking-tight flex-1",
-                            item.done ? "text-surface-300 line-through" : "text-surface-400 group-hover:text-black"
-                          )}
-                        >
-                          {item.step}
-                        </span>
-                        <ArrowRight className="w-3.5 h-3.5 text-surface-300 group-hover:text-surface-400 group-hover:translate-x-0.5 transition-all" />
-                      </Link>
-                    ))}
-                  </div>
-                </>
-              );
-            })()}
-          </motion.div>
+          <OnboardingChecklistWidget />
 
           {/* Weekly Application Goals Widget */}
           <motion.div
