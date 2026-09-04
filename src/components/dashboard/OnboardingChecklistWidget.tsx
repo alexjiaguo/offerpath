@@ -11,6 +11,7 @@ import {
   CaretUp,
   Sparkle,
   Clock,
+  X,
 } from "@phosphor-icons/react";
 import { useProfileStore } from "@/store/profileStore";
 import { useResumeStore } from "@/store/resumeStore";
@@ -21,6 +22,7 @@ import { useTranslation } from "@/i18n";
 import { cn } from "@/lib/utils";
 
 const COLLAPSED_STORAGE_KEY = "offerpath_onboarding_collapsed";
+const DISMISSED_STORAGE_KEY = "offerpath_onboarding_dismissed";
 
 export function calculateTimeSavedHours(metrics: {
   resumesCount: number;
@@ -50,12 +52,17 @@ export default function OnboardingChecklistWidget() {
   const discoveredJobs = useDiscoveryStore((s) => s.jobs);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(COLLAPSED_STORAGE_KEY);
       if (stored !== null) {
         setIsCollapsed(stored === "1");
+      }
+      const dismissed = window.localStorage.getItem(DISMISSED_STORAGE_KEY);
+      if (dismissed === "1") {
+        setIsDismissed(true);
       }
     } catch {
       // ignore storage errors
@@ -72,6 +79,15 @@ export default function OnboardingChecklistWidget() {
       }
       return next;
     });
+  };
+
+  const dismissChecklist = () => {
+    setIsDismissed(true);
+    try {
+      window.localStorage.setItem(DISMISSED_STORAGE_KEY, "1");
+    } catch {
+      // ignore
+    }
   };
 
   const steps = useMemo(() => {
@@ -136,6 +152,10 @@ export default function OnboardingChecklistWidget() {
     });
   }, [resumes, jobs, stories, mockSessions, profile]);
 
+  if (allComplete || isDismissed) {
+    return null;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -173,7 +193,7 @@ export default function OnboardingChecklistWidget() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <span className="eyebrow-tag border border-surface-200 bg-surface-100 text-surface-400">
             <Trophy weight="bold" className="w-3 h-3 text-surface-400" />
             {badgeTitle}
@@ -189,6 +209,15 @@ export default function OnboardingChecklistWidget() {
             ) : (
               <CaretUp weight="bold" className="w-4 h-4" />
             )}
+          </button>
+          <button
+            type="button"
+            onClick={dismissChecklist}
+            aria-label="Dismiss checklist"
+            title="Dismiss checklist"
+            className="p-1 rounded text-surface-300 hover:text-red-500 hover:bg-red-50 transition-colors ml-0.5"
+          >
+            <X weight="bold" className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -221,7 +250,7 @@ export default function OnboardingChecklistWidget() {
             className="space-y-1.5 overflow-hidden"
           >
             {/* Progress track */}
-            <div className="w-full bg-surface-100 rounded-full h-1.5 overflow-hidden mb-2">
+            <div className="w-full bg-surface-100 rounded-full h-1.5 overflow-hidden mb-3">
               <motion.div
                 className="bg-surface-400 h-full rounded-full"
                 initial={{ width: 0 }}
@@ -230,37 +259,42 @@ export default function OnboardingChecklistWidget() {
               />
             </div>
 
-            {steps.map((item) => (
-              <Link
-                key={item.id}
-                href={item.href}
-                className="flex items-center gap-3 p-2.5 rounded-md border border-surface-200 bg-surface-0 hover:bg-surface-100 transition-all group"
-              >
-                <div
-                  className={cn(
-                    "w-5 h-5 rounded flex items-center justify-center transition-all shrink-0",
-                    item.done
-                      ? "bg-surface-400 text-surface-0"
-                      : "border border-surface-300 text-transparent"
-                  )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+              {steps.map((item, idx) => (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className="flex items-center gap-2.5 p-2 rounded-md border border-surface-200 bg-surface-0 hover:bg-surface-100 transition-all group min-w-0"
                 >
-                  {item.done && (
-                    <CheckCircle className="w-3.5 h-3.5 text-surface-0" weight="bold" />
-                  )}
-                </div>
-                <span
-                  className={cn(
-                    "text-xs font-medium tracking-tight flex-1",
-                    item.done
-                      ? "text-surface-300 line-through"
-                      : "text-surface-400 group-hover:text-black"
-                  )}
-                >
-                  {item.label}
-                </span>
-                <ArrowRight className="w-3.5 h-3.5 text-surface-300 group-hover:text-surface-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-              </Link>
-            ))}
+                  <div
+                    className={cn(
+                      "w-5 h-5 rounded flex items-center justify-center transition-all shrink-0 text-[10px] font-mono font-bold",
+                      item.done
+                        ? "bg-surface-400 text-surface-0"
+                        : "border border-surface-300 text-surface-400 bg-surface-50"
+                    )}
+                  >
+                    {item.done ? (
+                      <CheckCircle className="w-3.5 h-3.5 text-surface-0" weight="bold" />
+                    ) : (
+                      idx + 1
+                    )}
+                  </div>
+                  <span
+                    className={cn(
+                      "text-xs font-medium tracking-tight flex-1 line-clamp-2",
+                      item.done
+                        ? "text-surface-300 line-through"
+                        : "text-surface-400 group-hover:text-black"
+                    )}
+                    title={item.label}
+                  >
+                    {item.label}
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-surface-300 group-hover:text-surface-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </Link>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

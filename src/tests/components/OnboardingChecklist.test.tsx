@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import OnboardingChecklistWidget, { calculateTimeSavedHours } from "@/components/dashboard/OnboardingChecklistWidget";
 import { useProfileStore } from "@/store/profileStore";
-import { useResumeStore, type Resume } from "@/store/resumeStore";
+import { useResumeStore } from "@/store/resumeStore";
+import type { Resume } from "@/types";
 import { usePipelineStore } from "@/store/pipelineStore";
 import { useInterviewStore } from "@/store/interviewStore";
 import { useDiscoveryStore } from "@/store/discoveryStore";
@@ -77,7 +78,7 @@ describe("OnboardingChecklistWidget & Gamification", () => {
     it("renders initial state at 0% with New Explorer badge", () => {
       render(<OnboardingChecklistWidget />);
       expect(screen.getByText("0%")).toBeDefined();
-      expect(screen.getByText(/5/)).toBeDefined(); // 5 steps remaining
+      expect(screen.getByText(/steps remaining|steps to complete/)).toBeDefined();
     });
 
     it("updates progress percentage when steps are completed", () => {
@@ -96,12 +97,20 @@ describe("OnboardingChecklistWidget & Gamification", () => {
 
     it("toggles collapse state and persists to localStorage", () => {
       render(<OnboardingChecklistWidget />);
-      const toggleBtn = screen.getByRole("button");
+      const toggleBtn = screen.getByRole("button", { name: /hide|show/i });
       fireEvent.click(toggleBtn);
       expect(window.localStorage.getItem("offerpath_onboarding_collapsed")).toBe("1");
 
       fireEvent.click(toggleBtn);
       expect(window.localStorage.getItem("offerpath_onboarding_collapsed")).toBe("0");
+    });
+
+    it("dismisses checklist and persists dismissal to localStorage", () => {
+      const { container } = render(<OnboardingChecklistWidget />);
+      const dismissBtn = screen.getByRole("button", { name: /dismiss/i });
+      fireEvent.click(dismissBtn);
+      expect(window.localStorage.getItem("offerpath_onboarding_dismissed")).toBe("1");
+      expect(container.firstChild).toBeNull();
     });
   });
 });

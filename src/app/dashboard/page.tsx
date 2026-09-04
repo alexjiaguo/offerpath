@@ -16,13 +16,15 @@ import { useTranslation } from "@/i18n";
    ═══════════════════════════════════════════════════════ */
 
 export default function DashboardPage() {
-  const { t, isZh } = useTranslation();
+  const { t } = useTranslation();
   const getStats = usePipelineStore((s) => s.getStats);
   const weeklyGoalCount = usePipelineStore((s) => s.weeklyGoalCount);
   const setWeeklyGoalCount = usePipelineStore((s) => s.setWeeklyGoalCount);
   const resumes = useResumeStore((s) => s.resumes);
   const discoveredJobs = useDiscoveryStore((s) => s.jobs);
   const discoveredCompanies = useDiscoveryStore((s) => s.companies);
+  const getJobsNeedingResume = usePipelineStore((s) => s.getJobsNeedingResume);
+  const hasNeedsTailoring = getJobsNeedingResume().length > 0;
   const stats = getStats();
 
   const baseResumes = resumes.filter((r) => r.is_base).length;
@@ -103,14 +105,14 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
-      {/* Quick Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Quick Stats & Weekly Goal Grid (5 Columns) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {QUICK_STATS.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: i * 0.05 }}
+            transition={{ duration: 0.3, delay: i * 0.04 }}
             className="card-editorial flex flex-col justify-between gap-3"
           >
             <div className="flex items-center justify-between">
@@ -127,7 +129,78 @@ export default function DashboardPage() {
             </div>
           </motion.div>
         ))}
+
+        {/* 5th Card: Weekly Application Goal */}
+        {(() => {
+          const currentGoalProgress = stats.appliedThisWeek;
+          const goalPercent = Math.min(100, Math.round((currentGoalProgress / weeklyGoalCount) * 100));
+
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="card-editorial flex flex-col justify-between gap-3"
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-md bg-surface-100 border border-surface-200 flex items-center justify-center text-surface-400">
+                  <Target weight="regular" className="w-4 h-4" />
+                </div>
+                <div className="flex items-center gap-1 bg-surface-50 px-1 py-0.5 rounded border border-surface-200">
+                  <button
+                    type="button"
+                    onClick={() => setWeeklyGoalCount(Math.max(1, weeklyGoalCount - 1))}
+                    className="w-4 h-4 rounded text-surface-300 hover:text-surface-400 hover:bg-surface-200/50 flex items-center justify-center text-[10px] font-mono transition-colors"
+                    aria-label="Decrease goal"
+                  >
+                    -
+                  </button>
+                  <span className="text-[10px] font-mono font-bold text-surface-400 min-w-[14px] text-center">
+                    {weeklyGoalCount}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setWeeklyGoalCount(weeklyGoalCount + 1)}
+                    className="w-4 h-4 rounded text-surface-300 hover:text-surface-400 hover:bg-surface-200/50 flex items-center justify-center text-[10px] font-mono transition-colors"
+                    aria-label="Increase goal"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-baseline justify-between">
+                  <p className="text-2xl font-display font-semibold text-surface-400 tabular-nums">
+                    {currentGoalProgress}{" "}
+                    <span className="text-xs font-normal text-surface-300">
+                      / {weeklyGoalCount}
+                    </span>
+                  </p>
+                  <span className="text-[10px] font-mono font-bold text-surface-400">
+                    {goalPercent}%
+                  </span>
+                </div>
+
+                {/* Compact Progress bar */}
+                <div className="h-1 w-full bg-surface-100 rounded-full overflow-hidden my-1.5 border border-surface-200">
+                  <div
+                    className="h-full bg-surface-400 rounded-full transition-all duration-500"
+                    style={{ width: `${goalPercent}%` }}
+                  />
+                </div>
+
+                <p className="text-[10px] font-mono font-medium text-surface-300 uppercase tracking-widest">
+                  {t.dashboard.weeklyGoal.title}
+                </p>
+              </div>
+            </motion.div>
+          );
+        })()}
       </div>
+
+      {/* Onboarding Checklist (Clean standalone full-width card; auto-hides when 100% complete or dismissed) */}
+      <OnboardingChecklistWidget />
 
       {/* Primary Modules */}
       <div className="grid md:grid-cols-3 gap-4">
@@ -174,86 +247,10 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-6">
-        {/* Needs Tailoring Widget */}
-        <div className="lg:col-span-6">
-          <NeedsTailoringWidget />
-        </div>
-
-        {/* System Onboarding & Weekly Goals */}
-        <div className="lg:col-span-6 flex flex-col gap-6">
-          <OnboardingChecklistWidget />
-
-          {/* Weekly Application Goals Widget */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.35 }}
-            className="card-editorial space-y-4"
-          >
-            <div className="flex items-center justify-between pb-3 border-b border-surface-200">
-              <div className="flex items-center gap-2">
-                <Target weight="bold" className="w-4 h-4 text-surface-400" />
-                <h2 className="text-sm font-semibold text-surface-400 font-sans">{t.dashboard.weeklyGoal.title}</h2>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-surface-300">{t.dashboard.weeklyGoal.target}</span>
-                <div className="flex items-center gap-1">
-                  <button 
-                    onClick={() => setWeeklyGoalCount(Math.max(1, weeklyGoalCount - 1))}
-                    className="w-5 h-5 rounded border border-surface-200 bg-surface-0 flex items-center justify-center font-mono text-xs text-surface-400 hover:bg-surface-100 transition-colors"
-                  >
-                    -
-                  </button>
-                  <span className="text-xs font-mono font-bold text-surface-400 min-w-[16px] text-center">{weeklyGoalCount}</span>
-                  <button 
-                    onClick={() => setWeeklyGoalCount(weeklyGoalCount + 1)}
-                    className="w-5 h-5 rounded border border-surface-200 bg-surface-0 flex items-center justify-center font-mono text-xs text-surface-400 hover:bg-surface-100 transition-colors"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Progress calculation */}
-            {(() => {
-              const currentGoalProgress = stats.appliedThisWeek;
-              const goalPercent = Math.min(100, Math.round((currentGoalProgress / weeklyGoalCount) * 100));
-
-              return (
-                <div className="space-y-3">
-                  <div className="flex items-baseline justify-between">
-                    <div>
-                      <span className="text-2xl font-display font-semibold text-surface-400">{currentGoalProgress}</span>
-                      <span className="text-surface-300 text-xs font-medium ml-1.5">/ {weeklyGoalCount} {t.dashboard.weeklyGoal.appliedCount}</span>
-                    </div>
-                    <span className="text-xs font-mono font-bold text-surface-400">{goalPercent}%</span>
-                  </div>
-
-                  {/* Goal Progress bar */}
-                  <div className="h-1.5 w-full bg-surface-100 rounded-full overflow-hidden border border-surface-200">
-                    <motion.div
-                      className="h-full bg-surface-400"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${goalPercent}%` }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                    />
-                  </div>
-
-                  <p className="text-[12px] text-surface-300 font-sans">
-                    {currentGoalProgress >= weeklyGoalCount 
-                      ? t.dashboard.weeklyGoal.reached 
-                      : isZh
-                      ? `距离达成目标还需投递 ${weeklyGoalCount - currentGoalProgress} 个职位。`
-                      : `Apply to ${weeklyGoalCount - currentGoalProgress} more roles to reach your goal.`}
-                  </p>
-                </div>
-              );
-            })()}
-          </motion.div>
-        </div>
-      </div>
+      {/* Needs Tailoring Alert Widget — Only shown when active opportunities require resumes */}
+      {hasNeedsTailoring && (
+        <NeedsTailoringWidget />
+      )}
     </div>
   );
 }
