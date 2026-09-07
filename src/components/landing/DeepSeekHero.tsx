@@ -222,26 +222,29 @@ export function DeepSeekHero() {
           >
             <div className="ds-terminal-card overflow-hidden">
               {/* Terminal Header & Mode Tabs */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-black/40">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-                  <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
-                  <span className="w-3 h-3 rounded-full bg-[#28c840]" />
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-black/40 gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+                  </div>
                   <a
                     href="https://offerpath.cc.cd/dashboard"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ml-2 font-mono text-[11px] text-white/50 hover:text-white/80 transition-colors bg-white/[0.06] px-2 py-0.5 rounded-md border border-white/[0.08]"
+                    title="https://offerpath.cc.cd/dashboard"
+                    className="ml-1 font-mono text-[11px] text-white/50 hover:text-white/80 transition-colors bg-white/[0.06] px-2 py-0.5 rounded-md border border-white/[0.08] truncate min-w-0"
                   >
-                    https://offerpath.cc.cd/dashboard
+                    <span className="hidden xl:inline">https://</span>offerpath.cc.cd/dashboard
                   </a>
                 </div>
 
-                <div className="flex items-center gap-1 bg-white/[0.06] p-0.5 rounded-lg border border-white/[0.06]">
+                <div className="flex items-center gap-1 bg-white/[0.06] p-0.5 rounded-lg border border-white/[0.06] shrink-0">
                   <button
                     type="button"
                     onClick={() => setActiveTab("tailor")}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all ${
                       activeTab === "tailor"
                         ? "bg-[#6799fe]/20 text-[#6799fe] border border-[#6799fe]/30"
                         : "text-white/60 hover:text-white"
@@ -252,7 +255,7 @@ export function DeepSeekHero() {
                   <button
                     type="button"
                     onClick={() => setActiveTab("radar")}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all ${
                       activeTab === "radar"
                         ? "bg-[#6799fe]/20 text-[#6799fe] border border-[#6799fe]/30"
                         : "text-white/60 hover:text-white"
