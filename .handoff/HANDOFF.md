@@ -17,8 +17,8 @@
 ## Git State (verified against actual `git status`)
 
 - **Branch**: `main`
-- **HEAD commit**: `ac59e1c` (`feat(pipeline): complete system-wide chinese localization and anti-overflow improvements`)
-- **Remote**: `origin/main` (in sync, `ac59e1c`)
+- **HEAD commit**: `ede4f6b` (`docs(handoff): update handoff document after system-wide localization and production deployment`)
+- **Remote**: `origin/main` (in sync, `ede4f6b`)
 - **Working Tree**: Clean.
 - **Stashes**: `stash@{0}: On main: main branch uncommitted changes (favicon.svg, logo-mark.svg deletion)` — pre-existing, untouched.
 
