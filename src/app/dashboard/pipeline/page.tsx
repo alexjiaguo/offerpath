@@ -50,7 +50,7 @@ export default function PipelinePage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success(isZh ? "求职管道已成功导出为 CSV！" : "Pipeline exported successfully as CSV!");
+      toast.success(isZh ? "求职看板数据已成功导出为 CSV！" : "Pipeline exported successfully as CSV!");
     } catch (error) {
       logger.error(error);
       toast.error(isZh ? "导出 CSV 失败" : "Failed to export pipeline to CSV");

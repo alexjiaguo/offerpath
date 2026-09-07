@@ -55,7 +55,7 @@ export function QuickStartSection() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <span className="text-[10px] font-mono font-bold text-[#C2410C] uppercase tracking-wider">
-                  {isZh ? "快速体验 · 90秒针对性润色" : "QUICK START · 90S TAILORING"}
+                  {isZh ? "快速体验 · 90秒针对性定制" : "QUICK START · 90S TAILORING"}
                 </span>
                 <Lightning weight="duotone" className="w-5 h-5 text-[#C2410C]" />
               </div>
@@ -142,7 +142,7 @@ export function QuickStartSection() {
                 </div>
                 <div className="flex items-center gap-2 text-neutral-700">
                   <Kanban weight="duotone" className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span className="text-[11px] font-medium">{isZh ? "求职看板管道" : "Kanban Pipeline"}</span>
+                  <span className="text-[11px] font-medium">{isZh ? "求职进展看板" : "Kanban Pipeline"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-neutral-700">
                   <ChatCircleDots weight="duotone" className="w-4 h-4 text-indigo-600 shrink-0" />

@@ -146,7 +146,7 @@ export function JobTrackerPreview() {
     <div className="flex-1 flex flex-col min-h-0">
       <div className="flex items-center justify-between mb-3">
         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-surface-300">
-          {isZh ? "实时看板管道" : "Your Pipeline"}
+          {isZh ? "求职进展看板" : "Your Pipeline"}
         </span>
         <span className="text-[10px] font-medium text-ember-700 flex items-center gap-1">
           <TrendUp weight="bold" className="w-3 h-3" />

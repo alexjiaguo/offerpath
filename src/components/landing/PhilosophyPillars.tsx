@@ -25,7 +25,7 @@ export function PhilosophyPillars() {
         {
           title: "一体化求职工作台",
           subtitle: "MODULAR CAREER OS",
-          desc: "打破传统求职工具碎片化痛点。简历逆向定制、官网职位雷达、可视化看板管道与 STAR 模拟面试无缝协同，形成飞轮效应。",
+          desc: "打破传统求职工具碎片化痛点。简历逆向定制、官网职位雷达、可视化求职看板与 STAR 模拟面试无缝协同，形成飞轮效应。",
           icon: (
             <svg aria-hidden="true" width="64" height="64" viewBox="0 0 72 72" fill="none" className="text-[#6799fe]/80">
               <circle cx="36" cy="36" r="17" stroke="currentColor" strokeWidth="0.9" strokeDasharray="2 2.5" opacity="0.5" />
@@ -132,7 +132,7 @@ export function PhilosophyPillars() {
                 <span className="text-[#C2410C] font-mono uppercase tracking-wider text-xl md:text-2xl block mb-2 font-semibold">
                   系统级工程架构
                 </span>
-                专为真实商业招聘环境与面试管道打造
+                专为真实企业招聘流程与求职链路打造
               </>
             ) : (
               <>

@@ -23,7 +23,7 @@ export default function NeedsTailoringWidget() {
           <h3 className="text-sm font-semibold text-surface-400 font-sans">{t.dashboard.needsTailoring.title}</h3>
           <p className="text-[12px] text-surface-300">
             {isZh
-              ? `${jobs.length} 个在途岗位尚未创建专属针对性简历`
+              ? `${jobs.length} 个在途岗位尚未创建专属定制简历`
               : `${jobs.length} evaluated ${jobs.length === 1 ? "job" : "jobs"} without a resume version`}
           </p>
         </div>

@@ -13,7 +13,7 @@ export function AnnouncementBar() {
   const messages = useMemo(() => {
     if (isZh) {
       return [
-        { label: "NEW", text: "90 秒内为目标岗位智能针对性润色简历" },
+        { label: "NEW", text: "90 秒按目标岗位智能定制专属简历" },
         { label: "KEYS", text: "支持接入 OpenAI、Anthropic、Google 或 DeepSeek 密钥" },
         { label: "RADAR", text: "每周自动巡航：追踪 30+ 家知名企业官网直聘岗位" },
       ];

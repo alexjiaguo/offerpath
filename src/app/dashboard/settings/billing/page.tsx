@@ -103,7 +103,7 @@ export default function BillingPage() {
           ? [
               `每月 ${PRO_TIER_MONTHLY_AI_USES} 次内置托管 AI 深度分析额度`,
               "额度用尽后可无缝接入自带 Key (BYOK) 继续使用",
-              "无限份定制针对性简历",
+              "无限份按 JD 定制简历",
               "全部 9 套经过 ATS 验证的精选模板",
               "无限在途求职岗位追踪看板",
               "无限全真模拟面试与 AI 专家复盘",

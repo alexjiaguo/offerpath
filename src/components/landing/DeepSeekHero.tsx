@@ -24,7 +24,7 @@ export function DeepSeekHero() {
   const presets = isZh
     ? [
         {
-          role: "资深全栈工程师",
+          role: "全栈技术专家 (Staff)",
           company: "Anthropic",
           jdSnippet: "要求 5+ 年 React/Node/TypeScript 经验，熟练掌握 LLM Agent 架构设计与性能调优...",
           score: 96,
@@ -250,7 +250,7 @@ export function DeepSeekHero() {
                         : "text-white/60 hover:text-white"
                     }`}
                   >
-                    {isZh ? "针对性润色" : "Instant Tailor"}
+                    {isZh ? "针对性定制" : "Instant Tailor"}
                   </button>
                   <button
                     type="button"
@@ -319,7 +319,7 @@ export function DeepSeekHero() {
                               {currentPreset.score}%
                             </span>
                             <span className="text-xs font-semibold text-white/90">
-                              {isZh ? "契合度得分与润色成果" : "ATS Match & Tailored Bullets"}
+                              {isZh ? "ATS 匹配分与定制成果" : "ATS Match & Tailored Bullets"}
                             </span>
                           </div>
                           <button
