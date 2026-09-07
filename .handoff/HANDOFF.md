@@ -12,12 +12,12 @@
 - **From agent**: Antigravity
 - **To agent**: any
 - **Date**: 2026-09-07 12:22 CST
-- **Session summary**: Updated the landing page hero headline from '全流程工程化。' to '全流程自动化。' (and English 'engineered.' to 'automated.'). Replaced the mock terminal URL `offerpath.app/studio` with an interactive link to `https://offerpath.cc.cd/dashboard` across both language modes. Scanned the codebase and updated `offerpath.app/{steps[activeStep].id}` in StickyFeatureShowcase to `offerpath.cc.cd/{steps[activeStep].id}`, bringing remaining `offerpath.app` references across the repository to 0. Verified all 258 vitest tests pass, production build succeeds, committed changes as `fix(landing): update hero headline to automation and replace studio links with production dashboard` (`d3a7cfb`), and pushed to `origin/main` to trigger Vercel deployment.
+- **Session summary**: Resolved text overflow and vertical wrapping on hero terminal mode tabs ('针对性润色' and '职位雷达扫描'). Added `shrink-0` to the tab container, `whitespace-nowrap` to tab buttons, and made the terminal URL pill gracefully responsive (`<span className="hidden xl:inline">https://</span>offerpath.cc.cd/dashboard`) with `min-w-0 truncate`. Visually verified via screenshots across both English and Chinese locales that buttons remain cleanly on a single line. Passed 258/258 tests and production build. Audited Supabase (0 migrations required). Pushed commit `171a9f5` to `origin/main`.
 
 ## Git State (verified against actual `git status`)
 
 - **Branch**: `main`
-- **HEAD commit**: `d3a7cfb` (`fix(landing): update hero headline to automation and replace studio links with production dashboard`)
+- **HEAD commit**: `171a9f5` (`fix(landing): prevent terminal header tabs text wrapping and make URL responsive`)
 - **Remote**: `origin/main` (up to date; pushes trigger Vercel deployment at `https://offerpath.cc.cd`)
 - **Working Tree**: Clean (`nothing to commit, working tree clean`).
 - **Stashes**: `stash@{0}: On main: main branch uncommitted changes (favicon.svg, logo-mark.svg deletion)` — pre-existing, untouched.
@@ -27,10 +27,11 @@
 - **Verified**:
   - `git branch --show-current` returns `main`.
   - `git status` shows clean working tree.
-  - `git log -n 1 --oneline` shows `d3a7cfb`.
+  - `git log -n 1 --oneline` shows `171a9f5`.
   - `npm test` runs 34 test files, all 258 tests pass cleanly.
   - `npm run build` compiles clean with all 31 routes generated.
-  - `grep -rn "offerpath\.app"` returns 0 results across codebase.
+  - Visual verification with Playwright screenshots confirms single-line tab layout in both English and Chinese.
+  - Supabase audit confirms 0 schema/table mutations needed.
   - `git push origin main` completed successfully.
 - **Assumed**:
   - Vercel GitHub CI integration automatically deploys commit `d3a7cfb` to `https://offerpath.cc.cd`.
