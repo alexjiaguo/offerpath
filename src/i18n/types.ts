@@ -280,11 +280,15 @@ export interface TranslationSchema {
     tierFilter: string;
     minScoreFilter: string;
     columns: {
+      new?: string;
+      evaluated?: string;
       saved: string;
       applied: string;
       interviewing: string;
       offer: string;
+      offered?: string;
       rejected: string;
+      [key: string]: string | undefined;
     };
     columnEmpty: string;
     dragDropHint: string;
@@ -311,6 +315,7 @@ export interface TranslationSchema {
       tailoredResume: string;
       notes: string;
       timeline: string;
+      outreach?: string;
     };
     company: string;
     location: string;
@@ -333,6 +338,16 @@ export interface TranslationSchema {
     deleteJob: string;
     deleteJobConfirm: string;
     saveChanges: string;
+    posting?: string;
+    noDescription?: string;
+    whyItFits?: string;
+    concerns?: string;
+    notEvaluatedYet?: string;
+    notEvaluatedDesc?: string;
+    runAiEval?: string;
+    quickActions?: string;
+    startInterviewPrep?: string;
+    score?: string;
   };
   addJobDialog: {
     title: string;
@@ -872,6 +887,8 @@ export interface TranslationSchema {
       deletePrepConfirm: string;
       standardPrepNote: string;
       unknownCompany: string;
+      categories?: Record<string, string>;
+      difficulties?: Record<string, string>;
     };
     mock: {
       title: string;
@@ -885,6 +902,7 @@ export interface TranslationSchema {
       aiAnalyzed: string;
       outOf: string;
       categoryBreakdown: string;
+      scoreCategories?: Record<string, string>;
       strengths: string;
       improvements: string;
       tipsTitle: string;

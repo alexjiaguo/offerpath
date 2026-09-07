@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { ArrowLeft, ChartBar } from '@phosphor-icons/react';
 import Link from "next/link";
+import { useTranslation } from "@/i18n";
 
 const AnalyticsCharts = dynamic(() => import("@/components/pipeline/AnalyticsCharts"), {
  loading: () => (
@@ -19,20 +20,23 @@ const AnalyticsCharts = dynamic(() => import("@/components/pipeline/AnalyticsCha
  ═══════════════════════════════════════════════════ */
 
 export default function AnalyticsPage() {
+ const { t, isZh } = useTranslation();
  return (
  <div className="w-full animate-fade-in">
  {/* Header */}
  <div className="flex items-center justify-between mb-6">
  <div className="flex items-center gap-3">
  <ChartBar className="w-6 h-6 text-brand-400" weight="fill" />
- <h1 className="text-2xl font-bold">Pipeline Analytics</h1>
+ <h1 className="text-2xl font-bold">
+ {t.analytics.title || (isZh ? "求职漏斗与数据分析" : "Pipeline Analytics")}
+ </h1>
  </div>
  <Link
  href="/dashboard/pipeline"
  className="flex items-center gap-1.5 text-sm text-surface-300 hover:text-surface-400 transition-colors"
  >
  <ArrowLeft className="w-4 h-4" />
- Back to Board
+ {t.analytics.backToPipeline || (isZh ? "返回求职看板" : "Back to Board")}
  </Link>
  </div>
 

@@ -210,7 +210,9 @@ function MockInterviewContent({ jobId }: { jobId: string }) {
  {Object.entries(session.feedback.category_scores).map(([category, score]) => (
  <div key={category}>
  <div className="flex items-center justify-between text-sm mb-1">
- <span className="text-surface-300">{category}</span>
+ <span className="text-surface-300">
+ {(t.interview.mock as { scoreCategories?: Record<string, string> }).scoreCategories?.[category] || category}
+ </span>
  <span className="font-medium">{(score as number).toFixed(1)}</span>
  </div>
  <div className="h-2 rounded-md bg-surface-200 overflow-hidden">

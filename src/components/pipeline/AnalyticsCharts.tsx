@@ -15,6 +15,7 @@ import {
  Pie,
 } from "recharts";
 import { ArrowUpRight, Briefcase, Target, TrendUp, Percent, Star } from '@phosphor-icons/react';
+import { useTranslation } from "@/i18n";
 
 
 /* ═══════════════════════════════════════════════════
@@ -54,6 +55,7 @@ const CustomTooltip = ({
 };
 
 export default function AnalyticsCharts() {
+ const { t, isZh } = useTranslation();
  const jobs = usePipelineStore((s) => s.jobs);
  const getStats = usePipelineStore((s) => s.getStats);
  const getUniqueArchetypes = usePipelineStore((s) => s.getUniqueArchetypes);
@@ -62,17 +64,15 @@ export default function AnalyticsCharts() {
  // ── Chart Data ──
 
   const funnelData = useMemo(() => [
-  { name: "New", count: stats.byStatus.new || 0, color: STATUS_COLORS.new },
-  { name: "Evaluated", count: stats.byStatus.evaluated || 0, color: STATUS_COLORS.evaluated },
-  { name: "Applied", count: stats.byStatus.applied || 0, color: STATUS_COLORS.applied },
-  { name: "Interviewing", count: stats.byStatus.interviewing || 0, color: STATUS_COLORS.interviewing },
-  { name: "Offered", count: stats.byStatus.offered || 0, color: STATUS_COLORS.offered },
-  { name: "Rejected", count: stats.byStatus.rejected || 0, color: STATUS_COLORS.rejected },
-  // Previously omitted: discarded/archived counted in Total but vanished
-  // from the funnel, so the bars never reconciled with the total.
-  { name: "Discarded", count: stats.byStatus.discarded || 0, color: STATUS_COLORS.discarded },
-  { name: "Archived", count: stats.byStatus.archived || 0, color: STATUS_COLORS.archived },
-  ], [stats]);
+  { name: isZh ? "待投递" : "New", count: stats.byStatus.new || 0, color: STATUS_COLORS.new },
+  { name: isZh ? "已评估" : "Evaluated", count: stats.byStatus.evaluated || 0, color: STATUS_COLORS.evaluated },
+  { name: isZh ? "已投递" : "Applied", count: stats.byStatus.applied || 0, color: STATUS_COLORS.applied },
+  { name: isZh ? "面试中" : "Interviewing", count: stats.byStatus.interviewing || 0, color: STATUS_COLORS.interviewing },
+  { name: isZh ? "已获 Offer" : "Offered", count: stats.byStatus.offered || 0, color: STATUS_COLORS.offered },
+  { name: isZh ? "未通过" : "Rejected", count: stats.byStatus.rejected || 0, color: STATUS_COLORS.rejected },
+  { name: isZh ? "已放弃" : "Discarded", count: stats.byStatus.discarded || 0, color: STATUS_COLORS.discarded },
+  { name: isZh ? "已归档" : "Archived", count: stats.byStatus.archived || 0, color: STATUS_COLORS.archived },
+  ], [stats, isZh]);
 
  const scoreDistribution = useMemo(() => {
  const scoredJobs = jobs.filter((j) => j.score !== undefined);
@@ -91,10 +91,10 @@ export default function AnalyticsCharts() {
  [jobs, archetypes]);
 
   const tierData = useMemo(() => [
-  { name: "Tier 1", value: jobs.filter((j) => j.tier === 1).length, color: "#111111" },
-  { name: "Tier 2", value: jobs.filter((j) => j.tier === 2).length, color: "#888888" },
-  { name: "Tier 3", value: jobs.filter((j) => j.tier === 3).length, color: "#EAEAEA" },
- ].filter((d) => d.value > 0), [jobs]);
+  { name: isZh ? "第一梯队" : "Tier 1", value: jobs.filter((j) => j.tier === 1).length, color: "#111111" },
+  { name: isZh ? "第二梯队" : "Tier 2", value: jobs.filter((j) => j.tier === 2).length, color: "#888888" },
+  { name: isZh ? "第三梯队" : "Tier 3", value: jobs.filter((j) => j.tier === 3).length, color: "#EAEAEA" },
+ ].filter((d) => d.value > 0), [jobs, isZh]);
 
   return (
   <div className="space-y-6 animate-stagger-in">
@@ -102,22 +102,22 @@ export default function AnalyticsCharts() {
  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
   <StatCard
   icon={<Briefcase className="w-5 h-5 text-surface-400" />}
-  label="Total Jobs"
+  label={isZh ? "跟进岗位总数" : "Total Jobs"}
   value={stats.total.toString()}
   />
   <StatCard
   icon={<Star className="w-5 h-5 text-surface-400" />}
-  label="Avg Score"
+  label={isZh ? "平均匹配分" : "Avg Score"}
   value={stats.avgScore > 0 ? stats.avgScore.toFixed(1) : "—"}
   />
   <StatCard
   icon={<ArrowUpRight className="w-5 h-5 text-surface-400" />}
-  label="Interview Rate"
+  label={isZh ? "面试转化率" : "Interview Rate"}
   value={stats.interviewRate > 0 ? `${Math.round(stats.interviewRate)}%` : "—"}
   />
   <StatCard
   icon={<Percent className="w-5 h-5 text-surface-400" />}
- label="Offer Rate"
+ label={isZh ? "Offer 获得率" : "Offer Rate"}
  value={stats.offerRate > 0 ? `${Math.round(stats.offerRate)}%` : "—"}
  />
  </div>
@@ -128,7 +128,7 @@ export default function AnalyticsCharts() {
   <div className="card-editorial rounded-2xl p-6">
   <h3 className="text-[11px] uppercase tracking-[0.15em] font-mono font-semibold text-surface-400 mb-6 flex items-center gap-2">
   <Target className="w-4 h-4" />
-  Pipeline Funnel
+  {t.analytics.conversionFunnel || (isZh ? "求职全流程转化漏斗" : "Pipeline Funnel")}
   </h3>
   <ResponsiveContainer width="100%" height={240}>
   <BarChart data={funnelData} layout="vertical" barCategoryGap="20%">
@@ -156,7 +156,7 @@ export default function AnalyticsCharts() {
   <div className="card-editorial rounded-2xl p-6">
   <h3 className="text-[11px] uppercase tracking-[0.15em] font-mono font-semibold text-surface-400 mb-6 flex items-center gap-2">
   <Star className="w-4 h-4" />
-  Score Distribution
+  {isZh ? "岗位人岗匹配度分布" : "Score Distribution"}
   </h3>
   <ResponsiveContainer width="100%" height={240}>
   <BarChart data={scoreDistribution} barCategoryGap="25%">
@@ -177,7 +177,7 @@ export default function AnalyticsCharts() {
   <div className="card-editorial rounded-2xl p-6">
   <h3 className="text-[11px] uppercase tracking-[0.15em] font-mono font-semibold text-surface-400 mb-6 flex items-center gap-2">
   <Briefcase className="w-4 h-4" />
-  By role type
+  {isZh ? "岗位类别分布" : "By role type"}
   </h3>
   <ResponsiveContainer width="100%" height={240}>
   <BarChart data={archetypeData} layout="vertical" barCategoryGap="20%">
@@ -201,7 +201,7 @@ export default function AnalyticsCharts() {
   <div className="card-editorial rounded-2xl p-6">
   <h3 className="text-[11px] uppercase tracking-[0.15em] font-mono font-semibold text-surface-400 mb-6 flex items-center gap-2">
   <TrendUp className="w-4 h-4" />
-  Tier Breakdown
+  {t.analytics.tierPerformance || (isZh ? "优先级梯队分布" : "Tier Breakdown")}
   </h3>
  <div className="flex items-center gap-8">
  <ResponsiveContainer width="50%" height={200}>

@@ -7,18 +7,19 @@ import { CaretRight, FileText, MapPin, Star } from '@phosphor-icons/react';
 import Link from "next/link";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useTranslation } from "@/i18n";
 
 /* ═══════════════════════════════════════════════════
  JobCard v4 — Minimalist Bento Node
  ═══════════════════════════════════════════════════ */
 
-function timeAgo(dateStr: string): string {
+function timeAgo(dateStr: string, isZh?: boolean): string {
  const diff = Date.now() - new Date(dateStr).getTime();
  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
- if (days === 0) return "Today";
- if (days === 1) return "Yesterday";
- if (days < 7) return `${days}d`;
- return `${Math.floor(days / 7)}w`;
+ if (days === 0) return isZh ? "今天" : "Today";
+ if (days === 1) return isZh ? "昨天" : "Yesterday";
+ if (days < 7) return isZh ? `${days}天前` : `${days}d`;
+ return isZh ? `${Math.floor(days / 7)}周前` : `${Math.floor(days / 7)}w`;
 }
 
 function scoreBadgeColor(score: number): string {
@@ -54,6 +55,7 @@ interface JobCardProps {
 }
 
 const JobCard = React.memo(function JobCard({ job, overlay }: JobCardProps) {
+ const { isZh } = useTranslation();
  const {
  attributes,
  listeners,
@@ -93,7 +95,7 @@ const JobCard = React.memo(function JobCard({ job, overlay }: JobCardProps) {
  {job.company?.name}
  </span>
  <span className="text-[10px] font-mono text-surface-300 tabular-nums">
- {timeAgo(job.created_at)}
+ {timeAgo(job.created_at, isZh)}
  </span>
  </div>
  <Link

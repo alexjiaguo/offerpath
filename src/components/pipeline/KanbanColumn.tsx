@@ -55,7 +55,7 @@ export default function KanbanColumn({ config, jobs, onAddClick }: KanbanColumnP
             <config.icon weight="bold" className="w-4.5 h-4.5 text-surface-400" />
           </div>
           <div>
-            <span className="text-sm font-bold tracking-tight text-surface-400 block leading-none">
+            <span className="text-sm font-bold tracking-tight text-surface-400 block leading-none truncate max-w-[170px] sm:max-w-[200px]">
               {columnTitle}
             </span>
             <span className="text-[10px] font-bold text-surface-300 uppercase tracking-widest leading-none mt-1.5 block">

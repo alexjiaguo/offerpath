@@ -123,7 +123,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-2xl font-display font-semibold text-surface-400 tabular-nums">{stat.value}</p>
-              <p className="text-[10px] font-mono font-medium text-surface-300 uppercase tracking-widest mt-0.5">
+              <p className="text-[10px] font-mono font-medium text-surface-300 uppercase tracking-wider truncate mt-0.5" title={stat.label}>
                 {stat.label}
               </p>
             </div>
@@ -190,7 +190,7 @@ export default function DashboardPage() {
                   />
                 </div>
 
-                <p className="text-[10px] font-mono font-medium text-surface-300 uppercase tracking-widest">
+                <p className="text-[10px] font-mono font-medium text-surface-300 uppercase tracking-wider truncate" title={t.dashboard.weeklyGoal.title}>
                   {t.dashboard.weeklyGoal.title}
                 </p>
               </div>

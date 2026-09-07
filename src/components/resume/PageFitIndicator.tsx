@@ -66,7 +66,7 @@ export default function PageFitIndicator({ selector = "[data-live-preview] .resu
     : t("resumeStudio.pageFitGood");
 
   return (
-    <div className={cn("flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border whitespace-nowrap shrink-0", statusColor)}>
+    <div className={cn("flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border whitespace-nowrap shrink-0", statusColor)}>
       <div className={cn("w-1.5 h-1.5 rounded-full", isOverflow ? "bg-red-500" : isUnderflow ? "bg-amber-500" : "bg-emerald-500")} />
       {statusText}
     </div>

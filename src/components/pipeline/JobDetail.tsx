@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { JobStatus, ExperienceEntry, EducationEntry, SkillItem } from "@/types";
 import { formatDate, statusColor } from "@/lib/utils";
+import { useTranslation } from "@/i18n";
 
 /* ═══════════════════════════════════════════════════
  generateSimulatedOutreach — High-end Outreach Builder
@@ -123,65 +124,78 @@ ${senderName}`;
  ═══════════════════════════════════════════════════ */
 
 const STATUS_OPTIONS: { id: JobStatus; label: string; color: string }[] = [
- { id: "new", label: "New", color: "bg-brand-500" },
- { id: "evaluated", label: "Evaluated", color: "bg-blue-500" },
- { id: "applied", label: "Applied", color: "bg-emerald-500" },
- { id: "interviewing", label: "Interviewing", color: "bg-amber-500" },
- { id: "offered", label: "Offered", color: "bg-purple-500" },
- { id: "rejected", label: "Rejected", color: "bg-red-500" },
- { id: "discarded", label: "Discarded", color: "bg-surface-300" },
- { id: "archived", label: "Archived", color: "bg-surface-300" },
+  { id: "new", label: "New", color: "bg-brand-500" },
+  { id: "evaluated", label: "Evaluated", color: "bg-blue-500" },
+  { id: "applied", label: "Applied", color: "bg-emerald-500" },
+  { id: "interviewing", label: "Interviewing", color: "bg-amber-500" },
+  { id: "offered", label: "Offered", color: "bg-purple-500" },
+  { id: "rejected", label: "Rejected", color: "bg-red-500" },
+  { id: "discarded", label: "Discarded", color: "bg-surface-300" },
+  { id: "archived", label: "Archived", color: "bg-surface-300" },
 ];
+
+const STATUS_LABELS: Record<JobStatus, { en: string; zh: string }> = {
+  new: { en: "New", zh: "待投递" },
+  evaluated: { en: "Evaluated", zh: "已评估" },
+  applied: { en: "Applied", zh: "已投递" },
+  interviewing: { en: "Interviewing", zh: "面试中" },
+  offered: { en: "Offered", zh: "已获 Offer" },
+  rejected: { en: "Rejected", zh: "未通过" },
+  discarded: { en: "Discarded", zh: "已放弃" },
+  archived: { en: "Archived", zh: "已归档" },
+};
 
 // Score ring SVG component
 function ScoreRing({ score }: { score: number }) {
- const percentage = (score / 5) * 100;
- const radius = 36;
- const stroke = 5;
- const circumference = 2 * Math.PI * radius;
- const offset = circumference - (percentage / 100) * circumference;
+  const percentage = (score / 5) * 100;
+  const radius = 36;
+  const stroke = 5;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
- return (
- <div className="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
- <svg className="w-20 h-20 -rotate-90" viewBox="0 0 96 96">
- <circle
- cx="48"
- cy="48"
- r={radius}
- fill="none"
- stroke="var(--color-surface-200)"
- strokeWidth={stroke}
- />
- <circle
- cx="48"
- cy="48"
- r={radius}
- fill="none"
- stroke="var(--color-surface-400)"
- strokeWidth={stroke}
- strokeLinecap="round"
- strokeDasharray={circumference}
- strokeDashoffset={offset}
- className="transition-all duration-700 ease-out"
- />
- </svg>
- <div className="absolute inset-0 flex flex-col items-center justify-center">
- <span className="text-xl font-display font-bold text-surface-400">
- {score.toFixed(1)}
- </span>
- <span className="text-[9px] font-mono text-surface-300">/ 5.0</span>
- </div>
- </div>
- );
+  return (
+    <div className="relative w-20 h-20 flex items-center justify-center">
+      <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
+        <circle
+          cx="40"
+          cy="40"
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={stroke}
+          className="text-surface-100"
+        />
+        <circle
+          cx="40"
+          cy="40"
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={stroke}
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          className="text-surface-400 transition-all duration-1000 ease-out"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-xl font-display font-bold text-surface-400 leading-none">
+          {score.toFixed(1)}
+        </span>
+        <span className="text-[9px] font-mono text-surface-300 uppercase tracking-widest mt-0.5">/ 5.0</span>
+      </div>
+    </div>
+  );
 }
 
 interface JobDetailProps {
- jobId: string;
+  jobId: string;
 }
 
 export default function JobDetail({ jobId }: JobDetailProps) {
- const router = useRouter();
- const { getJobById, moveJob, deleteJob, updateJob } = usePipelineStore();
+  const { t, isZh } = useTranslation();
+  const router = useRouter();
+  const { getJobById, moveJob, deleteJob, updateJob } = usePipelineStore();
  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
  const [evaluating, setEvaluating] = useState(false);
  const [upgradingATS, setUpgradingATS] = useState(false);
@@ -312,129 +326,131 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  setTimeout(() => setCopied(false), 2000);
  };
 
- if (!job) {
- return (
- <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
- <Warning className="w-12 h-12 text-surface-300 mb-4" />
- <h2 className="text-xl font-display font-semibold text-surface-400 mb-2">Job Not Found</h2>
- <p className="text-sm text-surface-300 mb-6">
- This job may have been deleted or doesn&apos;t exist.
- </p>
- <Link
- href="/dashboard/pipeline"
- className="btn-editorial-secondary inline-flex items-center gap-2"
- >
- <ArrowLeft className="w-4 h-4" />
- Back to Pipeline
- </Link>
- </div>
- );
- }
+  if (!job) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
+        <Warning className="w-12 h-12 text-surface-300 mb-4" />
+        <h2 className="text-xl font-display font-semibold text-surface-400 mb-2">
+          {isZh ? "未找到该岗位" : "Job Not Found"}
+        </h2>
+        <p className="text-sm text-surface-300 mb-6">
+          {isZh ? "此职位可能已被删除或不存在。" : "This job may have been deleted or doesn't exist."}
+        </p>
+        <Link
+          href="/dashboard/pipeline"
+          className="btn-editorial-secondary inline-flex items-center gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          {t.pipelineDetail.backToBoard}
+        </Link>
+      </div>
+    );
+  }
 
- const handleStatusChange = (newStatus: JobStatus) => {
- moveJob(job.id, newStatus);
- };
+  const handleStatusChange = (newStatus: JobStatus) => {
+    moveJob(job.id, newStatus);
+  };
 
- const handleDelete = () => {
- setShowDeleteConfirm(true);
- };
+  const handleDelete = () => {
+    setShowDeleteConfirm(true);
+  };
 
- const confirmDelete = () => {
- deleteJob(job.id);
- setShowDeleteConfirm(false);
- router.push("/dashboard/pipeline");
- };
+  const confirmDelete = () => {
+    deleteJob(job.id);
+    setShowDeleteConfirm(false);
+    router.push("/dashboard/pipeline");
+  };
 
- return (
- <div className="max-w-5xl mx-auto animate-fade-in">
- {/* Back navigation */}
- <Link
- href="/dashboard/pipeline"
- className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-surface-300 hover:text-surface-400 transition-colors mb-6"
- >
- <ArrowLeft className="w-4 h-4" />
- Back to Pipeline
- </Link>
+  return (
+    <div className="max-w-5xl mx-auto animate-fade-in">
+      {/* Back navigation */}
+      <Link
+        href="/dashboard/pipeline"
+        className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-surface-300 hover:text-surface-400 transition-colors mb-6"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        {t.pipelineDetail.backToBoard}
+      </Link>
 
- {/* Header */}
- <div className="card-editorial mb-6 space-y-4">
- <div className="flex items-start justify-between">
- <div className="flex items-start gap-4">
- {/* Company initial */}
- <div className="w-12 h-12 rounded-md bg-surface-400 flex items-center justify-center text-lg font-mono font-bold text-surface-0 flex-shrink-0">
- {(job.company?.name || "?").charAt(0)}
- </div>
- <div>
- <p className="text-xs font-mono text-surface-300 uppercase tracking-widest mb-0.5">{job.company?.name}</p>
- <h1 className="text-2xl font-display font-bold text-surface-400 leading-tight">{job.title}</h1>
- <div className="flex items-center gap-3 flex-wrap mt-2">
- <span
- className={cn(
- "px-2.5 py-0.5 rounded-md text-xs font-mono font-medium uppercase tracking-wider border",
- statusColor(job.status)
- )}
- >
- {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
- </span>
- {job.location && (
- <span className="flex items-center gap-1 text-xs text-surface-300 font-mono">
- <MapPin weight="bold" className="w-3.5 h-3.5" />
- {job.location}
- </span>
- )}
- {job.salary_range && (
- <span className="flex items-center gap-1 text-xs text-surface-300 font-mono">
- <CurrencyDollar weight="bold" className="w-3.5 h-3.5" />
- {job.salary_range}
- </span>
- )}
- {job.url && (
- <a
- href={job.url}
- target="_blank"
- rel="noopener noreferrer"
- className="flex items-center gap-1 text-xs font-mono font-semibold text-surface-400 hover:text-black transition-colors"
- >
- <ArrowSquareOut weight="bold" className="w-3.5 h-3.5" />
- Posting
- </a>
- )}
- </div>
- </div>
- </div>
+      {/* Header */}
+      <div className="card-editorial mb-6 space-y-4">
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-4">
+            {/* Company initial */}
+            <div className="w-12 h-12 rounded-md bg-surface-400 flex items-center justify-center text-lg font-mono font-bold text-surface-0 flex-shrink-0">
+              {(job.company?.name || "?").charAt(0)}
+            </div>
+            <div>
+              <p className="text-xs font-mono text-surface-300 uppercase tracking-widest mb-0.5">{job.company?.name}</p>
+              <h1 className="text-2xl font-display font-bold text-surface-400 leading-tight">{job.title}</h1>
+              <div className="flex items-center gap-3 flex-wrap mt-2">
+                <span
+                  className={cn(
+                    "px-2.5 py-0.5 rounded-md text-xs font-mono font-medium uppercase tracking-wider border",
+                    statusColor(job.status)
+                  )}
+                >
+                  {STATUS_LABELS[job.status]?.[isZh ? "zh" : "en"] || (job.status.charAt(0).toUpperCase() + job.status.slice(1))}
+                </span>
+                {job.location && (
+                  <span className="flex items-center gap-1 text-xs text-surface-300 font-mono">
+                    <MapPin weight="bold" className="w-3.5 h-3.5" />
+                    {job.location}
+                  </span>
+                )}
+                {job.salary_range && (
+                  <span className="flex items-center gap-1 text-xs text-surface-300 font-mono">
+                    <CurrencyDollar weight="bold" className="w-3.5 h-3.5" />
+                    {job.salary_range}
+                  </span>
+                )}
+                {job.url && (
+                  <a
+                    href={job.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs font-mono font-semibold text-surface-400 hover:text-black transition-colors"
+                  >
+                    <ArrowSquareOut weight="bold" className="w-3.5 h-3.5" />
+                    {t.pipelineDetail.posting}
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
 
- {/* Delete button */}
- <button
- onClick={handleDelete}
- className="p-2 rounded-md text-surface-300 hover:text-red-600 hover:bg-pastel-red-bg transition-all"
- title="Delete job"
- >
- <Trash weight="bold" className="w-4 h-4" />
- </button>
- </div>
+          {/* Delete button */}
+          <button
+            onClick={handleDelete}
+            className="p-2 rounded-md text-surface-300 hover:text-red-600 hover:bg-pastel-red-bg transition-all"
+            title={t.pipelineDetail.deleteJob}
+          >
+            <Trash weight="bold" className="w-4 h-4" />
+          </button>
+        </div>
 
- {/* Status changer */}
- <div className="flex items-center gap-1.5 pt-3 border-t border-surface-200 overflow-x-auto">
- {STATUS_OPTIONS.map((opt) => (
- <button
- key={opt.id}
- onClick={() => handleStatusChange(opt.id)}
- className={cn(
- "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-semibold uppercase tracking-wider transition-all whitespace-nowrap border",
- job.status === opt.id
- ? "bg-surface-400 text-surface-0 border-surface-400"
- : "bg-surface-50 text-surface-300 border-surface-200 hover:text-surface-400 hover:bg-surface-100"
- )}
- >
- <span className={cn("w-1.5 h-1.5 rounded-full", opt.color)} />
- {opt.label}
- </button>
- ))}
- </div>
- </div>
+        {/* Status changer */}
+        <div className="flex items-center gap-1.5 pt-3 border-t border-surface-200 overflow-x-auto">
+          {STATUS_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => handleStatusChange(opt.id)}
+              className={cn(
+                "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-semibold uppercase tracking-wider transition-all whitespace-nowrap border",
+                job.status === opt.id
+                  ? "bg-surface-400 text-surface-0 border-surface-400"
+                  : "bg-surface-50 text-surface-300 border-surface-200 hover:text-surface-400 hover:bg-surface-100"
+              )}
+            >
+              <span className={cn("w-1.5 h-1.5 rounded-full", opt.color)} />
+              {STATUS_LABELS[opt.id]?.[isZh ? "zh" : "en"] || opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
- {/* Two-column content */}
- <div className="grid lg:grid-cols-5 gap-6">
+      {/* Two-column content */}
+      <div className="grid lg:grid-cols-5 gap-6">
  {/* Left: Job details and interaction tools */}
  <div className="lg:col-span-3 space-y-6">
  {/* Tabs Navigation */}
@@ -449,7 +465,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  )}
  >
  <Briefcase weight="bold" className="w-3.5 h-3.5" />
- Job Overview
+ {t.pipelineDetail.tabs.details}
  </button>
  <button
  onClick={() => setActiveTab("resume")}
@@ -461,10 +477,10 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  )}
  >
  <FileText weight="bold" className="w-3.5 h-3.5" />
- Resume Preview
+ {t.pipelineDetail.tabs.tailoredResume}
  {linkedResume && (
  <span className="eyebrow-tag bg-pastel-green-bg text-pastel-green-fg border border-pastel-green-fg/20">
- {atsView !== null ? `${atsView}% Match` : "Match"}
+ {atsView !== null ? `${atsView}% ${isZh ? "匹配" : "Match"}` : (isZh ? "已关联" : "Match")}
  </span>
  )}
  </button>
@@ -478,7 +494,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  )}
  >
  <Sparkle weight="bold" className="w-3.5 h-3.5 text-surface-400" />
- AI Outreach Studio
+ {t.pipelineDetail.tabs.outreach || (isZh ? "AI 自荐信工作台" : "AI Outreach Studio")}
  </button>
  </div>
 
@@ -489,7 +505,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  <div className="card-editorial space-y-3">
  <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
  <Briefcase weight="bold" className="w-4 h-4 text-surface-400" />
- Job Description
+ {t.pipelineDetail.description}
  </h2>
  {job.description ? (
  <div className="text-xs text-surface-400 leading-relaxed whitespace-pre-wrap font-sans">
@@ -497,7 +513,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  </div>
  ) : (
  <p className="text-xs text-surface-300 italic font-mono">
- No description available. Add a description by editing this job.
+ {t.pipelineDetail.noDescription}
  </p>
  )}
  </div>
@@ -507,7 +523,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  <div className="card-editorial space-y-2">
  <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
  <EnvelopeOpen weight="bold" className="w-4 h-4 text-surface-400" />
- Notes
+ {t.pipelineDetail.tabs.notes || (isZh ? "跟进笔记" : "Notes")}
  </h2>
  <div className="text-xs text-surface-400 leading-relaxed whitespace-pre-wrap font-sans">
  {job.notes}
@@ -519,14 +535,14 @@ export default function JobDetail({ jobId }: JobDetailProps) {
   <div className="card-editorial space-y-3">
   <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
   <CurrencyDollar weight="bold" className="w-4 h-4 text-surface-400" />
-  Compensation
+  {isZh ? "薪酬构成" : "Compensation"}
   </h2>
   <div className="grid grid-cols-2 gap-2.5">
   {([
-  { key: "base_salary", label: "Base salary" },
-  { key: "equity", label: "Equity" },
-  { key: "bonus", label: "Bonus" },
-  { key: "total_comp", label: "Total comp" },
+  { key: "base_salary", label: isZh ? "基础底薪" : "Base salary" },
+  { key: "equity", label: isZh ? "股票期权" : "Equity" },
+  { key: "bonus", label: isZh ? "年终/绩效奖金" : "Bonus" },
+  { key: "total_comp", label: isZh ? "年度总包 (TC)" : "Total comp" },
   ] as const).map((field) => (
   <label key={field.key} className="block">
   <span className="block text-[10px] font-mono font-bold uppercase tracking-wider text-surface-300 mb-1">
@@ -545,7 +561,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
   </div>
   <label className="block">
   <span className="block text-[10px] font-mono font-bold uppercase tracking-wider text-surface-300 mb-1">
-  Benefits (comma-separated)
+  {isZh ? "核心福利保障 (英文逗号分隔)" : "Benefits (comma-separated)"}
   </span>
   <input
   type="text"
@@ -562,14 +578,14 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  <div className="card-editorial space-y-3">
  <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
  <Calendar weight="bold" className="w-4 h-4 text-surface-400" />
- Timeline
+ {t.pipelineDetail.tabs.timeline || (isZh ? "求职进度时间线" : "Timeline")}
  </h2>
  <div className="space-y-2">
  {[
- { label: "Added", date: job.created_at, always: true },
- { label: "Applied", date: job.applied_at },
- { label: "Interview", date: job.interviewed_at },
- { label: "Offered", date: job.offered_at },
+ { label: isZh ? "已录入" : "Added", date: job.created_at, always: true },
+ { label: isZh ? "已投递" : "Applied", date: job.applied_at },
+ { label: isZh ? "首轮面试" : "Interview", date: job.interviewed_at },
+ { label: isZh ? "斩获 Offer" : "Offered", date: job.offered_at },
  ]
  .filter((e) => e.always || e.date)
  .map((event) => (
@@ -578,7 +594,7 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  className="flex items-center gap-3 text-xs font-mono"
  >
  <span className="w-1.5 h-1.5 rounded-full bg-surface-400" />
- <span className="text-surface-300 w-20 uppercase tracking-wider">{event.label}</span>
+ <span className="text-surface-300 w-24 uppercase tracking-wider">{event.label}</span>
  <span className="text-surface-400 font-semibold">
  {event.date ? formatDate(event.date) : "—"}
  </span>
@@ -588,7 +604,9 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  {/* Activity History */}
  {job.history && job.history.length > 0 && (
  <div className="mt-4 pt-3 border-t border-surface-200">
- <h3 className="text-[10px] font-mono font-bold text-surface-300 uppercase tracking-widest mb-3">Activity Log</h3>
+ <h3 className="text-[10px] font-mono font-bold text-surface-300 uppercase tracking-widest mb-3">
+ {isZh ? "活动记录" : "Activity Log"}
+ </h3>
  <div className="space-y-3">
  {job.history.map((item, idx) => (
  <div key={idx} className="flex gap-3 text-xs">
@@ -615,433 +633,459 @@ export default function JobDetail({ jobId }: JobDetailProps) {
  </div>
  )}
 
- {activeTab === "resume" && (
- <div className="space-y-4">
- {linkedResume ? (
- <div className="card-editorial space-y-4">
- <div className="flex items-center justify-between border-b border-surface-200 pb-3">
- <div>
- <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
- <FileText weight="bold" className="w-4 h-4 text-surface-400" />
- Linked Resume Preview
- </h2>
- <p className="text-xs text-surface-300 mt-0.5 font-mono">
- {linkedResume.title} — ATS Alignment: <span className="font-bold text-surface-400">{atsView !== null ? `${atsView}%` : "--"}</span>
- {atsEngine === "llm" && (
- <span className="ml-1.5 px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-500 text-[9px] font-sans font-bold uppercase">AI</span>
- )}
- </p>
- </div>
- <div className="flex gap-2">
- <button
- type="button"
- onClick={handleUpgradeATS}
- disabled={upgradingATS}
- className={cn(
- "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold border transition-all",
- upgradingATS
- ? "bg-surface-100 text-surface-300 cursor-wait border-surface-200"
- : "bg-white text-surface-400 border-surface-200 hover:border-surface-400"
- )}
- >
- <Sparkle weight="fill" className={cn("w-3.5 h-3.5", upgradingATS && "animate-pulse")} />
- {upgradingATS ? "Analyzing…" : atsEngine === "llm" ? "Re-run AI analysis" : "Analyze with AI"}
- </button>
- <Link
- href={`/dashboard/resume?view=${linkedResume.id}`}
- className="btn-editorial-secondary"
- >
- Edit Resume
- </Link>
- <Link
- href={`/dashboard/resume?tailorFor=${job.id}`}
- className="btn-editorial-primary"
- >
- Re-tailor
- </Link>
- </div>
- </div>
+      {activeTab === "resume" && (
+        <div className="space-y-4">
+          {linkedResume ? (
+            <div className="card-editorial space-y-4">
+              <div className="flex items-center justify-between border-b border-surface-200 pb-3">
+                <div>
+                  <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
+                    <FileText weight="bold" className="w-4 h-4 text-surface-400" />
+                    {isZh ? "关联定制简历预览" : "Linked Resume Preview"}
+                  </h2>
+                  <p className="text-xs text-surface-300 mt-0.5 font-mono">
+                    {linkedResume.title} — {isZh ? "ATS 匹配度: " : "ATS Alignment: "}
+                    <span className="font-bold text-surface-400">{atsView !== null ? `${atsView}%` : "--"}</span>
+                    {atsEngine === "llm" && (
+                      <span className="ml-1.5 px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-500 text-[9px] font-sans font-bold uppercase">AI</span>
+                    )}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleUpgradeATS}
+                    disabled={upgradingATS}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold border transition-all",
+                      upgradingATS
+                        ? "bg-surface-100 text-surface-300 cursor-wait border-surface-200"
+                        : "bg-white text-surface-400 border-surface-200 hover:border-surface-400"
+                    )}
+                  >
+                    <Sparkle weight="fill" className={cn("w-3.5 h-3.5", upgradingATS && "animate-pulse")} />
+                    {upgradingATS ? (isZh ? "正在分析…" : "Analyzing…") : atsEngine === "llm" ? (isZh ? "重新运行 AI 诊断" : "Re-run AI analysis") : (isZh ? "运行 AI 深度诊断" : "Analyze with AI")}
+                  </button>
+                  <Link
+                    href={`/dashboard/resume?view=${linkedResume.id}`}
+                    className="btn-editorial-secondary"
+                  >
+                    {isZh ? "编辑简历" : "Edit Resume"}
+                  </Link>
+                  <Link
+                    href={`/dashboard/resume?tailorFor=${job.id}`}
+                    className="btn-editorial-primary"
+                  >
+                    {isZh ? "重新定制" : "Re-tailor"}
+                  </Link>
+                </div>
+              </div>
 
- {/* Print Mockup Container */}
- <div className="rounded-md border border-surface-200 p-6 bg-white text-surface-400 font-sans max-h-[600px] overflow-y-auto">
- {/* Header */}
- <div className="text-center border-b border-surface-200 pb-4 mb-4">
- <h3 className="text-lg font-display font-bold text-surface-400 mb-0.5">{linkedResume.data.personal?.name || "Brouard Madan"}</h3>
- <p className="text-xs font-mono uppercase tracking-wider text-surface-300">{linkedResume.data.personal?.title || job.title}</p>
- <div className="flex justify-center gap-3 text-[10px] font-mono text-surface-300 mt-2 flex-wrap">
- {linkedResume.data.personal?.email && <span>{linkedResume.data.personal.email}</span>}
- {linkedResume.data.personal?.phone && <span>• {linkedResume.data.personal.phone}</span>}
- {linkedResume.data.personal?.location && <span>• {linkedResume.data.personal.location}</span>}
- {linkedResume.data.personal?.visa_status && <span>• {linkedResume.data.personal.visa_status}</span>}
- </div>
- </div>
+              {/* Print Mockup Container */}
+              <div className="rounded-md border border-surface-200 p-6 bg-white text-surface-400 font-sans max-h-[600px] overflow-y-auto">
+                {/* Header */}
+                <div className="text-center border-b border-surface-200 pb-4 mb-4">
+                  <h3 className="text-lg font-display font-bold text-surface-400 mb-0.5">{linkedResume.data.personal?.name || "Brouard Madan"}</h3>
+                  <p className="text-xs font-mono uppercase tracking-wider text-surface-300">{linkedResume.data.personal?.title || job.title}</p>
+                  <div className="flex justify-center gap-3 text-[10px] font-mono text-surface-300 mt-2 flex-wrap">
+                    {linkedResume.data.personal?.email && <span>{linkedResume.data.personal.email}</span>}
+                    {linkedResume.data.personal?.phone && <span>• {linkedResume.data.personal.phone}</span>}
+                    {linkedResume.data.personal?.location && <span>• {linkedResume.data.personal.location}</span>}
+                    {linkedResume.data.personal?.visa_status && <span>• {linkedResume.data.personal.visa_status}</span>}
+                  </div>
+                </div>
 
- {/* Summary */}
- {linkedResume.data.summary && (
- <div className="mb-4 text-left">
- <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400 mb-1 border-b border-surface-200 pb-0.5">Professional Summary</h4>
- <p className="text-[11px] text-surface-400 leading-relaxed">{linkedResume.data.summary}</p>
- </div>
- )}
+                {/* Summary */}
+                {linkedResume.data.summary && (
+                  <div className="mb-4 text-left">
+                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400 mb-1 border-b border-surface-200 pb-0.5">
+                      {isZh ? "个人优势与总结" : "Professional Summary"}
+                    </h4>
+                    <p className="text-[11px] text-surface-400 leading-relaxed">{linkedResume.data.summary}</p>
+                  </div>
+                )}
 
- {/* Experience */}
- {linkedResume.data.experience && linkedResume.data.experience.length > 0 && (
- <div className="mb-4 text-left">
- <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400 mb-2 border-b border-surface-200 pb-0.5">Professional Experience</h4>
- <div className="space-y-3">
- {linkedResume.data.experience.map((exp: ExperienceEntry, idx: number) => (
- <div key={idx} className="text-[11px]">
- <div className="flex justify-between items-baseline mb-0.5">
- <span className="font-bold text-surface-400">{exp.company} — {exp.title}</span>
- <span className="text-[9px] font-mono text-surface-300">{exp.start_date} to {exp.current ? "Present" : exp.end_date}</span>
- </div>
- {exp.bullets && exp.bullets.length > 0 && (
- <ul className="list-disc list-outside pl-4 space-y-0.5 mt-1 text-surface-400">
- {exp.bullets.map((b: string, bIdx: number) => (
- <li key={bIdx} className="leading-relaxed">{b}</li>
- ))}
- </ul>
- )}
- </div>
- ))}
- </div>
- </div>
- )}
+                {/* Experience */}
+                {linkedResume.data.experience && linkedResume.data.experience.length > 0 && (
+                  <div className="mb-4 text-left">
+                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400 mb-2 border-b border-surface-200 pb-0.5">
+                      {isZh ? "专业工作经历" : "Professional Experience"}
+                    </h4>
+                    <div className="space-y-3">
+                      {linkedResume.data.experience.map((exp: ExperienceEntry, idx: number) => (
+                        <div key={idx} className="text-[11px]">
+                          <div className="flex justify-between items-baseline mb-0.5">
+                            <span className="font-bold text-surface-400">{exp.company} — {exp.title}</span>
+                            <span className="text-[9px] font-mono text-surface-300">{exp.start_date} to {exp.current ? (isZh ? "至今" : "Present") : exp.end_date}</span>
+                          </div>
+                          {exp.bullets && exp.bullets.length > 0 && (
+                            <ul className="list-disc list-outside pl-4 space-y-0.5 mt-1 text-surface-400">
+                              {exp.bullets.map((b: string, bIdx: number) => (
+                                <li key={bIdx} className="leading-relaxed">{b}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
- {/* Education */}
- {linkedResume.data.education && linkedResume.data.education.length > 0 && (
- <div className="mb-4 text-left">
- <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400 mb-2 border-b border-surface-200 pb-0.5">Education</h4>
- <div className="space-y-1">
- {linkedResume.data.education.map((edu: EducationEntry, idx: number) => (
- <div key={idx} className="flex justify-between items-baseline text-[11px]">
- <span className="font-semibold text-surface-400">{edu.institution} — {edu.degree} in {edu.field}</span>
- <span className="text-[9px] font-mono text-surface-300">{edu.end_date}</span>
- </div>
- ))}
- </div>
- </div>
- )}
+                {/* Education */}
+                {linkedResume.data.education && linkedResume.data.education.length > 0 && (
+                  <div className="mb-4 text-left">
+                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400 mb-2 border-b border-surface-200 pb-0.5">
+                      {isZh ? "教育背景" : "Education"}
+                    </h4>
+                    <div className="space-y-1">
+                      {linkedResume.data.education.map((edu: EducationEntry, idx: number) => (
+                        <div key={idx} className="flex justify-between items-baseline text-[11px]">
+                          <span className="font-semibold text-surface-400">{edu.institution} — {edu.degree} in {edu.field}</span>
+                          <span className="text-[9px] font-mono text-surface-300">{edu.end_date}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
- {/* Skills */}
- {linkedResume.data.skills && linkedResume.data.skills.length > 0 && (
- <div className="text-left">
- <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400 mb-2 border-b border-surface-200 pb-0.5">Skills & Competencies</h4>
- <div className="flex flex-wrap gap-1 mt-1">
- {linkedResume.data.skills.map((s: SkillItem, idx: number) => (
- <span key={idx} className={cn("px-2 py-0.5 rounded text-[10px] font-mono bg-surface-100 text-surface-400 border border-surface-200", s.isHighlighted && "bg-surface-400 text-surface-0 font-bold")}>
- {s.name}
- </span>
- ))}
- </div>
- </div>
- )}
- </div>
- </div>
- ) : (
- <div className="card-editorial text-center py-8">
- <FileText weight="regular" className="w-10 h-10 text-surface-300 mx-auto mb-3" />
- <h3 className="text-sm font-bold text-surface-400 mb-1 font-display">No Resume Linked</h3>
- <p className="text-xs text-surface-300 mb-4 max-w-xs mx-auto">
- Link a tailored resume to this application to check ATS alignment, preview bullets, and generate outreach.
- </p>
- <Link
- href={`/dashboard/resume?tailorFor=${job.id}`}
- className="btn-editorial-primary inline-flex items-center gap-2"
- >
- <Sparkle weight="bold" className="w-3.5 h-3.5" />
- Tailor Resume for This Job
- </Link>
- </div>
- )}
- </div>
- )}
+                {/* Skills */}
+                {linkedResume.data.skills && linkedResume.data.skills.length > 0 && (
+                  <div className="text-left">
+                    <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400 mb-2 border-b border-surface-200 pb-0.5">
+                      {isZh ? "核心技能矩阵" : "Skills & Competencies"}
+                    </h4>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {linkedResume.data.skills.map((s: SkillItem, idx: number) => (
+                        <span key={idx} className={cn("px-2 py-0.5 rounded text-[10px] font-mono bg-surface-100 text-surface-400 border border-surface-200", s.isHighlighted && "bg-surface-400 text-surface-0 font-bold")}>
+                          {s.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="card-editorial text-center py-8">
+              <FileText weight="regular" className="w-10 h-10 text-surface-300 mx-auto mb-3" />
+              <h3 className="text-sm font-bold text-surface-400 mb-1 font-display">
+                {isZh ? "暂未关联定制简历" : "No Resume Linked"}
+              </h3>
+              <p className="text-xs text-surface-300 mb-4 max-w-xs mx-auto">
+                {isZh ? "为该岗位生成或关联专属定制简历，即可诊断 ATS 匹配分并获取针对性自荐信。" : "Link a tailored resume to this application to check ATS alignment, preview bullets, and generate outreach."}
+              </p>
+              <Link
+                href={`/dashboard/resume?tailorFor=${job.id}`}
+                className="btn-editorial-primary inline-flex items-center gap-2"
+              >
+                <Sparkle weight="bold" className="w-3.5 h-3.5" />
+                {isZh ? "针对该岗位定制专属简历" : "Tailor Resume for This Job"}
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
 
- {activeTab === "outreach" && (
- <div className="space-y-4">
- <div className="card-editorial space-y-4">
- <div>
- <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
- <EnvelopeOpen weight="bold" className="w-4 h-4 text-surface-400" />
- AI Outreach Studio
- </h2>
- <p className="text-xs text-surface-300 mt-1">
- Draft high-conversion outreach emails automatically customized for this position, company context, and your experience.
- </p>
- </div>
+      {activeTab === "outreach" && (
+        <div className="space-y-4">
+          <div className="card-editorial space-y-4">
+            <div>
+              <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
+                <EnvelopeOpen weight="bold" className="w-4 h-4 text-surface-400" />
+                {isZh ? "AI 自荐信工作台" : "AI Outreach Studio"}
+              </h2>
+              <p className="text-xs text-surface-300 mt-1">
+                {isZh ? "根据目标岗位要求、企业背景与您的真实履历，自动生成高回复率的内推求职信或跟进话术。" : "Draft high-conversion outreach emails automatically customized for this position, company context, and your experience."}
+              </p>
+            </div>
 
- <div className="grid sm:grid-cols-2 gap-3">
- <div>
- <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">Outreach Purpose</label>
- <select
- value={outreachType}
- onChange={(e) => setOutreachType(e.target.value as typeof outreachType)}
- className="w-full px-3 py-1.5 text-xs bg-surface-50 border border-surface-200 rounded-md text-surface-400 focus:outline-none focus:border-surface-400 font-sans"
- >
- <option value="referral">Referral Request (Before Applying)</option>
- <option value="thankyou">Thank You Note (Post-Interview)</option>
- <option value="followup">Application Status Follow-up</option>
- <option value="negotiation">Offer Compensation Discussion</option>
- </select>
- </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
+                  {isZh ? "自荐信用途" : "Outreach Purpose"}
+                </label>
+                <select
+                  value={outreachType}
+                  onChange={(e) => setOutreachType(e.target.value as typeof outreachType)}
+                  className="w-full px-3 py-1.5 text-xs bg-surface-50 border border-surface-200 rounded-md text-surface-400 focus:outline-none focus:border-surface-400 font-sans"
+                >
+                  <option value="referral">{isZh ? "内推引荐请求 (投递前)" : "Referral Request (Before Applying)"}</option>
+                  <option value="thankyou">{isZh ? "面试感谢信 (面试后)" : "Thank You Note (Post-Interview)"}</option>
+                  <option value="followup">{isZh ? "投递进展询问信" : "Application Status Follow-up"}</option>
+                  <option value="negotiation">{isZh ? "薪酬待遇探讨信" : "Offer Compensation Discussion"}</option>
+                </select>
+              </div>
 
- <div>
- <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">Recipient Name</label>
- <input
- type="text"
- value={recipientName}
- onChange={(e) => setRecipientName(e.target.value)}
- placeholder="e.g. Hiring Manager, Recruiter"
- className="w-full px-3 py-1.5 text-xs bg-surface-50 border border-surface-200 rounded-md text-surface-400 focus:outline-none focus:border-surface-400 placeholder:text-surface-300 font-sans"
- />
- </div>
- </div>
+              <div>
+                <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
+                  {isZh ? "收信人称谓" : "Recipient Name"}
+                </label>
+                <input
+                  type="text"
+                  value={recipientName}
+                  onChange={(e) => setRecipientName(e.target.value)}
+                  placeholder={isZh ? "例如：招聘负责人、面试官" : "e.g. Hiring Manager, Recruiter"}
+                  className="w-full px-3 py-1.5 text-xs bg-surface-50 border border-surface-200 rounded-md text-surface-400 focus:outline-none focus:border-surface-400 placeholder:text-surface-300 font-sans"
+                />
+              </div>
+            </div>
 
- <div>
- <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">Tone & Style</label>
- <div className="flex gap-2 flex-wrap">
- {["Professional & Polished", "Short & Punchy", "Warm & Conversational", "Metrics-Driven"].map((tone) => (
- <button
- key={tone}
- onClick={() => setOutreachTone(tone)}
- className={cn(
- "px-2.5 py-1 rounded-md text-[11px] font-mono font-medium border transition-all",
- outreachTone === tone
- ? "bg-surface-400 text-surface-0 border-surface-400"
- : "bg-surface-50 border-surface-200 text-surface-300 hover:text-surface-400 hover:bg-surface-100"
- )}
- >
- {tone}
- </button>
- ))}
- </div>
- </div>
+            <div>
+              <label className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-surface-300 mb-1">
+                {isZh ? "语气与沟通风格" : "Tone & Style"}
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {[
+                  { id: "Professional & Polished", label: isZh ? "专业严谨" : "Professional & Polished" },
+                  { id: "Short & Punchy", label: isZh ? "精炼扼要" : "Short & Punchy" },
+                  { id: "Warm & Conversational", label: isZh ? "亲和真诚" : "Warm & Conversational" },
+                  { id: "Metrics-Driven", label: isZh ? "数据与结果导向" : "Metrics-Driven" },
+                ].map((tItem) => (
+                  <button
+                    key={tItem.id}
+                    onClick={() => setOutreachTone(tItem.id)}
+                    className={cn(
+                      "px-2.5 py-1 rounded-md text-[11px] font-mono font-medium border transition-all",
+                      outreachTone === tItem.id
+                        ? "bg-surface-400 text-surface-0 border-surface-400"
+                        : "bg-surface-50 border-surface-200 text-surface-300 hover:text-surface-400 hover:bg-surface-100"
+                    )}
+                  >
+                    {tItem.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
- <button
- onClick={handleGenerateOutreach}
- disabled={isGeneratingOutreach}
- className="btn-editorial-primary w-full flex items-center justify-center gap-2"
- >
-  <Sparkle weight="bold" className="w-3.5 h-3.5" />
-  {isGeneratingOutreach ? "Drafting Outreach Email..." : "Generate Outreach Draft"}
- </button>
- </div>
+            <button
+              onClick={handleGenerateOutreach}
+              disabled={isGeneratingOutreach}
+              className="btn-editorial-primary w-full flex items-center justify-center gap-2"
+            >
+              <Sparkle weight="bold" className="w-3.5 h-3.5" />
+              {isGeneratingOutreach ? (isZh ? "正在撰写自荐信..." : "Drafting Outreach Email...") : (isZh ? "一键生成求职信草稿" : "Generate Outreach Draft")}
+            </button>
+          </div>
 
- {generatedOutreach && (
- <div className="card-editorial space-y-3">
- <div className="flex items-center justify-between border-b border-surface-200 pb-2">
- <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400">Generated Email Draft</span>
- <button
- onClick={handleCopyOutreach}
- className="btn-editorial-secondary inline-flex items-center gap-1.5"
- >
- {copied ? (
- <>
- <Check weight="bold" className="w-3.5 h-3.5 text-pastel-green-fg" />
- <span>Copied!</span>
- </>
- ) : (
- <>
- <Copy weight="bold" className="w-3.5 h-3.5" />
- <span>Copy Draft</span>
- </>
- )}
- </button>
- </div>
+          {generatedOutreach && (
+            <div className="card-editorial space-y-3">
+              <div className="flex items-center justify-between border-b border-surface-200 pb-2">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-surface-400">
+                  {isZh ? "生成的邮件草稿" : "Generated Email Draft"}
+                </span>
+                <button
+                  onClick={handleCopyOutreach}
+                  className="btn-editorial-secondary inline-flex items-center gap-1.5"
+                >
+                  {copied ? (
+                    <>
+                      <Check weight="bold" className="w-3.5 h-3.5 text-pastel-green-fg" />
+                      <span>{isZh ? "已复制！" : "Copied!"}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy weight="bold" className="w-3.5 h-3.5" />
+                      <span>{isZh ? "复制草稿" : "Copy Draft"}</span>
+                    </>
+                  )}
+                </button>
+              </div>
 
- <textarea
- value={generatedOutreach}
- onChange={(e) => setGeneratedOutreach(e.target.value)}
- rows={12}
- className="w-full p-3 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 focus:outline-none focus:border-surface-400 font-mono leading-relaxed"
- />
- </div>
- )}
- </div>
- )}
- </div>
+              <textarea
+                value={generatedOutreach}
+                onChange={(e) => setGeneratedOutreach(e.target.value)}
+                rows={12}
+                className="w-full p-3 rounded-md bg-surface-50 border border-surface-200 text-xs text-surface-400 focus:outline-none focus:border-surface-400 font-mono leading-relaxed"
+              />
+            </div>
+          )}
+        </div>
+      )}
+      </div>
 
- {/* Right: Evaluation panel */}
- <div className="lg:col-span-2 space-y-4">
- {job.evaluation ? (
- <>
- {/* Score card */}
- <div className="card-editorial space-y-3">
- <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
- <Star weight="bold" className="w-4 h-4 text-surface-400" />
- AI Evaluation
- </h2>
- <div className="flex items-center gap-4">
- <ScoreRing score={job.evaluation.score} />
- <div>
- <div className="flex items-center gap-1.5 mb-1">
- <span className="eyebrow-tag bg-surface-100 text-surface-400 border border-surface-200 font-bold">
- Tier {job.evaluation.tier}
- </span>
- </div>
- <span className="eyebrow-tag bg-surface-50 text-surface-300 border border-surface-200">
- {job.evaluation.archetype}
- </span>
- </div>
- </div>
- <p className="text-xs text-surface-300 leading-relaxed font-sans border-t border-surface-200 pt-3">
- {job.evaluation.match_summary}
- </p>
- </div>
+      {/* Right: Evaluation panel */}
+      <div className="lg:col-span-2 space-y-4">
+        {job.evaluation ? (
+          <>
+            {/* Score card */}
+            <div className="card-editorial space-y-3">
+              <h2 className="text-sm font-display font-bold text-surface-400 flex items-center gap-2">
+                <Star weight="bold" className="w-4 h-4 text-surface-400" />
+                {t.pipelineDetail.jdAnalysis}
+              </h2>
+              <div className="flex items-center gap-4">
+                <ScoreRing score={job.evaluation.score} />
+                <div>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="eyebrow-tag bg-surface-100 text-surface-400 border border-surface-200 font-bold">
+                      Tier {job.evaluation.tier}
+                    </span>
+                  </div>
+                  <span className="eyebrow-tag bg-surface-50 text-surface-300 border border-surface-200">
+                    {job.evaluation.archetype}
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-surface-300 leading-relaxed font-sans border-t border-surface-200 pt-3">
+                {job.evaluation.match_summary}
+              </p>
+            </div>
 
- {/* Fit reasons */}
- <div className="card-editorial space-y-2">
- <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400 flex items-center gap-2">
- <CheckCircle weight="bold" className="w-3.5 h-3.5 text-pastel-green-fg" />
- Why It Fits
- </h3>
- <ul className="space-y-1.5">
- {job.evaluation.fit_reasons.map((reason, i) => (
- <li key={i} className="flex items-start gap-2 text-xs text-surface-300">
- <CaretRight weight="bold" className="w-3 h-3 text-surface-400 flex-shrink-0 mt-0.5" />
- <span>{reason}</span>
- </li>
- ))}
- </ul>
- </div>
+            {/* Fit reasons */}
+            <div className="card-editorial space-y-2">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400 flex items-center gap-2">
+                <CheckCircle weight="bold" className="w-3.5 h-3.5 text-pastel-green-fg" />
+                {t.pipelineDetail.whyItFits || (isZh ? "核心匹配理由" : "Why It Fits")}
+              </h3>
+              <ul className="space-y-1.5">
+                {job.evaluation.fit_reasons.map((reason, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-surface-300">
+                    <CaretRight weight="bold" className="w-3 h-3 text-surface-400 flex-shrink-0 mt-0.5" />
+                    <span>{reason}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
- {/* Concerns */}
- <div className="card-editorial space-y-2">
- <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400 flex items-center gap-2">
- <XCircle weight="bold" className="w-3.5 h-3.5 text-pastel-yellow-fg" />
- Concerns
- </h3>
- <ul className="space-y-1.5">
- {job.evaluation.concerns.map((concern, i) => (
- <li key={i} className="flex items-start gap-2 text-xs text-surface-300">
- <CaretRight weight="bold" className="w-3 h-3 text-surface-400 flex-shrink-0 mt-0.5" />
- <span>{concern}</span>
- </li>
- ))}
- </ul>
- </div>
+            {/* Concerns */}
+            <div className="card-editorial space-y-2">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400 flex items-center gap-2">
+                <XCircle weight="bold" className="w-3.5 h-3.5 text-pastel-yellow-fg" />
+                {t.pipelineDetail.concerns || (isZh ? "潜在匹配顾虑" : "Concerns")}
+              </h3>
+              <ul className="space-y-1.5">
+                {job.evaluation.concerns.map((concern, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-surface-300">
+                    <CaretRight weight="bold" className="w-3 h-3 text-surface-400 flex-shrink-0 mt-0.5" />
+                    <span>{concern}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
- {/* Key requirements */}
- <div className="card-editorial space-y-2">
- <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400 flex items-center gap-2">
- <Shield weight="bold" className="w-3.5 h-3.5 text-surface-400" />
- Key Requirements
- </h3>
- <ul className="space-y-1.5">
- {job.evaluation.key_requirements.map((req, i) => (
- <li key={i} className="flex items-start gap-2 text-xs text-surface-300">
- <Target weight="bold" className="w-3 h-3 text-surface-400 flex-shrink-0 mt-0.5" />
- <span>{req}</span>
- </li>
- ))}
- </ul>
- </div>
- </>
- ) : (
- <div className="card-editorial text-center py-6">
- <Star weight="regular" className="w-8 h-8 text-surface-300 mx-auto mb-2" />
- <h3 className="text-xs font-bold text-surface-400 mb-1 font-display">
- Not Evaluated Yet
- </h3>
- <p className="text-[11px] text-surface-300 mb-4 px-4">
- Run AI evaluation to get a fitness score and detailed match analysis.
- </p>
- <button
- type="button"
- onClick={handleRunEvaluation}
- disabled={evaluating}
- className={cn(
- "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all",
- evaluating
- ? "bg-brand-500/20 text-brand-300 cursor-wait"
- : "bg-brand-500 text-white hover:bg-brand-400"
- )}
- >
- <Sparkle weight="fill" className={cn("w-3.5 h-3.5", evaluating && "animate-pulse")} />
- {evaluating ? "Evaluating…" : "Run AI Evaluation"}
- </button>
- </div>
- )}
+            {/* Key requirements */}
+            <div className="card-editorial space-y-2">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400 flex items-center gap-2">
+                <Shield weight="bold" className="w-3.5 h-3.5 text-surface-400" />
+                {t.pipelineDetail.requiredSkills}
+              </h3>
+              <ul className="space-y-1.5">
+                {job.evaluation.key_requirements.map((req, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-surface-300">
+                    <Target weight="bold" className="w-3 h-3 text-surface-400 flex-shrink-0 mt-0.5" />
+                    <span>{req}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        ) : (
+          <div className="card-editorial text-center py-6">
+            <Star weight="regular" className="w-8 h-8 text-surface-300 mx-auto mb-2" />
+            <h3 className="text-xs font-bold text-surface-400 mb-1 font-display">
+              {t.pipelineDetail.notEvaluatedYet || (isZh ? "尚未运行 AI 评估" : "Not Evaluated Yet")}
+            </h3>
+            <p className="text-[11px] text-surface-300 mb-4 px-4">
+              {t.pipelineDetail.notEvaluatedDesc || (isZh ? "运行 AI 深度评估以获得人岗匹配度与详细诊断报告。" : "Run AI evaluation to get a fitness score and detailed match analysis.")}
+            </p>
+            <button
+              type="button"
+              onClick={handleRunEvaluation}
+              disabled={evaluating}
+              className={cn(
+                "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all",
+                evaluating
+                  ? "bg-brand-500/20 text-brand-300 cursor-wait"
+                  : "bg-brand-500 text-white hover:bg-brand-400"
+              )}
+            >
+              <Sparkle weight="fill" className={cn("w-3.5 h-3.5", evaluating && "animate-pulse")} />
+              {evaluating ? (isZh ? "正在评估…" : "Evaluating…") : (t.pipelineDetail.runAiEval || (isZh ? "运行 AI 评估" : "Run AI Evaluation"))}
+            </button>
+          </div>
+        )}
 
- {/* Quick Actions */}
- <div className="card-editorial space-y-3">
- <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400">Quick Actions</h3>
- <div className="space-y-2">
- {job.resume_id ? (
- <div className="rounded-md border border-surface-200 p-3 bg-surface-50 space-y-2">
- {(() => {
- const linkedResume = getResumeById(job.resume_id!);
- const atsScore = atsView;
- return linkedResume ? (
- <>
- <div className="flex items-center gap-2">
- <FileText weight="bold" className="w-3.5 h-3.5 text-surface-400" />
- <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-surface-300">
- Linked Resume
- </span>
- </div>
- <p className="text-xs font-medium text-surface-400 truncate">
- {linkedResume.title}
- </p>
- <div className="py-1">
- <ATSScoreBadge score={atsScore ?? 0} size="sm" />
- </div>
- <div className="flex gap-2">
- <Link
- href={`/dashboard/resume?view=${linkedResume.id}`}
- className="flex-1 text-center py-1 rounded-md text-[11px] font-mono font-semibold bg-surface-0 border border-surface-200 text-surface-400 hover:bg-surface-100 transition-all"
- >
- View
- </Link>
- <Link
- href={`/dashboard/resume?tailorFor=${job.id}`}
- className="flex-1 text-center py-1 rounded-md text-[11px] font-mono font-semibold bg-surface-400 text-surface-0 hover:bg-black transition-all"
- >
- Re-tailor
- </Link>
- </div>
- </>
- ) : null;
- })()}
- </div>
- ) : (
- <Link
- href={`/dashboard/resume?tailorFor=${job.id}`}
- className="flex items-center justify-between p-3 rounded-md bg-surface-50 border border-surface-200 hover:bg-surface-100 transition-all group"
- >
- <div className="flex items-center gap-2">
- <Sparkle weight="bold" className="w-4 h-4 text-surface-400" />
- <span className="text-xs text-surface-400 font-semibold uppercase tracking-wider font-mono">
- Tailor Resume
- </span>
- </div>
- <CaretRight weight="bold" className="w-3.5 h-3.5 text-surface-300 group-hover:text-surface-400" />
- </Link>
- )}
+        {/* Quick Actions */}
+        <div className="card-editorial space-y-3">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-surface-400">
+            {t.pipelineDetail.quickActions || (isZh ? "快捷操作" : "Quick Actions")}
+          </h3>
+          <div className="space-y-2">
+            {job.resume_id ? (
+              <div className="rounded-md border border-surface-200 p-3 bg-surface-50 space-y-2">
+                {(() => {
+                  const linkedResume = getResumeById(job.resume_id!);
+                  const atsScore = atsView;
+                  return linkedResume ? (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <FileText weight="bold" className="w-3.5 h-3.5 text-surface-400" />
+                        <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-surface-300">
+                          {isZh ? "已关联简历" : "Linked Resume"}
+                        </span>
+                      </div>
+                      <p className="text-xs font-medium text-surface-400 truncate">
+                        {linkedResume.title}
+                      </p>
+                      <div className="py-1">
+                        <ATSScoreBadge score={atsScore ?? 0} size="sm" />
+                      </div>
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/dashboard/resume?view=${linkedResume.id}`}
+                          className="flex-1 text-center py-1 rounded-md text-[11px] font-mono font-semibold bg-surface-0 border border-surface-200 text-surface-400 hover:bg-surface-100 transition-all"
+                        >
+                          {isZh ? "查看" : "View"}
+                        </Link>
+                        <Link
+                          href={`/dashboard/resume?tailorFor=${job.id}`}
+                          className="flex-1 text-center py-1 rounded-md text-[11px] font-mono font-semibold bg-surface-400 text-surface-0 hover:bg-black transition-all"
+                        >
+                          {isZh ? "重新定制" : "Re-tailor"}
+                        </Link>
+                      </div>
+                    </>
+                  ) : null;
+                })()}
+              </div>
+            ) : (
+              <Link
+                href={`/dashboard/resume?tailorFor=${job.id}`}
+                className="flex items-center justify-between p-3 rounded-md bg-surface-50 border border-surface-200 hover:bg-surface-100 transition-all group"
+              >
+                <div className="flex items-center gap-2">
+                  <Sparkle weight="bold" className="w-4 h-4 text-surface-400" />
+                  <span className="text-xs text-surface-400 font-semibold uppercase tracking-wider font-mono">
+                    {isZh ? "定制专属简历" : "Tailor Resume"}
+                  </span>
+                </div>
+                <CaretRight weight="bold" className="w-3.5 h-3.5 text-surface-300 group-hover:text-surface-400" />
+              </Link>
+            )}
 
- <Link
- href="/dashboard/interview"
- className="flex items-center justify-between p-3 rounded-md border border-surface-200 bg-surface-0 hover:bg-surface-50 transition-all group"
- >
- <span className="text-xs text-surface-400 font-medium">
- Start Interview Prep
- </span>
- <CaretRight weight="bold" className="w-3.5 h-3.5 text-surface-300 group-hover:text-surface-400" />
- </Link>
- </div>
- </div>
- </div>
- </div>
+            <Link
+              href="/dashboard/interview"
+              className="flex items-center justify-between p-3 rounded-md border border-surface-200 bg-surface-0 hover:bg-surface-50 transition-all group"
+            >
+              <span className="text-xs text-surface-400 font-medium">
+                {t.pipelineDetail.startInterviewPrep || (isZh ? "开启面试备战" : "Start Interview Prep")}
+              </span>
+              <CaretRight weight="bold" className="w-3.5 h-3.5 text-surface-300 group-hover:text-surface-400" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
 
- <ConfirmDialog
- open={showDeleteConfirm}
- title="Delete Job"
- message="Are you sure you want to delete this job? This action cannot be undone."
- confirmLabel="Delete"
- variant="danger"
- onConfirm={confirmDelete}
- onCancel={() => setShowDeleteConfirm(false)}
- />
- </div>
- );
+    <ConfirmDialog
+      open={showDeleteConfirm}
+      title={t.pipelineDetail.deleteJob}
+      message={t.pipelineDetail.deleteJobConfirm}
+      confirmLabel={isZh ? "删除" : "Delete"}
+      variant="danger"
+      onConfirm={confirmDelete}
+      onCancel={() => setShowDeleteConfirm(false)}
+    />
+  </div>
+  );
 }

@@ -139,7 +139,7 @@ export default function JobPrepPage({
  {job.score !== undefined && (
  <span className="flex items-center gap-1">
  <Star className="w-3.5 h-3.5" />
- Score: {job.score.toFixed(1)}
+ {t.interview.prep.scoreLabel}: {job.score.toFixed(1)}
  </span>
  )}
  </div>
@@ -249,16 +249,16 @@ export default function JobPrepPage({
  </p>
  <div className="flex items-center gap-2">
  <span className={cn(
- "text-[10px] px-1.5 py-0.5 rounded font-medium capitalize",
+ "text-[10px] px-1.5 py-0.5 rounded font-medium capitalize whitespace-nowrap",
  CATEGORY_COLORS[q.category] || "text-surface-400 bg-surface-300/10"
  )}>
- {q.category}
+ {t.interview.prep.categories?.[q.category as keyof typeof t.interview.prep.categories] || q.category}
  </span>
  <span className={cn(
- "text-[10px] px-1.5 py-0.5 rounded font-medium capitalize",
+ "text-[10px] px-1.5 py-0.5 rounded font-medium capitalize whitespace-nowrap",
  DIFFICULTY_STYLES[q.difficulty]
  )}>
- {q.difficulty}
+ {t.interview.prep.difficulties?.[q.difficulty as keyof typeof t.interview.prep.difficulties] || q.difficulty}
  </span>
  </div>
  </div>
