@@ -53,6 +53,7 @@ npm run lint
 
 - ALWAYS run tests after making code changes
 - ALWAYS verify build succeeds before committing
+- ALWAYS check Supabase (migrations, schema sync, RLS, and database status) whenever merging changes and publishing code to production
 
 ## Security Rules
 

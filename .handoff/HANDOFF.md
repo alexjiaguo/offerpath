@@ -74,6 +74,7 @@
 
 - Mirrored Chinese `全流程自动化。` in English with `automated.`.
 - Wrapped the terminal address bar pill in an `<a>` tag pointing to `https://offerpath.cc.cd/dashboard` with `target="_blank"`.
+- Mandatory production publish checklist: Always audit Supabase (migrations, schema, RLS, status) whenever merging and deploying code.
 
 ## Environment Notes
 
@@ -90,7 +91,7 @@
 ## Agent Config Changes
 
 - [x] `AGENTS.md`
-- [ ] `CLAUDE.md`
+- [x] `CLAUDE.md`
 - [ ] `GEMINI.md`
 - [ ] None modified
 
