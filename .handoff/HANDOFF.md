@@ -11,44 +11,53 @@
 - **Project path**: `/Volumes/Download/ai-projects/side-hustles/job-hunt-os/products/offerpath`
 - **From agent**: Antigravity
 - **To agent**: any
-- **Date**: 2026-09-07 12:52 CST
-- **Session summary**: Completed comprehensive Chinese technical terminology updates across `zh.ts`, `DeepSeekHero.tsx`, `AnnouncementBar.tsx`, `QuickStartSection.tsx`, `StickyFeatureShowcase.tsx`, `BentoPreviews.tsx`, `PhilosophyPillars.tsx`, `PageFitIndicator.tsx`, `NeedsTailoringWidget.tsx`, `billing/page.tsx`, and `pipeline/page.tsx`. Replaced mechanical/awkward translations (literal "管道", generic "润色", "强动词") with native Chinese tech/recruiting terms ("针对性定制", "智能精修", "ATS 过筛率", "求职进展看板"). Enforced zero-overflow constraints with equal/shorter character counts and `whitespace-nowrap shrink-0` on `PageFitIndicator`. All 258 vitest tests passed and production build succeeded (31/31 routes). Supabase audited with 0 schema changes.
+- **Date**: 2026-09-07 13:35 CST
+- **Session summary**: Completed system-wide Chinese localization and anti-overflow improvements across all dashboard modules (`JobDetail.tsx`, `compare/page.tsx`, `KanbanColumn.tsx`, `AnalyticsCharts.tsx`, `JobCard.tsx`, `interview/[jobId]/page.tsx`, `interview/[jobId]/mock/page.tsx`, `dashboard/page.tsx`, `PageFitIndicator.tsx`, and `i18n`). Fixed the P0 Kanban column title fallback bug by aligning keys in `zh.ts`, `en.ts`, and `types.ts`. All 258 vitest tests passed and local `next build` compiled cleanly (31/31 routes). Security sweep confirmed 0 secrets exposed. Supabase checked with 0 schema migrations needed. Changes committed to `main` (`ac59e1c`), pushed to GitHub `origin/main`, and deployed live to production on Vercel (`https://offerpath.cc.cd`).
 
 ## Git State (verified against actual `git status`)
 
 - **Branch**: `main`
-- **HEAD commit**: `171a9f5` (`fix(landing): prevent terminal header tabs text wrapping and make URL responsive`)
-- **Remote**: `origin/main`
-- **Working Tree**: 11 modified files ready for user review/commit.
+- **HEAD commit**: `ac59e1c` (`feat(pipeline): complete system-wide chinese localization and anti-overflow improvements`)
+- **Remote**: `origin/main` (in sync, `ac59e1c`)
+- **Working Tree**: Clean.
 - **Stashes**: `stash@{0}: On main: main branch uncommitted changes (favicon.svg, logo-mark.svg deletion)` — pre-existing, untouched.
 
 ### Verified vs. Assumed
 
 - **Verified**:
   - `git branch --show-current` returns `main`.
-  - `git status` shows clean working tree.
-  - `git log -n 1 --oneline` shows `171a9f5`.
+  - `git status` shows working tree clean, up to date with `origin/main`.
   - `npm test` runs 34 test files, all 258 tests pass cleanly.
   - `npm run build` compiles clean with all 31 routes generated.
-  - Visual verification with Playwright screenshots confirms single-line tab layout in both English and Chinese.
-  - Supabase audit confirms 0 schema/table mutations needed.
+  - Pre-publish security sweep confirmed 0 exposed credentials or keys.
+  - Supabase audit confirms clean schema sync with 0 pending migrations.
   - `git push origin main` completed successfully.
+  - `vercel --prod --yes` completed successfully with status `READY`, deployed to `https://offerpath.cc.cd`.
 - **Assumed**:
-  - Vercel GitHub CI integration automatically deploys commit `d3a7cfb` to `https://offerpath.cc.cd`.
+  - none.
 
 ## What Was Done
 
-1. **Hero Title Update**:
-   - In `src/components/landing/DeepSeekHero.tsx`, changed Chinese highlight text from `全流程工程化。` to `全流程自动化。`.
-   - In `src/components/landing/DeepSeekHero.tsx`, changed English highlight text from `engineered.` to `automated.`.
-2. **Terminal Mock URL Replacement**:
-   - In `src/components/landing/DeepSeekHero.tsx`, replaced `offerpath.app/studio` with an interactive anchor link to `https://offerpath.cc.cd/dashboard`.
-3. **Repository-Wide Domain Cleanup**:
-   - In `src/components/landing/StickyFeatureShowcase.tsx`, replaced `offerpath.app/{steps[activeStep].id}` with `offerpath.cc.cd/{steps[activeStep].id}`.
-   - Verified 0 remaining occurrences of `offerpath.app` across the repository.
-4. **Committed & Pushed**:
-   - Staged and committed with conventional commit `fix(landing): update hero headline to automation and replace studio links with production dashboard` (`d3a7cfb`).
-   - Pushed directly to `origin/main` to trigger Vercel deployment.
+1. **Landing Page Refinements & Fixes (Pre-requisite, Commit `123ea1b`)**:
+   - Hero copy updated from "全流程工程化" to "全流程自动化".
+   - Production URLs updated to `https://offerpath.cc.cd/dashboard`.
+   - Comprehensive audit of Chinese terminology recorded in `.sessions/chinese-technical-translation-audit_session_2026-09-07.md`.
+2. **System-Wide P0 Localization Fixes (Commit `ac59e1c`)**:
+   - **Kanban Columns**: Aligned IDs in `zh.ts`, `en.ts`, and `types.ts` (`new`, `evaluated`, `applied`, `interviewing`, `offered`, `rejected`), resolving the bug where 3 columns fell back to English. Added `truncate max-w-[170px]` to header.
+   - **JobDetail**: 1,077 lines fully connected to `useTranslation` (`t.pipelineDetail`).
+   - **Offer Compare**: Fully wired to `t.compare` for all metric rows, factors, and cards.
+   - **Analytics & Funnel**: Localized funnel stage names and metric summaries.
+3. **P1 & P2 Refinements**:
+   - `JobCard.tsx`: Localized `timeAgo` formatting (`今天`, `昨天`, `N天前`, `N周前`).
+   - `interview/[jobId]/page.tsx`: Mapped question categories and difficulties to native Chinese with `whitespace-nowrap`.
+   - `interview/[jobId]/mock/page.tsx`: Mapped scorecard capability breakdown categories.
+   - `dashboard/page.tsx`: Adjusted `tracking-widest` to `tracking-wider truncate` on stat and weekly goal cards.
+   - `PageFitIndicator.tsx`: Adjusted `tracking-widest` to `tracking-wider`.
+4. **Production Deployment**:
+   - Security sweep verified 0 secrets in diff.
+   - Supabase schema & migrations verified clean.
+   - Changes committed and pushed to `origin/main`.
+   - Production deployment promoted to Vercel (`https://offerpath.cc.cd`).
 
 ## In Progress
 
@@ -56,8 +65,8 @@
 
 ## Dead Ends & Ruled-Out Approaches
 
-- Do not keep a large 6-column or full-width goal widget in the middle of the dashboard; it looks oversized and leaves an awkward void once the onboarding checklist finishes.
-- Do not keep the onboarding checklist visible after 100% completion; ephemeral onboarding that auto-hides is the proven SaaS pattern.
+- Do not use `tracking-widest` (0.1em) on multi-character Chinese uppercase/mono tags in narrow grid cards; it causes unwanted 2-line wraps on tablet breakpoints.
+- Do not let enum keys in `KANBAN_COLUMNS` drift from `pipeline.columns` translation keys (`saved` vs `new`, `offer` vs `offered`); always maintain 1:1 key parity and sync with `src/i18n/types.ts`.
 
 ## Do Not Touch
 
@@ -73,8 +82,8 @@
 
 ## Decisions Made
 
-- Mirrored Chinese `全流程自动化。` in English with `automated.`.
-- Wrapped the terminal address bar pill in an `<a>` tag pointing to `https://offerpath.cc.cd/dashboard` with `target="_blank"`.
+- Conventional Commit: `feat(pipeline): complete system-wide chinese localization and anti-overflow improvements`.
+- Maintained strict typed schema in `src/i18n/types.ts` to prevent TypeScript compilation errors.
 - Mandatory production publish checklist: Always audit Supabase (migrations, schema, RLS, status) whenever merging and deploying code.
 
 ## Environment Notes
@@ -98,4 +107,4 @@
 
 ## Scratch Files
 
-- `/tmp/dashboard_v2_*.png` (copied to artifact folder)
+- None.
