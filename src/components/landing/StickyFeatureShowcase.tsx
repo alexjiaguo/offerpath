@@ -190,7 +190,7 @@ export function StickyFeatureShowcase() {
                   <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
                   <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
                   <span className="ml-2 font-mono text-[11px] text-white/60 bg-white/[0.06] px-2.5 py-0.5 rounded-full border border-white/[0.08]">
-                    offerpath.app/{steps[activeStep].id}
+                    offerpath.cc.cd/{steps[activeStep].id}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">

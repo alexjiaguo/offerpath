@@ -139,12 +139,12 @@ export function DeepSeekHero() {
               {isZh ? (
                 <>
                   从职位到 Offer，<br />
-                  <span className="font-bold bg-gradient-to-r from-[#C2410C] via-[#EA580C] to-[#9A3412] bg-clip-text text-transparent">全流程工程化。</span>
+                  <span className="font-bold bg-gradient-to-r from-[#C2410C] via-[#EA580C] to-[#9A3412] bg-clip-text text-transparent">全流程自动化。</span>
                 </>
               ) : (
                 <>
                   From search to offer,<br />
-                  <span className="font-bold bg-gradient-to-r from-[#C2410C] via-[#EA580C] to-[#9A3412] bg-clip-text text-transparent">engineered.</span>
+                  <span className="font-bold bg-gradient-to-r from-[#C2410C] via-[#EA580C] to-[#9A3412] bg-clip-text text-transparent">automated.</span>
                 </>
               )}
             </h1>
@@ -227,7 +227,14 @@ export function DeepSeekHero() {
                   <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
                   <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
                   <span className="w-3 h-3 rounded-full bg-[#28c840]" />
-                  <span className="ml-2 font-mono text-[11px] text-white/50 bg-white/[0.06] px-2 py-0.5 rounded-md border border-white/[0.08]">offerpath.app/studio</span>
+                  <a
+                    href="https://offerpath.cc.cd/dashboard"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-2 font-mono text-[11px] text-white/50 hover:text-white/80 transition-colors bg-white/[0.06] px-2 py-0.5 rounded-md border border-white/[0.08]"
+                  >
+                    https://offerpath.cc.cd/dashboard
+                  </a>
                 </div>
 
                 <div className="flex items-center gap-1 bg-white/[0.06] p-0.5 rounded-lg border border-white/[0.06]">
